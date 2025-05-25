@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 
-import { LimitForm } from '../components/form/limit-form'
+import { LimitForm, LimitFormProps } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
 import { useChainContext } from '../contexts/chain-context'
 import { useMarketContext } from '../contexts/trade/market-context'
@@ -25,7 +25,7 @@ import { ActionButton } from '../components/button/action-button'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
 import { useTradeContext } from '../contexts/trade/trade-context'
-import { SwapForm } from '../components/form/swap-form'
+import { SwapForm, SwapFormProps } from '../components/form/swap-form'
 import { useSwapContractContext } from '../contexts/trade/swap-contract-context'
 import { fetchPrice } from '../apis/price'
 import { SearchSvg } from '../components/svg/search-svg'
@@ -446,57 +446,58 @@ export const TradeContainer = () => {
   )
 
   const limitFormProps = useMemo(
-    () => ({
-      chain: selectedChain,
-      explorerUrl: selectedChain.blockExplorers?.default?.url ?? '',
-      prices,
-      balances,
-      currencies,
-      setCurrencies,
-      priceInput,
-      setPriceInput,
-      selectedMarket,
-      isBid,
-      showInputCurrencySelect,
-      setShowInputCurrencySelect,
-      inputCurrency,
-      setInputCurrency,
-      inputCurrencyAmount,
-      setInputCurrencyAmount,
-      availableInputCurrencyBalance: inputCurrency
-        ? (balances[inputCurrency.address] ?? 0n)
-        : 0n,
-      showOutputCurrencySelect,
-      setShowOutputCurrencySelect,
-      outputCurrency,
-      setOutputCurrency,
-      outputCurrencyAmount,
-      setOutputCurrencyAmount,
-      availableOutputCurrencyBalance: outputCurrency
-        ? (balances[outputCurrency.address] ?? 0n)
-        : 0n,
-      swapInputCurrencyAndOutputCurrency: () => {
-        setIsBid((prevState) => !prevState)
-        setDepthClickedIndex(undefined)
-        setInputCurrencyAmount(outputCurrencyAmount)
+    () =>
+      ({
+        chain: selectedChain,
+        explorerUrl: selectedChain.blockExplorers?.default?.url ?? '',
+        prices,
+        balances,
+        currencies,
+        setCurrencies,
+        priceInput,
+        setPriceInput,
+        selectedMarket,
+        isBid,
+        showInputCurrencySelect,
+        setShowInputCurrencySelect,
+        inputCurrency,
+        setInputCurrency,
+        inputCurrencyAmount,
+        setInputCurrencyAmount,
+        availableInputCurrencyBalance: inputCurrency
+          ? (balances[inputCurrency.address] ?? 0n)
+          : 0n,
+        showOutputCurrencySelect,
+        setShowOutputCurrencySelect,
+        outputCurrency,
+        setOutputCurrency,
+        outputCurrencyAmount,
+        setOutputCurrencyAmount,
+        availableOutputCurrencyBalance: outputCurrency
+          ? (balances[outputCurrency.address] ?? 0n)
+          : 0n,
+        swapInputCurrencyAndOutputCurrency: () => {
+          setIsBid((prevState) => !prevState)
+          setDepthClickedIndex(undefined)
+          setInputCurrencyAmount(outputCurrencyAmount)
 
-        // swap currencies
-        const _inputCurrency = inputCurrency
-        setInputCurrency(outputCurrency)
-        setOutputCurrency(_inputCurrency)
-      },
-      minimumDecimalPlaces: availableDecimalPlacesGroups?.[0]?.value,
-      marketPrice,
-      marketRateDiff,
-      setMarketRateAction: {
-        isLoading: isFetchingQuotes,
-        action: async () => {
-          await setMarketRateAction()
+          // swap currencies
+          const _inputCurrency = inputCurrency
+          setInputCurrency(outputCurrency)
+          setOutputCurrency(_inputCurrency)
         },
-      },
-      closeLimitFormAction: () => setShowMobileModal(false),
-      actionButtonProps: limitActionButtonProps,
-    }),
+        minimumDecimalPlaces: availableDecimalPlacesGroups?.[0]?.value,
+        marketPrice,
+        marketRateDiff,
+        setMarketRateAction: {
+          isLoading: isFetchingQuotes,
+          action: async () => {
+            await setMarketRateAction()
+          },
+        },
+        closeLimitFormAction: () => setShowMobileModal(false),
+        actionButtonProps: limitActionButtonProps,
+      }) as LimitFormProps,
     [
       availableDecimalPlacesGroups,
       balances,
@@ -611,37 +612,38 @@ export const TradeContainer = () => {
   )
 
   const swapFormProps = useMemo(
-    () => ({
-      chain: selectedChain,
-      explorerUrl: selectedChain.blockExplorers?.default?.url ?? '',
-      currencies,
-      setCurrencies,
-      balances,
-      prices,
-      showInputCurrencySelect,
-      setShowInputCurrencySelect,
-      inputCurrency,
-      setInputCurrency,
-      inputCurrencyAmount,
-      setInputCurrencyAmount,
-      availableInputCurrencyBalance: inputCurrency
-        ? (balances[inputCurrency.address] ?? 0n)
-        : 0n,
-      showOutputCurrencySelect,
-      setShowOutputCurrencySelect,
-      outputCurrency,
-      setOutputCurrency,
-      outputCurrencyAmount: formatUnits(
-        selectedQuote?.amountOut ?? 0n,
-        outputCurrency?.decimals ?? 18,
-      ),
-      slippageInput,
-      setSlippageInput,
-      aggregatorName: selectedQuote?.aggregator?.name ?? '',
-      gasEstimateValue: selectedQuote?.gasUsd ?? 0,
-      priceImpact: priceImpact,
-      refreshQuotesAction: () => setLatestRefreshTime(Date.now()),
-    }),
+    () =>
+      ({
+        chain: selectedChain,
+        explorerUrl: selectedChain.blockExplorers?.default?.url ?? '',
+        currencies,
+        setCurrencies,
+        balances,
+        prices,
+        showInputCurrencySelect,
+        setShowInputCurrencySelect,
+        inputCurrency,
+        setInputCurrency,
+        inputCurrencyAmount,
+        setInputCurrencyAmount,
+        availableInputCurrencyBalance: inputCurrency
+          ? (balances[inputCurrency.address] ?? 0n)
+          : 0n,
+        showOutputCurrencySelect,
+        setShowOutputCurrencySelect,
+        outputCurrency,
+        setOutputCurrency,
+        outputCurrencyAmount: formatUnits(
+          selectedQuote?.amountOut ?? 0n,
+          outputCurrency?.decimals ?? 18,
+        ),
+        slippageInput,
+        setSlippageInput,
+        aggregatorName: selectedQuote?.aggregator?.name ?? '',
+        gasEstimateValue: selectedQuote?.gasUsd ?? 0,
+        priceImpact: priceImpact,
+        refreshQuotesAction: () => setLatestRefreshTime(Date.now()),
+      }) as SwapFormProps,
     [
       balances,
       currencies,
