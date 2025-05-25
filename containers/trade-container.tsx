@@ -138,14 +138,14 @@ export const TradeContainer = () => {
     }
   }, [inputCurrency, outputCurrency, selectedChain.id])
 
-  const amount = useMemo(
+  const amountIn = useMemo(
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
     [inputCurrency?.decimals, inputCurrencyAmount],
   )
 
-  const filteredOpenOrders = useMemo(
-    () =>
-      openOrders.filter((order) => {
+  const [filteredOpenOrders, claimableOpenOrders, cancellableOpenOrders] =
+    useMemo(() => {
+      const filteredOpenOrders = openOrders.filter((order) => {
         if (selectedMarket && searchInCurrentMarket) {
           return (
             (isAddressEqual(
@@ -175,18 +175,17 @@ export const TradeContainer = () => {
           order.inputCurrency.address.toLowerCase().includes(_searchValue) ||
           order.outputCurrency.address.toLowerCase().includes(_searchValue)
         )
-      }),
-    [openOrders, searchInCurrentMarket, searchValue, selectedMarket],
-  )
-
-  const claimableOpenOrders = filteredOpenOrders.filter(
-    ({ claimable }) =>
-      parseUnits(claimable.value, claimable.currency.decimals) > 0n,
-  )
-  const cancellableOpenOrders = filteredOpenOrders.filter(
-    ({ cancelable }) =>
-      parseUnits(cancelable.value, cancelable.currency.decimals) > 0n,
-  )
+      })
+      const claimableOpenOrders = filteredOpenOrders.filter(
+        ({ claimable }) =>
+          parseUnits(claimable.value, claimable.currency.decimals) > 0n,
+      )
+      const cancellableOpenOrders = filteredOpenOrders.filter(
+        ({ cancelable }) =>
+          parseUnits(cancelable.value, cancelable.currency.decimals) > 0n,
+      )
+      return [filteredOpenOrders, claimableOpenOrders, cancellableOpenOrders]
+    }, [openOrders, searchInCurrentMarket, searchValue, selectedMarket])
 
   useEffect(() => {
     if (
@@ -296,11 +295,6 @@ export const TradeContainer = () => {
       : new BigNumber(priceInput).dividedBy(marketPrice).minus(1).times(100)
   ).toNumber()
 
-  const amountIn = parseUnits(
-    inputCurrencyAmount,
-    inputCurrency?.decimals ?? 18,
-  )
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedValue(inputCurrencyAmount)
@@ -336,7 +330,7 @@ export const TradeContainer = () => {
           chainId: selectedChain.id,
           inputCurrency: inputCurrency.symbol,
           outputCurrency: outputCurrency.symbol,
-          amountIn,
+          amount: amountIn,
         })
         const { best, all } = await fetchQuotes(
           aggregators,
@@ -690,8 +684,8 @@ export const TradeContainer = () => {
                               selectedMarket.quote.address,
                             ],
                           )) ||
-                        amount === 0n ||
-                        amount > (balances[inputCurrency.address] ?? 0n)),
+                        amountIn === 0n ||
+                        amountIn > (balances[inputCurrency.address] ?? 0n)),
                     onClick: async () => {
                       if (!walletClient && openConnectModal) {
                         openConnectModal()
@@ -721,9 +715,9 @@ export const TradeContainer = () => {
                         ? 'Select input currency'
                         : !outputCurrency
                           ? 'Select output currency'
-                          : amount === 0n
+                          : amountIn === 0n
                             ? 'Enter amount'
-                            : amount > balances[inputCurrency.address]
+                            : amountIn > balances[inputCurrency.address]
                               ? 'Insufficient balance'
                               : `Place Order`,
                   }}
@@ -766,8 +760,8 @@ export const TradeContainer = () => {
                         (selectedQuote?.amountOut ?? 0n) === 0n) ||
                       !inputCurrency ||
                       !outputCurrency ||
-                      amount === 0n ||
-                      amount > balances[inputCurrency.address],
+                      amountIn === 0n ||
+                      amountIn > balances[inputCurrency.address],
                     onClick: async () => {
                       if (!userAddress && openConnectModal) {
                         openConnectModal()
@@ -807,9 +801,9 @@ export const TradeContainer = () => {
                             ? 'Select input currency'
                             : !outputCurrency
                               ? 'Select output currency'
-                              : amount === 0n
+                              : amountIn === 0n
                                 ? 'Enter amount'
-                                : amount > balances[inputCurrency.address]
+                                : amountIn > balances[inputCurrency.address]
                                   ? 'Insufficient balance'
                                   : isAddressEqual(
                                         inputCurrency.address,
@@ -1048,8 +1042,8 @@ export const TradeContainer = () => {
                             selectedMarket.quote.address,
                           ],
                         )) ||
-                      amount === 0n ||
-                      amount > (balances[inputCurrency.address] ?? 0n)),
+                      amountIn === 0n ||
+                      amountIn > (balances[inputCurrency.address] ?? 0n)),
                   onClick: async () => {
                     if (!walletClient && openConnectModal) {
                       openConnectModal()
@@ -1075,9 +1069,9 @@ export const TradeContainer = () => {
                       ? 'Select input currency'
                       : !outputCurrency
                         ? 'Select output currency'
-                        : amount === 0n
+                        : amountIn === 0n
                           ? 'Enter amount'
-                          : amount > balances[inputCurrency.address]
+                          : amountIn > balances[inputCurrency.address]
                             ? 'Insufficient balance'
                             : `Place Order`,
                 }}
@@ -1108,8 +1102,8 @@ export const TradeContainer = () => {
                       (selectedQuote?.amountOut ?? 0n) === 0n) ||
                     !inputCurrency ||
                     !outputCurrency ||
-                    amount === 0n ||
-                    amount > balances[inputCurrency.address]
+                    amountIn === 0n ||
+                    amountIn > balances[inputCurrency.address]
                   }
                   onClick={async () => {
                     if (!userAddress && openConnectModal) {
@@ -1150,9 +1144,9 @@ export const TradeContainer = () => {
                           ? 'Select input currency'
                           : !outputCurrency
                             ? 'Select output currency'
-                            : amount === 0n
+                            : amountIn === 0n
                               ? 'Enter amount'
-                              : amount > balances[inputCurrency.address]
+                              : amountIn > balances[inputCurrency.address]
                                 ? 'Insufficient balance'
                                 : isAddressEqual(
                                       inputCurrency.address,
