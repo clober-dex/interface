@@ -78,7 +78,7 @@ export async function fetchQuotes(
       amountIn,
       ...quote,
       gasUsd,
-      netAmountOutUsd: Math.max(0, netAmountOutUsd),
+      netAmountOutUsd,
     }
 
     allQuotes.push(quoteWithMeta)
