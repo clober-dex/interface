@@ -70,7 +70,8 @@ export const SwapRouteCard = ({
         <div className="flex justify-start items-center gap-1.5">
           {quote ? (
             <div className="justify-start text-[#838b99] text-xs sm:text-sm font-medium">
-              = ${toCommaSeparated(quote.netAmountOutUsd.toFixed(4))}
+              = {quote.netAmountOutUsd >= 0 ? '' : '-'}$
+              {toCommaSeparated(Math.abs(quote.netAmountOutUsd).toFixed(4))}
             </div>
           ) : (
             <div className="w-[70px] h-4 sm:h-5 rounded animate-pulse bg-gray-500" />

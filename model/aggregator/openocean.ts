@@ -1,4 +1,4 @@
-import { formatUnits, getAddress, isAddressEqual, zeroAddress } from 'viem'
+import { getAddress, isAddressEqual, zeroAddress } from 'viem'
 import { Transaction } from '@clober/v2-sdk'
 
 import { Chain } from '../chain'
@@ -10,13 +10,15 @@ import { Aggregator } from './index'
 
 export class OpenOceanAggregator implements Aggregator {
   public readonly name = 'OpenOcean'
-  public readonly baseUrl = 'https://open-api.openocean.finance'
+  public readonly baseUrl = 'https://ethapi.openocean.finance'
   public readonly contract: `0x${string}`
   public readonly minimumSlippage = 0.01 // 0.01% slippage
   public readonly maximumSlippage = 50 // 50% slippage
   public readonly chain: Chain
   private readonly TIMEOUT = 4000
   private readonly nativeTokenAddress = zeroAddress
+  private readonly referrer: `0x${string}` =
+    '0x331fa4a4f7b906491f37bdc8b042b894234e101f'
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
@@ -29,6 +31,12 @@ export class OpenOceanAggregator implements Aggregator {
 
   public async prices(): Promise<Prices> {
     return {} as Prices
+  }
+
+  private calculateSlippage(slippageLimitPercent: number) {
+    slippageLimitPercent = Math.max(slippageLimitPercent, this.minimumSlippage)
+    slippageLimitPercent = Math.min(slippageLimitPercent, this.maximumSlippage)
+    return slippageLimitPercent
   }
 
   public async quote(
@@ -44,129 +52,60 @@ export class OpenOceanAggregator implements Aggregator {
     aggregator: Aggregator
     transaction: Transaction | undefined
   }> {
-    if (userAddress) {
-      const { transaction, amountOut } = await this.buildCallData(
-        inputCurrency,
-        amountIn,
-        outputCurrency,
-        slippageLimitPercent,
-        gasPrice,
-        userAddress,
+    slippageLimitPercent = this.calculateSlippage(slippageLimitPercent)
+    let params = {
+      quoteType: 'swap',
+      inTokenAddress: isAddressEqual(
+        inputCurrency.address,
+        this.nativeTokenAddress,
       )
-      return {
-        amountOut,
-        gasLimit: transaction.gas,
-        aggregator: this,
-        transaction,
-      }
-    } else {
-      const response = await fetchApi<{
-        code: number
-        data: {
-          outAmount: string
-          estimatedGas: string
-          price_impact: string
-        }
-      }>(this.baseUrl, `v4/${this.chain.id}/quote`, {
-        method: 'GET',
-        headers: {
-          accept: 'application/json',
-        },
-        timeout: this.TIMEOUT,
-        params: {
-          inTokenAddress: isAddressEqual(
-            inputCurrency.address,
-            this.nativeTokenAddress,
-          )
-            ? this.nativeTokenAddress
-            : getAddress(inputCurrency.address),
-          outTokenAddress: isAddressEqual(
-            outputCurrency.address,
-            this.nativeTokenAddress,
-          )
-            ? this.nativeTokenAddress
-            : getAddress(outputCurrency.address),
-          amount: formatUnits(amountIn, inputCurrency.decimals),
-          gasPrice: formatUnits(gasPrice, 9),
-        },
-      })
-
-      if (response.code !== 200) {
-        throw new Error(`Quote failed: ${response.code}`)
-      }
-
-      return {
-        amountOut: BigInt(response.data.outAmount),
-        gasLimit: BigInt(response.data.estimatedGas),
-        aggregator: this,
-        transaction: undefined,
+        ? this.nativeTokenAddress
+        : getAddress(inputCurrency.address),
+      outTokenAddress: isAddressEqual(
+        outputCurrency.address,
+        this.nativeTokenAddress,
+      )
+        ? this.nativeTokenAddress
+        : getAddress(outputCurrency.address),
+      amount: amountIn.toString(),
+      gasPrice: gasPrice.toString(),
+      slippage: (slippageLimitPercent * 100).toString(),
+      referrer: this.referrer,
+    } as any
+    if (userAddress) {
+      params = {
+        ...params,
+        account: userAddress as `0x${string}`,
       }
     }
-  }
 
-  private async buildCallData(
-    inputCurrency: Currency,
-    amountIn: bigint,
-    outputCurrency: Currency,
-    slippageLimitPercent: number,
-    gasPrice: bigint,
-    userAddress: `0x${string}`,
-  ): Promise<{
-    transaction: Transaction
-    amountOut: bigint
-  }> {
-    slippageLimitPercent = Math.max(slippageLimitPercent, this.minimumSlippage)
-    slippageLimitPercent = Math.min(slippageLimitPercent, this.maximumSlippage)
-    const response = await fetchApi<{
-      code: number
-      data: {
-        data: `0x${string}`
-        estimatedGas: string
-        outAmount: string
-        value: string
-        to: `0x${string}`
-      }
-    }>(this.baseUrl, `v4/${this.chain.id}/swap`, {
+    const { estimatedGas, outAmount, data, value, to } = await fetchApi<{
+      estimatedGas: string
+      outAmount: string
+      data: string
+      value: string
+      to: string
+    }>(this.baseUrl, `v2/${this.chain.id}/swap`, {
       method: 'GET',
-      timeout: this.TIMEOUT,
       headers: {
         accept: 'application/json',
       },
-      params: {
-        inTokenAddress: isAddressEqual(
-          inputCurrency.address,
-          this.nativeTokenAddress,
-        )
-          ? this.nativeTokenAddress
-          : getAddress(inputCurrency.address),
-        outTokenAddress: isAddressEqual(
-          outputCurrency.address,
-          this.nativeTokenAddress,
-        )
-          ? this.nativeTokenAddress
-          : getAddress(outputCurrency.address),
-        amount: formatUnits(amountIn, inputCurrency.decimals),
-        gasPrice: formatUnits(gasPrice, 9),
-        slippage: (slippageLimitPercent * 100).toString(),
-        account: userAddress,
-        referrer: '0x331fa4a4f7b906491f37bdc8b042b894234e101f' as `0x${string}`,
-      },
+      timeout: this.TIMEOUT,
+      params,
     })
 
-    if (response.code !== 200) {
-      throw new Error(`Swap quote failed: ${response.code}`)
-    }
-
     return {
+      amountOut: BigInt(outAmount),
+      gasLimit: BigInt(estimatedGas),
+      aggregator: this,
       transaction: {
-        data: response.data.data,
-        gas: BigInt(response.data.estimatedGas),
-        value: BigInt(response.data.value),
-        to: response.data.to,
+        data: data as `0x${string}`,
+        gas: BigInt(estimatedGas),
+        value: BigInt(value),
+        to: getAddress(to),
         gasPrice: gasPrice,
         from: userAddress,
       },
-      amountOut: BigInt(response.data.outAmount ?? 0),
     }
   }
 }
