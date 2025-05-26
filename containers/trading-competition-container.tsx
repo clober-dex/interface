@@ -171,7 +171,7 @@ export const TradingCompetitionContainer = () => {
       if (Object.keys(prices).length === 0) {
         return {}
       }
-      return fetchTradingCompetitionLeaderboard(selectedChain.id, prices)
+      return fetchTradingCompetitionLeaderboard(prices)
     },
   }) as {
     data: {
@@ -193,7 +193,7 @@ export const TradingCompetitionContainer = () => {
           trades: [],
         }
       }
-      return fetchUserPnL(selectedChain.id, prices, userAddress)
+      return fetchUserPnL(prices, userAddress)
     },
   })
 

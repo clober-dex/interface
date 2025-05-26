@@ -1,4 +1,3 @@
-import { CHAIN_IDS } from '@clober/v2-sdk'
 import { createPublicClient, getAddress, http, isAddressEqual } from 'viem'
 import BigNumber from 'bignumber.js'
 
@@ -6,7 +5,6 @@ import { Subgraph } from '../../model/subgraph'
 import { Prices } from '../../model/prices'
 import { formatUnits } from '../../utils/bigint'
 import { TradingCompetitionPnl } from '../../model/trading-competition-pnl'
-import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { WHITELISTED_FUTURES_ASSETS } from '../../constants/futures'
 
@@ -36,7 +34,6 @@ export const fetchTotalRegisteredUsers = async (): Promise<number> => {
 }
 
 export const fetchUserPnL = async (
-  chainId: CHAIN_IDS,
   prices: Prices,
   userAddress: `0x${string}`,
 ): Promise<TradingCompetitionPnl> => {
@@ -91,31 +88,11 @@ export const fetchUserPnL = async (
   }
 }
 
-const cache = new Map<
-  string,
-  {
-    data: {
-      [user: `0x${string}`]: TradingCompetitionPnl
-    }
-    timestamp: number
-  }
->()
-
 export const fetchTradingCompetitionLeaderboard = async (
-  chainId: CHAIN_IDS,
   prices: Prices,
 ): Promise<{
   [user: `0x${string}`]: TradingCompetitionPnl
 }> => {
-  const cacheKey = `${chainId}`
-  const cachedData = cache.get(cacheKey)
-  if (
-    cachedData &&
-    Object.keys(prices).length > 0 &&
-    cachedData.timestamp > currentTimestampInSeconds() - 60
-  ) {
-    return cachedData.data
-  }
   const {
     data: { users },
   } = await Subgraph.get<{
@@ -135,7 +112,7 @@ export const fetchTradingCompetitionLeaderboard = async (
     '{ users( first: 100 orderBy: pnl orderDirection: desc where: {isRegistered: true} ) { id trades { token { id decimals symbol } realizedPnL estimatedHolding } } }',
     {},
   )
-  const results = users
+  return users
     .filter(
       (user) =>
         !BLACKLISTED_USER_ADDRESSES.some((address) =>
@@ -171,11 +148,6 @@ export const fetchTradingCompetitionLeaderboard = async (
       },
       {} as { [user: `0x${string}`]: TradingCompetitionPnl },
     )
-  cache.set(cacheKey, {
-    data: results,
-    timestamp: currentTimestampInSeconds(),
-  })
-  return results
 }
 
 export const fetchLeverageIndexOraclePrices = async (): Promise<Prices> => {
