@@ -208,7 +208,7 @@ export const MarketInfoCard = ({
                       />
                     )}
 
-                    {WHITELISTED_FUTURES_ASSETS.some((address) =>
+                    {WHITELISTED_FUTURES_ASSETS.some(({ address }) =>
                       isAddressEqual(baseCurrency.address, address),
                     ) && (
                       <ActionButton

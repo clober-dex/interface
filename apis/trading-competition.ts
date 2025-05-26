@@ -1,5 +1,6 @@
 import { CHAIN_IDS } from '@clober/v2-sdk'
-import { getAddress, isAddressEqual } from 'viem'
+import { createPublicClient, getAddress, http, isAddressEqual } from 'viem'
+import BigNumber from 'bignumber.js'
 
 import { Subgraph } from '../model/subgraph'
 import { Prices } from '../model/prices'
@@ -7,6 +8,7 @@ import { formatUnits } from '../utils/bigint'
 import { TradingCompetitionPnl } from '../model/trading-competition-pnl'
 import { currentTimestampInSeconds } from '../utils/date'
 import { CHAIN_CONFIG } from '../chain-configs'
+import { WHITELISTED_FUTURES_ASSETS } from '../constants/futures'
 
 const BLACKLISTED_USER_ADDRESSES = [
   '0x5F79EE8f8fA862E98201120d83c4eC39D9468D49',
@@ -173,4 +175,34 @@ export const fetchTradingCompetitionLeaderboard = async (
     timestamp: currentTimestampInSeconds(),
   })
   return results
+}
+
+export const fetchLeverageIndexOraclePrices = async (): Promise<Prices> => {
+  const publicClient = createPublicClient({
+    chain: CHAIN_CONFIG.CHAIN,
+    transport: http(CHAIN_CONFIG.RPC_URL),
+  })
+  const results = await publicClient.readContract({
+    address: '0xFAC34076fc84579916573c2C307d70304caB2c8E',
+    abi: [
+      {
+        inputs: [
+          { internalType: 'bytes32[]', name: 'assetIds', type: 'bytes32[]' },
+        ],
+        name: 'getAssetsPrices',
+        outputs: [{ internalType: 'uint256[]', name: '', type: 'uint256[]' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+    ],
+    functionName: 'getAssetsPrices',
+    args: [WHITELISTED_FUTURES_ASSETS.map((asset) => asset.priceFeedId)],
+  })
+  return results.reduce((acc, price, index) => {
+    const asset = WHITELISTED_FUTURES_ASSETS[index]
+    acc[getAddress(asset.address)] = new BigNumber(price.toString())
+      .div(new BigNumber(10).pow(18))
+      .toNumber()
+    return acc
+  }, {} as Prices)
 }

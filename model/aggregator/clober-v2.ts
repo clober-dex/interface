@@ -18,6 +18,7 @@ import { formatUnits } from '../../utils/bigint'
 import { WETH_ABI } from '../../abis/weth-abi'
 import { Chain } from '../chain'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { fetchLeverageIndexOraclePrices } from '../../apis/trading-competition'
 
 import { Aggregator } from './index'
 
@@ -43,9 +44,18 @@ export class CloberV2Aggregator implements Aggregator {
   }
 
   public async prices(): Promise<Prices> {
-    return getLatestPriceMap({
-      chainId: this.chain.id,
-    })
+    const [prices, leverageIndexOraclePrices] = await Promise.allSettled([
+      getLatestPriceMap({
+        chainId: this.chain.id,
+      }),
+      fetchLeverageIndexOraclePrices(),
+    ])
+    return {
+      ...(prices.status === 'fulfilled' ? prices.value : {}),
+      ...(leverageIndexOraclePrices.status === 'fulfilled'
+        ? leverageIndexOraclePrices.value
+        : {}),
+    } as Prices
   }
 
   public async quote(

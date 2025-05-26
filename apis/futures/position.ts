@@ -97,11 +97,11 @@ export const fetchFuturesPositions = async (
   )
 
   const results = await publicClient.multicall({
-    contracts: WHITELISTED_FUTURES_ASSETS.map((asset) => ({
+    contracts: WHITELISTED_FUTURES_ASSETS.map(({ address }) => ({
       address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
       abi: _abi,
       functionName: 'getPosition',
-      args: [asset, userAddress],
+      args: [address, userAddress],
     })),
   })
   return results
@@ -109,7 +109,7 @@ export const fetchFuturesPositions = async (
       const asset = assets.find((asset) =>
         isAddressEqual(
           asset.currency.address,
-          WHITELISTED_FUTURES_ASSETS[index],
+          WHITELISTED_FUTURES_ASSETS[index].address,
         ),
       )
       if (result.error || !asset) {

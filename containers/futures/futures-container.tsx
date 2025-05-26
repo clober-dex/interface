@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
-import { isAddressEqual, parseUnits } from 'viem'
+import { getAddress, isAddressEqual, parseUnits } from 'viem'
 
 import { FuturesAssetCard } from '../../components/card/futures/futures-asset-card'
 import { FuturesPosition } from '../../model/futures/futures-position'
@@ -156,7 +156,9 @@ export const FuturesContainer = () => {
                 {assets
                   .filter((asset) => asset.expiration > now)
                   .filter((asset) =>
-                    WHITELISTED_FUTURES_ASSETS.includes(asset.currency.address),
+                    WHITELISTED_FUTURES_ASSETS.map(
+                      (item) => item.address,
+                    ).includes(getAddress(asset.currency.address)),
                   )
                   .sort((a, b) =>
                     a.currency.symbol.localeCompare(b.currency.symbol),
@@ -186,9 +188,9 @@ export const FuturesContainer = () => {
                     (asset) =>
                       asset.expiration < now &&
                       balances[asset.currency.address] > 0n &&
-                      WHITELISTED_FUTURES_ASSETS.includes(
-                        asset.currency.address,
-                      ),
+                      WHITELISTED_FUTURES_ASSETS.map((item) =>
+                        getAddress(item.address),
+                      ).includes(getAddress(asset.currency.address)),
                   )
                   .map((asset, index) => (
                     <FuturesRedeemCard
