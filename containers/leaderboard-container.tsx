@@ -4,10 +4,10 @@ import { useAccount } from 'wagmi'
 import { getAddress, isAddressEqual } from 'viem'
 import CountUp from 'react-countup'
 import {
-  getUserDailyVolumes,
-  UserVolumeSnapshot,
   getTopUsersByNativeVolume,
+  getUserDailyVolumes,
   getUserNativeVolume,
+  UserVolumeSnapshot,
 } from '@clober/v2-sdk'
 
 import { useChainContext } from '../contexts/chain-context'
@@ -21,6 +21,10 @@ import {
   fetchLiquidVaultPoint,
 } from '../apis/point'
 import { CHAIN_CONFIG } from '../chain-configs'
+import {
+  fetchTradingCompetitionLeaderboard,
+  fetchUserPnL,
+} from '../apis/trading-competition/season1'
 
 type HeatmapProps = {
   userDailyVolumes: UserVolumeSnapshot[]
@@ -265,10 +269,13 @@ function Heatmap({ userDailyVolumes, monthLabels }: HeatmapProps) {
 }
 
 export const LeaderboardContainer = () => {
-  const [tab, setTab] = useState<'vault' | 'volume'>('volume')
+  const [tab, setTab] = useState<'vault' | 'volume' | 'competition-season1'>(
+    'volume',
+  )
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
 
+  // user data
   const { data: myVaultPoint } = useQuery({
     queryKey: ['my-vault-point', selectedChain.id, userAddress],
     queryFn: async () => {
@@ -318,6 +325,22 @@ export const LeaderboardContainer = () => {
     initialData: [],
   })
 
+  const { data: myTradingCompetitionSeason1PnL } = useQuery({
+    queryKey: [
+      'trading-competition-season1-user-pnl',
+      selectedChain.id,
+      userAddress,
+    ],
+    queryFn: async () => {
+      if (!userAddress) {
+        return 0
+      }
+      return fetchUserPnL(userAddress)
+    },
+    initialData: 0,
+  })
+
+  // leaderboards
   const { data: allUserNativeVolume } = useQuery({
     queryKey: ['native-volume-leaderboard', selectedChain.id],
     queryFn: async () => {
@@ -342,6 +365,14 @@ export const LeaderboardContainer = () => {
     initialData: [],
   })
 
+  const { data: allUserTradingCompetitionSeason1PnL } = useQuery({
+    queryKey: ['trading-competition-season1-leader-board', selectedChain.id],
+    queryFn: async () => {
+      return fetchTradingCompetitionLeaderboard()
+    },
+  })
+
+  // ranks
   const myVolumeRank = useMemo(() => {
     if (allUserNativeVolume && userAddress) {
       const index = allUserNativeVolume.findIndex(({ address }) =>
@@ -361,6 +392,16 @@ export const LeaderboardContainer = () => {
     }
     return 0
   }, [allUserLP, userAddress])
+
+  const myTradingCompetitionSeason1Rank = useMemo(() => {
+    if (allUserTradingCompetitionSeason1PnL && userAddress) {
+      const index = Object.keys(allUserTradingCompetitionSeason1PnL).findIndex(
+        (address) => isAddressEqual(getAddress(address), userAddress),
+      )
+      return index + 1
+    }
+    return 0
+  }, [allUserTradingCompetitionSeason1PnL, userAddress])
 
   const countUpFormatter = useCallback((value: number): string => {
     return toCommaSeparated(value.toFixed(2))
@@ -423,6 +464,13 @@ export const LeaderboardContainer = () => {
               >
                 Vault
               </button>
+              <button
+                onClick={() => setTab('competition-season1')}
+                disabled={tab === 'competition-season1'}
+                className="flex text-sm font-semibold w-full items-center justify-center px-4 sm:px-5 py-1.5 disabled:bg-blue-500/30 rounded-[10px]"
+              >
+                Season1
+              </button>
             </div>
           </div>
 
@@ -439,7 +487,9 @@ export const LeaderboardContainer = () => {
                   <div className="justify-start text-gray-400">
                     {tab === 'volume'
                       ? `Total ${CHAIN_CONFIG.CHAIN.nativeCurrency.symbol} Volume`
-                      : 'Vault Balance'}
+                      : tab === 'vault'
+                        ? 'Vault Points'
+                        : 'Season1 PnL'}
                   </div>
                 </div>
               </div>
@@ -492,6 +542,35 @@ export const LeaderboardContainer = () => {
                   values={allUserLP.map(({ address, balance }, index) => ({
                     address: getAddress(address),
                     value: `${toCommaSeparated(balance.toFixed(4))}`,
+                    rank: index + 1,
+                  }))}
+                  maxDisplayRank={1000}
+                />
+              ) : (
+                <Loading />
+              )}
+            </>
+          )}
+
+          {tab === 'competition-season1' && (
+            <>
+              {allUserTradingCompetitionSeason1PnL ? (
+                <LeaderBoard
+                  explorerUrl={selectedChain.blockExplorers?.default.url ?? ''}
+                  myValue={
+                    userAddress
+                      ? {
+                          address: userAddress,
+                          rank: myTradingCompetitionSeason1Rank,
+                          value: `${toCommaSeparated(myTradingCompetitionSeason1PnL.toFixed(4))}`,
+                        }
+                      : undefined
+                  }
+                  values={Object.entries(
+                    allUserTradingCompetitionSeason1PnL,
+                  ).map(([address, totalPnl], index) => ({
+                    address: getAddress(address),
+                    value: `${toCommaSeparated(totalPnl.toFixed(4))}`,
                     rank: index + 1,
                   }))}
                   maxDisplayRank={1000}
