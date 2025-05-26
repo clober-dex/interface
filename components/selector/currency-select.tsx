@@ -1,6 +1,11 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import { getAddress, isAddress, isAddressEqual } from 'viem'
 import Image from 'next/image'
+import {
+  getNativeCurrency,
+  getReferenceCurrency,
+  getStableCurrencies,
+} from '@clober/v2-sdk'
 
 import { Currency } from '../../model/currency'
 import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
@@ -91,6 +96,10 @@ const CurrencySelect = ({
     [chain, currencies, defaultBlacklistedCurrency],
   )
 
+  const stableCurrencies = getStableCurrencies({ chainId: chain.id })
+  const nativeCurrency = getNativeCurrency({ chainId: chain.id })
+  const referenceCurrency = getReferenceCurrency({ chainId: chain.id })
+
   return (
     <>
       <InspectCurrencyModal
@@ -164,12 +173,40 @@ const CurrencySelect = ({
                 ),
             )
             .sort((a, b) => {
+              const getPriority = (currency: Currency) => {
+                if (isAddressEqual(currency.address, nativeCurrency.address)) {
+                  return 0
+                }
+                if (
+                  stableCurrencies.some((c) =>
+                    isAddressEqual(c.address, currency.address),
+                  )
+                ) {
+                  return 1
+                }
+                if (
+                  isAddressEqual(currency.address, referenceCurrency.address)
+                ) {
+                  return 2
+                }
+                return 3
+              }
+
+              const priorityA = getPriority(a)
+              const priorityB = getPriority(b)
+
+              if (priorityA !== priorityB) {
+                return priorityA - priorityB
+              }
+
+              // Fallback to balance * price value for same-priority currencies
               const aValue =
                 Number(formatUnits(balances[a.address] ?? 0n, a.decimals)) *
-                (prices[a.address] ?? 0.000000000000001)
+                (prices[a.address] ?? 1e-15)
               const bValue =
                 Number(formatUnits(balances[b.address] ?? 0n, b.decimals)) *
-                (prices[b.address] ?? 0.000000000000001)
+                (prices[b.address] ?? 1e-15)
+
               return bValue - aValue
             })
             .map((currency) => (
