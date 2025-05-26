@@ -186,6 +186,7 @@ export const WHITELISTED_CURRENCIES: Currency[] = [
     name: 'MockB',
     symbol: 'MOCKB',
     decimals: 6,
+    icon: '/asset-icon/mockb.png',
   },
   {
     address: '0xb38bb873cca844b20A9eE448a87Af3626a6e1EF5',
