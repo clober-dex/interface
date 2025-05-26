@@ -170,6 +170,9 @@ export const fetchTradingCompetitionLeaderboard = async (): Promise<{
 }
 
 export const fetchLeverageIndexOraclePrices = async (): Promise<Prices> => {
+  if (!CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2) {
+    return {} as Prices
+  }
   const publicClient = createPublicClient({
     chain: CHAIN_CONFIG.CHAIN,
     transport: http(CHAIN_CONFIG.RPC_URL),
