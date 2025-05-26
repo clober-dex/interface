@@ -33,6 +33,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   DOCS_URL: 'https://docs.clober.io/',
   RAINBOW_KIT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',
   GOOGLE_ANALYTICS_TRACKING_ID: 'G-TE8CSB6JP2',
+  IS_SWAP_DEFAULT: true,
   RPC_URL:
     'https://proud-tiniest-flower.monad-testnet.quiknode.pro/a4ebe00fca2e7bf01201f3b0f7fe2f0077c52a36',
   PYTH_HERMES_ENDPOINT: 'https://hermes-beta.pyth.network',

@@ -21,6 +21,7 @@ export type ChainConfig = {
   DOCS_URL: string
   RAINBOW_KIT_PROJECT_ID: string
   GOOGLE_ANALYTICS_TRACKING_ID: string
+  IS_SWAP_DEFAULT: boolean
   RPC_URL: string
   PYTH_HERMES_ENDPOINT: string
   ANALYTICS_VOLUME_BLACKLIST: {

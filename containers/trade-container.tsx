@@ -82,7 +82,9 @@ export const TradeContainer = () => {
   const [latestRefreshTime, setLatestRefreshTime] = useState(Date.now())
 
   const [debouncedValue, setDebouncedValue] = useState('')
-  const [tab, setTab] = useState<'limit' | 'swap'>('swap')
+  const [tab, setTab] = useState<'limit' | 'swap'>(
+    CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
+  )
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
 
   useEffect(() => {
