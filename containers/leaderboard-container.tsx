@@ -21,10 +21,7 @@ import {
   fetchLiquidVaultPoint,
 } from '../apis/point'
 import { CHAIN_CONFIG } from '../chain-configs'
-import {
-  fetchTradingCompetitionLeaderboard,
-  fetchUserPnL,
-} from '../apis/trading-competition/season1'
+import { TradingCompetition } from '../apis/trading-competition'
 
 type HeatmapProps = {
   userDailyVolumes: UserVolumeSnapshot[]
@@ -274,6 +271,17 @@ export const LeaderboardContainer = () => {
   )
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
+  const tradingCompetitionSeason1 = new TradingCompetition({
+    subgraphEndpoint:
+      CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON1,
+    seasonEndTimestamp: 1747353600,
+    blacklistedUserAddresses: [
+      '0x5F79EE8f8fA862E98201120d83c4eC39D9468D49',
+      '0xFC5899D93df81CA11583BEE03865b7B13cE093A7',
+      '0x605fCbDCba6C99b70A0028593a61CA9205e93739',
+      '0x255EC4A7dfefeed4889DbEB03d7aC06ADcCc2D24',
+    ],
+  })
 
   // user data
   const { data: myVaultPoint } = useQuery({
@@ -333,11 +341,13 @@ export const LeaderboardContainer = () => {
     ],
     queryFn: async () => {
       if (!userAddress) {
-        return 0
+        return null
       }
-      return fetchUserPnL(userAddress)
+      return tradingCompetitionSeason1.getUserPnL({
+        userAddress,
+      })
     },
-    initialData: 0,
+    initialData: null,
   })
 
   // leaderboards
@@ -368,7 +378,9 @@ export const LeaderboardContainer = () => {
   const { data: allUserTradingCompetitionSeason1PnL } = useQuery({
     queryKey: ['trading-competition-season1-leader-board', selectedChain.id],
     queryFn: async () => {
-      return fetchTradingCompetitionLeaderboard()
+      return tradingCompetitionSeason1.getTradingCompetitionLeaderboard({
+        maxUsers: 1000,
+      })
     },
   })
 
@@ -562,13 +574,13 @@ export const LeaderboardContainer = () => {
                       ? {
                           address: userAddress,
                           rank: myTradingCompetitionSeason1Rank,
-                          value: `${toCommaSeparated(myTradingCompetitionSeason1PnL.toFixed(4))}`,
+                          value: `${toCommaSeparated((myTradingCompetitionSeason1PnL?.totalPnl ?? 0).toFixed(4))}`,
                         }
                       : undefined
                   }
                   values={Object.entries(
                     allUserTradingCompetitionSeason1PnL,
-                  ).map(([address, totalPnl], index) => ({
+                  ).map(([address, { totalPnl }], index) => ({
                     address: getAddress(address),
                     value: `${toCommaSeparated(totalPnl.toFixed(4))}`,
                     rank: index + 1,
