@@ -12,12 +12,6 @@ import { buildTransaction, sendTransaction } from '../utils/transaction'
 import { useTransactionContext } from '../contexts/transaction-context'
 import { currentTimestampInSeconds } from '../utils/date'
 import { LeaderBoard } from '../components/leader-board'
-import {
-  fetchTotalRegisteredUsers,
-  fetchTradingCompetitionLeaderboard,
-  fetchUserPnL,
-  SEASON_2_END_TIMESTAMP,
-} from '../apis/trading-competition/season2'
 import { TradingCompetitionPnl } from '../model/trading-competition-pnl'
 import { CurrencyIcon } from '../components/icon/currency-icon'
 import { Chain } from '../model/chain'
@@ -27,6 +21,7 @@ import { Loading } from '../components/loading'
 import { TradingCompetitionPnlCard } from '../components/card/trading-competition-pnl-card'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { Legend } from '../components/chart/legend'
+import { TradingCompetition } from '../apis/trading-competition'
 
 const ASSETS: Currency[] = [
   {
@@ -79,6 +74,8 @@ const ASSETS: Currency[] = [
     icon: '/asset-icon/crude-oil--big.svg',
   },
 ]
+
+const SEASON_2_END_TIMESTAMP = 1756684800
 
 const Profit = ({
   chain,
@@ -153,6 +150,12 @@ export const TradingCompetitionContainer = () => {
       transport: http(CHAIN_CONFIG.RPC_URL),
     })
   }, [selectedChain])
+  const tradingCompetition = new TradingCompetition({
+    subgraphEndpoint:
+      CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
+    seasonEndTimestamp: SEASON_2_END_TIMESTAMP,
+    blacklistedUserAddresses: [],
+  })
 
   const countUpFormatter = useCallback((value: number): string => {
     return toCommaSeparated(value.toFixed(0))
@@ -161,7 +164,9 @@ export const TradingCompetitionContainer = () => {
   const { data: allUserPnL } = useQuery({
     queryKey: ['trading-competition-leader-board', selectedChain.id],
     queryFn: async () => {
-      return fetchTradingCompetitionLeaderboard()
+      return tradingCompetition.getTradingCompetitionLeaderboard({
+        maxUsers: 100,
+      })
     },
   }) as {
     data: {
@@ -178,14 +183,16 @@ export const TradingCompetitionContainer = () => {
           trades: [],
         }
       }
-      return fetchUserPnL(userAddress)
+      return tradingCompetition.getUserPnL({
+        userAddress,
+      })
     },
   })
 
   const { data: totalRegisteredUsers } = useQuery({
     queryKey: ['total-registered-users', selectedChain.id],
     queryFn: async () => {
-      return fetchTotalRegisteredUsers()
+      return tradingCompetition.getTotalRegisteredUsers()
     },
   })
 

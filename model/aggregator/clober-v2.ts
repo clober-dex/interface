@@ -18,7 +18,7 @@ import { formatUnits } from '../../utils/bigint'
 import { WETH_ABI } from '../../abis/weth-abi'
 import { Chain } from '../chain'
 import { CHAIN_CONFIG } from '../../chain-configs'
-import { fetchLeverageIndexOraclePrices } from '../../apis/trading-competition/season2'
+import { fetchLeverageIndexPrices } from '../../apis/futures/leverage-index-price'
 
 import { Aggregator } from './index'
 
@@ -48,7 +48,7 @@ export class CloberV2Aggregator implements Aggregator {
       getLatestPriceMap({
         chainId: this.chain.id,
       }),
-      fetchLeverageIndexOraclePrices(),
+      fetchLeverageIndexPrices(),
     ])
     return {
       ...(prices.status === 'fulfilled' ? prices.value : {}),
