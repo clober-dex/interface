@@ -250,6 +250,7 @@ export const TradeContainer = () => {
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [latestRefreshTime, setLatestRefreshTime] = useState(Date.now())
 
+  const [showMetaInfo, setShowMetaInfo] = useState(false)
   const [debouncedValue, setDebouncedValue] = useState('')
   const [tab, setTab] = useState<'limit' | 'swap'>(
     CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
@@ -289,6 +290,17 @@ export const TradeContainer = () => {
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
     [inputCurrency?.decimals, inputCurrencyAmount],
   )
+
+  useEffect(() => {
+    if (tab === 'swap' && amountIn === 0n) {
+      const timer = setTimeout(() => {
+        setShowMetaInfo(true)
+      }, 500)
+      return () => clearTimeout(timer)
+    } else {
+      setShowMetaInfo(false)
+    }
+  }, [amountIn, tab])
 
   const marketRateDiff = useMemo(
     () =>
@@ -945,7 +957,9 @@ export const TradeContainer = () => {
             {tab === 'swap' && (
               <>
                 <div className="relative hidden sm:flex flex-col h-full rounded-xl sm:rounded-2xl bg-[#171b24]">
-                  {quotes.all.length > 0 ? (
+                  {showMetaInfo ? (
+                    <MetaAggregatorInfo currencies={currencies} />
+                  ) : (
                     <SwapRouteList
                       quotes={quotes.all}
                       bestQuote={quotes.best}
@@ -954,8 +968,6 @@ export const TradeContainer = () => {
                       selectedQuote={selectedQuote}
                       setSelectedQuote={setSelectedQuote}
                     />
-                  ) : (
-                    <MetaAggregatorInfo currencies={currencies} />
                   )}
                 </div>
 
