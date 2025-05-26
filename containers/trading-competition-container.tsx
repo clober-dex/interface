@@ -26,74 +26,61 @@ import { Currency } from '../model/currency'
 import { Loading } from '../components/loading'
 import { TradingCompetitionPnlCard } from '../components/card/trading-competition-pnl-card'
 import { CHAIN_CONFIG } from '../chain-configs'
+import { Legend } from '../components/chart/legend'
 
 const ASSETS: Currency[] = [
   {
-    address: '0xcaeF04f305313080C2538e585089846017193033',
-    name: 'USOILSPOT 2025-05-16',
-    symbol: 'USOILSPOT-250516',
+    address: '0xeC884fE8dF2DC08d6D6f2eB671351E10a14bAe7c',
+    name: 'US30Y 30x 2025-09-01',
+    symbol: 'US30Y-30x-250901',
     decimals: 18,
-    icon: '/asset-icon/crude-oil--big.svg',
+    icon: '/asset-icon/US--big.svg',
   },
   {
-    address: '0xCAfFD292a5c578Dbd4BBff733F1553bF2cD8850c',
-    name: 'XAU 2025-05-16',
-    symbol: 'XAU-250516',
-    decimals: 18,
-    icon: '/asset-icon/gold--big.svg',
-  },
-  {
-    address: '0x746e48E2CDD8F6D0B672adAc7810f55658dC801b',
-    name: 'EUR 2025-05-16',
-    symbol: 'EUR-250516',
+    address: '0x0dD6aD59ff939E59fbc9091F4Bc5069a10376ebD',
+    name: 'EUR 20x 2025-09-01',
+    symbol: 'EUR-20x-250901',
     decimals: 18,
     icon: '/asset-icon/EU--big.svg',
   },
   {
-    address: '0x5F433CFeB6CB2743481a096a56007a175E12ae23',
-    name: 'BTC 2025-05-16',
-    symbol: 'BTC-250516',
+    address: '0x33eE70f46A8Cd6fA67bfD0B4710d05e65AaEd37A',
+    name: 'S&P 500 10x 2025-09-01',
+    symbol: 'S&P500-10x-250901',
+    decimals: 18,
+    icon: '/asset-icon/s-and-p-500--big.svg',
+  },
+  {
+    address: '0xa7bff4fBA9719863912D528bB294b5018542D81f',
+    name: 'XAU 10x 2025-09-01',
+    symbol: 'XAU-10x-250901',
+    decimals: 18,
+    icon: '/asset-icon/gold--big.svg',
+  },
+  {
+    address: '0x78f2Fe42776C3f84Bd0fa26fdBd24AE9beb09c7D',
+    name: 'ETHBTC 5x 2025-09-01',
+    symbol: 'ETHBTC-5x-250901',
+    decimals: 18,
+    icon: '/asset-icon/ETH-BTC.png',
+  },
+  {
+    address: '0x07C656794dd6bc0953e363C11cCFD3d8dB306A12',
+    name: 'BTC 3x 2025-09-01',
+    symbol: 'BTC-3x-250901',
     decimals: 18,
     icon: '/asset-icon/XTVCBTC--big.svg',
   },
   {
-    address: '0x53E2BB2d88DdC44CC395a0CbCDDC837AeF44116D',
-    name: 'AAPL 2025-05-16',
-    symbol: 'AAPL-250516',
+    address: '0x5523d21554Eab9ab6164b9ceb5ff9736feA26206',
+    name: 'US OIL 5x 2025-09-01',
+    symbol: 'USOIL-5x-250901',
     decimals: 18,
-    icon: '/asset-icon/apple--big.svg',
-  },
-  {
-    address: '0xd57e27D90e04eAE2EEcBc63BA28E433098F72855',
-    name: 'GOOGL 2025-05-16',
-    symbol: 'GOOGL-250516',
-    decimals: 18,
-    icon: '/asset-icon/alphabet--big.svg',
-  },
-  {
-    address: '0xDB1Aa7232c2fF7bb480823af254453570d0E4A16',
-    name: 'TSLA 2025-05-16',
-    symbol: 'TSLA-250516',
-    decimals: 18,
-    icon: '/asset-icon/tesla--big.svg',
-  },
-  {
-    address: '0x24A08695F06A37C8882CD1588442eC40061e597B',
-    name: 'BRK-A 2025-05-16',
-    symbol: 'BRK-A-250516',
-    decimals: 18,
-    icon: '/asset-icon/berkshire-hathaway--big.svg',
-  },
-  {
-    address: '0x41DF9f8a0c014a0ce398A3F2D1af3164ff0F492A',
-    name: 'US30Y 2025-05-16',
-    symbol: 'US30Y-250516',
-    decimals: 18,
-    icon: '/asset-icon/US--big.svg',
+    icon: '/asset-icon/crude-oil--big.svg',
   },
 ]
 
-const SEASON_1_END_TIMESTAMP = 1747353600
+const SEASON_2_END_TIMESTAMP = 1756684800
 
 const Profit = ({
   chain,
@@ -120,11 +107,11 @@ const Profit = ({
 
   return (
     <div className="flex flex-col sm:flex-row group relative gap-1 sm:gap-2 py-2">
-      {/*{data.length > 0 && (*/}
-      {/*  <div className="hidden group-hover:flex absolute top-8 -left-20 sm:left-2 z-[1000]">*/}
-      {/*    <Legend data={data} />*/}
-      {/*  </div>*/}
-      {/*)}*/}
+      {data.length > 0 && (
+        <div className="hidden group-hover:flex absolute top-8 -left-20 sm:left-2 z-[1000]">
+          <Legend data={data} />
+        </div>
+      )}
 
       <div
         className={`flex flex-1 justify-start items-center ${profit === 0 ? 'text-white' : profit > 0 ? 'text-green-500' : 'text-red-500'} font-semibold`}
@@ -582,12 +569,12 @@ export const TradingCompetitionContainer = () => {
           </defs>
         </svg>
         {CHAIN_CONFIG.DEX_NAME} Trading Competition
-        <div className="text-sm sm:text-xl">Season 1 ends in</div>
+        <div className="text-sm sm:text-xl">Season 2 ends in</div>
       </div>
 
       <div className="w-full md:flex md:justify-center mt-3 sm:mt-6">
         <Countdown
-          initialSeconds={SEASON_1_END_TIMESTAMP - currentTimestampInSeconds()}
+          initialSeconds={SEASON_2_END_TIMESTAMP - currentTimestampInSeconds()}
         />
       </div>
 
@@ -596,12 +583,12 @@ export const TradingCompetitionContainer = () => {
           <ActionButton
             disabled={
               !userAddress ||
-              currentTimestampInSeconds() > SEASON_1_END_TIMESTAMP
+              currentTimestampInSeconds() > SEASON_2_END_TIMESTAMP
             }
             onClick={async () => {
               if (
                 !userAddress ||
-                currentTimestampInSeconds() > SEASON_1_END_TIMESTAMP
+                currentTimestampInSeconds() > SEASON_2_END_TIMESTAMP
               ) {
                 return
               }
@@ -616,7 +603,7 @@ export const TradingCompetitionContainer = () => {
             }}
             text={
               userAddress
-                ? currentTimestampInSeconds() > SEASON_1_END_TIMESTAMP
+                ? currentTimestampInSeconds() > SEASON_2_END_TIMESTAMP
                   ? 'Trading Competition has ended'
                   : isRegistered
                     ? 'Welcome to the arena, trader'
@@ -714,7 +701,7 @@ export const TradingCompetitionContainer = () => {
         <div className="md:w-[616px] flex w-full mt-8 px-6 sm:px-[62px] py-4 sm:py-6 bg-[#e9edff]/5 rounded-2xl sm:rounded-[20px] flex-col justify-center items-center gap-2 sm:gap-2.5">
           <div className="w-full flex flex-col justify-start items-center gap-2 sm:gap-4">
             <div className="self-stretch text-center justify-start text-gray-400 text-[13px] sm:text-base font-bold">
-              Total Participants
+              Current Participants
             </div>
             <div className="self-stretch text-center justify-start text-white/90 text-2xl sm:text-[32px] font-bold">
               <CountUp
@@ -742,8 +729,7 @@ export const TradingCompetitionContainer = () => {
                 </div>
                 <div className="flex flex-1 justify-start items-center gap-2.5">
                   <div className="justify-start text-gray-400 text-nowrap flex flex-row gap-1">
-                    PnL
-                    <span className="hidden sm:block">at Block #17028880</span>
+                    Total Profit
                   </div>
                 </div>
               </div>
@@ -771,29 +757,29 @@ export const TradingCompetitionContainer = () => {
                             tokenColorMap={tokenColorMap}
                             trades={userPnL?.trades ?? []}
                           />
-                          {/*<button*/}
-                          {/*  onClick={() => setShowPnLCard(true)}*/}
-                          {/*  className="hidden sm:flex absolute -right-6 top-1/2 -translate-y-1/2 pl-2 pr-1.5 py-1 bg-blue-500/20 rounded-lg justify-start items-center gap-1"*/}
-                          {/*>*/}
-                          {/*  <div className="justify-start text-blue-400 text-[12px] font-semibold">*/}
-                          {/*    Share*/}
-                          {/*  </div>*/}
-                          {/*  <svg*/}
-                          {/*    xmlns="http://www.w3.org/2000/svg"*/}
-                          {/*    width="16"*/}
-                          {/*    height="16"*/}
-                          {/*    viewBox="0 0 16 16"*/}
-                          {/*    fill="none"*/}
-                          {/*  >*/}
-                          {/*    <path*/}
-                          {/*      d="M5.33337 6H4.66671C4.31309 6 3.97395 6.14048 3.7239 6.39052C3.47385 6.64057 3.33337 6.97971 3.33337 7.33333V12.6667C3.33337 13.0203 3.47385 13.3594 3.7239 13.6095C3.97395 13.8595 4.31309 14 4.66671 14H11.3334C11.687 14 12.0261 13.8595 12.2762 13.6095C12.5262 13.3594 12.6667 13.0203 12.6667 12.6667V7.33333C12.6667 6.97971 12.5262 6.64057 12.2762 6.39052C12.0261 6.14048 11.687 6 11.3334 6H10.6667M8.00004 9.33333V2M8.00004 2L6.00004 4M8.00004 2L10 4"*/}
-                          {/*      stroke="#60A5FA"*/}
-                          {/*      strokeWidth="1.5"*/}
-                          {/*      strokeLinecap="round"*/}
-                          {/*      strokeLinejoin="round"*/}
-                          {/*    />*/}
-                          {/*  </svg>*/}
-                          {/*</button>*/}
+                          <button
+                            onClick={() => setShowPnLCard(true)}
+                            className="hidden sm:flex absolute -right-6 top-1/2 -translate-y-1/2 pl-2 pr-1.5 py-1 bg-blue-500/20 rounded-lg justify-start items-center gap-1"
+                          >
+                            <div className="justify-start text-blue-400 text-[12px] font-semibold">
+                              Share
+                            </div>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                            >
+                              <path
+                                d="M5.33337 6H4.66671C4.31309 6 3.97395 6.14048 3.7239 6.39052C3.47385 6.64057 3.33337 6.97971 3.33337 7.33333V12.6667C3.33337 13.0203 3.47385 13.3594 3.7239 13.6095C3.97395 13.8595 4.31309 14 4.66671 14H11.3334C11.687 14 12.0261 13.8595 12.2762 13.6095C12.5262 13.3594 12.6667 13.0203 12.6667 12.6667V7.33333C12.6667 6.97971 12.5262 6.64057 12.2762 6.39052C12.0261 6.14048 11.687 6 11.3334 6H10.6667M8.00004 9.33333V2M8.00004 2L6.00004 4M8.00004 2L10 4"
+                                stroke="#60A5FA"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </button>
                         </div>
                       ),
                     }

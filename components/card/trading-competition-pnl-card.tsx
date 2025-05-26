@@ -7,6 +7,7 @@ import { TradingCompetitionPnl } from '../../model/trading-competition-pnl'
 import { toCommaSeparated } from '../../utils/number'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { Chain } from '../../model/chain'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 const CloberSVG = () => (
   <div className="flex flex-row gap-2">
@@ -167,7 +168,7 @@ export const TradingCompetitionPnlCard = ({
         : `-$${Math.abs(profit).toFixed(2)}`
     const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
 
-    const message = `💰💰 Profit: ${profitString} \n ${shortAddress}\n\nTrade futures on Clober!\n\nhttps://alpha.clober.io/trading-competition`
+    const message = `💰💰 Profit: ${profitString} \n ${shortAddress}\n\nTrade futures on Clober!\n\n${CHAIN_CONFIG.URL}/trading-competition`
 
     if (target === 'twitter') {
       const text = encodeURIComponent(message)

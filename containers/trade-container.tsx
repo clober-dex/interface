@@ -82,7 +82,9 @@ export const TradeContainer = () => {
   const [latestRefreshTime, setLatestRefreshTime] = useState(Date.now())
 
   const [debouncedValue, setDebouncedValue] = useState('')
-  const [tab, setTab] = useState<'limit' | 'swap'>('swap')
+  const [tab, setTab] = useState<'limit' | 'swap'>(
+    CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
+  )
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
 
   useEffect(() => {
@@ -784,7 +786,7 @@ export const TradeContainer = () => {
                   />
                 </div>
 
-                <div className="flex sm:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
+                <div className="flex max-h-[560px] sm:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
                   <SwapForm {...swapFormProps} />
                 </div>
               </>

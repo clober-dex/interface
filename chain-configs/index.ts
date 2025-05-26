@@ -33,6 +33,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   DOCS_URL: 'https://docs.clober.io/',
   RAINBOW_KIT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',
   GOOGLE_ANALYTICS_TRACKING_ID: 'G-TE8CSB6JP2',
+  IS_SWAP_DEFAULT: true,
   RPC_URL:
     'https://proud-tiniest-flower.monad-testnet.quiknode.pro/a4ebe00fca2e7bf01201f3b0f7fe2f0077c52a36',
   PYTH_HERMES_ENDPOINT: 'https://hermes-beta.pyth.network',
@@ -47,7 +48,7 @@ export const CHAIN_CONFIG: ChainConfig = {
     FuturesMarket: getAddress('0x56b88CFe40d592Ec4d4234043e039d7CA807f110'),
     PythOracle: getAddress('0xad2B52D2af1a9bD5c561894Cdd84f7505e1CD0B5'),
     TradingCompetitionRegistration: getAddress(
-      '0x58e84BAc13e19966A17F7Df370d3452bb0c23BF7',
+      '0xfE5771C5b651dfa9f8db95140efcC75d59CE0c88',
     ),
   },
   BLACKLISTED_USERS: [
@@ -56,7 +57,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   ],
   EXTERNAL_SUBGRAPH_ENDPOINTS: {
     FUTURES:
-      'https://subgraph.satsuma-prod.com/f6a8c4889b7b/clober/clober-futures-subgraph-monad-testnet/api',
+      'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/clober-futures-subgraph-monad-testnet/latest/gn',
     LIQUIDITY_VAULT_POINT:
       'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/liquidity-vault-point-monad-testnet/latest/gn',
   },

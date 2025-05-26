@@ -3,6 +3,7 @@ import { getAddress, isAddressEqual } from 'viem'
 import { Asset } from '../../model/futures/asset'
 import { Subgraph } from '../../model/subgraph'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { applyPercent } from '../../utils/bigint'
 
 type AssetDto = {
   id: string
@@ -74,7 +75,7 @@ export const fetchFuturesAssets = async (): Promise<Asset[]> => {
         },
         collateral: DEFAULT_COLLATERAL,
         expiration: Number(asset.expiration),
-        maxLTV: BigInt(asset.maxLTV),
+        maxLTV: applyPercent(BigInt(asset.maxLTV), 98), // @dev: Use 98% of maxLTV as the effective LTV
         liquidationThreshold: BigInt(asset.liquidationThreshold),
         ltvPrecision: 1000000n,
         minDebt: BigInt(asset.minDebt),

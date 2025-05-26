@@ -2,19 +2,14 @@ import React, { useCallback, useEffect, useMemo } from 'react'
 import { useAccount, useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import {
-  BaseError,
-  ContractFunctionRevertedError,
   createPublicClient,
-  encodeAbiParameters,
   encodeFunctionData,
   getAddress,
   Hash,
   http,
   isAddressEqual,
-  parseAbiParameters,
   zeroAddress,
 } from 'viem'
-import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js'
 
 import { Asset } from '../../model/futures/asset'
 import { useCurrencyContext } from '../currency-context'
@@ -27,7 +22,6 @@ import { maxApprove } from '../../utils/approve20'
 import { useChainContext } from '../chain-context'
 import { formatUnits } from '../../utils/bigint'
 import { FUTURES_MARKET_ABI } from '../../abis/futures/futures-market-abi'
-import { PYTH_ORACLE_ABI } from '../../abis/futures/pyth-oracle-abi'
 import { FuturesPosition } from '../../model/futures/futures-position'
 import { buildTransaction, sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
@@ -39,7 +33,6 @@ import { CHAIN_CONFIG } from '../../chain-configs'
 import { useFuturesContext } from './futures-context'
 
 type FuturesContractContext = {
-  isMarketClose: (asset: Asset, debtAmount: bigint) => Promise<boolean>
   borrow: (
     asset: Asset,
     collateralAmount: bigint,
@@ -61,7 +54,6 @@ type FuturesContractContext = {
 
 const Context = React.createContext<FuturesContractContext>({
   borrow: () => Promise.resolve(undefined),
-  isMarketClose: () => Promise.resolve(false),
   repay: () => Promise.resolve(undefined),
   repayAll: () => Promise.resolve(undefined),
   settle: () => Promise.resolve(undefined),
@@ -209,76 +201,6 @@ export const FuturesContractProvider = ({
     pendingPositionCurrencies,
   ])
 
-  const isMarketClose = useCallback(
-    async (asset: Asset, debtAmount: bigint): Promise<boolean> => {
-      try {
-        if (!walletClient) {
-          throw new Error('Wallet not connected')
-        }
-
-        const evmPriceServiceConnection = new EvmPriceServiceConnection(
-          CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
-        )
-        const priceFeedUpdateData =
-          await evmPriceServiceConnection.getPriceFeedsUpdateData([
-            asset.currency.priceFeedId,
-            asset.collateral.priceFeedId,
-          ])
-
-        const fee = await publicClient.readContract({
-          address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
-          abi: PYTH_ORACLE_ABI,
-          functionName: 'getUpdateFee',
-          args: [priceFeedUpdateData as any],
-        })
-
-        await publicClient.simulateContract({
-          chain: walletClient.chain,
-          address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
-          functionName: 'multicall',
-          abi: FUTURES_MARKET_ABI,
-          value: fee,
-          args: [
-            [
-              encodeFunctionData({
-                abi: FUTURES_MARKET_ABI,
-                functionName: 'updateOracle',
-                args: [
-                  encodeAbiParameters(parseAbiParameters('bytes[]'), [
-                    priceFeedUpdateData as any,
-                  ]),
-                ],
-              }),
-              encodeFunctionData({
-                abi: FUTURES_MARKET_ABI,
-                functionName: 'mint',
-                args: [
-                  asset.currency.address,
-                  walletClient.account.address,
-                  debtAmount,
-                ],
-              }),
-            ],
-          ],
-        })
-        return false
-      } catch (e) {
-        if (e instanceof BaseError) {
-          const revertError = e.walk(
-            (err) => err instanceof ContractFunctionRevertedError,
-          )
-          if (revertError instanceof ContractFunctionRevertedError) {
-            if (revertError.toString().includes('0x19abf40e')) {
-              return true
-            }
-          }
-        }
-        return false
-      }
-    },
-    [publicClient, walletClient],
-  )
-
   const borrow = useCallback(
     async (
       asset: Asset,
@@ -360,26 +282,26 @@ export const FuturesContractProvider = ({
         }
         setConfirmation(confirmation)
 
-        const evmPriceServiceConnection = new EvmPriceServiceConnection(
-          CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
-        )
-        const priceFeedUpdateData =
-          await evmPriceServiceConnection.getPriceFeedsUpdateData([
-            asset.currency.priceFeedId,
-            asset.collateral.priceFeedId,
-          ])
-
-        if (priceFeedUpdateData.length === 0) {
-          console.error('Price feed not found')
-          return
-        }
-
-        const fee = await publicClient.readContract({
-          address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
-          abi: PYTH_ORACLE_ABI,
-          functionName: 'getUpdateFee',
-          args: [priceFeedUpdateData as any],
-        })
+        // const evmPriceServiceConnection = new EvmPriceServiceConnection(
+        //   CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
+        // )
+        // const priceFeedUpdateData =
+        //   await evmPriceServiceConnection.getPriceFeedsUpdateData([
+        //     asset.currency.priceFeedId,
+        //     asset.collateral.priceFeedId,
+        //   ])
+        //
+        // if (priceFeedUpdateData.length === 0) {
+        //   console.error('Price feed not found')
+        //   return
+        // }
+        //
+        // const fee = await publicClient.readContract({
+        //   address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
+        //   abi: PYTH_ORACLE_ABI,
+        //   functionName: 'getUpdateFee',
+        //   args: [priceFeedUpdateData as any],
+        // })
 
         const transaction = await buildTransaction(
           publicClient,
@@ -388,18 +310,18 @@ export const FuturesContractProvider = ({
             address: spender,
             functionName: 'multicall',
             abi: FUTURES_MARKET_ABI,
-            value: fee,
+            // value: fee,
             args: [
               [
-                encodeFunctionData({
-                  abi: FUTURES_MARKET_ABI,
-                  functionName: 'updateOracle',
-                  args: [
-                    encodeAbiParameters(parseAbiParameters('bytes[]'), [
-                      priceFeedUpdateData as any,
-                    ]),
-                  ],
-                }),
+                // encodeFunctionData({
+                //   abi: FUTURES_MARKET_ABI,
+                //   functionName: 'updateOracle',
+                //   args: [
+                //     encodeAbiParameters(parseAbiParameters('bytes[]'), [
+                //       priceFeedUpdateData as any,
+                //     ]),
+                //   ],
+                // }),
                 encodeFunctionData({
                   abi: FUTURES_MARKET_ABI,
                   functionName: 'deposit',
@@ -617,26 +539,26 @@ export const FuturesContractProvider = ({
         }
         setConfirmation(confirmation)
 
-        const evmPriceServiceConnection = new EvmPriceServiceConnection(
-          CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
-        )
-        const priceFeedUpdateData =
-          await evmPriceServiceConnection.getPriceFeedsUpdateData([
-            userPosition.asset.currency.priceFeedId,
-            userPosition.asset.collateral.priceFeedId,
-          ])
-
-        if (priceFeedUpdateData.length === 0) {
-          console.error('Price feed not found')
-          return
-        }
-
-        const fee = await publicClient.readContract({
-          address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
-          abi: PYTH_ORACLE_ABI,
-          functionName: 'getUpdateFee',
-          args: [priceFeedUpdateData as any],
-        })
+        // const evmPriceServiceConnection = new EvmPriceServiceConnection(
+        //   CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
+        // )
+        // const priceFeedUpdateData =
+        //   await evmPriceServiceConnection.getPriceFeedsUpdateData([
+        //     userPosition.asset.currency.priceFeedId,
+        //     userPosition.asset.collateral.priceFeedId,
+        //   ])
+        //
+        // if (priceFeedUpdateData.length === 0) {
+        //   console.error('Price feed not found')
+        //   return
+        // }
+        //
+        // const fee = await publicClient.readContract({
+        //   address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
+        //   abi: PYTH_ORACLE_ABI,
+        //   functionName: 'getUpdateFee',
+        //   args: [priceFeedUpdateData as any],
+        // })
 
         const transaction = await buildTransaction(
           publicClient,
@@ -645,18 +567,18 @@ export const FuturesContractProvider = ({
             address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
             functionName: 'multicall',
             abi: FUTURES_MARKET_ABI,
-            value: fee,
+            // value: fee,
             args: [
               [
-                encodeFunctionData({
-                  abi: FUTURES_MARKET_ABI,
-                  functionName: 'updateOracle',
-                  args: [
-                    encodeAbiParameters(parseAbiParameters('bytes[]'), [
-                      priceFeedUpdateData as any,
-                    ]),
-                  ],
-                }),
+                // encodeFunctionData({
+                //   abi: FUTURES_MARKET_ABI,
+                //   functionName: 'updateOracle',
+                //   args: [
+                //     encodeAbiParameters(parseAbiParameters('bytes[]'), [
+                //       priceFeedUpdateData as any,
+                //     ]),
+                //   ],
+                // }),
                 encodeFunctionData({
                   abi: FUTURES_MARKET_ABI,
                   functionName: 'burn',
@@ -739,26 +661,26 @@ export const FuturesContractProvider = ({
         }
         setConfirmation(confirmation)
 
-        const evmPriceServiceConnection = new EvmPriceServiceConnection(
-          CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
-        )
-        const priceFeedUpdateData =
-          await evmPriceServiceConnection.getPriceFeedsUpdateData([
-            asset.currency.priceFeedId,
-            asset.collateral.priceFeedId,
-          ])
-
-        if (priceFeedUpdateData.length === 0) {
-          console.error('Price feed not found')
-          return
-        }
-
-        const fee = await publicClient.readContract({
-          address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
-          abi: PYTH_ORACLE_ABI,
-          functionName: 'getUpdateFee',
-          args: [priceFeedUpdateData as any],
-        })
+        // const evmPriceServiceConnection = new EvmPriceServiceConnection(
+        //   CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
+        // )
+        // const priceFeedUpdateData =
+        //   await evmPriceServiceConnection.getPriceFeedsUpdateData([
+        //     asset.currency.priceFeedId,
+        //     asset.collateral.priceFeedId,
+        //   ])
+        //
+        // if (priceFeedUpdateData.length === 0) {
+        //   console.error('Price feed not found')
+        //   return
+        // }
+        //
+        // const fee = await publicClient.readContract({
+        //   address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
+        //   abi: PYTH_ORACLE_ABI,
+        //   functionName: 'getUpdateFee',
+        //   args: [priceFeedUpdateData as any],
+        // })
 
         const transaction = await buildTransaction(
           publicClient,
@@ -767,18 +689,18 @@ export const FuturesContractProvider = ({
             address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
             functionName: 'multicall',
             abi: FUTURES_MARKET_ABI,
-            value: fee,
+            // value: fee,
             args: [
               [
-                encodeFunctionData({
-                  abi: FUTURES_MARKET_ABI,
-                  functionName: 'updateOracle',
-                  args: [
-                    encodeAbiParameters(parseAbiParameters('bytes[]'), [
-                      priceFeedUpdateData as any,
-                    ]),
-                  ],
-                }),
+                // encodeFunctionData({
+                //   abi: FUTURES_MARKET_ABI,
+                //   functionName: 'updateOracle',
+                //   args: [
+                //     encodeAbiParameters(parseAbiParameters('bytes[]'), [
+                //       priceFeedUpdateData as any,
+                //     ]),
+                //   ],
+                // }),
                 encodeFunctionData({
                   abi: FUTURES_MARKET_ABI,
                   functionName: 'settle',
@@ -1105,26 +1027,26 @@ export const FuturesContractProvider = ({
         }
         setConfirmation(confirmation)
 
-        const evmPriceServiceConnection = new EvmPriceServiceConnection(
-          CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
-        )
-        const priceFeedUpdateData =
-          await evmPriceServiceConnection.getPriceFeedsUpdateData([
-            asset.currency.priceFeedId,
-            asset.collateral.priceFeedId,
-          ])
-
-        if (priceFeedUpdateData.length === 0) {
-          console.error('Price feed not found')
-          return
-        }
-
-        const fee = await publicClient.readContract({
-          address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
-          abi: PYTH_ORACLE_ABI,
-          functionName: 'getUpdateFee',
-          args: [priceFeedUpdateData as any],
-        })
+        // const evmPriceServiceConnection = new EvmPriceServiceConnection(
+        //   CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
+        // )
+        // const priceFeedUpdateData =
+        //   await evmPriceServiceConnection.getPriceFeedsUpdateData([
+        //     asset.currency.priceFeedId,
+        //     asset.collateral.priceFeedId,
+        //   ])
+        //
+        // if (priceFeedUpdateData.length === 0) {
+        //   console.error('Price feed not found')
+        //   return
+        // }
+        //
+        // const fee = await publicClient.readContract({
+        //   address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
+        //   abi: PYTH_ORACLE_ABI,
+        //   functionName: 'getUpdateFee',
+        //   args: [priceFeedUpdateData as any],
+        // })
 
         const transaction = await buildTransaction(
           publicClient,
@@ -1133,18 +1055,18 @@ export const FuturesContractProvider = ({
             address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
             functionName: 'multicall',
             abi: FUTURES_MARKET_ABI,
-            value: fee,
+            // value: fee,
             args: [
               [
-                encodeFunctionData({
-                  abi: FUTURES_MARKET_ABI,
-                  functionName: 'updateOracle',
-                  args: [
-                    encodeAbiParameters(parseAbiParameters('bytes[]'), [
-                      priceFeedUpdateData as any,
-                    ]),
-                  ],
-                }),
+                // encodeFunctionData({
+                //   abi: FUTURES_MARKET_ABI,
+                //   functionName: 'updateOracle',
+                //   args: [
+                //     encodeAbiParameters(parseAbiParameters('bytes[]'), [
+                //       priceFeedUpdateData as any,
+                //     ]),
+                //   ],
+                // }),
                 encodeFunctionData({
                   abi: FUTURES_MARKET_ABI,
                   functionName: 'withdraw',
@@ -1206,7 +1128,6 @@ export const FuturesContractProvider = ({
   return (
     <Context.Provider
       value={{
-        isMarketClose,
         borrow,
         repay,
         repayAll,
