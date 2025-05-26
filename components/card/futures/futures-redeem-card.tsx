@@ -6,11 +6,11 @@ import {
   formatDate,
   getExpirationDateTextColor,
 } from '../../../utils/date'
-import { formatDollarValue, formatUnits } from '../../../utils/bigint'
+import { formatUnits } from '../../../utils/bigint'
 import { Asset } from '../../../model/futures/asset'
 import { Prices } from '../../../model/prices'
 import { ActionButtonProps } from '../../button/action-button'
-import { toCommaSeparated } from '../../../utils/number'
+import { toCommaSeparated, toShortNumber } from '../../../utils/number'
 import { Chain } from '../../../model/chain'
 
 export const FuturesRedeemCard = ({
@@ -89,11 +89,7 @@ export const FuturesRedeemCard = ({
               Mark Price
             </div>
             <div className="text-sm sm:text-base">
-              {formatDollarValue(
-                BigInt(10 ** asset.currency.decimals),
-                asset.currency.decimals,
-                prices[asset.currency.address] ?? 0,
-              )}
+              {toShortNumber(prices[asset.currency.address] ?? 0)}
             </div>
           </div>
 

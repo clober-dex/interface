@@ -46,7 +46,7 @@ export async function fetchQuotes(
         gasLimit: bigint
         aggregator: Aggregator
         transaction: Transaction | undefined
-      } => quote !== undefined,
+      } => quote !== undefined && quote.amountOut > 0n,
     )
   if (quotes.length === 0) {
     throw new Error('No quotes available')
@@ -54,12 +54,12 @@ export async function fetchQuotes(
 
   let bestQuote: Quote = {
     amountIn,
-    amountOut: 0n,
-    gasLimit: 0n,
+    amountOut: -(2n ** 256n - 1n),
+    gasLimit: -(2n ** 256n - 1n),
     aggregator: aggregators[0],
     transaction: undefined,
-    gasUsd: 0,
-    netAmountOutUsd: 0,
+    gasUsd: -Number.MAX_SAFE_INTEGER,
+    netAmountOutUsd: -Number.MAX_SAFE_INTEGER,
   }
   let fallbackQuote: Quote | undefined = undefined
   const allQuotes: Quote[] = []

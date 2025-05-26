@@ -215,13 +215,11 @@ export const TradingCompetitionPnlCard = ({
               <div
                 className={`justify-start ${totalProfit === 0 ? 'text-white' : totalProfit > 0 ? 'text-[#21ef8b]' : 'text-[#ff5c5c]'} text-[32px] font-semibold`}
               >
-                <span className="text-[#21ef8b] text-[50px] font-semibold mr-2">
+                <span className="text-[50px] font-semibold mr-2">
                   {totalProfit === 0 ? ' ' : totalProfit > 0 ? '+' : '-'}$
                   {toCommaSeparated(Math.abs(totalProfit).toFixed(4))}
                 </span>
-                <span className="text-[#21ef8b] text-[28px] font-semibold">
-                  USDC
-                </span>
+                <span className="text-[28px] font-semibold">USDC</span>
               </div>
             </div>
 

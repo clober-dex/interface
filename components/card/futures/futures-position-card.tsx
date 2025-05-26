@@ -6,9 +6,9 @@ import {
   formatDate,
   getExpirationDateTextColor,
 } from '../../../utils/date'
-import { formatDollarValue, formatUnits } from '../../../utils/bigint'
+import { formatUnits } from '../../../utils/bigint'
 import { FuturesPosition } from '../../../model/futures/futures-position'
-import { toCommaSeparated } from '../../../utils/number'
+import { toCommaSeparated, toShortNumber } from '../../../utils/number'
 import { EditSvg } from '../../svg/edit-svg'
 import { Chain } from '../../../model/chain'
 
@@ -73,10 +73,12 @@ export const FuturesPositionCard = ({
             </div>
             <div className="flex gap-1">
               <div className="text-sm sm:text-base">
-                {formatUnits(
-                  position.debtAmount ?? 0n,
-                  position.asset.currency.decimals,
-                  loanAssetPrice,
+                {toCommaSeparated(
+                  formatUnits(
+                    position.debtAmount ?? 0n,
+                    position.asset.currency.decimals,
+                    loanAssetPrice,
+                  ),
                 )}{' '}
                 {symbol}
               </div>
@@ -91,12 +93,8 @@ export const FuturesPositionCard = ({
               Mark / Avg. Price
             </div>
             <div className="text-sm sm:text-base">
-              {formatDollarValue(
-                BigInt(10 ** position.asset.collateral.decimals),
-                position.asset.collateral.decimals,
-                loanAssetPrice,
-              )}{' '}
-              / ${toCommaSeparated((position?.averagePrice ?? 0).toFixed(2))}
+              ${toShortNumber(loanAssetPrice)}
+              {' / '}${toShortNumber(position?.averagePrice ?? 0)}
             </div>
           </div>
 
@@ -105,7 +103,7 @@ export const FuturesPositionCard = ({
               Liq. Price
             </div>
             <div className="text-sm sm:text-base">
-              ${toCommaSeparated((position?.liquidationPrice ?? 0).toFixed(2))}
+              ${toCommaSeparated((position?.liquidationPrice ?? 0).toFixed(4))}
             </div>
           </div>
 

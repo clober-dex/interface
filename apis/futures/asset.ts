@@ -44,7 +44,7 @@ export const fetchFuturesAssets = async (): Promise<Asset[]> => {
       assets: AssetDto[]
     }
   }>(
-    CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.FUTURES,
+    CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
     'getAssets',
     'query getAssets { assets { id assetId currency { id name symbol decimals } collateral { id name symbol decimals } expiration maxLTV liquidationThreshold minDebt settlePrice } }',
     {},
