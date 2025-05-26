@@ -784,7 +784,7 @@ export const TradeContainer = () => {
                   />
                 </div>
 
-                <div className="flex sm:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
+                <div className="flex max-h-[560px] sm:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
                   <SwapForm {...swapFormProps} />
                 </div>
               </>
