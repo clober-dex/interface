@@ -24,16 +24,14 @@ export const Default: Story = {
         name: 'AAPL',
         symbol: 'AAPL',
         icon: 'https://www.pyth.network/_next/image?url=%2Ficons%2Fprice-feed-icons%2Flight%2Fequity-us-aapl-usd.inline.svg&w=1920&q=75',
-        priceFeedId:
-          '0xafcc9a5bb5eefd55e12b6f0b4c8e6bccf72b785134ee232a5d175afd082e8832',
+        priceFeedId: '0x',
       },
       collateral: {
         address: '0x43D614B1bA4bA469fAEAa4557AEAFdec039b8795',
         name: 'USD Coin',
         symbol: 'USDC',
         decimals: 6,
-        priceFeedId:
-          '0xafcc9a5bb5eefd55e12b6f0b4c8e6bccf72b785134ee232a5d175afd082e8832',
+        priceFeedId: '0x',
       },
       expiration: 1635724800,
       maxLTV: 700000n,
