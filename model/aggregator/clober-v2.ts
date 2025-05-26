@@ -18,7 +18,7 @@ import { formatUnits } from '../../utils/bigint'
 import { WETH_ABI } from '../../abis/weth-abi'
 import { Chain } from '../chain'
 import { CHAIN_CONFIG } from '../../chain-configs'
-import { fetchLeverageIndexOraclePrices } from '../../apis/trading-competition'
+import { fetchLeverageIndexOraclePrices } from '../../apis/trading-competition/season2'
 
 import { Aggregator } from './index'
 

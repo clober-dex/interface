@@ -2,13 +2,13 @@ import { CHAIN_IDS } from '@clober/v2-sdk'
 import { createPublicClient, getAddress, http, isAddressEqual } from 'viem'
 import BigNumber from 'bignumber.js'
 
-import { Subgraph } from '../model/subgraph'
-import { Prices } from '../model/prices'
-import { formatUnits } from '../utils/bigint'
-import { TradingCompetitionPnl } from '../model/trading-competition-pnl'
-import { currentTimestampInSeconds } from '../utils/date'
-import { CHAIN_CONFIG } from '../chain-configs'
-import { WHITELISTED_FUTURES_ASSETS } from '../constants/futures'
+import { Subgraph } from '../../model/subgraph'
+import { Prices } from '../../model/prices'
+import { formatUnits } from '../../utils/bigint'
+import { TradingCompetitionPnl } from '../../model/trading-competition-pnl'
+import { currentTimestampInSeconds } from '../../utils/date'
+import { CHAIN_CONFIG } from '../../chain-configs'
+import { WHITELISTED_FUTURES_ASSETS } from '../../constants/futures'
 
 const BLACKLISTED_USER_ADDRESSES = [
   // '0x5F79EE8f8fA862E98201120d83c4eC39D9468D49',
@@ -122,7 +122,6 @@ export const fetchTradingCompetitionLeaderboard = async (
     data: {
       users: Array<{
         id: string
-        pnl: string
         trades: Array<{
           token: { id: string; decimals: string; symbol: string }
           realizedPnL: string
@@ -133,7 +132,7 @@ export const fetchTradingCompetitionLeaderboard = async (
   }>(
     CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.FUTURES,
     'getUsersPnL',
-    '{ users( first: 100 orderBy: pnl orderDirection: desc where: {isRegistered: true} ) { id pnl trades { token { id decimals symbol } realizedPnL estimatedHolding } } }',
+    '{ users( first: 100 orderBy: pnl orderDirection: desc where: {isRegistered: true} ) { id trades { token { id decimals symbol } realizedPnL estimatedHolding } } }',
     {},
   )
   const results = users
@@ -146,27 +145,27 @@ export const fetchTradingCompetitionLeaderboard = async (
     .reduce(
       (acc, user) => {
         const userAddress = getAddress(user.id)
+        const trades = user.trades.map((trade) => {
+          const token = getAddress(trade.token.id)
+          const amount = formatUnits(
+            BigInt(trade.estimatedHolding),
+            Number(trade.token.decimals),
+          )
+          const pnl = Number(trade.realizedPnL) + Number(amount) * prices[token]
+          return {
+            currency: {
+              address: token,
+              symbol: trade.token.symbol,
+              name: trade.token.symbol,
+              decimals: Number(trade.token.decimals),
+            },
+            pnl,
+            amount: Number(amount),
+          }
+        })
         acc[userAddress] = {
-          trades: user.trades.map((trade) => {
-            const token = getAddress(trade.token.id)
-            const amount = formatUnits(
-              BigInt(trade.estimatedHolding),
-              Number(trade.token.decimals),
-            )
-            const pnl =
-              Number(trade.realizedPnL) + Number(amount) * prices[token]
-            return {
-              currency: {
-                address: token,
-                symbol: trade.token.symbol,
-                name: trade.token.symbol,
-                decimals: Number(trade.token.decimals),
-              },
-              pnl,
-              amount: Number(amount),
-            }
-          }),
-          totalPnl: Number(user.pnl),
+          trades,
+          totalPnl: trades.reduce((total, trade) => total + trade.pnl, 0),
         }
         return acc
       },

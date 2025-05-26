@@ -16,7 +16,7 @@ import {
   fetchTotalRegisteredUsers,
   fetchTradingCompetitionLeaderboard,
   fetchUserPnL,
-} from '../apis/trading-competition'
+} from '../apis/trading-competition/season2'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { TradingCompetitionPnl } from '../model/trading-competition-pnl'
 import { CurrencyIcon } from '../components/icon/currency-icon'
