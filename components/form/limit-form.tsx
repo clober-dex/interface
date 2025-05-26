@@ -15,39 +15,7 @@ import { getPriceDecimals } from '../../utils/prices'
 import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
 
-export const LimitForm = ({
-  chain,
-  explorerUrl,
-  currencies,
-  setCurrencies,
-  balances,
-  prices,
-  priceInput,
-  setPriceInput,
-  selectedMarket,
-  isBid,
-  showInputCurrencySelect,
-  setShowInputCurrencySelect,
-  inputCurrency,
-  setInputCurrency,
-  inputCurrencyAmount,
-  setInputCurrencyAmount,
-  availableInputCurrencyBalance,
-  showOutputCurrencySelect,
-  setShowOutputCurrencySelect,
-  outputCurrency,
-  setOutputCurrency,
-  outputCurrencyAmount,
-  setOutputCurrencyAmount,
-  availableOutputCurrencyBalance,
-  swapInputCurrencyAndOutputCurrency,
-  minimumDecimalPlaces,
-  marketPrice,
-  marketRateDiff,
-  setMarketRateAction,
-  closeLimitFormAction,
-  actionButtonProps,
-}: {
+export type LimitFormProps = {
   chain: Chain
   explorerUrl: string
   currencies: Currency[]
@@ -88,7 +56,41 @@ export const LimitForm = ({
     | undefined
   closeLimitFormAction?: () => void
   actionButtonProps?: ActionButtonProps
-}) => {
+}
+
+export const LimitForm = ({
+  chain,
+  explorerUrl,
+  currencies,
+  setCurrencies,
+  balances,
+  prices,
+  priceInput,
+  setPriceInput,
+  selectedMarket,
+  isBid,
+  showInputCurrencySelect,
+  setShowInputCurrencySelect,
+  inputCurrency,
+  setInputCurrency,
+  inputCurrencyAmount,
+  setInputCurrencyAmount,
+  availableInputCurrencyBalance,
+  showOutputCurrencySelect,
+  setShowOutputCurrencySelect,
+  outputCurrency,
+  setOutputCurrency,
+  outputCurrencyAmount,
+  setOutputCurrencyAmount,
+  availableOutputCurrencyBalance,
+  swapInputCurrencyAndOutputCurrency,
+  minimumDecimalPlaces,
+  marketPrice,
+  marketRateDiff,
+  setMarketRateAction,
+  closeLimitFormAction,
+  actionButtonProps,
+}: LimitFormProps) => {
   minimumDecimalPlaces = minimumDecimalPlaces
     ? minimumDecimalPlaces
     : getPriceDecimals(Number(priceInput))

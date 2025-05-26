@@ -18,34 +18,7 @@ import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
 
-export const SwapForm = ({
-  chain,
-  explorerUrl,
-  currencies,
-  setCurrencies,
-  balances,
-  prices,
-  showInputCurrencySelect,
-  setShowInputCurrencySelect,
-  inputCurrency,
-  setInputCurrency,
-  inputCurrencyAmount,
-  setInputCurrencyAmount,
-  availableInputCurrencyBalance,
-  showOutputCurrencySelect,
-  setShowOutputCurrencySelect,
-  outputCurrency,
-  setOutputCurrency,
-  outputCurrencyAmount,
-  slippageInput,
-  setSlippageInput,
-  gasEstimateValue,
-  priceImpact,
-  aggregatorName,
-  refreshQuotesAction,
-  closeSwapFormAction,
-  actionButtonProps,
-}: {
+export type SwapFormProps = {
   chain: Chain
   explorerUrl: string
   currencies: Currency[]
@@ -76,7 +49,36 @@ export const SwapForm = ({
   refreshQuotesAction: () => void
   closeSwapFormAction?: () => void
   actionButtonProps?: ActionButtonProps
-}) => {
+}
+
+export const SwapForm = ({
+  chain,
+  explorerUrl,
+  currencies,
+  setCurrencies,
+  balances,
+  prices,
+  showInputCurrencySelect,
+  setShowInputCurrencySelect,
+  inputCurrency,
+  setInputCurrency,
+  inputCurrencyAmount,
+  setInputCurrencyAmount,
+  availableInputCurrencyBalance,
+  showOutputCurrencySelect,
+  setShowOutputCurrencySelect,
+  outputCurrency,
+  setOutputCurrency,
+  outputCurrencyAmount,
+  slippageInput,
+  setSlippageInput,
+  gasEstimateValue,
+  priceImpact,
+  aggregatorName,
+  refreshQuotesAction,
+  closeSwapFormAction,
+  actionButtonProps,
+}: SwapFormProps) => {
   const isLoadingResults = useMemo(() => {
     return !!(
       inputCurrency &&

@@ -7,11 +7,10 @@ import BigNumber from 'bignumber.js'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 
-import { LimitForm } from '../components/form/limit-form'
+import { LimitForm, LimitFormProps } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
 import { useChainContext } from '../contexts/chain-context'
 import { useMarketContext } from '../contexts/trade/market-context'
-import { useOpenOrderContext } from '../contexts/trade/open-order-context'
 import { useLimitContractContext } from '../contexts/trade/limit-contract-context'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { isAddressesEqual } from '../utils/address'
@@ -20,23 +19,20 @@ import { aggregators } from '../chain-configs/aggregators'
 import { formatUnits } from '../utils/bigint'
 import { toPlacesString } from '../utils/bignumber'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
-import { OpenOrderCardList } from '../components/card/open-order/open-order-card-list'
-import { ActionButton } from '../components/button/action-button'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
 import { useTradeContext } from '../contexts/trade/trade-context'
-import { SwapForm } from '../components/form/swap-form'
+import { SwapForm, SwapFormProps } from '../components/form/swap-form'
 import { useSwapContractContext } from '../contexts/trade/swap-contract-context'
 import { fetchPrice } from '../apis/price'
-import { SearchSvg } from '../components/svg/search-svg'
-import CheckIcon from '../components/icon/check-icon'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { SwapRouteList } from '../components/swap-router-list'
 import { Quote } from '../model/aggregator/quote'
-import CloseSvg from '../components/svg/close-svg'
+import { MobileFixedModal } from '../components/modal/mobile-fixed-modal'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
+import { OpenOrderContainer } from './open-order-container'
 
 export const TradeContainer = () => {
   const router = useRouter()
@@ -52,8 +48,7 @@ export const TradeContainer = () => {
     asks,
     setDepthClickedIndex,
   } = useMarketContext()
-  const { openOrders } = useOpenOrderContext()
-  const { limit, cancels, claims } = useLimitContractContext()
+  const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
   const { address: userAddress } = useAccount()
   const { data: walletClient } = useWalletClient()
@@ -88,26 +83,7 @@ export const TradeContainer = () => {
 
   const [debouncedValue, setDebouncedValue] = useState('')
   const [tab, setTab] = useState<'limit' | 'swap'>('swap')
-  const [searchValue, _setSearchValue] = useState('')
-  const [searchInCurrentMarket, _setSearchInCurrentMarket] = useState(false)
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
-
-  const setSearchInCurrentMarket = useCallback((value: boolean) => {
-    _setSearchInCurrentMarket(value)
-    if (value) {
-      _setSearchValue('')
-    }
-  }, [])
-
-  const setSearchValue = useCallback(
-    (value: string) => {
-      _setSearchValue(value)
-      if (value) {
-        setSearchInCurrentMarket(false)
-      }
-    },
-    [setSearchInCurrentMarket],
-  )
 
   useEffect(() => {
     if (selectedChain.testnet) {
@@ -138,54 +114,18 @@ export const TradeContainer = () => {
     }
   }, [inputCurrency, outputCurrency, selectedChain.id])
 
-  const amount = useMemo(
+  const amountIn = useMemo(
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
     [inputCurrency?.decimals, inputCurrencyAmount],
   )
 
-  const filteredOpenOrders = useMemo(
+  const marketRateDiff = useMemo(
     () =>
-      openOrders.filter((order) => {
-        if (selectedMarket && searchInCurrentMarket) {
-          return (
-            (isAddressEqual(
-              selectedMarket.base.address,
-              order.inputCurrency.address,
-            ) &&
-              isAddressEqual(
-                selectedMarket.quote.address,
-                order.outputCurrency.address,
-              )) ||
-            (isAddressEqual(
-              selectedMarket.base.address,
-              order.outputCurrency.address,
-            ) &&
-              isAddressEqual(
-                selectedMarket.quote.address,
-                order.inputCurrency.address,
-              ))
-          )
-        }
-        const _searchValue = searchValue.toLowerCase()
-        return (
-          order.inputCurrency.symbol.toLowerCase().includes(_searchValue) ||
-          order.outputCurrency.symbol.toLowerCase().includes(_searchValue) ||
-          order.inputCurrency.name.toLowerCase().includes(_searchValue) ||
-          order.outputCurrency.name.toLowerCase().includes(_searchValue) ||
-          order.inputCurrency.address.toLowerCase().includes(_searchValue) ||
-          order.outputCurrency.address.toLowerCase().includes(_searchValue)
-        )
-      }),
-    [openOrders, searchInCurrentMarket, searchValue, selectedMarket],
-  )
-
-  const claimableOpenOrders = filteredOpenOrders.filter(
-    ({ claimable }) =>
-      parseUnits(claimable.value, claimable.currency.decimals) > 0n,
-  )
-  const cancellableOpenOrders = filteredOpenOrders.filter(
-    ({ cancelable }) =>
-      parseUnits(cancelable.value, cancelable.currency.decimals) > 0n,
+      (isBid
+        ? new BigNumber(marketPrice).dividedBy(priceInput).minus(1).times(100)
+        : new BigNumber(priceInput).dividedBy(marketPrice).minus(1).times(100)
+      ).toNumber(),
+    [isBid, marketPrice, priceInput],
   )
 
   useEffect(() => {
@@ -290,17 +230,6 @@ export const TradeContainer = () => {
     setPriceInput,
   ])
 
-  const marketRateDiff = (
-    isBid
-      ? new BigNumber(marketPrice).dividedBy(priceInput).minus(1).times(100)
-      : new BigNumber(priceInput).dividedBy(marketPrice).minus(1).times(100)
-  ).toNumber()
-
-  const amountIn = parseUnits(
-    inputCurrencyAmount,
-    inputCurrency?.decimals ?? 18,
-  )
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedValue(inputCurrencyAmount)
@@ -336,7 +265,7 @@ export const TradeContainer = () => {
           chainId: selectedChain.id,
           inputCurrency: inputCurrency.symbol,
           outputCurrency: outputCurrency.symbol,
-          amountIn,
+          amount: amountIn,
         })
         const { best, all } = await fetchQuotes(
           aggregators,
@@ -387,6 +316,290 @@ export const TradeContainer = () => {
     }
     return Number.NaN
   }, [inputCurrency, outputCurrency, prices, selectedQuote])
+
+  const limitActionButtonProps = useMemo(
+    () => ({
+      disabled:
+        !!walletClient &&
+        (!inputCurrency ||
+          !outputCurrency ||
+          priceInput === '' ||
+          (selectedMarket &&
+            !isAddressesEqual(
+              [inputCurrency.address, outputCurrency.address],
+              [selectedMarket.base.address, selectedMarket.quote.address],
+            )) ||
+          amountIn === 0n ||
+          amountIn > (balances[inputCurrency.address] ?? 0n)),
+      onClick: async () => {
+        if (!walletClient && openConnectModal) {
+          openConnectModal()
+        }
+        if (!inputCurrency || !outputCurrency || !selectedMarket) {
+          return
+        }
+        if (marketRateDiff < -2) {
+          setShowWarningModal(true)
+          return
+        }
+        await limit(
+          inputCurrency,
+          outputCurrency,
+          inputCurrencyAmount,
+          priceInput,
+          selectedMarket,
+        )
+      },
+      text: !walletClient
+        ? 'Connect wallet'
+        : !inputCurrency
+          ? 'Select input currency'
+          : !outputCurrency
+            ? 'Select output currency'
+            : amountIn === 0n
+              ? 'Enter amount'
+              : amountIn > balances[inputCurrency.address]
+                ? 'Insufficient balance'
+                : `Place Order`,
+    }),
+    [
+      amountIn,
+      balances,
+      inputCurrency,
+      inputCurrencyAmount,
+      limit,
+      marketRateDiff,
+      openConnectModal,
+      outputCurrency,
+      priceInput,
+      selectedMarket,
+      walletClient,
+    ],
+  )
+
+  const limitFormProps = useMemo(
+    () =>
+      ({
+        chain: selectedChain,
+        explorerUrl: selectedChain.blockExplorers?.default?.url ?? '',
+        prices,
+        balances,
+        currencies,
+        setCurrencies,
+        priceInput,
+        setPriceInput,
+        selectedMarket,
+        isBid,
+        showInputCurrencySelect,
+        setShowInputCurrencySelect,
+        inputCurrency,
+        setInputCurrency,
+        inputCurrencyAmount,
+        setInputCurrencyAmount,
+        availableInputCurrencyBalance: inputCurrency
+          ? (balances[inputCurrency.address] ?? 0n)
+          : 0n,
+        showOutputCurrencySelect,
+        setShowOutputCurrencySelect,
+        outputCurrency,
+        setOutputCurrency,
+        outputCurrencyAmount,
+        setOutputCurrencyAmount,
+        availableOutputCurrencyBalance: outputCurrency
+          ? (balances[outputCurrency.address] ?? 0n)
+          : 0n,
+        swapInputCurrencyAndOutputCurrency: () => {
+          setIsBid((prevState) => !prevState)
+          setDepthClickedIndex(undefined)
+          setInputCurrencyAmount(outputCurrencyAmount)
+
+          // swap currencies
+          const _inputCurrency = inputCurrency
+          setInputCurrency(outputCurrency)
+          setOutputCurrency(_inputCurrency)
+        },
+        minimumDecimalPlaces: availableDecimalPlacesGroups?.[0]?.value,
+        marketPrice,
+        marketRateDiff,
+        setMarketRateAction: {
+          isLoading: isFetchingQuotes,
+          action: async () => {
+            await setMarketRateAction()
+          },
+        },
+        closeLimitFormAction: () => setShowMobileModal(false),
+        actionButtonProps: limitActionButtonProps,
+      }) as LimitFormProps,
+    [
+      availableDecimalPlacesGroups,
+      balances,
+      currencies,
+      inputCurrency,
+      inputCurrencyAmount,
+      isBid,
+      isFetchingQuotes,
+      limitActionButtonProps,
+      marketPrice,
+      marketRateDiff,
+      outputCurrency,
+      outputCurrencyAmount,
+      priceInput,
+      prices,
+      selectedChain,
+      selectedMarket,
+      setCurrencies,
+      setDepthClickedIndex,
+      setInputCurrency,
+      setInputCurrencyAmount,
+      setIsBid,
+      setMarketRateAction,
+      setOutputCurrency,
+      setOutputCurrencyAmount,
+      setPriceInput,
+      setShowInputCurrencySelect,
+      setShowOutputCurrencySelect,
+      showInputCurrencySelect,
+      showOutputCurrencySelect,
+    ],
+  )
+
+  const swapActionButtonProps = useMemo(
+    () => ({
+      disabled:
+        (Number(inputCurrencyAmount) > 0 &&
+          (selectedQuote?.amountOut ?? 0n) === 0n) ||
+        !inputCurrency ||
+        !outputCurrency ||
+        amountIn === 0n ||
+        amountIn > balances[inputCurrency.address],
+      onClick: async () => {
+        if (!userAddress && openConnectModal) {
+          openConnectModal()
+        }
+
+        if (
+          !gasPrice ||
+          !userAddress ||
+          !inputCurrency ||
+          !outputCurrency ||
+          !inputCurrencyAmount ||
+          !selectedQuote ||
+          amountIn !== selectedQuote.amountIn ||
+          !selectedQuote.transaction
+        ) {
+          return
+        }
+        await swap(
+          inputCurrency,
+          amountIn,
+          outputCurrency,
+          selectedQuote.amountOut,
+          aggregators.find(
+            (aggregator) => aggregator.name === selectedQuote.aggregator.name,
+          )!,
+          selectedQuote.transaction,
+        )
+      },
+      text:
+        Number(inputCurrencyAmount) > 0 &&
+        (selectedQuote?.amountOut ?? 0n) === 0n
+          ? 'Fetching...'
+          : !walletClient
+            ? 'Connect wallet'
+            : !inputCurrency
+              ? 'Select input currency'
+              : !outputCurrency
+                ? 'Select output currency'
+                : amountIn === 0n
+                  ? 'Enter amount'
+                  : amountIn > balances[inputCurrency.address]
+                    ? 'Insufficient balance'
+                    : isAddressEqual(inputCurrency.address, zeroAddress) &&
+                        isAddressEqual(
+                          outputCurrency.address,
+                          CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+                        )
+                      ? 'Wrap'
+                      : isAddressEqual(
+                            inputCurrency.address,
+                            CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+                          ) &&
+                          isAddressEqual(outputCurrency.address, zeroAddress)
+                        ? 'Unwrap'
+                        : `Swap`,
+    }),
+    [
+      amountIn,
+      balances,
+      gasPrice,
+      inputCurrency,
+      inputCurrencyAmount,
+      openConnectModal,
+      outputCurrency,
+      selectedQuote,
+      swap,
+      userAddress,
+      walletClient,
+    ],
+  )
+
+  const swapFormProps = useMemo(
+    () =>
+      ({
+        chain: selectedChain,
+        explorerUrl: selectedChain.blockExplorers?.default?.url ?? '',
+        currencies,
+        setCurrencies,
+        balances,
+        prices,
+        showInputCurrencySelect,
+        setShowInputCurrencySelect,
+        inputCurrency,
+        setInputCurrency,
+        inputCurrencyAmount,
+        setInputCurrencyAmount,
+        availableInputCurrencyBalance: inputCurrency
+          ? (balances[inputCurrency.address] ?? 0n)
+          : 0n,
+        showOutputCurrencySelect,
+        setShowOutputCurrencySelect,
+        outputCurrency,
+        setOutputCurrency,
+        outputCurrencyAmount: formatUnits(
+          selectedQuote?.amountOut ?? 0n,
+          outputCurrency?.decimals ?? 18,
+        ),
+        slippageInput,
+        setSlippageInput,
+        aggregatorName: selectedQuote?.aggregator?.name ?? '',
+        gasEstimateValue: selectedQuote?.gasUsd ?? 0,
+        priceImpact: priceImpact,
+        refreshQuotesAction: () => setLatestRefreshTime(Date.now()),
+      }) as SwapFormProps,
+    [
+      balances,
+      currencies,
+      inputCurrency,
+      inputCurrencyAmount,
+      outputCurrency,
+      priceImpact,
+      prices,
+      selectedChain,
+      selectedQuote?.aggregator?.name,
+      selectedQuote?.amountOut,
+      selectedQuote?.gasUsd,
+      setCurrencies,
+      setInputCurrency,
+      setInputCurrencyAmount,
+      setOutputCurrency,
+      setShowInputCurrencySelect,
+      setShowOutputCurrencySelect,
+      setSlippageInput,
+      showInputCurrencySelect,
+      showOutputCurrencySelect,
+      slippageInput,
+    ],
+  )
 
   return (
     <>
@@ -572,49 +785,7 @@ export const TradeContainer = () => {
                 </div>
 
                 <div className="flex sm:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
-                  <SwapForm
-                    chain={selectedChain}
-                    explorerUrl={
-                      selectedChain.blockExplorers?.default?.url ?? ''
-                    }
-                    currencies={currencies}
-                    setCurrencies={setCurrencies}
-                    balances={balances}
-                    prices={prices}
-                    showInputCurrencySelect={showInputCurrencySelect}
-                    setShowInputCurrencySelect={setShowInputCurrencySelect}
-                    inputCurrency={inputCurrency}
-                    setInputCurrency={setInputCurrency}
-                    inputCurrencyAmount={inputCurrencyAmount}
-                    setInputCurrencyAmount={setInputCurrencyAmount}
-                    availableInputCurrencyBalance={
-                      inputCurrency
-                        ? (balances[inputCurrency.address] ?? 0n)
-                        : 0n
-                    }
-                    showOutputCurrencySelect={showOutputCurrencySelect}
-                    setShowOutputCurrencySelect={setShowOutputCurrencySelect}
-                    outputCurrency={outputCurrency}
-                    setOutputCurrency={setOutputCurrency}
-                    outputCurrencyAmount={formatUnits(
-                      selectedQuote?.amountOut ?? 0n,
-                      outputCurrency?.decimals ?? 18,
-                    )}
-                    slippageInput={slippageInput}
-                    setSlippageInput={setSlippageInput}
-                    aggregatorName={selectedQuote?.aggregator?.name ?? ''}
-                    gasEstimateValue={
-                      parseFloat(
-                        formatUnits(
-                          BigInt(selectedQuote?.gasLimit ?? 0n) *
-                            (gasPrice ?? 0n),
-                          selectedChain.nativeCurrency.decimals,
-                        ),
-                      ) * (prices[zeroAddress] ?? 0)
-                    }
-                    priceImpact={priceImpact}
-                    refreshQuotesAction={() => setLatestRefreshTime(Date.now())}
-                  />
+                  <SwapForm {...swapFormProps} />
                 </div>
               </>
             )}
@@ -623,575 +794,37 @@ export const TradeContainer = () => {
           <div className="flex flex-col items-start gap-3">
             <div className="hidden sm:flex flex-col rounded-2xl bg-[#171b24] p-6 w-fit sm:w-[480px] h-[626px]">
               {tab === 'limit' ? (
-                <LimitForm
-                  chain={selectedChain}
-                  explorerUrl={selectedChain.blockExplorers?.default?.url ?? ''}
-                  prices={prices}
-                  balances={balances}
-                  currencies={currencies}
-                  setCurrencies={setCurrencies}
-                  priceInput={priceInput}
-                  setPriceInput={setPriceInput}
-                  selectedMarket={selectedMarket}
-                  isBid={isBid}
-                  showInputCurrencySelect={showInputCurrencySelect}
-                  setShowInputCurrencySelect={setShowInputCurrencySelect}
-                  inputCurrency={inputCurrency}
-                  setInputCurrency={setInputCurrency}
-                  inputCurrencyAmount={inputCurrencyAmount}
-                  setInputCurrencyAmount={setInputCurrencyAmount}
-                  availableInputCurrencyBalance={
-                    inputCurrency ? (balances[inputCurrency.address] ?? 0n) : 0n
-                  }
-                  showOutputCurrencySelect={showOutputCurrencySelect}
-                  setShowOutputCurrencySelect={setShowOutputCurrencySelect}
-                  outputCurrency={outputCurrency}
-                  setOutputCurrency={setOutputCurrency}
-                  outputCurrencyAmount={outputCurrencyAmount}
-                  setOutputCurrencyAmount={setOutputCurrencyAmount}
-                  availableOutputCurrencyBalance={
-                    outputCurrency
-                      ? (balances[outputCurrency.address] ?? 0n)
-                      : 0n
-                  }
-                  swapInputCurrencyAndOutputCurrency={() => {
-                    setIsBid((prevState) => !prevState)
-                    setDepthClickedIndex(undefined)
-                    setInputCurrencyAmount(outputCurrencyAmount)
-
-                    // swap currencies
-                    const _inputCurrency = inputCurrency
-                    setInputCurrency(outputCurrency)
-                    setOutputCurrency(_inputCurrency)
-                  }}
-                  minimumDecimalPlaces={
-                    availableDecimalPlacesGroups?.[0]?.value
-                  }
-                  marketPrice={marketPrice}
-                  marketRateDiff={marketRateDiff}
-                  setMarketRateAction={{
-                    isLoading: isFetchingQuotes,
-                    action: async () => {
-                      await setMarketRateAction()
-                    },
-                  }}
-                  closeLimitFormAction={() => setShowMobileModal(false)}
-                  actionButtonProps={{
-                    disabled:
-                      !!walletClient &&
-                      (!inputCurrency ||
-                        !outputCurrency ||
-                        priceInput === '' ||
-                        (selectedMarket &&
-                          !isAddressesEqual(
-                            [inputCurrency.address, outputCurrency.address],
-                            [
-                              selectedMarket.base.address,
-                              selectedMarket.quote.address,
-                            ],
-                          )) ||
-                        amount === 0n ||
-                        amount > (balances[inputCurrency.address] ?? 0n)),
-                    onClick: async () => {
-                      if (!walletClient && openConnectModal) {
-                        openConnectModal()
-                      }
-                      if (
-                        !inputCurrency ||
-                        !outputCurrency ||
-                        !selectedMarket
-                      ) {
-                        return
-                      }
-                      if (marketRateDiff < -2) {
-                        setShowWarningModal(true)
-                        return
-                      }
-                      await limit(
-                        inputCurrency,
-                        outputCurrency,
-                        inputCurrencyAmount,
-                        priceInput,
-                        selectedMarket,
-                      )
-                    },
-                    text: !walletClient
-                      ? 'Connect wallet'
-                      : !inputCurrency
-                        ? 'Select input currency'
-                        : !outputCurrency
-                          ? 'Select output currency'
-                          : amount === 0n
-                            ? 'Enter amount'
-                            : amount > balances[inputCurrency.address]
-                              ? 'Insufficient balance'
-                              : `Place Order`,
-                  }}
-                />
+                <LimitForm {...limitFormProps} />
               ) : (
                 <SwapForm
-                  chain={selectedChain}
-                  explorerUrl={selectedChain.blockExplorers?.default?.url ?? ''}
-                  currencies={currencies}
-                  setCurrencies={setCurrencies}
-                  balances={balances}
-                  prices={prices}
-                  showInputCurrencySelect={showInputCurrencySelect}
-                  setShowInputCurrencySelect={setShowInputCurrencySelect}
-                  inputCurrency={inputCurrency}
-                  setInputCurrency={setInputCurrency}
-                  inputCurrencyAmount={inputCurrencyAmount}
-                  setInputCurrencyAmount={setInputCurrencyAmount}
-                  availableInputCurrencyBalance={
-                    inputCurrency ? (balances[inputCurrency.address] ?? 0n) : 0n
-                  }
-                  showOutputCurrencySelect={showOutputCurrencySelect}
-                  setShowOutputCurrencySelect={setShowOutputCurrencySelect}
-                  outputCurrency={outputCurrency}
-                  setOutputCurrency={setOutputCurrency}
-                  outputCurrencyAmount={formatUnits(
-                    selectedQuote?.amountOut ?? 0n,
-                    outputCurrency?.decimals ?? 18,
-                  )}
-                  slippageInput={slippageInput}
-                  setSlippageInput={setSlippageInput}
-                  aggregatorName={selectedQuote?.aggregator?.name ?? ''}
-                  gasEstimateValue={selectedQuote?.gasUsd ?? 0}
-                  priceImpact={priceImpact}
-                  refreshQuotesAction={() => setLatestRefreshTime(Date.now())}
+                  {...swapFormProps}
                   closeSwapFormAction={() => setShowMobileModal(false)}
-                  actionButtonProps={{
-                    disabled:
-                      (Number(inputCurrencyAmount) > 0 &&
-                        (selectedQuote?.amountOut ?? 0n) === 0n) ||
-                      !inputCurrency ||
-                      !outputCurrency ||
-                      amount === 0n ||
-                      amount > balances[inputCurrency.address],
-                    onClick: async () => {
-                      if (!userAddress && openConnectModal) {
-                        openConnectModal()
-                      }
-
-                      if (
-                        !gasPrice ||
-                        !userAddress ||
-                        !inputCurrency ||
-                        !outputCurrency ||
-                        !inputCurrencyAmount ||
-                        !selectedQuote ||
-                        amountIn !== selectedQuote.amountIn ||
-                        !selectedQuote.transaction
-                      ) {
-                        return
-                      }
-                      await swap(
-                        inputCurrency,
-                        amountIn,
-                        outputCurrency,
-                        selectedQuote.amountOut,
-                        aggregators.find(
-                          (aggregator) =>
-                            aggregator.name === selectedQuote.aggregator.name,
-                        )!,
-                        selectedQuote.transaction,
-                      )
-                    },
-                    text:
-                      Number(inputCurrencyAmount) > 0 &&
-                      (selectedQuote?.amountOut ?? 0n) === 0n
-                        ? 'Fetching...'
-                        : !walletClient
-                          ? 'Connect wallet'
-                          : !inputCurrency
-                            ? 'Select input currency'
-                            : !outputCurrency
-                              ? 'Select output currency'
-                              : amount === 0n
-                                ? 'Enter amount'
-                                : amount > balances[inputCurrency.address]
-                                  ? 'Insufficient balance'
-                                  : isAddressEqual(
-                                        inputCurrency.address,
-                                        zeroAddress,
-                                      ) &&
-                                      isAddressEqual(
-                                        outputCurrency.address,
-                                        CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-                                      )
-                                    ? 'Wrap'
-                                    : isAddressEqual(
-                                          inputCurrency.address,
-                                          CHAIN_CONFIG.REFERENCE_CURRENCY
-                                            .address,
-                                        ) &&
-                                        isAddressEqual(
-                                          outputCurrency.address,
-                                          zeroAddress,
-                                        )
-                                      ? 'Unwrap'
-                                      : `Swap`,
-                  }}
+                  actionButtonProps={swapActionButtonProps}
                 />
               )}
             </div>
           </div>
         </div>
-        {tab === 'limit' && userAddress && openOrders.length > 0 ? (
-          <>
-            <div className="flex flex-col w-full lg:flex-row gap-4 lg:gap-0 mt-[20px] mb-4 lg:mt-12 text-white">
-              <div className="border-b-blue-500 text-[13px] lg:text-base border-solid lg:border-0 flex w-1/2 lg:w-[161px] h-[37px] px-6 lg:px-0 lg:justify-start pt-1.5 pb-2.5 border-b-2 border-[#ffc32d] justify-center items-center gap-2">
-                <div className="text-white font-semibold">Open Order</div>
-                <div className="flex px-2 py-0.5 lg:h-7 lg:px-2.5 lg:py-0.5 bg-blue-500/20 rounded-[17.02px] flex-col justify-center items-center">
-                  <div className="text-blue-500 text-[13px] font-semibold">
-                    {filteredOpenOrders.length}
-                  </div>
-                </div>
-              </div>
 
-              <div className="flex flex-row mb-4 gap-5 max-w-[480px] lg:max-w-full lg:ml-auto lg:flex-row-reverse">
-                <div className="w-full lg:w-[246px] flex flex-col relative rounded shadow-sm">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <div className="relative h-4 w-4">
-                      <SearchSvg />
-                    </div>
-                  </div>
-                  <div className="inline-block">
-                    <div className="invisible h-0 mx-[29px]" aria-hidden="true">
-                      Search by symbol
-                    </div>
-                    <input
-                      type="search"
-                      name="open-order-search"
-                      id="search"
-                      autoComplete="off"
-                      className="inline w-full pl-10 py-1.5 lg:py-2.5 text-white bg-transparent rounded-xl border border-solid border-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-400 flex-col placeholder:text-gray-400 text-xs sm:text-sm"
-                      placeholder="Search tokens"
-                      value={searchValue}
-                      onChange={(event) => setSearchValue(event.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <button className="flex justify-start items-center gap-2">
-                  <CheckIcon
-                    checked={searchInCurrentMarket}
-                    onCheck={setSearchInCurrentMarket}
-                    text="Current Market"
-                  />
-                </button>
-              </div>
-            </div>
-
-            {/*pc open order card*/}
-            {filteredOpenOrders.length > 0 ? (
-              <div className="hidden lg:flex flex-col w-full justify-start items-center gap-4 bg-transparent mb-14">
-                <div className="w-full justify-start items-end inline-flex">
-                  <div className="flex text-gray-50 text-sm font-semibold">
-                    <div className="flex w-[225px] ml-5">Market</div>
-                    <div className="flex w-[145px]">Price</div>
-                    <div className="flex w-[200px]">Amount</div>
-                    <div className="flex w-[100px]">Filled</div>
-                    <div className="flex w-[200px]">Claimable</div>
-                  </div>
-                  <div className="h-full ml-auto justify-center items-center gap-3 flex">
-                    <ActionButton
-                      disabled={claimableOpenOrders.length === 0}
-                      onClick={async () => {
-                        await claims(claimableOpenOrders)
-                      }}
-                      text="Claim All"
-                      className="disabled:text-gray-400 text-white text-[13px] font-semibold w-[110px] h-8 px-3 py-1.5 disabled:bg-[#2b3544] bg-blue-500 rounded-[10px] justify-center items-center flex"
-                    />
-                    <ActionButton
-                      disabled={cancellableOpenOrders.length === 0}
-                      onClick={async () => {
-                        await cancels(cancellableOpenOrders)
-                      }}
-                      text="Cancel All"
-                      className="disabled:text-gray-400 text-white text-[13px] font-semibold w-[110px] h-8 px-3 py-1.5 disabled:bg-[#2b3544] bg-blue-500 rounded-[10px] justify-center items-center flex"
-                    />
-                  </div>
-                </div>
-
-                <OpenOrderCardList
-                  userAddress={userAddress}
-                  openOrders={filteredOpenOrders}
-                  claims={claims}
-                  cancels={cancels}
-                  router={router}
-                />
-              </div>
-            ) : (
-              <></>
-            )}
-
-            {/*mobile open order card*/}
-            <div className="flex lg:hidden w-full justify-center mb-28 sm:mb-0">
-              <div className="flex flex-col w-full lg:w-auto h-full lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
-                {filteredOpenOrders.length > 0 ? (
-                  <div className="flex ml-auto h-6 opacity-80 justify-start items-center gap-2">
-                    <button
-                      disabled={claimableOpenOrders.length === 0}
-                      onClick={async () => {
-                        await claims(claimableOpenOrders)
-                      }}
-                      className="flex flex-1 w-[95px] px-3 py-1 disabled:bg-[#2b3544] bg-[#3B82F6]/20 rounded-lg justify-center items-center disabled:text-gray-400 text-[#3B82F6] text-[13px] font-semibold"
-                    >
-                      Claim All
-                    </button>
-                    <button
-                      disabled={cancellableOpenOrders.length === 0}
-                      onClick={async () => {
-                        await cancels(cancellableOpenOrders)
-                      }}
-                      className="flex flex-1 w-[95px] px-3 py-1 disabled:bg-[#2b3544] bg-[#3B82F6]/20 rounded-lg justify-center items-center disabled:text-gray-400 text-[#3B82F6] text-[13px] font-semibold"
-                    >
-                      Cancel All
-                    </button>
-                  </div>
-                ) : (
-                  <></>
-                )}
-
-                <OpenOrderCardList
-                  userAddress={userAddress}
-                  openOrders={filteredOpenOrders}
-                  claims={claims}
-                  cancels={cancels}
-                  router={router}
-                />
-              </div>
-            </div>
-          </>
+        {tab === 'limit' && userAddress ? (
+          <OpenOrderContainer selectedMarket={selectedMarket} />
         ) : (
           <div className="hidden sm:flex mb-28 lg:mb-2" />
         )}
       </div>
 
-      {/*mobile fixed bottom modal*/}
-      <div className="fixed flex w-full overflow-y-scroll sm:hidden bottom-0 z-[1000]">
-        <div
-          className={`${
-            showMobileModal ? 'flex' : 'hidden'
-          } w-full h-full fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm`}
-          onClick={() => setShowMobileModal(false)}
-        />
-        <div className="w-full h-full top-0 absolute bg-[#171b24] shadow rounded-tl-2xl rounded-tr-2xl border" />
-        <div className="z-[10000] w-full flex flex-col px-5 pt-5 pb-3">
-          <div
-            className={`${
-              showMobileModal ? 'flex max-h-[560px]' : 'hidden'
-            } flex-col mb-5`}
-          >
-            {tab === 'limit' ? (
-              <LimitForm
-                chain={selectedChain}
-                explorerUrl={selectedChain.blockExplorers?.default?.url ?? ''}
-                prices={prices}
-                balances={balances}
-                currencies={currencies}
-                setCurrencies={setCurrencies}
-                priceInput={priceInput}
-                setPriceInput={setPriceInput}
-                selectedMarket={selectedMarket}
-                isBid={isBid}
-                showInputCurrencySelect={showInputCurrencySelect}
-                setShowInputCurrencySelect={setShowInputCurrencySelect}
-                inputCurrency={inputCurrency}
-                setInputCurrency={setInputCurrency}
-                inputCurrencyAmount={inputCurrencyAmount}
-                setInputCurrencyAmount={setInputCurrencyAmount}
-                availableInputCurrencyBalance={
-                  inputCurrency ? (balances[inputCurrency.address] ?? 0n) : 0n
-                }
-                showOutputCurrencySelect={showOutputCurrencySelect}
-                setShowOutputCurrencySelect={setShowOutputCurrencySelect}
-                outputCurrency={outputCurrency}
-                setOutputCurrency={setOutputCurrency}
-                outputCurrencyAmount={outputCurrencyAmount}
-                setOutputCurrencyAmount={setOutputCurrencyAmount}
-                availableOutputCurrencyBalance={
-                  outputCurrency ? (balances[outputCurrency.address] ?? 0n) : 0n
-                }
-                swapInputCurrencyAndOutputCurrency={() => {
-                  setIsBid((prevState) => !prevState)
-                  setDepthClickedIndex(undefined)
-                  setInputCurrencyAmount(outputCurrencyAmount)
-
-                  // swap currencies
-                  const _inputCurrency = inputCurrency
-                  setInputCurrency(outputCurrency)
-                  setOutputCurrency(_inputCurrency)
-                }}
-                minimumDecimalPlaces={availableDecimalPlacesGroups?.[0]?.value}
-                marketPrice={marketPrice}
-                marketRateDiff={marketRateDiff}
-                setMarketRateAction={{
-                  isLoading: isFetchingQuotes,
-                  action: async () => {
-                    await setMarketRateAction()
-                  },
-                }}
-                closeLimitFormAction={() => setShowMobileModal(false)}
-                actionButtonProps={{
-                  disabled:
-                    !!walletClient &&
-                    (!inputCurrency ||
-                      !outputCurrency ||
-                      priceInput === '' ||
-                      (selectedMarket &&
-                        !isAddressesEqual(
-                          [inputCurrency.address, outputCurrency.address],
-                          [
-                            selectedMarket.base.address,
-                            selectedMarket.quote.address,
-                          ],
-                        )) ||
-                      amount === 0n ||
-                      amount > (balances[inputCurrency.address] ?? 0n)),
-                  onClick: async () => {
-                    if (!walletClient && openConnectModal) {
-                      openConnectModal()
-                    }
-                    if (!inputCurrency || !outputCurrency || !selectedMarket) {
-                      return
-                    }
-                    if (marketRateDiff < -2) {
-                      setShowWarningModal(true)
-                      return
-                    }
-                    await limit(
-                      inputCurrency,
-                      outputCurrency,
-                      inputCurrencyAmount,
-                      priceInput,
-                      selectedMarket,
-                    )
-                  },
-                  text: !walletClient
-                    ? 'Connect wallet'
-                    : !inputCurrency
-                      ? 'Select input currency'
-                      : !outputCurrency
-                        ? 'Select output currency'
-                        : amount === 0n
-                          ? 'Enter amount'
-                          : amount > balances[inputCurrency.address]
-                            ? 'Insufficient balance'
-                            : `Place Order`,
-                }}
-              />
-            ) : (
-              <div className="flex flex-col gap-4">
-                <button
-                  className="flex sm:hidden w-5 h-5 ml-auto"
-                  onClick={() => setShowMobileModal(false)}
-                >
-                  <CloseSvg />
-                </button>
-
-                <div className="flex flex-col w-full mb-4">
-                  <SwapRouteList
-                    quotes={quotes.all}
-                    bestQuote={quotes.best}
-                    outputCurrency={outputCurrency}
-                    aggregatorNames={aggregators.map((a) => a.name)}
-                    selectedQuote={selectedQuote}
-                    setSelectedQuote={setSelectedQuote}
-                  />
-                </div>
-
-                <ActionButton
-                  disabled={
-                    (Number(inputCurrencyAmount) > 0 &&
-                      (selectedQuote?.amountOut ?? 0n) === 0n) ||
-                    !inputCurrency ||
-                    !outputCurrency ||
-                    amount === 0n ||
-                    amount > balances[inputCurrency.address]
-                  }
-                  onClick={async () => {
-                    if (!userAddress && openConnectModal) {
-                      openConnectModal()
-                    }
-
-                    if (
-                      !gasPrice ||
-                      !userAddress ||
-                      !inputCurrency ||
-                      !outputCurrency ||
-                      !inputCurrencyAmount ||
-                      !selectedQuote ||
-                      amountIn !== selectedQuote.amountIn ||
-                      !selectedQuote.transaction
-                    ) {
-                      return
-                    }
-                    await swap(
-                      inputCurrency,
-                      amountIn,
-                      outputCurrency,
-                      selectedQuote.amountOut,
-                      aggregators.find(
-                        (aggregator) =>
-                          aggregator.name === selectedQuote.aggregator.name,
-                      )!,
-                      selectedQuote.transaction,
-                    )
-                  }}
-                  text={
-                    Number(inputCurrencyAmount) > 0 &&
-                    (selectedQuote?.amountOut ?? 0n) === 0n
-                      ? 'Fetching...'
-                      : !walletClient
-                        ? 'Connect wallet'
-                        : !inputCurrency
-                          ? 'Select input currency'
-                          : !outputCurrency
-                            ? 'Select output currency'
-                            : amount === 0n
-                              ? 'Enter amount'
-                              : amount > balances[inputCurrency.address]
-                                ? 'Insufficient balance'
-                                : isAddressEqual(
-                                      inputCurrency.address,
-                                      zeroAddress,
-                                    ) &&
-                                    isAddressEqual(
-                                      outputCurrency.address,
-                                      CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-                                    )
-                                  ? 'Wrap'
-                                  : isAddressEqual(
-                                        inputCurrency.address,
-                                        CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-                                      ) &&
-                                      isAddressEqual(
-                                        outputCurrency.address,
-                                        zeroAddress,
-                                      )
-                                    ? 'Unwrap'
-                                    : `Swap`
-                  }
-                />
-              </div>
-            )}
-          </div>
-
-          <button
-            onClick={() => setShowMobileModal(true)}
-            disabled={tab === 'swap' && amountIn === 0n}
-            className={`disabled:bg-[#2b3544] disabled:text-gray-400 text-white w-full ${
-              showMobileModal ? 'hidden' : 'flex'
-            } h-12 bg-blue-500 rounded-xl justify-center items-center mb-5`}
-          >
-            <div className="grow shrink basis-0 opacity-90 text-center text-base font-semibold">
-              {tab === 'limit' ? 'Make order' : 'Quotes'}
-            </div>
-          </button>
-        </div>
-      </div>
+      <MobileFixedModal
+        tab={tab}
+        disabled={tab === 'swap' && amountIn === 0n}
+        quotes={quotes}
+        outputCurrency={outputCurrency}
+        showMobileModal={showMobileModal}
+        setShowMobileModal={setShowMobileModal}
+        selectedQuote={selectedQuote}
+        setSelectedQuote={setSelectedQuote}
+        limitFormProps={limitFormProps}
+        swapActionButtonProps={swapActionButtonProps}
+      />
     </>
   )
 }
