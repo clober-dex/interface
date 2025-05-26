@@ -7,6 +7,8 @@ import { formatUnits } from '../../utils/bigint'
 import { TradingCompetitionPnl } from '../../model/trading-competition-pnl'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { WHITELISTED_FUTURES_ASSETS } from '../../constants/futures'
+import { currentTimestampInSeconds } from '../../utils/date'
+export const SEASON_2_END_TIMESTAMP = 1756684800
 
 const BLACKLISTED_USER_ADDRESSES = [
   // '0x5F79EE8f8fA862E98201120d83c4eC39D9468D49',
@@ -34,84 +36,97 @@ export const fetchTotalRegisteredUsers = async (): Promise<number> => {
 }
 
 export const fetchUserPnL = async (
-  prices: Prices,
   userAddress: `0x${string}`,
 ): Promise<TradingCompetitionPnl> => {
   const {
-    data: { myTrades },
+    data: { user, myTrades, tokens },
   } = await Subgraph.get<{
     data: {
+      user: { id: string; pnl: string } // pnl is the final pnl
       myTrades: Array<{
-        user: { id: string }
         token: { id: string; decimals: string; name: string; symbol: string }
         realizedPnL: string
         estimatedHolding: string
       }>
+      tokens: Array<{ id: string; price: string }>
     }
   }>(
     CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
     'getTrades',
-    'query getTrades($userAddress: String!) { myTrades: trades(where: {user: $userAddress}) { user { id } token { id decimals name symbol } realizedPnL estimatedHolding } }',
+    'query getTrades($userAddress: String!) { user: user(id: $userAddress) { id pnl } myTrades: trades(where: {user: $userAddress}) { token { id decimals name symbol } realizedPnL estimatedHolding } tokens: tokens(where: {price_gt: 0}) { id price } }',
     {
       userAddress: userAddress.toLowerCase(),
     },
   )
+  const now = currentTimestampInSeconds()
+  const prices: Prices = tokens.reduce((acc, token) => {
+    const address = getAddress(token.id)
+    acc[address] = new BigNumber(token.price).toNumber()
+    return acc
+  }, {} as Prices)
 
+  const trades = myTrades.map((trade) => {
+    const token = getAddress(trade.token.id)
+    const amount = formatUnits(
+      BigInt(trade.estimatedHolding),
+      Number(trade.token.decimals),
+    )
+    const pnl =
+      Number(trade.realizedPnL) + Number(amount) * (prices[token] ?? 0)
+    return {
+      currency: {
+        address: token,
+        symbol: trade.token.symbol,
+        name: trade.token.name,
+        decimals: Number(trade.token.decimals),
+      },
+      pnl,
+      amount: Number(amount),
+    }
+  })
   return {
-    totalPnl: myTrades.reduce((acc, trade) => {
-      const token = getAddress(trade.token.id)
-      const amount = formatUnits(
-        BigInt(trade.estimatedHolding),
-        Number(trade.token.decimals),
-      )
-      const pnl = Number(trade.realizedPnL) + Number(amount) * prices[token]
-      return acc + pnl
-    }, 0),
-    trades: myTrades.map((trade) => {
-      const token = getAddress(trade.token.id)
-      const amount = formatUnits(
-        BigInt(trade.estimatedHolding),
-        Number(trade.token.decimals),
-      )
-      const pnl = Number(trade.realizedPnL) + Number(amount) * prices[token]
-      return {
-        currency: {
-          address: token,
-          symbol: trade.token.symbol,
-          name: trade.token.name,
-          decimals: Number(trade.token.decimals),
-        },
-        pnl,
-        amount: Number(amount),
-      }
-    }),
+    totalPnl:
+      now < SEASON_2_END_TIMESTAMP
+        ? trades.reduce((total, trade) => total + trade.pnl, 0)
+        : Number(user.pnl),
+    trades,
   }
 }
 
-export const fetchTradingCompetitionLeaderboard = async (
-  prices: Prices,
-): Promise<{
+export const fetchTradingCompetitionLeaderboard = async (): Promise<{
   [user: `0x${string}`]: TradingCompetitionPnl
 }> => {
   const {
-    data: { users },
+    data: { users, tokens },
   } = await Subgraph.get<{
     data: {
       users: Array<{
         id: string
+        pnl: string // final pnl
         trades: Array<{
           token: { id: string; decimals: string; symbol: string }
           realizedPnL: string
           estimatedHolding: string
         }>
       }>
+      tokens: Array<{
+        id: string
+        price: string // price in USD
+      }>
     }
   }>(
     CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
     'getUsersPnL',
-    '{ users( first: 100 orderBy: pnl orderDirection: desc where: {isRegistered: true} ) { id trades { token { id decimals symbol } realizedPnL estimatedHolding } } }',
+    '{ users( first: 100 orderBy: pnl orderDirection: desc where: {isRegistered: true} ) { id pnl trades { token { id decimals symbol } realizedPnL estimatedHolding } } tokens: tokens(where: {price_gt: 0}) { id price } }',
     {},
   )
+  const now = currentTimestampInSeconds()
+  const prices: Prices = tokens.reduce((acc, token) => {
+    const address = getAddress(token.id)
+    acc[address] = new BigNumber(token.price).toNumber()
+    return acc
+  }, {} as Prices)
+
   return users
     .filter(
       (user) =>
@@ -128,7 +143,8 @@ export const fetchTradingCompetitionLeaderboard = async (
             BigInt(trade.estimatedHolding),
             Number(trade.token.decimals),
           )
-          const pnl = Number(trade.realizedPnL) + Number(amount) * prices[token]
+          const pnl =
+            Number(trade.realizedPnL) + Number(amount) * (prices[token] ?? 0)
           return {
             currency: {
               address: token,
@@ -142,7 +158,10 @@ export const fetchTradingCompetitionLeaderboard = async (
         })
         acc[userAddress] = {
           trades,
-          totalPnl: trades.reduce((total, trade) => total + trade.pnl, 0),
+          totalPnl:
+            now < SEASON_2_END_TIMESTAMP
+              ? trades.reduce((total, trade) => total + trade.pnl, 0)
+              : Number(user.pnl),
         }
         return acc
       },

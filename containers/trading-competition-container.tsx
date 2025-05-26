@@ -16,8 +16,8 @@ import {
   fetchTotalRegisteredUsers,
   fetchTradingCompetitionLeaderboard,
   fetchUserPnL,
+  SEASON_2_END_TIMESTAMP,
 } from '../apis/trading-competition/season2'
-import { useCurrencyContext } from '../contexts/currency-context'
 import { TradingCompetitionPnl } from '../model/trading-competition-pnl'
 import { CurrencyIcon } from '../components/icon/currency-icon'
 import { Chain } from '../model/chain'
@@ -79,8 +79,6 @@ const ASSETS: Currency[] = [
     icon: '/asset-icon/crude-oil--big.svg',
   },
 ]
-
-const SEASON_2_END_TIMESTAMP = 1756684800
 
 const Profit = ({
   chain,
@@ -146,7 +144,6 @@ export const TradingCompetitionContainer = () => {
   const { data: walletClient } = useWalletClient()
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
-  const { prices } = useCurrencyContext()
 
   const [showPnLCard, setShowPnLCard] = useState(false)
 
@@ -162,16 +159,9 @@ export const TradingCompetitionContainer = () => {
   }, [])
 
   const { data: allUserPnL } = useQuery({
-    queryKey: [
-      'trading-competition-leader-board',
-      selectedChain.id,
-      Object.keys(prices).length !== 0,
-    ],
+    queryKey: ['trading-competition-leader-board', selectedChain.id],
     queryFn: async () => {
-      if (Object.keys(prices).length === 0) {
-        return {}
-      }
-      return fetchTradingCompetitionLeaderboard(prices)
+      return fetchTradingCompetitionLeaderboard()
     },
   }) as {
     data: {
@@ -180,20 +170,15 @@ export const TradingCompetitionContainer = () => {
   }
 
   const { data: userPnL } = useQuery({
-    queryKey: [
-      'trading-competition-user-pnl',
-      selectedChain.id,
-      userAddress,
-      Object.keys(prices).length !== 0,
-    ],
+    queryKey: ['trading-competition-user-pnl', selectedChain.id, userAddress],
     queryFn: async () => {
-      if (!userAddress || Object.keys(prices).length === 0) {
+      if (!userAddress) {
         return {
           totalPnl: 0,
           trades: [],
         }
       }
-      return fetchUserPnL(prices, userAddress)
+      return fetchUserPnL(userAddress)
     },
   })
 
