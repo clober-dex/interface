@@ -31,7 +31,7 @@ export const PoolSnapshotCard = ({
   return (
     <>
       <div className="hidden lg:flex w-[1040px] h-16 px-5 py-4 bg-gray-800 rounded-2xl justify-start items-center gap-4">
-        <div className="flex w-80 items-center gap-2">
+        <div className="flex w-80 max-w-80 overflow-x-scroll items-center gap-2">
           <div className="w-14 h-8 shrink-0 relative">
             <CurrencyIcon
               chain={chain}
