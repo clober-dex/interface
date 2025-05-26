@@ -19,7 +19,6 @@ import { aggregators } from '../chain-configs/aggregators'
 import { formatUnits } from '../utils/bigint'
 import { toPlacesString } from '../utils/bignumber'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
-import { ActionButton } from '../components/button/action-button'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
 import { useTradeContext } from '../contexts/trade/trade-context'
@@ -29,7 +28,7 @@ import { fetchPrice } from '../apis/price'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { SwapRouteList } from '../components/swap-router-list'
 import { Quote } from '../model/aggregator/quote'
-import CloseSvg from '../components/svg/close-svg'
+import { MobileFixedModal } from '../components/modal/mobile-fixed-modal'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
@@ -814,61 +813,18 @@ export const TradeContainer = () => {
         )}
       </div>
 
-      {/*mobile fixed bottom modal*/}
-      <div className="fixed flex w-full overflow-y-scroll sm:hidden bottom-0 z-[1000]">
-        <div
-          className={`${
-            showMobileModal ? 'flex' : 'hidden'
-          } w-full h-full fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm`}
-          onClick={() => setShowMobileModal(false)}
-        />
-        <div className="w-full h-full top-0 absolute bg-[#171b24] shadow rounded-tl-2xl rounded-tr-2xl border" />
-        <div className="z-[10000] w-full flex flex-col px-5 pt-5 pb-3">
-          <div
-            className={`${
-              showMobileModal ? 'flex max-h-[560px]' : 'hidden'
-            } flex-col mb-5`}
-          >
-            {tab === 'limit' ? (
-              <LimitForm {...limitFormProps} />
-            ) : (
-              <div className="flex flex-col gap-4">
-                <button
-                  className="flex sm:hidden w-5 h-5 ml-auto"
-                  onClick={() => setShowMobileModal(false)}
-                >
-                  <CloseSvg />
-                </button>
-
-                <div className="flex flex-col w-full mb-4">
-                  <SwapRouteList
-                    quotes={quotes.all}
-                    bestQuote={quotes.best}
-                    outputCurrency={outputCurrency}
-                    aggregatorNames={aggregators.map((a) => a.name)}
-                    selectedQuote={selectedQuote}
-                    setSelectedQuote={setSelectedQuote}
-                  />
-                </div>
-
-                <ActionButton {...swapActionButtonProps} />
-              </div>
-            )}
-          </div>
-
-          <button
-            onClick={() => setShowMobileModal(true)}
-            disabled={tab === 'swap' && amountIn === 0n}
-            className={`disabled:bg-[#2b3544] disabled:text-gray-400 text-white w-full ${
-              showMobileModal ? 'hidden' : 'flex'
-            } h-12 bg-blue-500 rounded-xl justify-center items-center mb-5`}
-          >
-            <div className="grow shrink basis-0 opacity-90 text-center text-base font-semibold">
-              {tab === 'limit' ? 'Make order' : 'Quotes'}
-            </div>
-          </button>
-        </div>
-      </div>
+      <MobileFixedModal
+        tab={tab}
+        disabled={tab === 'swap' && amountIn === 0n}
+        quotes={quotes}
+        outputCurrency={outputCurrency}
+        showMobileModal={showMobileModal}
+        setShowMobileModal={setShowMobileModal}
+        selectedQuote={selectedQuote}
+        setSelectedQuote={setSelectedQuote}
+        limitFormProps={limitFormProps}
+        swapActionButtonProps={swapActionButtonProps}
+      />
     </>
   )
 }
