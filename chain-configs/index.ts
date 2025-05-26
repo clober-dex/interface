@@ -56,7 +56,7 @@ export const CHAIN_CONFIG: ChainConfig = {
     '0xCcd0964F534c4583C35e07E47AbE8984A6bB1534',
   ],
   EXTERNAL_SUBGRAPH_ENDPOINTS: {
-    FUTURES:
+    TRADING_COMPETITION_SEASON2:
       'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/clober-futures-subgraph-monad-testnet/latest/gn',
     LIQUIDITY_VAULT_POINT:
       'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/liquidity-vault-point-monad-testnet/latest/gn',

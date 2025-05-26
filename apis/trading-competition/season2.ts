@@ -27,7 +27,7 @@ export const fetchTotalRegisteredUsers = async (): Promise<number> => {
       globalState: { totalRegisteredUsers: string }
     }
   }>(
-    CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.FUTURES,
+    CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
     '',
     '{ globalState(id: "state") { totalRegisteredUsers } }',
     {},
@@ -52,7 +52,7 @@ export const fetchUserPnL = async (
       }>
     }
   }>(
-    CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.FUTURES,
+    CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
     'getTrades',
     'query getTrades($userAddress: String!) { myTrades: trades(where: {user: $userAddress}) { user { id } token { id decimals name symbol } realizedPnL estimatedHolding } }',
     {
@@ -130,7 +130,7 @@ export const fetchTradingCompetitionLeaderboard = async (
       }>
     }
   }>(
-    CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.FUTURES,
+    CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
     'getUsersPnL',
     '{ users( first: 100 orderBy: pnl orderDirection: desc where: {isRegistered: true} ) { id trades { token { id decimals symbol } realizedPnL estimatedHolding } } }',
     {},

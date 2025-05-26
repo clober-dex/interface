@@ -6,7 +6,7 @@ type EXTERNAL_CONTRACT =
   | 'PythOracle'
   | 'TradingCompetitionRegistration'
 
-type EXTERNAL_SUBGRAPH = 'FUTURES' | 'LIQUIDITY_VAULT_POINT'
+type EXTERNAL_SUBGRAPH = 'TRADING_COMPETITION_SEASON2' | 'LIQUIDITY_VAULT_POINT'
 
 export type ChainConfig = {
   TITLE: string
