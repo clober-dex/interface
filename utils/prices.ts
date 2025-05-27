@@ -19,8 +19,12 @@ export const formatCloberPriceString = (
   currency0: Currency,
   currency1: Currency,
   isBid: boolean,
-  decimalPlaces: number,
+  decimalPlaces?: number,
 ): string => {
+  decimalPlaces =
+    decimalPlaces !== undefined
+      ? decimalPlaces
+      : getPriceDecimals(Number(price))
   try {
     const {
       normal: {
@@ -35,11 +39,22 @@ export const formatCloberPriceString = (
       currency0,
       currency1,
     })
-    return new BigNumber(isBid ? marketPrice : invertedMarketPrice).toFixed(
+    const newPrice = isBid ? marketPrice : invertedMarketPrice
+    if (decimalPlaces < 0) {
+      return new BigNumber(newPrice)
+        .minus(new BigNumber(newPrice).mod(10 ** -decimalPlaces))
+        .toFixed()
+    }
+    return new BigNumber(newPrice).toFixed(
       decimalPlaces,
       isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
     )
   } catch {
+    if (decimalPlaces < 0) {
+      return new BigNumber(price)
+        .minus(new BigNumber(price).mod(10 ** -decimalPlaces))
+        .toFixed()
+    }
     return new BigNumber(price).toFixed(
       decimalPlaces,
       isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,

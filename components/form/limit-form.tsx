@@ -11,7 +11,7 @@ import CurrencySelect from '../selector/currency-select'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
 import { formatSignificantString } from '../../utils/bignumber'
-import { getPriceDecimals } from '../../utils/prices'
+import { formatCloberPriceString, getPriceDecimals } from '../../utils/prices'
 import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
 
@@ -91,9 +91,10 @@ export const LimitForm = ({
   closeLimitFormAction,
   actionButtonProps,
 }: LimitFormProps) => {
-  minimumDecimalPlaces = minimumDecimalPlaces
-    ? minimumDecimalPlaces
-    : getPriceDecimals(Number(priceInput))
+  minimumDecimalPlaces =
+    minimumDecimalPlaces !== undefined
+      ? minimumDecimalPlaces
+      : getPriceDecimals(Number(priceInput))
 
   const [debouncedPriceInput, setDebouncedPriceInput] = useState('')
   const minimumPrice = formatSignificantString(
@@ -104,7 +105,7 @@ export const LimitForm = ({
   const maximumPrice = formatSignificantString(
     '8662020672688495886265',
     minimumDecimalPlaces,
-    BigNumber.ROUND_UP,
+    BigNumber.ROUND_DOWN,
   )
 
   // only when user change priceInput directly
@@ -116,24 +117,13 @@ export const LimitForm = ({
         minimumDecimalPlaces &&
         !new BigNumber(debouncedPriceInput).isNaN()
       ) {
-        const {
-          normal: {
-            now: { marketPrice },
-          },
-          inverted: {
-            now: { marketPrice: invertedMarketPrice },
-          },
-        } = getPriceNeighborhood({
-          chainId: chain.id,
-          price: debouncedPriceInput,
-          currency0: inputCurrency,
-          currency1: outputCurrency,
-        })
-        const price = new BigNumber(
-          isBid ? marketPrice : invertedMarketPrice,
-        ).toFixed(
+        const price = formatCloberPriceString(
+          chain.id,
+          debouncedPriceInput,
+          inputCurrency,
+          outputCurrency,
+          isBid,
           minimumDecimalPlaces,
-          isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
         )
         setPriceInput(price)
       }
@@ -292,6 +282,7 @@ export const LimitForm = ({
                         selectedMarket &&
                         inputCurrency &&
                         outputCurrency &&
+                        minimumDecimalPlaces &&
                         !new BigNumber(priceInput).isNaN()
                       ) {
                         if (new BigNumber(priceInput).gte(maximumPrice)) {
@@ -316,10 +307,13 @@ export const LimitForm = ({
                             marketBaseCurrency: selectedMarket.base,
                             bidTick: currentTick,
                           })
-                          const nextPrice = formatSignificantString(
+                          const nextPrice = formatCloberPriceString(
+                            chain.id,
                             price,
+                            inputCurrency,
+                            outputCurrency,
+                            isBid,
                             minimumDecimalPlaces,
-                            isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
                           )
                           if (new BigNumber(nextPrice).lt(minimumPrice)) {
                             setPriceInput(minimumPrice)
@@ -355,6 +349,7 @@ export const LimitForm = ({
                         selectedMarket &&
                         inputCurrency &&
                         outputCurrency &&
+                        minimumDecimalPlaces &&
                         !new BigNumber(priceInput).isNaN()
                       ) {
                         if (new BigNumber(priceInput).gte(maximumPrice)) {
@@ -379,10 +374,13 @@ export const LimitForm = ({
                             marketBaseCurrency: selectedMarket.base,
                             bidTick: currentTick,
                           })
-                          const nextPrice = formatSignificantString(
+                          const nextPrice = formatCloberPriceString(
+                            chain.id,
                             price,
+                            inputCurrency,
+                            outputCurrency,
+                            isBid,
                             minimumDecimalPlaces,
-                            isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
                           )
                           if (new BigNumber(nextPrice).lte(minimumPrice)) {
                             setPriceInput(minimumPrice)

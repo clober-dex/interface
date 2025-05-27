@@ -1,9 +1,10 @@
 import BigNumber from 'bignumber.js'
-import { CHAIN_IDS, Depth, getPriceNeighborhood, Market } from '@clober/v2-sdk'
+import { CHAIN_IDS, Depth, Market } from '@clober/v2-sdk'
 
 import { Decimals } from '../model/decimals'
 
 import { formatSignificantString } from './bignumber'
+import { formatCloberPriceString } from './prices'
 
 export function calculateInputCurrencyAmountString(
   isBid: boolean,
@@ -63,26 +64,14 @@ export function parseDepth(
       })
       .reduce(
         (prev, curr) => {
-          // const {
-          //   normal: {
-          //     now: { marketPrice },
-          //   },
-          //   inverted: {
-          //     now: { marketPrice: invertedMarketPrice },
-          //   },
-          // } = getPriceNeighborhood({
-          //   chainId,
-          //   price: curr.price,
-          //   currency0: market.quote,
-          //   currency1: market.base,
-          // })
-          // const key = new BigNumber(
-          //   isBid ? marketPrice : invertedMarketPrice,
-          // ).toFixed(
-          //   decimalPlaces.value,
-          //   isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
-          // )
-          const key = '1'
+          const key = formatCloberPriceString(
+            chainId,
+            curr.price,
+            market.quote,
+            market.base,
+            isBid,
+            decimalPlaces.value,
+          )
           if (!new BigNumber(key).eq(0)) {
             prev.set(
               key,

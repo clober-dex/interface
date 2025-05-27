@@ -118,7 +118,7 @@ export const MarketDailySnapshotCard = ({
           ${formatTinyNumber(price)}
         </div>
         <div className="w-[140px] text-white text-base font-bold">
-          ${formatTinyNumber(dailyVolume)}
+          ${formatAbbreviatedNumberString(dailyVolume)}
         </div>
         <div className="w-[140px] text-white text-base font-bold">
           {fdv > 0
@@ -221,7 +221,7 @@ export const MarketDailySnapshotCard = ({
                 24h Volume
               </div>
               <div className="self-stretch text-white text-sm font-bold">
-                ${formatTinyNumber(dailyVolume)}
+                ${formatAbbreviatedNumberString(dailyVolume)}
               </div>
             </div>
           </div>

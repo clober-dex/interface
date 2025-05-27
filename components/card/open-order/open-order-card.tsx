@@ -1,21 +1,21 @@
 import React from 'react'
-import { OpenOrder } from '@clober/v2-sdk'
+import { CHAIN_IDS, OpenOrder } from '@clober/v2-sdk'
 import { NextRouter } from 'next/router'
 
 import { OutlinkSvg } from '../../svg/outlink-svg'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
-import {
-  formatSignificantString,
-  formatTinyNumber,
-} from '../../../utils/bignumber'
+import { formatSignificantString } from '../../../utils/bignumber'
+import { formatCloberPriceString } from '../../../utils/prices'
 
 export const OpenOrderCard = ({
+  chainId,
   openOrder,
   router,
   claimActionButtonProps,
   cancelActionButtonProps,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & {
+  chainId: CHAIN_IDS
   openOrder: OpenOrder
   router: NextRouter
   claimActionButtonProps: ActionButtonProps
@@ -57,7 +57,13 @@ export const OpenOrderCard = ({
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Price</label>
                 <p className="text-white">
-                  {formatTinyNumber(openOrder.price)}
+                  {formatCloberPriceString(
+                    chainId,
+                    openOrder.price,
+                    openOrder.inputCurrency,
+                    openOrder.outputCurrency,
+                    openOrder.isBid,
+                  )}
                 </p>
               </div>
               <div className="flex flex-row align-baseline justify-between">
@@ -134,7 +140,13 @@ export const OpenOrderCard = ({
           </div>
 
           <div className="w-[120px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
-            {formatTinyNumber(openOrder.price)}
+            {formatCloberPriceString(
+              chainId,
+              openOrder.price,
+              openOrder.inputCurrency,
+              openOrder.outputCurrency,
+              openOrder.isBid,
+            )}
           </div>
 
           <div className="w-[180px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">

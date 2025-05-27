@@ -733,7 +733,7 @@ export const TradeContainer = () => {
       {showWarningModal ? (
         <WarningLimitModal
           marketPrice={marketPrice}
-          priceInput={Number(priceInput)}
+          priceInput={priceInput}
           marketRateDiff={marketRateDiff}
           closeModal={() => setShowWarningModal(false)}
           limit={async () => {

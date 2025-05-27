@@ -11,7 +11,7 @@ const WarningLimitModal = ({
   closeModal,
 }: {
   marketPrice: number
-  priceInput: number
+  priceInput: string
   marketRateDiff: number
   limit: () => void
   closeModal: () => void
@@ -96,7 +96,7 @@ const WarningLimitModal = ({
                 )}
               </div>
               <div className="flex ml-auto text-xs sm:text-sm font-semibold">
-                {formatTinyNumber(priceInput)}
+                {priceInput}
               </div>
             </div>
           </div>
