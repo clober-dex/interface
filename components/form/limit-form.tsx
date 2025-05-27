@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { isAddressEqual } from 'viem'
 import { getMarketPrice, getPriceNeighborhood, Market } from '@clober/v2-sdk'
 import BigNumber from 'bignumber.js'
@@ -94,6 +94,8 @@ export const LimitForm = ({
   minimumDecimalPlaces = minimumDecimalPlaces
     ? minimumDecimalPlaces
     : getPriceDecimals(Number(priceInput))
+
+  const [debouncedPriceInput, setDebouncedPriceInput] = useState('')
   const minimumPrice = toPlacesString(
     new BigNumber(0.1).pow(minimumDecimalPlaces).toString(),
     minimumDecimalPlaces,
@@ -104,6 +106,52 @@ export const LimitForm = ({
     minimumDecimalPlaces,
     isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
   )
+
+  // only when user change priceInput directly
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (
+        inputCurrency &&
+        outputCurrency &&
+        minimumDecimalPlaces &&
+        !new BigNumber(debouncedPriceInput).isNaN()
+      ) {
+        const {
+          normal: {
+            now: { marketPrice },
+          },
+          inverted: {
+            now: { marketPrice: invertedMarketPrice },
+          },
+        } = getPriceNeighborhood({
+          chainId: chain.id,
+          price: debouncedPriceInput,
+          currency0: inputCurrency,
+          currency1: outputCurrency,
+        })
+        const price = new BigNumber(
+          isBid ? marketPrice : invertedMarketPrice,
+        ).toFixed(
+          minimumDecimalPlaces,
+          isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
+        )
+        setPriceInput(price)
+      }
+    }, 500)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [
+    chain.id,
+    debouncedPriceInput,
+    inputCurrency,
+    isBid,
+    minimumDecimalPlaces,
+    outputCurrency,
+    setPriceInput,
+  ])
+
   return showInputCurrencySelect ? (
     <CurrencySelect
       chain={chain}
@@ -214,7 +262,10 @@ export const LimitForm = ({
                   ) : (
                     <NumberInput
                       value={priceInput}
-                      onValueChange={setPriceInput}
+                      onValueChange={(value) => {
+                        setDebouncedPriceInput(value)
+                        setPriceInput(value)
+                      }}
                       className="text-xl w-full sm:text-3xl bg-transparent placeholder-gray-500 text-white outline-none"
                     />
                   )}
