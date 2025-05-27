@@ -3,14 +3,18 @@ import { CHAIN_IDS, getPriceNeighborhood } from '@clober/v2-sdk'
 
 import { Currency } from '../model/currency'
 
-import { findFirstNonZeroDecimalIndex } from './bignumber'
-
-export const getPriceDecimals = (price: number, r: number = 1.0001) => {
-  const priceNumber = new BigNumber(price)
-  const priceDiff = new BigNumber(r)
-    .multipliedBy(priceNumber)
-    .minus(priceNumber)
-  return findFirstNonZeroDecimalIndex(priceDiff) + 1
+export const getPriceDecimals = (price: number) => {
+  const priceNumber = new BigNumber(price).div(10000) // 1bp
+  let i = 0
+  while (
+    priceNumber
+      .times(10 ** i)
+      .integerValue()
+      .isZero()
+  ) {
+    i += 1
+  }
+  return i + 1
 }
 
 export const formatCloberPriceString = (
@@ -30,22 +34,18 @@ export const formatCloberPriceString = (
       normal: {
         now: { marketPrice },
       },
-      inverted: {
-        now: { marketPrice: invertedMarketPrice },
-      },
     } = getPriceNeighborhood({
       chainId,
       price,
       currency0,
       currency1,
     })
-    const newPrice = isBid ? marketPrice : invertedMarketPrice
     if (decimalPlaces < 0) {
-      return new BigNumber(newPrice)
-        .minus(new BigNumber(newPrice).mod(10 ** -decimalPlaces))
+      return new BigNumber(marketPrice)
+        .minus(new BigNumber(marketPrice).mod(10 ** -decimalPlaces))
         .toFixed()
     }
-    return new BigNumber(newPrice).toFixed(
+    return new BigNumber(marketPrice).toFixed(
       decimalPlaces,
       isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
     )
