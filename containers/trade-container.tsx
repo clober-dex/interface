@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -216,6 +216,10 @@ export const TradeContainer = () => {
     bids,
     asks,
     setDepthClickedIndex,
+    isFetchingQuotes,
+    setIsFetchingQuotes,
+    marketPrice,
+    setMarketPrice,
   } = useMarketContext()
   const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
@@ -244,9 +248,7 @@ export const TradeContainer = () => {
   const { openConnectModal } = useConnectModal()
   const { balances, prices, currencies, setCurrencies } = useCurrencyContext()
   const [showOrderBook, setShowOrderBook] = useState(false)
-  const [isFetchingQuotes, setIsFetchingQuotes] = useState(false)
   const [showMobileModal, setShowMobileModal] = useState(false)
-  const [marketPrice, setMarketPrice] = useState(0)
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [latestRefreshTime, setLatestRefreshTime] = useState(Date.now())
 
@@ -264,12 +266,6 @@ export const TradeContainer = () => {
       setShowOrderBook(false)
     }
   }, [selectedChain.testnet])
-
-  const previousValue = useRef({
-    chain: selectedChain,
-    inputCurrencyAddress: inputCurrency?.address,
-    outputCurrencyAddress: outputCurrency?.address,
-  })
 
   const [quoteCurrency, baseCurrency] = useMemo(() => {
     if (inputCurrency && outputCurrency) {
@@ -320,62 +316,6 @@ export const TradeContainer = () => {
     }
   }, [selectedMarket])
 
-  // once
-  useEffect(
-    () => {
-      const action = async () => {
-        setIsFetchingQuotes(true)
-        previousValue.current.chain = selectedChain
-        if (inputCurrency && outputCurrency && gasPrice) {
-          previousValue.current.inputCurrencyAddress = inputCurrency.address
-          previousValue.current.outputCurrencyAddress = outputCurrency.address
-          try {
-            const price = await fetchPrice(
-              selectedChain.id,
-              inputCurrency,
-              outputCurrency,
-              gasPrice,
-            )
-            if (
-              previousValue.current.chain.id !== selectedChain.id ||
-              !isAddressEqual(
-                previousValue.current.inputCurrencyAddress,
-                inputCurrency.address,
-              ) ||
-              !isAddressEqual(
-                previousValue.current.outputCurrencyAddress,
-                outputCurrency.address,
-              ) ||
-              price.isZero()
-            ) {
-              return
-            }
-            console.log({
-              context: 'limit',
-              price: price.toNumber(),
-              chainId: selectedChain.id,
-              inputCurrency: inputCurrency.symbol,
-              outputCurrency: outputCurrency.symbol,
-              gasPrice: gasPrice.toString(),
-            })
-            setMarketPrice(price.toNumber())
-            setPriceInput(price.toNumber().toString())
-            setIsFetchingQuotes(false)
-          } catch (e) {
-            console.error(`Failed to fetch price: ${e}`)
-          }
-        }
-      }
-
-      setDepthClickedIndex(undefined)
-      setPriceInput('')
-      setMarketPrice(0)
-
-      action()
-    }, // eslint-disable-next-line react-hooks/exhaustive-deps
-    [inputCurrency, outputCurrency, selectedChain.id, gasPrice === undefined],
-  )
-
   const setMarketRateAction = useCallback(async () => {
     if (inputCurrency && outputCurrency && gasPrice) {
       setIsFetchingQuotes(true)
@@ -394,10 +334,7 @@ export const TradeContainer = () => {
         gasPrice: gasPrice.toString(),
       })
       const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
-      if (
-        previousValue.current.chain.id !== selectedChain.id ||
-        price.isZero()
-      ) {
+      if (price.isZero()) {
         setIsFetchingQuotes(false)
         return
       }
@@ -415,6 +352,8 @@ export const TradeContainer = () => {
     inputCurrency,
     outputCurrency,
     selectedChain.id,
+    setIsFetchingQuotes,
+    setMarketPrice,
     setPriceInput,
   ])
 

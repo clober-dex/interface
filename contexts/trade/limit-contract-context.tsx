@@ -202,8 +202,10 @@ export const LimitContractProvider = ({
           price: price,
           options: {
             rpcUrl: CHAIN_CONFIG.RPC_URL,
+            roundingUpMakeBid: false,
+            roundingDownMakeAsk: false,
             roundingDownTakenBid: true,
-            roundingDownMakeAsk: true,
+            roundingUpTakenAsk: true,
           },
         }
         const { transaction, result } = await limitOrder(args)
@@ -285,7 +287,7 @@ export const LimitContractProvider = ({
           if (transactionReceipt) {
             const makeRatio =
               (Number(result.make.amount) * 100) / Number(amount)
-            // dev: make.amount is not exact zero
+            // @dev: make.amount is not exact zero
             if (makeRatio < 0.01) {
               queuePendingTransaction({
                 ...confirmation,
