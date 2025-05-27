@@ -100,7 +100,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   } = useTradeContext()
 
   const previousValue = useRef({
-    chain: selectedChain,
     inputCurrencyAddress: inputCurrency?.address,
     outputCurrencyAddress: outputCurrency?.address,
   })
@@ -203,7 +202,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     () => {
       const action = async () => {
         setIsFetchingQuotes(true)
-        previousValue.current.chain = selectedChain
         if (inputCurrency && outputCurrency && gasPrice) {
           previousValue.current.inputCurrencyAddress = inputCurrency.address
           previousValue.current.outputCurrencyAddress = outputCurrency.address
@@ -215,7 +213,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
               gasPrice,
             )
             if (
-              previousValue.current.chain.id !== selectedChain.id ||
               !isAddressEqual(
                 previousValue.current.inputCurrencyAddress,
                 inputCurrency.address,
