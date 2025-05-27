@@ -326,7 +326,7 @@ export const TradeContainer = () => {
       const action = async () => {
         setIsFetchingQuotes(true)
         previousValue.current.chain = selectedChain
-        if (inputCurrency && outputCurrency) {
+        if (inputCurrency && outputCurrency && gasPrice) {
           previousValue.current.inputCurrencyAddress = inputCurrency.address
           previousValue.current.outputCurrencyAddress = outputCurrency.address
           try {
@@ -334,6 +334,7 @@ export const TradeContainer = () => {
               selectedChain.id,
               inputCurrency,
               outputCurrency,
+              gasPrice,
             )
             if (
               previousValue.current.chain.id !== selectedChain.id ||
@@ -355,6 +356,7 @@ export const TradeContainer = () => {
               chainId: selectedChain.id,
               inputCurrency: inputCurrency.symbol,
               outputCurrency: outputCurrency.symbol,
+              gasPrice: gasPrice.toString(),
             })
             setMarketPrice(price.toNumber())
             setPriceInput(price.toNumber().toString())
@@ -371,23 +373,25 @@ export const TradeContainer = () => {
 
       action()
     }, // eslint-disable-next-line react-hooks/exhaustive-deps
-    [inputCurrency, outputCurrency, selectedChain.id],
+    [inputCurrency, outputCurrency, selectedChain.id, gasPrice === undefined],
   )
 
   const setMarketRateAction = useCallback(async () => {
-    if (inputCurrency && outputCurrency) {
+    if (inputCurrency && outputCurrency && gasPrice) {
       setIsFetchingQuotes(true)
       const price = await fetchPrice(
         selectedChain.id,
         inputCurrency,
         outputCurrency,
+        gasPrice,
       )
       console.log({
-        context: 'fetching price',
+        context: 'fetching price for market rate',
         price: price.toNumber(),
         chainId: selectedChain.id,
         inputCurrency: inputCurrency.symbol,
         outputCurrency: outputCurrency.symbol,
+        gasPrice: gasPrice.toString(),
       })
       const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
       if (
@@ -407,6 +411,7 @@ export const TradeContainer = () => {
     }
   }, [
     availableDecimalPlacesGroups,
+    gasPrice,
     inputCurrency,
     outputCurrency,
     selectedChain.id,

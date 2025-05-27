@@ -15,6 +15,7 @@ export const fetchPrice = async (
   chainId: CHAIN_IDS,
   currency0: Currency,
   currency1: Currency,
+  gasPrice: bigint,
 ): Promise<BigNumber> => {
   const quoteToken = getQuoteToken({
     chainId: chainId,
@@ -33,10 +34,11 @@ export const fetchPrice = async (
       baseCurrency,
       parseUnits('1', baseCurrency.decimals),
       quoteCurrency,
-      20,
-      0n, // arbitrary gas price
+      5,
+      gasPrice,
       {}, // arbitrary prices
     )
+    console.log('best quote:', best)
     return new BigNumber(
       formatUnits(best?.amountOut ?? 0n, quoteCurrency.decimals),
     )
