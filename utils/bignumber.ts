@@ -60,7 +60,9 @@ const TINY_NUMBER_LIST = [
  * @returns The index (0-based) of the first non-zero digit after the decimal point.
  *          Returns 0 if the number is an integer.
  */
-export const findFirstNonZeroIndex = (number: BigNumber.Value): number => {
+export const findFirstNonZeroDecimalIndex = (
+  number: BigNumber.Value,
+): number => {
   const value = new BigNumber(number)
   const decimalPart = value.minus(value.integerValue())
   if (decimalPart.isZero()) {
@@ -95,7 +97,7 @@ export const formatSignificantString = (
 ): string => {
   const result = new BigNumber(number).toFixed(places, roundingMode)
   if (new BigNumber(result).isZero()) {
-    const index = findFirstNonZeroIndex(number)
+    const index = findFirstNonZeroDecimalIndex(number)
     return new BigNumber(number).toFixed(
       index + POLLY_FILL_DECIMALS,
       roundingMode,
@@ -120,7 +122,7 @@ export const formatPreciseAmountString = (
   price?: number,
 ): string => {
   if (!price) {
-    const index = findFirstNonZeroIndex(number)
+    const index = findFirstNonZeroDecimalIndex(number)
     return new BigNumber(number).toFixed(
       index + POLLY_FILL_DECIMALS,
       BigNumber.ROUND_FLOOR,
@@ -204,18 +206,18 @@ export const formatTinyNumber = (number: BigNumber.Value): string => {
   const integer = bn.integerValue()
   if (integer.gt(0)) {
     // minimum tick is 0.1bp
-    const fractionDigits = findFirstNonZeroIndex(integer.div(100000))
+    const fractionDigits = findFirstNonZeroDecimalIndex(integer.div(100000))
     return formatWithCommas(
       removeZeroTail(bn.toFixed(fractionDigits, BigNumber.ROUND_DOWN)),
     )
   }
-  const index = findFirstNonZeroIndex(bn) - 1
+  const index = findFirstNonZeroDecimalIndex(bn) - 1
   if (index === -1) {
     if (integer.eq(0)) {
       return '0'
     }
     // minimum tick is 0.1bp
-    const fractionDigits = findFirstNonZeroIndex(integer.div(100000))
+    const fractionDigits = findFirstNonZeroDecimalIndex(integer.div(100000))
     return formatWithCommas(
       removeZeroTail(bn.toFixed(fractionDigits, BigNumber.ROUND_DOWN)),
     )

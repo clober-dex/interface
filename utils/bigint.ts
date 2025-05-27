@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { formatUnits as _formatUnits } from 'viem'
 
 import {
-  findFirstNonZeroIndex,
+  findFirstNonZeroDecimalIndex,
   formatWithCommas,
   POLLY_FILL_DECIMALS,
 } from './bignumber'
@@ -68,7 +68,7 @@ export const formatUnits = (
 ): string => {
   const formatted = _formatUnits(value, decimals)
   if (!price) {
-    const index = findFirstNonZeroIndex(formatted) + POLLY_FILL_DECIMALS
+    const index = findFirstNonZeroDecimalIndex(formatted) + POLLY_FILL_DECIMALS
     return new BigNumber(formatted).toFixed(index, BigNumber.ROUND_FLOOR)
   }
   const underHalfPennyDecimals =

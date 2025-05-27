@@ -3,14 +3,14 @@ import { CHAIN_IDS, getPriceNeighborhood } from '@clober/v2-sdk'
 
 import { Currency } from '../model/currency'
 
-import { findFirstNonZeroIndex } from './bignumber'
+import { findFirstNonZeroDecimalIndex } from './bignumber'
 
 export const getPriceDecimals = (price: number, r: number = 1.0001) => {
   const priceNumber = new BigNumber(price)
   const priceDiff = new BigNumber(r)
     .multipliedBy(priceNumber)
     .minus(priceNumber)
-  return findFirstNonZeroIndex(priceDiff) + 1
+  return findFirstNonZeroDecimalIndex(priceDiff) + 1
 }
 
 export const formatCloberPriceString = (

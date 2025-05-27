@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import {
-  findFirstNonZeroIndex,
+  findFirstNonZeroDecimalIndex,
   formatAbbreviatedNumberString,
   formatSignificantString,
   formatTinyNumber,
@@ -9,14 +9,14 @@ import {
 
 describe('Numbers', () => {
   it('findFirstNonZeroIndex', () => {
-    expect(findFirstNonZeroIndex(1111.1023123)).toBe(1)
-    expect(findFirstNonZeroIndex(0.1023123)).toBe(1)
-    expect(findFirstNonZeroIndex(0.01023123)).toBe(2)
-    expect(findFirstNonZeroIndex(0)).toBe(0)
-    expect(findFirstNonZeroIndex(1000000)).toBe(0)
-    expect(findFirstNonZeroIndex(123)).toBe(0)
-    expect(findFirstNonZeroIndex(1.23)).toBe(1)
-    expect(findFirstNonZeroIndex(123.000000123)).toBe(7)
+    expect(findFirstNonZeroDecimalIndex(1111.1023123)).toBe(1)
+    expect(findFirstNonZeroDecimalIndex(0.1023123)).toBe(1)
+    expect(findFirstNonZeroDecimalIndex(0.01023123)).toBe(2)
+    expect(findFirstNonZeroDecimalIndex(0)).toBe(0)
+    expect(findFirstNonZeroDecimalIndex(1000000)).toBe(0)
+    expect(findFirstNonZeroDecimalIndex(123)).toBe(0)
+    expect(findFirstNonZeroDecimalIndex(1.23)).toBe(1)
+    expect(findFirstNonZeroDecimalIndex(123.000000123)).toBe(7)
   })
 
   it('toPlacesString', () => {
