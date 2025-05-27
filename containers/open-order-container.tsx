@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { isAddressEqual, parseUnits } from 'viem'
-import { Market } from '@clober/v2-sdk'
+import { CHAIN_IDS, Market } from '@clober/v2-sdk'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 
@@ -12,8 +12,10 @@ import { useOpenOrderContext } from '../contexts/trade/open-order-context'
 import { useLimitContractContext } from '../contexts/trade/limit-contract-context'
 
 export const OpenOrderContainer = ({
+  chainId,
   selectedMarket,
 }: {
+  chainId: CHAIN_IDS
   selectedMarket: Market | undefined
 }) => {
   const router = useRouter()
@@ -163,6 +165,7 @@ export const OpenOrderContainer = ({
 
           {userAddress && (
             <OpenOrderCardList
+              chainId={chainId}
               userAddress={userAddress}
               openOrders={filteredOpenOrders}
               claims={claims}
@@ -205,6 +208,7 @@ export const OpenOrderContainer = ({
 
           {userAddress && (
             <OpenOrderCardList
+              chainId={chainId}
               userAddress={userAddress}
               openOrders={filteredOpenOrders}
               claims={claims}

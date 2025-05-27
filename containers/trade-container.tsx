@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -18,14 +18,12 @@ import { isAddressesEqual } from '../utils/address'
 import { fetchQuotes } from '../apis/swap/quote'
 import { aggregators } from '../chain-configs/aggregators'
 import { formatUnits } from '../utils/bigint'
-import { formatSignificantString } from '../utils/bignumber'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
 import { useTradeContext } from '../contexts/trade/trade-context'
 import { SwapForm, SwapFormProps } from '../components/form/swap-form'
 import { useSwapContractContext } from '../contexts/trade/swap-contract-context'
-import { fetchPrice } from '../apis/price'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { SwapRouteList } from '../components/swap-router-list'
 import { Quote } from '../model/aggregator/quote'
@@ -217,9 +215,8 @@ export const TradeContainer = () => {
     asks,
     setDepthClickedIndex,
     isFetchingQuotes,
-    setIsFetchingQuotes,
     marketPrice,
-    setMarketPrice,
+    setMarketRateAction,
   } = useMarketContext()
   const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
@@ -315,47 +312,6 @@ export const TradeContainer = () => {
       setShowOrderBook(false)
     }
   }, [selectedMarket])
-
-  const setMarketRateAction = useCallback(async () => {
-    if (inputCurrency && outputCurrency && gasPrice) {
-      setIsFetchingQuotes(true)
-      const price = await fetchPrice(
-        selectedChain.id,
-        inputCurrency,
-        outputCurrency,
-        gasPrice,
-      )
-      console.log({
-        context: 'fetching price for market rate',
-        price: price.toNumber(),
-        chainId: selectedChain.id,
-        inputCurrency: inputCurrency.symbol,
-        outputCurrency: outputCurrency.symbol,
-        gasPrice: gasPrice.toString(),
-      })
-      const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
-      if (price.isZero()) {
-        setIsFetchingQuotes(false)
-        return
-      }
-      setMarketPrice(price.toNumber())
-      setPriceInput(
-        minimumDecimalPlaces
-          ? formatSignificantString(price, minimumDecimalPlaces)
-          : price.toFixed(),
-      )
-      setIsFetchingQuotes(false)
-    }
-  }, [
-    availableDecimalPlacesGroups,
-    gasPrice,
-    inputCurrency,
-    outputCurrency,
-    selectedChain.id,
-    setIsFetchingQuotes,
-    setMarketPrice,
-    setPriceInput,
-  ])
 
   useEffect(() => {
     const timer = setTimeout(() => {

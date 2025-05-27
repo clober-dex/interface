@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   getMarket,
   getMarketId,
@@ -37,9 +37,7 @@ type MarketContext = {
   setSelectedMarket: (market: Market | undefined) => void
   selectedDecimalPlaces: Decimals | undefined
   isFetchingQuotes: boolean
-  setIsFetchingQuotes: (isFetchingQuotes: boolean) => void
   marketPrice: number
-  setMarketPrice: (price: number) => void
   setSelectedDecimalPlaces: (decimalPlaces: Decimals | undefined) => void
   availableDecimalPlacesGroups: Decimals[] | null
   depthClickedIndex:
@@ -64,6 +62,7 @@ type MarketContext = {
     price: string
     size: string
   }[]
+  setMarketRateAction: () => Promise<void>
 }
 
 const Context = React.createContext<MarketContext>({
@@ -73,14 +72,15 @@ const Context = React.createContext<MarketContext>({
   selectedDecimalPlaces: undefined,
   setSelectedDecimalPlaces: () => {},
   isFetchingQuotes: false,
-  setIsFetchingQuotes: () => {},
   marketPrice: 0,
-  setMarketPrice: () => {},
   availableDecimalPlacesGroups: null,
   depthClickedIndex: undefined,
   setDepthClickedIndex: () => {},
   bids: [],
   asks: [],
+  setMarketRateAction: async () => {
+    return Promise.resolve()
+  },
 })
 
 export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
@@ -455,6 +455,45 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setOutputCurrencyAmount,
   ])
 
+  const setMarketRateAction = useCallback(async () => {
+    if (inputCurrency && outputCurrency && gasPrice) {
+      setIsFetchingQuotes(true)
+      const price = await fetchPrice(
+        selectedChain.id,
+        inputCurrency,
+        outputCurrency,
+        gasPrice,
+      )
+      console.log({
+        context: 'fetching price for market rate',
+        price: price.toNumber(),
+        chainId: selectedChain.id,
+        inputCurrency: inputCurrency.symbol,
+        outputCurrency: outputCurrency.symbol,
+        gasPrice: gasPrice.toString(),
+      })
+      const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
+      if (price.isZero()) {
+        setIsFetchingQuotes(false)
+        return
+      }
+      setMarketPrice(price.toNumber())
+      setPriceInput(
+        minimumDecimalPlaces
+          ? formatSignificantString(price, minimumDecimalPlaces)
+          : price.toFixed(),
+      )
+      setIsFetchingQuotes(false)
+    }
+  }, [
+    availableDecimalPlacesGroups,
+    gasPrice,
+    inputCurrency,
+    outputCurrency,
+    selectedChain.id,
+    setPriceInput,
+  ])
+
   return (
     <Context.Provider
       value={{
@@ -464,14 +503,13 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         selectedDecimalPlaces,
         setSelectedDecimalPlaces,
         isFetchingQuotes,
-        setIsFetchingQuotes,
         marketPrice,
-        setMarketPrice,
         availableDecimalPlacesGroups,
         depthClickedIndex,
         setDepthClickedIndex,
         bids,
         asks,
+        setMarketRateAction,
       }}
     >
       {children}
