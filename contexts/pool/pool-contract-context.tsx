@@ -21,7 +21,7 @@ import { Confirmation, useTransactionContext } from '../transaction-context'
 import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
 import { maxApprove } from '../../utils/approve20'
-import { toPlacesAmountString } from '../../utils/bignumber'
+import { formatPreciseAmountString } from '../../utils/bignumber'
 import { sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
@@ -216,7 +216,7 @@ export const PoolContractProvider = ({
                   direction: result.currencyA.direction,
                   currency: result.currencyA.currency,
                   label: result.currencyA.currency.symbol,
-                  value: toPlacesAmountString(
+                  value: formatPreciseAmountString(
                     result.currencyA.amount,
                     prices[result.currencyA.currency.address] ?? 0,
                   ),
@@ -227,7 +227,7 @@ export const PoolContractProvider = ({
                   direction: result.currencyB.direction,
                   currency: result.currencyB.currency,
                   label: result.currencyB.currency.symbol,
-                  value: toPlacesAmountString(
+                  value: formatPreciseAmountString(
                     result.currencyB.amount,
                     prices[result.currencyB.currency.address] ?? 0,
                   ),
@@ -241,7 +241,7 @@ export const PoolContractProvider = ({
                     currencyB: result.currencyB.currency,
                   },
                   label: result.lpCurrency.currency.symbol,
-                  value: toPlacesAmountString(
+                  value: formatPreciseAmountString(
                     result.lpCurrency.amount,
                     prices[baseCurrency.address] ?? 0,
                   ),
@@ -355,7 +355,7 @@ export const PoolContractProvider = ({
                   direction: result.currencyA.direction,
                   currency: result.currencyA.currency,
                   label: result.currencyA.currency.symbol,
-                  value: toPlacesAmountString(
+                  value: formatPreciseAmountString(
                     result.currencyA.amount,
                     prices[result.currencyA.currency.address] ?? 0,
                   ),
@@ -366,7 +366,7 @@ export const PoolContractProvider = ({
                   direction: result.currencyB.direction,
                   currency: result.currencyB.currency,
                   label: result.currencyB.currency.symbol,
-                  value: toPlacesAmountString(
+                  value: formatPreciseAmountString(
                     result.currencyB.amount,
                     prices[result.currencyB.currency.address] ?? 0,
                   ),
@@ -377,7 +377,7 @@ export const PoolContractProvider = ({
                   direction: result.lpCurrency.direction,
                   currency: result.lpCurrency.currency,
                   label: result.lpCurrency.currency.symbol,
-                  value: toPlacesAmountString(
+                  value: formatPreciseAmountString(
                     result.lpCurrency.amount,
                     prices[baseCurrency.address] ?? 0,
                   ),

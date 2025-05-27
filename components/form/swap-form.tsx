@@ -6,7 +6,10 @@ import { getQuoteToken } from '@clober/v2-sdk'
 import CurrencyAmountInput from '../input/currency-amount-input'
 import { Currency } from '../../model/currency'
 import CurrencySelect from '../selector/currency-select'
-import { toPlacesAmountString, toPlacesString } from '../../utils/bignumber'
+import {
+  formatPreciseAmountString,
+  toPlacesString,
+} from '../../utils/bignumber'
 import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
@@ -394,7 +397,7 @@ export const SwapForm = ({
                         </span>
                         =
                         <span className="text-white">
-                          {toPlacesAmountString(
+                          {formatPreciseAmountString(
                             exchangeRate,
                             baseCurrency
                               ? prices[baseCurrency.address]

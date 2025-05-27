@@ -12,7 +12,7 @@ import { useCurrencyContext } from '../../contexts/currency-context'
 import { usePoolContractContext } from '../../contexts/pool/pool-contract-context'
 import { usePoolContext } from '../../contexts/pool/pool-context'
 import { CurrencyIcon } from '../../components/icon/currency-icon'
-import { toPlacesAmountString } from '../../utils/bignumber'
+import { formatPreciseAmountString } from '../../utils/bignumber'
 import { QuestionMarkSvg } from '../../components/svg/question-mark-svg'
 import { AddLiquidityForm } from '../../components/form/pool/add-liquidity-form'
 import { RemoveLiquidityForm } from '../../components/form/pool/remove-liquidity-form'
@@ -330,7 +330,7 @@ export const PoolManagerContainer = ({
                     </div>
                     <div className="text-blue-500 text-sm md:text-lg font-bold flex flex-col text-left items-center h-full">
                       {toCommaSeparated(
-                        toPlacesAmountString(
+                        formatPreciseAmountString(
                           pool.liquidityA.total.value.toString(),
                           prices[pool.currencyA.address] ?? 0,
                         ),
@@ -356,7 +356,7 @@ export const PoolManagerContainer = ({
                     </div>
                     <div className="text-cyan-400 text-sm md:text-lg font-bold flex flex-col text-left items-center h-full">
                       {toCommaSeparated(
-                        toPlacesAmountString(
+                        formatPreciseAmountString(
                           pool.liquidityB.total.value.toString(),
                           prices[pool.currencyB.address] ?? 0,
                         ),

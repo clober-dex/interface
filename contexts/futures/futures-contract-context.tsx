@@ -27,7 +27,7 @@ import { buildTransaction, sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { Currency } from '../../model/currency'
 import { deduplicateCurrencies } from '../../utils/currency'
-import { toPlacesAmountString } from '../../utils/bignumber'
+import { formatPreciseAmountString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 
 import { useFuturesContext } from './futures-context'
@@ -264,7 +264,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'in',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(collateralAmount, asset.collateral.decimals),
                 prices[asset.collateral.address] ?? 0,
               ),
@@ -273,7 +273,7 @@ export const FuturesContractProvider = ({
               currency: asset.currency,
               label: asset.currency.symbol,
               direction: 'out',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(debtAmount, asset.currency.decimals),
                 prices[asset.currency.address] ?? 0,
               ),
@@ -416,7 +416,7 @@ export const FuturesContractProvider = ({
               currency: asset.currency,
               label: asset.currency.symbol,
               direction: 'in',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(debtAmount, asset.currency.decimals),
                 prices[asset.currency.address] ?? 0,
               ),
@@ -515,7 +515,7 @@ export const FuturesContractProvider = ({
               currency: userPosition.asset.currency,
               label: userPosition.asset.currency.symbol,
               direction: 'in',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(
                   userPosition?.debtAmount ?? 0n,
                   userPosition.asset.currency.decimals,
@@ -527,7 +527,7 @@ export const FuturesContractProvider = ({
               currency: userPosition.asset.collateral,
               label: userPosition.asset.collateral.symbol,
               direction: 'out',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(
                   userPosition?.collateralAmount ?? 0n,
                   userPosition.asset.collateral.decimals,
@@ -767,7 +767,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address] ?? 0,
               ),
@@ -846,7 +846,7 @@ export const FuturesContractProvider = ({
               currency: asset.currency,
               label: asset.currency.symbol,
               direction: 'in',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(amount, asset.currency.decimals),
                 prices[asset.currency.address] ?? 0,
               ),
@@ -855,7 +855,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address] ?? 0,
               ),
@@ -934,7 +934,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'in',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(amount, asset.collateral.decimals),
                 prices[asset.collateral.address] ?? 0,
               ),
@@ -1018,7 +1018,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(amount, asset.collateral.decimals),
                 prices[asset.collateral.address] ?? 0,
               ),

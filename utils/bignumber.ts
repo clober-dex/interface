@@ -37,7 +37,7 @@ export const toPlacesString = (
   }
 }
 
-export const toPlacesAmountString = (
+export const formatPreciseAmountString = (
   number: BigNumber.Value,
   price?: number,
 ): string => {
