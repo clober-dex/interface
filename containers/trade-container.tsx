@@ -3,7 +3,6 @@ import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
 import { getQuoteToken } from '@clober/v2-sdk'
-import BigNumber from 'bignumber.js'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
@@ -213,6 +212,7 @@ export const TradeContainer = () => {
     setSelectedDecimalPlaces,
     bids,
     asks,
+    depthClickedIndex,
     setDepthClickedIndex,
     isFetchingQuotes,
     marketPrice,
@@ -465,6 +465,7 @@ export const TradeContainer = () => {
         setPriceInput,
         selectedMarket,
         isBid,
+        depthClickedIndex,
         showInputCurrencySelect,
         setShowInputCurrencySelect,
         inputCurrency,
@@ -509,6 +510,7 @@ export const TradeContainer = () => {
       availableDecimalPlacesGroups,
       balances,
       currencies,
+      depthClickedIndex,
       inputCurrency,
       inputCurrencyAmount,
       isBid,

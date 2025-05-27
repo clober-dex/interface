@@ -26,6 +26,7 @@ export type LimitFormProps = {
   setPriceInput: (priceInput: string) => void
   selectedMarket?: Market
   isBid: boolean
+  depthClickedIndex: number | undefined
   showInputCurrencySelect: boolean
   setShowInputCurrencySelect:
     | ((showInputCurrencySelect: boolean) => void)
@@ -69,6 +70,7 @@ export const LimitForm = ({
   setPriceInput,
   selectedMarket,
   isBid,
+  depthClickedIndex,
   showInputCurrencySelect,
   setShowInputCurrencySelect,
   inputCurrency,
@@ -108,6 +110,12 @@ export const LimitForm = ({
     BigNumber.ROUND_DOWN,
   )
 
+  useEffect(() => {
+    if (depthClickedIndex) {
+      setDebouncedPriceInput('')
+    }
+  }, [depthClickedIndex])
+
   // only when user change priceInput directly
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -127,7 +135,7 @@ export const LimitForm = ({
         )
         setPriceInput(price)
       }
-    }, 500)
+    }, 1000)
 
     return () => {
       clearTimeout(handler)
@@ -264,6 +272,7 @@ export const LimitForm = ({
                       <button
                         disabled={false}
                         onClick={async () => {
+                          setDebouncedPriceInput('')
                           await setMarketRateAction.action()
                         }}
                         className="text-center text-blue-400 text-xs font-semibold px-1.5 py-[5px] sm:px-2 sm:py-[5px] bg-blue-500/25 rounded-xl justify-center items-center gap-2.5 flex"
@@ -278,6 +287,7 @@ export const LimitForm = ({
                 <div className="flex items-center w-[34px] sm:w-11 h-full flex-col gap-2">
                   <button
                     onClick={() => {
+                      setDebouncedPriceInput('')
                       if (
                         selectedMarket &&
                         inputCurrency &&
@@ -345,6 +355,7 @@ export const LimitForm = ({
                   </button>
                   <button
                     onClick={() => {
+                      setDebouncedPriceInput('')
                       if (
                         selectedMarket &&
                         inputCurrency &&
