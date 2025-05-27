@@ -202,8 +202,8 @@ export const LimitContractProvider = ({
           price: price,
           options: {
             rpcUrl: CHAIN_CONFIG.RPC_URL,
-            roundingUpMakeBid: false,
-            roundingDownMakeAsk: false,
+            roundingUpMakeBid: true,
+            roundingDownMakeAsk: true,
             roundingDownTakenBid: true,
             roundingUpTakenAsk: true,
           },
