@@ -16,7 +16,7 @@ export async function fetchQuotes(
   gasPrice: bigint,
   prices: Prices,
   userAddress?: `0x${string}`,
-): Promise<{ best: Quote; all: Quote[] }> {
+): Promise<{ best: Quote | null; all: Quote[] }> {
   const quotes = (
     await Promise.allSettled(
       aggregators.map((aggregator) =>
@@ -52,15 +52,7 @@ export async function fetchQuotes(
     throw new Error('No quotes available')
   }
 
-  let bestQuote: Quote = {
-    amountIn,
-    amountOut: -(2n ** 256n - 1n),
-    gasLimit: -(2n ** 256n - 1n),
-    aggregator: aggregators[0],
-    transaction: undefined,
-    gasUsd: -Number.MAX_SAFE_INTEGER,
-    netAmountOutUsd: -Number.MAX_SAFE_INTEGER,
-  }
+  let bestQuote: Quote | null = null
   let fallbackQuote: Quote | undefined = undefined
   const allQuotes: Quote[] = []
   for (const quote of quotes) {
@@ -84,7 +76,10 @@ export async function fetchQuotes(
     allQuotes.push(quoteWithMeta)
 
     if (outputPrice && nativePrice) {
-      if (netAmountOutUsd > bestQuote.netAmountOutUsd) {
+      if (
+        netAmountOutUsd >
+        (bestQuote?.netAmountOutUsd ?? -Number.MAX_SAFE_INTEGER)
+      ) {
         bestQuote = quoteWithMeta
       }
     } else if (!outputPrice || !nativePrice) {
@@ -102,7 +97,7 @@ export async function fetchQuotes(
     }
   }
 
-  if (bestQuote.netAmountOutUsd === 0 && fallbackQuote) {
+  if (!bestQuote && fallbackQuote) {
     bestQuote = fallbackQuote
   }
 
