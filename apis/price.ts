@@ -28,9 +28,7 @@ export const fetchPrice = async (
     ? [currency0, currency1]
     : [currency1, currency0]
   try {
-    const {
-      best: { amountOut },
-    } = await fetchQuotes(
+    const { best } = await fetchQuotes(
       aggregators,
       baseCurrency,
       parseUnits('1', baseCurrency.decimals),
@@ -39,7 +37,9 @@ export const fetchPrice = async (
       0n, // arbitrary gas price
       {}, // arbitrary prices
     )
-    return new BigNumber(formatUnits(amountOut, quoteCurrency.decimals))
+    return new BigNumber(
+      formatUnits(best?.amountOut ?? 0n, quoteCurrency.decimals),
+    )
   } catch (e) {
     console.error(e)
     return new BigNumber(0)
