@@ -58,17 +58,11 @@ export const LpPositionCard = ({
             <div className="justify-center items-center gap-1 flex">
               <div className="text-right text-white text-base">
                 {formatWithCommas(
-                  formatUnits(amount, currencyLp.decimals, Number(lpPriceUSD)),
+                  formatUnits(amount, currencyLp.decimals, lpPriceUSD),
                 )}
               </div>
               <div className="text-center text-gray-400 text-sm font-semibold">
-                (
-                {formatDollarValue(
-                  amount,
-                  currencyLp.decimals,
-                  Number(lpPriceUSD),
-                )}
-                )
+                ({formatDollarValue(amount, currencyLp.decimals, lpPriceUSD)})
               </div>
             </div>
           </div>
@@ -113,17 +107,11 @@ export const LpPositionCard = ({
           <div className="justify-start items-center gap-2 flex">
             <div className="text-white text-sm font-bold">
               {formatWithCommas(
-                formatUnits(amount, currencyLp.decimals, Number(lpPriceUSD)),
+                formatUnits(amount, currencyLp.decimals, lpPriceUSD),
               )}
             </div>
             <div className="text-gray-400 text-xs font-semibold">
-              (
-              {formatDollarValue(
-                amount,
-                currencyLp.decimals,
-                Number(lpPriceUSD),
-              )}
-              )
+              ({formatDollarValue(amount, currencyLp.decimals, lpPriceUSD)})
             </div>
           </div>
         </div>

@@ -53,7 +53,7 @@ export const formatPreciseAmountString = (
   return new BigNumber(number).toFixed(underHalfPennyDecimals)
 }
 
-export const formatWithCommas = (number: BigNumber.Value) => {
+export const formatWithCommas = (number: BigNumber.Value): string => {
   const parts = number.toString().split('.')
   const integer = parts[0]
   const decimal = parts[1]
