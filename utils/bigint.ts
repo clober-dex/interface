@@ -9,6 +9,15 @@ export const max = (...args: bigint[]) =>
 export const min = (...args: bigint[]) =>
   args.reduce((m, e) => (e < m ? e : m), 2n ** 256n - 1n)
 
+/**
+ * Calculates the dollar value of a token amount using its price and decimals.
+ * @dev: This function assumes the price is given in USD per whole token, not per unit of the smallest denomination.
+ *
+ * @param value - The token amount as a bigint.
+ * @param decimals - The number of decimals the token uses.
+ * @param price - The USD price per one whole token.
+ * @returns The USD value as a BigNumber.
+ */
 export const getDollarValue = (
   value: bigint,
   decimals: number,
@@ -19,6 +28,15 @@ export const getDollarValue = (
   }
   return new BigNumber(value.toString()).times(price).div(10 ** decimals)
 }
+
+/**
+ * Formats the dollar value of a token amount into a human-readable USD string with commas and two decimal places.
+ *
+ * @param value - The token amount as a bigint.
+ * @param decimals - The number of decimals the token uses.
+ * @param price - The USD price per one whole token.
+ * @returns A string representing the formatted dollar value, prefixed with "$".
+ */
 export const formatDollarValue = (
   value: bigint,
   decimals: number,
@@ -26,6 +44,20 @@ export const formatDollarValue = (
 ): string => {
   return `$${formatWithCommas(getDollarValue(value, decimals, price).toFixed(2))}`
 }
+
+/**
+ * Converts a bigint token amount to a decimal string, formatted based on price precision.
+ *
+ * - If no price is provided, it uses dynamic precision based on significant digits.
+ * - If price is provided, it calculates precision based on half-cent sensitivity.
+ *  @dev: The returned string can safely be wrapped with `Number(...)` for approximate numeric use,
+ *   but note that very large or very small values may lose precision.
+ *
+ * @param value - The token amount as a bigint.
+ * @param decimals - The number of decimals the token uses.
+ * @param price - (Optional) The USD price used to determine appropriate decimal precision.
+ * @returns A formatted string representing the token amount.
+ */
 export const formatUnits = (
   value: bigint,
   decimals: number,
