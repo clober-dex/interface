@@ -62,3 +62,26 @@ export const formatWithCommas = (number: BigNumber.Value) => {
     integer.replace('-', '').replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return decimal ? `${formattedInteger}.${decimal}` : formattedInteger
 }
+
+export const formatAbbreviatedNumberString = (
+  value: BigNumber.Value,
+  decimalPlaces = 1,
+): string => {
+  value = new BigNumber(value)
+  let abbreviatedDollarValue = new BigNumber(value)
+  let suffix = ''
+  if (value.gte('1000000000000')) {
+    abbreviatedDollarValue = value.div('1000000000000')
+    suffix = 'T'
+  } else if (value.gte('1000000000')) {
+    abbreviatedDollarValue = value.div('1000000000')
+    suffix = 'B'
+  } else if (value.gte('1000000')) {
+    abbreviatedDollarValue = value.div('1000000')
+    suffix = 'M'
+  } else if (value.gte('1000')) {
+    abbreviatedDollarValue = value.div('1000')
+    suffix = 'K'
+  }
+  return `${formatWithCommas(abbreviatedDollarValue.toFixed(decimalPlaces))}${suffix}`
+}

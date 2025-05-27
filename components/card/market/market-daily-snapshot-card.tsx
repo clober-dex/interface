@@ -5,11 +5,12 @@ import { Tooltip } from 'react-tooltip'
 import { useRouter } from 'next/router'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
-import { toHumanReadableString, toShortNumber } from '../../../utils/number'
+import { toShortNumber } from '../../../utils/number'
 import { QuestionMarkSvg } from '../../svg/question-mark-svg'
 import { VerifiedSvg } from '../../svg/verified-svg'
 import { convertShortTimeAgo } from '../../../utils/time'
 import { Chain } from '../../../model/chain'
+import { formatAbbreviatedNumberString } from '../../../utils/bignumber'
 
 export const MarketDailySnapshotCard = ({
   chain,
@@ -118,12 +119,14 @@ export const MarketDailySnapshotCard = ({
           ${toShortNumber(dailyVolume)}
         </div>
         <div className="w-[140px] text-white text-base font-bold">
-          {fdv > 0 ? `$${toHumanReadableString(new BigNumber(fdv))}` : '-'}
+          {fdv > 0
+            ? `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+            : '-'}
         </div>
         <div
           className={`w-[120px] ${dailyChange === 0 ? 'text-white' : dailyChange > 0 ? 'text-green-500' : 'text-red-500'} text-base font-bold`}
         >
-          {toHumanReadableString(dailyChange.toFixed(2), 2)}%
+          {formatAbbreviatedNumberString(dailyChange.toFixed(2), 2)}%
         </div>
         <div className="w-[59px] flex h-full text-white text-base font-bold items-center justify-center">
           {verified ? <VerifiedSvg /> : <></>}
@@ -226,7 +229,7 @@ export const MarketDailySnapshotCard = ({
               <div className="self-stretch text-gray-400 text-xs">FDV</div>
               <div className="flex flex-row self-stretch text-white text-sm font-bold items-center gap-1">
                 {fdv > 0
-                  ? `$${toHumanReadableString(new BigNumber(fdv))}`
+                  ? `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
                   : '-'}
               </div>
             </div>
@@ -244,7 +247,7 @@ export const MarketDailySnapshotCard = ({
                         : 'text-red-500'
                   }`}
                 >
-                  {toHumanReadableString(dailyChange.toFixed(2), 2)}%
+                  {formatAbbreviatedNumberString(dailyChange.toFixed(2), 2)}%
                 </div>
               </div>
             </div>

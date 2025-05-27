@@ -108,31 +108,3 @@ export const toShortNumber = (number: BigNumber.Value): string => {
         .slice(index + 2, index + 2 + POLLY_FILL_DECIMALS),
   )
 }
-
-const KILO = '1000'
-const MILLION = '1000000'
-const BILLION = '1000000000'
-const TRILLION = '1000000000000'
-
-export const toHumanReadableString = (
-  value: BigNumber.Value,
-  decimalPlaces = 1,
-): string => {
-  value = new BigNumber(value)
-  let abbreviatedDollarValue = new BigNumber(value)
-  let suffix = ''
-  if (value.gte(TRILLION)) {
-    abbreviatedDollarValue = value.div(TRILLION)
-    suffix = 'T'
-  } else if (value.gte(BILLION)) {
-    abbreviatedDollarValue = value.div(BILLION)
-    suffix = 'B'
-  } else if (value.gte(MILLION)) {
-    abbreviatedDollarValue = value.div(MILLION)
-    suffix = 'M'
-  } else if (value.gte(KILO)) {
-    abbreviatedDollarValue = value.div(KILO)
-    suffix = 'K'
-  }
-  return `${formatWithCommas(abbreviatedDollarValue.toFixed(decimalPlaces))}${suffix}`
-}

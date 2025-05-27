@@ -2,13 +2,10 @@ import BigNumber from 'bignumber.js'
 
 import {
   findFirstNonZeroIndex,
+  formatAbbreviatedNumberString,
   formatSignificantString,
 } from '../utils/bignumber'
-import {
-  removeZeroTail,
-  toHumanReadableString,
-  toShortNumber,
-} from '../utils/number'
+import { removeZeroTail, toShortNumber } from '../utils/number'
 
 describe('Numbers', () => {
   it('findFirstNonZeroIndex', () => {
@@ -66,9 +63,11 @@ describe('Numbers', () => {
   })
 
   it('toDollarString', () => {
-    expect(toHumanReadableString(new BigNumber(100000000))).toBe('100.0M')
-    expect(toHumanReadableString(new BigNumber(10000000))).toBe('10.0M')
-    expect(toHumanReadableString(new BigNumber(1000000))).toBe('1.0M')
-    expect(toHumanReadableString(new BigNumber(100000))).toBe('100.0K')
+    expect(formatAbbreviatedNumberString(new BigNumber(100000000))).toBe(
+      '100.0M',
+    )
+    expect(formatAbbreviatedNumberString(new BigNumber(10000000))).toBe('10.0M')
+    expect(formatAbbreviatedNumberString(new BigNumber(1000000))).toBe('1.0M')
+    expect(formatAbbreviatedNumberString(new BigNumber(100000))).toBe('100.0K')
   })
 })
