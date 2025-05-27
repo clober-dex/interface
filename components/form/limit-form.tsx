@@ -97,12 +97,12 @@ export const LimitForm = ({
   const minimumPrice = toPlacesString(
     new BigNumber(0.1).pow(minimumDecimalPlaces).toString(),
     minimumDecimalPlaces,
-    BigNumber.ROUND_CEIL,
+    isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
   )
   const maximumPrice = toPlacesString(
     '8662020672688495886265',
     minimumDecimalPlaces,
-    BigNumber.ROUND_FLOOR,
+    isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
   )
   return showInputCurrencySelect ? (
     <CurrencySelect
@@ -268,7 +268,7 @@ export const LimitForm = ({
                           const nextPrice = toPlacesString(
                             price,
                             minimumDecimalPlaces,
-                            BigNumber.ROUND_CEIL,
+                            isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
                           )
                           if (new BigNumber(nextPrice).lt(minimumPrice)) {
                             setPriceInput(minimumPrice)
@@ -331,7 +331,7 @@ export const LimitForm = ({
                           const nextPrice = toPlacesString(
                             price,
                             minimumDecimalPlaces,
-                            BigNumber.ROUND_CEIL,
+                            isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
                           )
                           if (new BigNumber(nextPrice).lte(minimumPrice)) {
                             setPriceInput(minimumPrice)

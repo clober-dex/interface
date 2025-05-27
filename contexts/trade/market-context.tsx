@@ -303,8 +303,18 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     () =>
       selectedMarket && selectedDecimalPlaces
         ? [
-            parseDepth(true, selectedMarket, selectedDecimalPlaces),
-            parseDepth(false, selectedMarket, selectedDecimalPlaces),
+            parseDepth(
+              selectedChain.id,
+              true,
+              selectedMarket,
+              selectedDecimalPlaces,
+            ),
+            parseDepth(
+              selectedChain.id,
+              false,
+              selectedMarket,
+              selectedDecimalPlaces,
+            ),
           ]
         : [[], []],
     [selectedDecimalPlaces, selectedMarket],

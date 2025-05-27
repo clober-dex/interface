@@ -204,8 +204,8 @@ export const LimitContractProvider = ({
             rpcUrl: CHAIN_CONFIG.RPC_URL,
             roundingUpMakeBid: true,
             roundingDownMakeAsk: true,
-            roundingDownTakenBid: true,
-            roundingUpTakenAsk: true,
+            roundingDownTakenBid: false,
+            roundingUpTakenAsk: false,
           },
         }
         const { transaction, result } = await limitOrder(args)
