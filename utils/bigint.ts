@@ -9,7 +9,7 @@ export const max = (...args: bigint[]) =>
 export const min = (...args: bigint[]) =>
   args.reduce((m, e) => (e < m ? e : m), 2n ** 256n - 1n)
 
-export const dollarValue = (
+export const getDollarValue = (
   value: bigint,
   decimals: number,
   price?: number,
@@ -24,7 +24,7 @@ export const formatDollarValue = (
   decimals: number,
   price?: number,
 ): string => {
-  return `$${toCommaSeparated(dollarValue(value, decimals, price).toFixed(2))}`
+  return `$${toCommaSeparated(getDollarValue(value, decimals, price).toFixed(2))}`
 }
 export const formatUnits = (
   value: bigint,
