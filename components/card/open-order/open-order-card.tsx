@@ -4,8 +4,10 @@ import { NextRouter } from 'next/router'
 
 import { OutlinkSvg } from '../../svg/outlink-svg'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
-import { formatSignificantString } from '../../../utils/bignumber'
-import { toShortNumber } from '../../../utils/number'
+import {
+  formatSignificantString,
+  formatTinyNumber,
+} from '../../../utils/bignumber'
 
 export const OpenOrderCard = ({
   openOrder,
@@ -54,7 +56,9 @@ export const OpenOrderCard = ({
             <div className="flex flex-col align-baseline justify-between gap-3">
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Price</label>
-                <p className="text-white">{toShortNumber(openOrder.price)}</p>
+                <p className="text-white">
+                  {formatTinyNumber(openOrder.price)}
+                </p>
               </div>
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Amount</label>
@@ -130,7 +134,7 @@ export const OpenOrderCard = ({
           </div>
 
           <div className="w-[120px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
-            {toShortNumber(openOrder.price)}
+            {formatTinyNumber(openOrder.price)}
           </div>
 
           <div className="w-[180px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">

@@ -99,12 +99,12 @@ export const LimitForm = ({
   const minimumPrice = formatSignificantString(
     new BigNumber(0.1).pow(minimumDecimalPlaces).toString(),
     minimumDecimalPlaces,
-    isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
+    BigNumber.ROUND_DOWN,
   )
   const maximumPrice = formatSignificantString(
     '8662020672688495886265',
     minimumDecimalPlaces,
-    isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
+    BigNumber.ROUND_UP,
   )
 
   // only when user change priceInput directly

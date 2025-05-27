@@ -3,7 +3,7 @@ import { Listbox, Transition } from '@headlessui/react'
 
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
 import { Decimals } from '../../model/decimals'
-import { toShortNumber } from '../../utils/number'
+import { formatTinyNumber } from '../../utils/bignumber'
 
 export default function DecimalsSelector({
   availableDecimalPlacesGroups,
@@ -21,7 +21,7 @@ export default function DecimalsSelector({
           <div className="relative">
             <Listbox.Button className="flex items-center gap-0.5">
               <span className="text-[12px] leading-[16px] font-medium not-italic -tracking-[-0.005em]">
-                {toShortNumber(value.label)}
+                {formatTinyNumber(value.label)}
               </span>
               <span className="">
                 <TriangleDownSvg />
@@ -36,7 +36,7 @@ export default function DecimalsSelector({
                     className="py-2 px-3 text-right text-white text-[12px] leading-[16px] font-medium not-italic -tracking-[-0.005em] hover:bg-gray-600 first:rounded-t-lg last:rounded-b-lg"
                     value={value}
                   >
-                    <span>{toShortNumber(value.label)}</span>
+                    <span>{formatTinyNumber(value.label)}</span>
                   </Listbox.Option>
                 ))}
               </Listbox.Options>

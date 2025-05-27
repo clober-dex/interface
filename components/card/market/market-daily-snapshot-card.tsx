@@ -5,12 +5,14 @@ import { Tooltip } from 'react-tooltip'
 import { useRouter } from 'next/router'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
-import { toShortNumber } from '../../../utils/number'
 import { QuestionMarkSvg } from '../../svg/question-mark-svg'
 import { VerifiedSvg } from '../../svg/verified-svg'
 import { convertShortTimeAgo } from '../../../utils/time'
 import { Chain } from '../../../model/chain'
-import { formatAbbreviatedNumberString } from '../../../utils/bignumber'
+import {
+  formatAbbreviatedNumberString,
+  formatTinyNumber,
+} from '../../../utils/bignumber'
 
 export const MarketDailySnapshotCard = ({
   chain,
@@ -113,10 +115,10 @@ export const MarketDailySnapshotCard = ({
           {createAt > 0 ? convertShortTimeAgo(createAt * 1000) : '-'}
         </div>
         <div className="w-[140px] text-white text-base font-bold">
-          ${toShortNumber(price)}
+          ${formatTinyNumber(price)}
         </div>
         <div className="w-[140px] text-white text-base font-bold">
-          ${toShortNumber(dailyVolume)}
+          ${formatTinyNumber(dailyVolume)}
         </div>
         <div className="w-[140px] text-white text-base font-bold">
           {fdv > 0
@@ -196,7 +198,7 @@ export const MarketDailySnapshotCard = ({
             <div className="flex flex-1 w-full flex-col justify-start items-center gap-1">
               <div className="self-stretch text-gray-400 text-xs">Price</div>
               <div className="self-stretch text-white text-sm font-bold">
-                ${toShortNumber(price)}
+                ${formatTinyNumber(price)}
               </div>
             </div>
             <div className="flex flex-1 flex-col justify-start items-center gap-2">
@@ -219,7 +221,7 @@ export const MarketDailySnapshotCard = ({
                 24h Volume
               </div>
               <div className="self-stretch text-white text-sm font-bold">
-                ${toShortNumber(dailyVolume)}
+                ${formatTinyNumber(dailyVolume)}
               </div>
             </div>
           </div>

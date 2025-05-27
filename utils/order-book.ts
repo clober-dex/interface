@@ -63,25 +63,26 @@ export function parseDepth(
       })
       .reduce(
         (prev, curr) => {
-          const {
-            normal: {
-              now: { marketPrice },
-            },
-            inverted: {
-              now: { marketPrice: invertedMarketPrice },
-            },
-          } = getPriceNeighborhood({
-            chainId,
-            price: curr.price,
-            currency0: market.quote,
-            currency1: market.base,
-          })
-          const key = new BigNumber(
-            isBid ? marketPrice : invertedMarketPrice,
-          ).toFixed(
-            decimalPlaces.value,
-            isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
-          )
+          // const {
+          //   normal: {
+          //     now: { marketPrice },
+          //   },
+          //   inverted: {
+          //     now: { marketPrice: invertedMarketPrice },
+          //   },
+          // } = getPriceNeighborhood({
+          //   chainId,
+          //   price: curr.price,
+          //   currency0: market.quote,
+          //   currency1: market.base,
+          // })
+          // const key = new BigNumber(
+          //   isBid ? marketPrice : invertedMarketPrice,
+          // ).toFixed(
+          //   decimalPlaces.value,
+          //   isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
+          // )
+          const key = '1'
           if (!new BigNumber(key).eq(0)) {
             prev.set(
               key,

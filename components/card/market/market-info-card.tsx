@@ -6,7 +6,6 @@ import { isAddressEqual } from 'viem'
 import { NextRouter } from 'next/router'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
-import { toShortNumber } from '../../../utils/number'
 import { shortAddress } from '../../../utils/address'
 import { handleCopyClipBoard } from '../../../utils/string'
 import { ClipboardSvg } from '../../svg/clipboard-svg'
@@ -14,7 +13,10 @@ import { Toast } from '../../toast'
 import { ActionButton } from '../../button/action-button'
 import { Chain } from '../../../model/chain'
 import { WHITELISTED_FUTURES_ASSETS } from '../../../constants/futures'
-import { formatAbbreviatedNumberString } from '../../../utils/bignumber'
+import {
+  formatAbbreviatedNumberString,
+  formatTinyNumber,
+} from '../../../utils/bignumber'
 
 export const MarketInfoCard = ({
   chain,
@@ -231,10 +233,10 @@ export const MarketInfoCard = ({
 
           <div className="grow shrink basis-0 flex-col justify-center gap-1 flex ml-auto w-full lg:hidden text-right">
             <div className="text-[#39e79f] text-xl font-semibold">
-              {toShortNumber(price)}
+              {formatTinyNumber(price)}
             </div>
             <div className="text-white text-xs">
-              ${toShortNumber(dollarValue)}
+              ${formatTinyNumber(dollarValue)}
             </div>
           </div>
         </div>
@@ -300,10 +302,10 @@ export const MarketInfoCard = ({
         <div className="hidden lg:flex h-full ml-auto items-center gap-7">
           <div className="flex-col lg:items-end gap-0.5 flex w-[100px]">
             <div className="text-[#38e69f] text-[17px] font-bold">
-              {toShortNumber(price)}
+              {formatTinyNumber(price)}
             </div>
             <div className="text-white text-xs font-bold">
-              ${toShortNumber(dollarValue)}
+              ${formatTinyNumber(dollarValue)}
             </div>
           </div>
 

@@ -8,10 +8,9 @@ import {
 } from '../../../utils/date'
 import { formatUnits } from '../../../utils/bigint'
 import { FuturesPosition } from '../../../model/futures/futures-position'
-import { toShortNumber } from '../../../utils/number'
 import { EditSvg } from '../../svg/edit-svg'
 import { Chain } from '../../../model/chain'
-import { formatWithCommas } from '../../../utils/bignumber'
+import { formatTinyNumber, formatWithCommas } from '../../../utils/bignumber'
 
 export const FuturesPositionCard = ({
   chain,
@@ -94,8 +93,8 @@ export const FuturesPositionCard = ({
               Mark / Avg. Price
             </div>
             <div className="text-sm sm:text-base">
-              ${toShortNumber(loanAssetPrice)}
-              {' / '}${toShortNumber(position?.averagePrice ?? 0)}
+              ${formatTinyNumber(loanAssetPrice)}
+              {' / '}${formatTinyNumber(position?.averagePrice ?? 0)}
             </div>
           </div>
 

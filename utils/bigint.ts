@@ -1,8 +1,11 @@
 import BigNumber from 'bignumber.js'
 import { formatUnits as _formatUnits } from 'viem'
 
-import { findFirstNonZeroIndex, formatWithCommas } from './bignumber'
-import { POLLY_FILL_DECIMALS } from './number'
+import {
+  findFirstNonZeroIndex,
+  formatWithCommas,
+  POLLY_FILL_DECIMALS,
+} from './bignumber'
 
 export const max = (...args: bigint[]) =>
   args.reduce((m, e) => (e > m ? e : m), 0n)

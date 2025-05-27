@@ -1,7 +1,7 @@
 import React from 'react'
 import { createPortal } from 'react-dom'
 
-import { toShortNumber } from '../../utils/number'
+import { formatTinyNumber } from '../../utils/bignumber'
 
 const WarningLimitModal = ({
   marketPrice,
@@ -71,7 +71,7 @@ const WarningLimitModal = ({
                 Current market price
               </div>
               <div className="flex ml-auto font-semibold text-xs sm:text-sm">
-                {marketPrice > 0 ? toShortNumber(marketPrice) : 'Unknown'}
+                {marketPrice > 0 ? formatTinyNumber(marketPrice) : 'Unknown'}
               </div>
             </div>
             <div className="flex flex-row w-full items-start gap-1 self-stretch">
@@ -96,7 +96,7 @@ const WarningLimitModal = ({
                 )}
               </div>
               <div className="flex ml-auto text-xs sm:text-sm font-semibold">
-                {toShortNumber(priceInput)}
+                {formatTinyNumber(priceInput)}
               </div>
             </div>
           </div>
