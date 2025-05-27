@@ -18,10 +18,10 @@ export type ChainConfig = {
   URL: string
   LANDING_PAGE_URL: string
   CHAIN: Chain
-  TWITTER_HANDLE: string
-  GITHIB_URL: string
-  DISCORD_URL: string
-  DOCS_URL: string
+  TWITTER_HANDLE: string | null
+  GITHIB_URL: string | null
+  DISCORD_URL: string | null
+  DOCS_URL: string | null
   RAINBOW_KIT_PROJECT_ID: string
   GOOGLE_ANALYTICS_TRACKING_ID: string
   IS_SWAP_DEFAULT: boolean

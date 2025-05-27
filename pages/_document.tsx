@@ -29,7 +29,9 @@ export default function Document() {
         />
         {/* <!-- Twitter Meta Tags --> */}
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:site" content={CHAIN_CONFIG.TWITTER_HANDLE} />
+        {CHAIN_CONFIG.TWITTER_HANDLE && (
+          <meta property="twitter:site" content={CHAIN_CONFIG.TWITTER_HANDLE} />
+        )}
         <meta
           property="twitter:title"
           content={`Trade | ${CHAIN_CONFIG.DEX_NAME} DEX`}

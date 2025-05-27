@@ -25,7 +25,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   TITLE: 'Fully On-chain Order Book',
   DEX_NAME: 'Clober',
   COLOR: colors.blue,
-  URL: 'https://app.clober.io',
+  URL: 'https://alpha.clober.io',
   LANDING_PAGE_URL: 'https://clober.io',
   TWITTER_HANDLE: '@CloberDEX',
   GITHIB_URL: 'https://github.com/clober-dex/',

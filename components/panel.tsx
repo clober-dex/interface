@@ -87,50 +87,58 @@ const Panel = ({
                         />
                       </svg>
                       <div className="flex flex-col gap-8">
-                        <a
-                          className="link"
-                          target="_blank"
-                          href={CHAIN_CONFIG.GITHIB_URL}
-                          rel="noreferrer"
-                        >
-                          <div className="flex flex-row gap-2 items-center">
-                            <GithubLogoSvg className="w-4 h-4" />
-                            Github
-                          </div>
-                        </a>
-                        <a
-                          className="link"
-                          target="_blank"
-                          href={CHAIN_CONFIG.DOCS_URL}
-                          rel="noreferrer"
-                        >
-                          <div className="flex flex-row gap-2 items-center">
-                            <DocsIconSvg className="w-4 h-4" />
-                            Docs
-                          </div>
-                        </a>
-                        <a
-                          className="link"
-                          target="_blank"
-                          href={`https://x.com/${CHAIN_CONFIG.TWITTER_HANDLE}`}
-                          rel="noreferrer"
-                        >
-                          <div className="flex flex-row gap-2 items-center">
-                            <TwitterLogoSvg className="w-4 h-4" />
-                            Twitter
-                          </div>
-                        </a>
-                        <a
-                          className="link"
-                          target="_blank"
-                          href={CHAIN_CONFIG.DISCORD_URL}
-                          rel="noreferrer"
-                        >
-                          <div className="flex flex-row gap-2 items-center">
-                            <DiscordLogoSvg className="w-4 h-4" />
-                            Discord
-                          </div>
-                        </a>
+                        {CHAIN_CONFIG.GITHIB_URL && (
+                          <a
+                            className="link"
+                            target="_blank"
+                            href={CHAIN_CONFIG.GITHIB_URL}
+                            rel="noreferrer"
+                          >
+                            <div className="flex flex-row gap-2 items-center">
+                              <GithubLogoSvg className="w-4 h-4" />
+                              Github
+                            </div>
+                          </a>
+                        )}
+                        {CHAIN_CONFIG.DOCS_URL && (
+                          <a
+                            className="link"
+                            target="_blank"
+                            href={CHAIN_CONFIG.DOCS_URL}
+                            rel="noreferrer"
+                          >
+                            <div className="flex flex-row gap-2 items-center">
+                              <DocsIconSvg className="w-4 h-4" />
+                              Docs
+                            </div>
+                          </a>
+                        )}
+                        {CHAIN_CONFIG.TWITTER_HANDLE && (
+                          <a
+                            className="link"
+                            target="_blank"
+                            href={`https://x.com/${CHAIN_CONFIG.TWITTER_HANDLE}`}
+                            rel="noreferrer"
+                          >
+                            <div className="flex flex-row gap-2 items-center">
+                              <TwitterLogoSvg className="w-4 h-4" />
+                              Twitter
+                            </div>
+                          </a>
+                        )}
+                        {CHAIN_CONFIG.DISCORD_URL && (
+                          <a
+                            className="link"
+                            target="_blank"
+                            href={CHAIN_CONFIG.DISCORD_URL}
+                            rel="noreferrer"
+                          >
+                            <div className="flex flex-row gap-2 items-center">
+                              <DiscordLogoSvg className="w-4 h-4" />
+                              Discord
+                            </div>
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
