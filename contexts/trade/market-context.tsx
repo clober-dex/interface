@@ -252,6 +252,22 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   )
 
   const availableDecimalPlacesGroups = useMemo(() => {
+    if (marketPrice > 0) {
+      const decimalPlaces = getPriceDecimals(marketPrice)
+      return Array.from(Array(DEFAULT_DECIMAL_PLACE_GROUP_LENGTH).keys())
+        .map((i) => {
+          const label = (10 ** (i - decimalPlaces)).toFixed(
+            Math.max(decimalPlaces - i, 0),
+          )
+          if (new BigNumber(marketPrice).gt(label)) {
+            return {
+              label,
+              value: decimalPlaces - i,
+            }
+          }
+        })
+        .filter((x) => x) as Decimals[]
+    }
     return selectedMarket &&
       selectedMarket.bids.length + selectedMarket.asks.length > 0
       ? (Array.from(Array(DEFAULT_DECIMAL_PLACE_GROUP_LENGTH).keys())
@@ -281,7 +297,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
           })
           .filter((x) => x) as Decimals[])
       : null
-  }, [selectedMarket])
+  }, [marketPrice, selectedMarket])
 
   const [bids, asks] = useMemo(
     () =>
