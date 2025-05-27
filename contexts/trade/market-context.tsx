@@ -8,7 +8,8 @@ import {
 } from '@clober/v2-sdk'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
-import { getAddress } from 'viem'
+import { getAddress, isAddressEqual } from 'viem'
+import { useGasPrice } from 'wagmi'
 
 import { isMarketEqual } from '../../utils/market'
 import {
@@ -26,6 +27,7 @@ import { useChainContext } from '../chain-context'
 import { getCurrencyAddress } from '../../utils/currency'
 import { toPlacesString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { fetchPrice } from '../../apis/price'
 
 import { useTradeContext } from './trade-context'
 
@@ -34,6 +36,10 @@ type MarketContext = {
   selectedMarketSnapshot?: MarketSnapshot
   setSelectedMarket: (market: Market | undefined) => void
   selectedDecimalPlaces: Decimals | undefined
+  isFetchingQuotes: boolean
+  setIsFetchingQuotes: (isFetchingQuotes: boolean) => void
+  marketPrice: number
+  setMarketPrice: (price: number) => void
   setSelectedDecimalPlaces: (decimalPlaces: Decimals | undefined) => void
   availableDecimalPlacesGroups: Decimals[] | null
   depthClickedIndex:
@@ -66,6 +72,10 @@ const Context = React.createContext<MarketContext>({
   setSelectedMarket: (_) => _,
   selectedDecimalPlaces: undefined,
   setSelectedDecimalPlaces: () => {},
+  isFetchingQuotes: false,
+  setIsFetchingQuotes: () => {},
+  marketPrice: 0,
+  setMarketPrice: () => {},
   availableDecimalPlacesGroups: null,
   depthClickedIndex: undefined,
   setDepthClickedIndex: () => {},
@@ -74,6 +84,7 @@ const Context = React.createContext<MarketContext>({
 })
 
 export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
+  const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
   const queryClient = useQueryClient()
   const {
@@ -88,6 +99,13 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setOutputCurrencyAmount,
   } = useTradeContext()
 
+  const previousValue = useRef({
+    inputCurrencyAddress: inputCurrency?.address,
+    outputCurrencyAddress: outputCurrency?.address,
+  })
+
+  const [isFetchingQuotes, setIsFetchingQuotes] = useState(false)
+  const [marketPrice, setMarketPrice] = useState(0)
   const [selectedDecimalPlaces, setSelectedDecimalPlaces] = useState<
     Decimals | undefined
   >(undefined)
@@ -179,7 +197,77 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     }
   }, [data, selectedMarket])
 
+  // once
+  useEffect(
+    () => {
+      const action = async () => {
+        setIsFetchingQuotes(true)
+        if (inputCurrency && outputCurrency && gasPrice) {
+          previousValue.current.inputCurrencyAddress = inputCurrency.address
+          previousValue.current.outputCurrencyAddress = outputCurrency.address
+          try {
+            const price = await fetchPrice(
+              selectedChain.id,
+              inputCurrency,
+              outputCurrency,
+              gasPrice,
+            )
+            if (
+              !isAddressEqual(
+                previousValue.current.inputCurrencyAddress,
+                inputCurrency.address,
+              ) ||
+              !isAddressEqual(
+                previousValue.current.outputCurrencyAddress,
+                outputCurrency.address,
+              ) ||
+              price.isZero()
+            ) {
+              return
+            }
+            console.log({
+              context: 'limit',
+              price: price.toNumber(),
+              chainId: selectedChain.id,
+              inputCurrency: inputCurrency.symbol,
+              outputCurrency: outputCurrency.symbol,
+              gasPrice: gasPrice.toString(),
+            })
+            setMarketPrice(price.toNumber())
+            setPriceInput(price.toNumber().toString())
+            setIsFetchingQuotes(false)
+          } catch (e) {
+            console.error(`Failed to fetch price: ${e}`)
+          }
+        }
+      }
+
+      setDepthClickedIndex(undefined)
+      setPriceInput('')
+      setMarketPrice(0)
+
+      action()
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [inputCurrency, outputCurrency, selectedChain.id, gasPrice === undefined],
+  )
+
   const availableDecimalPlacesGroups = useMemo(() => {
+    if (marketPrice > 0) {
+      const decimalPlaces = getPriceDecimals(marketPrice)
+      return Array.from(Array(DEFAULT_DECIMAL_PLACE_GROUP_LENGTH).keys())
+        .map((i) => {
+          const label = (10 ** (i - decimalPlaces)).toFixed(
+            Math.max(decimalPlaces - i, 0),
+          )
+          if (new BigNumber(marketPrice).gt(label)) {
+            return {
+              label,
+              value: decimalPlaces - i,
+            }
+          }
+        })
+        .filter((x) => x) as Decimals[]
+    }
     return selectedMarket &&
       selectedMarket.bids.length + selectedMarket.asks.length > 0
       ? (Array.from(Array(DEFAULT_DECIMAL_PLACE_GROUP_LENGTH).keys())
@@ -209,7 +297,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
           })
           .filter((x) => x) as Decimals[])
       : null
-  }, [selectedMarket])
+  }, [marketPrice, selectedMarket])
 
   const [bids, asks] = useMemo(
     () =>
@@ -386,6 +474,10 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setSelectedMarket,
         selectedDecimalPlaces,
         setSelectedDecimalPlaces,
+        isFetchingQuotes,
+        setIsFetchingQuotes,
+        marketPrice,
+        setMarketPrice,
         availableDecimalPlacesGroups,
         depthClickedIndex,
         setDepthClickedIndex,

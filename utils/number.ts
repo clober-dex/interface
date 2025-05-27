@@ -49,7 +49,7 @@ export const toShortNumber = (number: BigNumber.Value): string => {
     // minimum tick is 0.1bp
     const fractionDigits = findFirstNonZeroIndex(integer.div(100000))
     return toCommaSeparated(
-      removeZeroTail(bn.toFixed(fractionDigits, BigNumber.ROUND_FLOOR)),
+      removeZeroTail(bn.toFixed(fractionDigits, BigNumber.ROUND_DOWN)),
     )
   }
   if (index <= 3) {
