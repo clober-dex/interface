@@ -63,6 +63,7 @@ type MarketContext = {
     size: string
   }[]
   setMarketRateAction: () => Promise<void>
+  marketRateDiff: number
 }
 
 const Context = React.createContext<MarketContext>({
@@ -81,6 +82,7 @@ const Context = React.createContext<MarketContext>({
   setMarketRateAction: async () => {
     return Promise.resolve()
   },
+  marketRateDiff: 0,
 })
 
 export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
@@ -494,6 +496,15 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setPriceInput,
   ])
 
+  const marketRateDiff = useMemo(
+    () =>
+      (isBid
+        ? new BigNumber(marketPrice).dividedBy(priceInput).minus(1).times(100)
+        : new BigNumber(priceInput).dividedBy(marketPrice).minus(1).times(100)
+      ).toNumber(),
+    [isBid, marketPrice, priceInput],
+  )
+
   return (
     <Context.Provider
       value={{
@@ -510,6 +521,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         bids,
         asks,
         setMarketRateAction,
+        marketRateDiff,
       }}
     >
       {children}

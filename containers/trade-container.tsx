@@ -217,6 +217,7 @@ export const TradeContainer = () => {
     isFetchingQuotes,
     marketPrice,
     setMarketRateAction,
+    marketRateDiff,
   } = useMarketContext()
   const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
@@ -294,15 +295,6 @@ export const TradeContainer = () => {
       setShowMetaInfo(false)
     }
   }, [amountIn, tab])
-
-  const marketRateDiff = useMemo(
-    () =>
-      (isBid
-        ? new BigNumber(marketPrice).dividedBy(priceInput).minus(1).times(100)
-        : new BigNumber(priceInput).dividedBy(marketPrice).minus(1).times(100)
-      ).toNumber(),
-    [isBid, marketPrice, priceInput],
-  )
 
   useEffect(() => {
     if (
@@ -894,7 +886,10 @@ export const TradeContainer = () => {
         </div>
 
         {tab === 'limit' && userAddress ? (
-          <OpenOrderContainer selectedMarket={selectedMarket} />
+          <OpenOrderContainer
+            chainId={selectedChain.id}
+            selectedMarket={selectedMarket}
+          />
         ) : (
           <div className="hidden sm:flex mb-28 lg:mb-2" />
         )}
