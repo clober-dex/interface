@@ -4,8 +4,8 @@ import { NextRouter } from 'next/router'
 import { CurrencyIcon } from '../../icon/currency-icon'
 import { formatDollarValue, formatUnits } from '../../../utils/bigint'
 import { Chain } from '../../../model/chain'
-import { toCommaSeparated } from '../../../utils/number'
 import { Currency } from '../../../model/currency'
+import { formatWithCommas } from '../../../utils/bignumber'
 
 export const LpPositionCard = ({
   chain,
@@ -57,7 +57,7 @@ export const LpPositionCard = ({
             <div className="text-gray-400 text-sm">LP in wallet</div>
             <div className="justify-center items-center gap-1 flex">
               <div className="text-right text-white text-base">
-                {toCommaSeparated(
+                {formatWithCommas(
                   formatUnits(amount, currencyLp.decimals, Number(lpPriceUSD)),
                 )}
               </div>
@@ -112,7 +112,7 @@ export const LpPositionCard = ({
           </div>
           <div className="justify-start items-center gap-2 flex">
             <div className="text-white text-sm font-bold">
-              {toCommaSeparated(
+              {formatWithCommas(
                 formatUnits(amount, currencyLp.decimals, Number(lpPriceUSD)),
               )}
             </div>

@@ -1,18 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { findFirstNonZeroIndex } from './bignumber'
+import { findFirstNonZeroIndex, formatWithCommas } from './bignumber'
 
 export const POLLY_FILL_DECIMALS = 4
-
-export const toCommaSeparated = (number: BigNumber.Value) => {
-  const parts = number.toString().split('.')
-  const integer = parts[0]
-  const decimal = parts[1]
-  const formattedInteger =
-    (integer.startsWith('-') ? '-' : '') +
-    integer.replace('-', '').replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  return decimal ? `${formattedInteger}.${decimal}` : formattedInteger
-}
 
 export const removeZeroTail = (number: string) => {
   // 0.001000 -> 0.001
@@ -37,7 +27,7 @@ export const toShortNumber = (number: BigNumber.Value): string => {
   if (integer.gt(0)) {
     // minimum tick is 0.1bp
     const fractionDigits = findFirstNonZeroIndex(integer.div(100000))
-    return toCommaSeparated(
+    return formatWithCommas(
       removeZeroTail(bn.toFixed(fractionDigits, BigNumber.ROUND_DOWN)),
     )
   }
@@ -48,12 +38,12 @@ export const toShortNumber = (number: BigNumber.Value): string => {
     }
     // minimum tick is 0.1bp
     const fractionDigits = findFirstNonZeroIndex(integer.div(100000))
-    return toCommaSeparated(
+    return formatWithCommas(
       removeZeroTail(bn.toFixed(fractionDigits, BigNumber.ROUND_DOWN)),
     )
   }
   if (index <= 3) {
-    return toCommaSeparated(
+    return formatWithCommas(
       removeZeroTail(
         bn.toFixed(index + 1 + POLLY_FILL_DECIMALS, BigNumber.ROUND_DOWN),
       ),
@@ -144,5 +134,5 @@ export const toHumanReadableString = (
     abbreviatedDollarValue = value.div(KILO)
     suffix = 'K'
   }
-  return `${toCommaSeparated(abbreviatedDollarValue.toFixed(decimalPlaces))}${suffix}`
+  return `${formatWithCommas(abbreviatedDollarValue.toFixed(decimalPlaces))}${suffix}`
 }

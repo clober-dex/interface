@@ -52,3 +52,13 @@ export const formatPreciseAmountString = (
     Math.floor(Math.max(-Math.log10(0.005 / price), 0) / 2) * 2
   return new BigNumber(number).toFixed(underHalfPennyDecimals)
 }
+
+export const formatWithCommas = (number: BigNumber.Value) => {
+  const parts = number.toString().split('.')
+  const integer = parts[0]
+  const decimal = parts[1]
+  const formattedInteger =
+    (integer.startsWith('-') ? '-' : '') +
+    integer.replace('-', '').replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return decimal ? `${formattedInteger}.${decimal}` : formattedInteger
+}

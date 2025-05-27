@@ -4,10 +4,10 @@ import html2canvas from 'html2canvas'
 import Modal from '../modal/modal'
 import { shortAddress } from '../../utils/address'
 import { TradingCompetitionPnl } from '../../model/trading-competition-pnl'
-import { toCommaSeparated } from '../../utils/number'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { Chain } from '../../model/chain'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { formatWithCommas } from '../../utils/bignumber'
 
 const CloberSVG = () => (
   <div className="flex flex-row gap-2">
@@ -217,7 +217,7 @@ export const TradingCompetitionPnlCard = ({
               >
                 <span className="text-[50px] font-semibold mr-2">
                   {totalProfit === 0 ? ' ' : totalProfit > 0 ? '+' : '-'}$
-                  {toCommaSeparated(Math.abs(totalProfit).toFixed(4))}
+                  {formatWithCommas(Math.abs(totalProfit).toFixed(4))}
                 </span>
                 <span className="text-[28px] font-semibold">USDC</span>
               </div>
@@ -242,7 +242,7 @@ export const TradingCompetitionPnlCard = ({
                       className={`justify-start ${pnl === 0 ? 'text-white' : pnl > 0 ? 'text-[#21ef8b]' : 'text-[#ff5c5c]'} text-lg font-semibold`}
                     >
                       {pnl === 0 ? ' ' : pnl > 0 ? '+' : '-'}$
-                      {toCommaSeparated(Math.abs(pnl).toFixed(4))}
+                      {formatWithCommas(Math.abs(pnl).toFixed(4))}
                     </div>
                   </div>
                 ))}

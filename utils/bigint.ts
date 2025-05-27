@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { formatUnits as _formatUnits } from 'viem'
 
-import { findFirstNonZeroIndex } from './bignumber'
-import { POLLY_FILL_DECIMALS, toCommaSeparated } from './number'
+import { findFirstNonZeroIndex, formatWithCommas } from './bignumber'
+import { POLLY_FILL_DECIMALS } from './number'
 
 export const max = (...args: bigint[]) =>
   args.reduce((m, e) => (e > m ? e : m), 0n)
@@ -24,7 +24,7 @@ export const formatDollarValue = (
   decimals: number,
   price?: number,
 ): string => {
-  return `$${toCommaSeparated(getDollarValue(value, decimals, price).toFixed(2))}`
+  return `$${formatWithCommas(getDollarValue(value, decimals, price).toFixed(2))}`
 }
 export const formatUnits = (
   value: bigint,

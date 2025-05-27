@@ -1,6 +1,5 @@
 import React from 'react'
 
-import { toCommaSeparated } from '../../../utils/number'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
 import CurrencyAmountInput from '../../input/currency-amount-input'
 import { getLTVTextColor } from '../../../utils/ltv'
@@ -9,6 +8,7 @@ import { Prices } from '../../../model/prices'
 import { Asset } from '../../../model/futures/asset'
 import { formatDollarValue } from '../../../utils/bigint'
 import { Chain } from '../../../model/chain'
+import { formatWithCommas } from '../../../utils/bignumber'
 
 export const MintFuturesAssetForm = ({
   chain,
@@ -113,7 +113,7 @@ export const MintFuturesAssetForm = ({
               </div>
               <div className="ml-auto text-sm sm:text-base">
                 {liquidationPrice ? (
-                  <>${toCommaSeparated(liquidationPrice.toFixed(2))}</>
+                  <>${formatWithCommas(liquidationPrice.toFixed(2))}</>
                 ) : (
                   <>-</>
                 )}

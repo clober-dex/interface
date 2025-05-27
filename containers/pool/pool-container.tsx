@@ -9,12 +9,12 @@ import { useChainContext } from '../../contexts/chain-context'
 import { QuestionMarkSvg } from '../../components/svg/question-mark-svg'
 import { useCurrencyContext } from '../../contexts/currency-context'
 import { Loading } from '../../components/loading'
-import { toCommaSeparated } from '../../utils/number'
 import { LpPositionCard } from '../../components/card/pool/lp-position-card'
 import { formatUnits } from '../../utils/bigint'
 import { PoolSnapshotCard } from '../../components/card/pool/pool-snapshot-card'
 import { fetchPoolSnapshots } from '../../apis/pool'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { formatWithCommas } from '../../utils/bignumber'
 
 export const PoolContainer = () => {
   const router = useRouter()
@@ -73,7 +73,7 @@ export const PoolContainer = () => {
                 TVL
               </div>
               <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">
-                ${toCommaSeparated(totalTvl.toFixed(2))}
+                ${formatWithCommas(totalTvl.toFixed(2))}
               </div>
             </div>
             <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">
@@ -81,7 +81,7 @@ export const PoolContainer = () => {
                 24h Volume
               </div>
               <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">
-                ${toCommaSeparated(total24hVolume.toFixed(2))}
+                ${formatWithCommas(total24hVolume.toFixed(2))}
               </div>
             </div>
           </div>

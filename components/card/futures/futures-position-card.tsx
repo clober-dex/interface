@@ -8,9 +8,10 @@ import {
 } from '../../../utils/date'
 import { formatUnits } from '../../../utils/bigint'
 import { FuturesPosition } from '../../../model/futures/futures-position'
-import { toCommaSeparated, toShortNumber } from '../../../utils/number'
+import { toShortNumber } from '../../../utils/number'
 import { EditSvg } from '../../svg/edit-svg'
 import { Chain } from '../../../model/chain'
+import { formatWithCommas } from '../../../utils/bignumber'
 
 export const FuturesPositionCard = ({
   chain,
@@ -73,7 +74,7 @@ export const FuturesPositionCard = ({
             </div>
             <div className="flex gap-1">
               <div className="text-sm sm:text-base">
-                {toCommaSeparated(
+                {formatWithCommas(
                   formatUnits(
                     position.debtAmount ?? 0n,
                     position.asset.currency.decimals,
@@ -103,7 +104,7 @@ export const FuturesPositionCard = ({
               Liq. Price
             </div>
             <div className="text-sm sm:text-base">
-              ${toCommaSeparated((position?.liquidationPrice ?? 0).toFixed(4))}
+              ${formatWithCommas((position?.liquidationPrice ?? 0).toFixed(4))}
             </div>
           </div>
 
@@ -129,7 +130,7 @@ export const FuturesPositionCard = ({
               {position.asset.settlePrice > 0n ? (
                 <>
                   $
-                  {toCommaSeparated(
+                  {formatWithCommas(
                     (position?.asset.settlePrice ?? 0).toFixed(2),
                   )}
                 </>
