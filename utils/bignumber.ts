@@ -20,7 +20,7 @@ export const findFirstNonZeroIndex = (number: BigNumber.Value): number => {
   return i
 }
 
-export const toPlacesString = (
+export const formatSignificantString = (
   number: BigNumber.Value,
   places: number = 4,
   roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_FLOOR,

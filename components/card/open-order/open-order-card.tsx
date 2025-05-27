@@ -4,7 +4,7 @@ import { NextRouter } from 'next/router'
 
 import { OutlinkSvg } from '../../svg/outlink-svg'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
-import { toPlacesString } from '../../../utils/bignumber'
+import { formatSignificantString } from '../../../utils/bignumber'
 import { toShortNumber } from '../../../utils/number'
 
 export const OpenOrderCard = ({
@@ -59,7 +59,7 @@ export const OpenOrderCard = ({
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Amount</label>
                 <p className="flex gap-1 text-white">
-                  {toPlacesString(openOrder.amount.value)}{' '}
+                  {formatSignificantString(openOrder.amount.value)}{' '}
                   <span className="text-[#8690a5]">
                     {openOrder.amount.currency.symbol}
                   </span>
@@ -84,7 +84,7 @@ export const OpenOrderCard = ({
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Claimable</label>
                 <p className="flex gap-1 text-white">
-                  {toPlacesString(openOrder.claimable.value)}{' '}
+                  {formatSignificantString(openOrder.claimable.value)}{' '}
                   <span className="text-[#8690a5]">
                     {openOrder.claimable.currency.symbol}
                   </span>
@@ -135,7 +135,7 @@ export const OpenOrderCard = ({
 
           <div className="w-[180px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             <p className="flex gap-1 text-white">
-              {toPlacesString(openOrder.amount.value)}{' '}
+              {formatSignificantString(openOrder.amount.value)}{' '}
               <span className="text-[#8690a5]">
                 {openOrder.amount.currency.symbol}
               </span>
@@ -148,7 +148,7 @@ export const OpenOrderCard = ({
 
           <div className="w-[200px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             <p className="flex gap-1 text-white">
-              {toPlacesString(openOrder.claimable.value)}{' '}
+              {formatSignificantString(openOrder.claimable.value)}{' '}
               <span className="text-[#8690a5]">
                 {openOrder.claimable.currency.symbol}
               </span>

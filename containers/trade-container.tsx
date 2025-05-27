@@ -18,7 +18,7 @@ import { isAddressesEqual } from '../utils/address'
 import { fetchQuotes } from '../apis/swap/quote'
 import { aggregators } from '../chain-configs/aggregators'
 import { formatUnits } from '../utils/bigint'
-import { toPlacesString } from '../utils/bignumber'
+import { formatSignificantString } from '../utils/bignumber'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
@@ -341,7 +341,7 @@ export const TradeContainer = () => {
       setMarketPrice(price.toNumber())
       setPriceInput(
         minimumDecimalPlaces
-          ? toPlacesString(price, minimumDecimalPlaces)
+          ? formatSignificantString(price, minimumDecimalPlaces)
           : price.toFixed(),
       )
       setIsFetchingQuotes(false)

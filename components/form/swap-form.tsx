@@ -8,7 +8,7 @@ import { Currency } from '../../model/currency'
 import CurrencySelect from '../selector/currency-select'
 import {
   formatPreciseAmountString,
-  toPlacesString,
+  formatSignificantString,
 } from '../../utils/bignumber'
 import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
@@ -362,7 +362,7 @@ export const SwapForm = ({
                     ) : (
                       <div className="text-xs sm:text-sm text-gray-400 flex flex-row gap-1 items-center">
                         <span className="text-white">
-                          ${toPlacesString(gasEstimateValue)}
+                          ${formatSignificantString(gasEstimateValue)}
                         </span>
                         {aggregatorName.length > 0 ? (
                           <>

@@ -5,7 +5,7 @@ import { Currency } from '../../model/currency'
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { formatDollarValue, formatUnits } from '../../utils/bigint'
-import { toPlacesString } from '../../utils/bignumber'
+import { formatSignificantString } from '../../utils/bignumber'
 import { Chain } from '../../model/chain'
 
 import NumberInput from './number-input'
@@ -128,7 +128,7 @@ const CurrencyAmountInput = ({
             <div className="flex items-center text-xs sm:text-sm gap-1 sm:gap-2">
               <div className="text-gray-500">Available</div>
               <div className="text-white">
-                {toPlacesString(
+                {formatSignificantString(
                   formatUnits(availableAmount, currency.decimals, price),
                 )}
               </div>

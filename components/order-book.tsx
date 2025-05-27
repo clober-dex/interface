@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import { Market } from '@clober/v2-sdk'
 
 import { Decimals } from '../model/decimals'
-import { toPlacesString } from '../utils/bignumber'
+import { formatSignificantString } from '../utils/bignumber'
 
 import DecimalsSelector from './selector/decimals-selector'
 import { Loading } from './loading'
@@ -127,7 +127,7 @@ export default function OrderBook({
                       }}
                     >
                       <div className="text-gray-200">
-                        {toPlacesString(size)}
+                        {formatSignificantString(size)}
                       </div>
                       <div className="text-green-500">{price}</div>
                       <div
@@ -166,7 +166,7 @@ export default function OrderBook({
                     >
                       <div className="text-red-500">{price}</div>
                       <div className="text-gray-200">
-                        {toPlacesString(size)}
+                        {formatSignificantString(size)}
                       </div>
                       <div
                         className="absolute h-full left-0 bg-red-500/10"
@@ -228,7 +228,7 @@ export default function OrderBook({
                         }}
                       >
                         <div className="flex-1 text-left text-gray-200">
-                          {toPlacesString(size)}
+                          {formatSignificantString(size)}
                         </div>
                         <div className="text-right text-green-500">{price}</div>
                         <div
@@ -262,7 +262,7 @@ export default function OrderBook({
                       >
                         <div className="text-left text-red-500">{price}</div>
                         <div className="flex-1 text-right text-gray-200">
-                          {toPlacesString(size)}
+                          {formatSignificantString(size)}
                         </div>
                         <div
                           className="absolute h-full left-0 bg-red-500/10"

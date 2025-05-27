@@ -10,7 +10,7 @@ import { ActionButton, ActionButtonProps } from '../button/action-button'
 import CurrencySelect from '../selector/currency-select'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
-import { toPlacesString } from '../../utils/bignumber'
+import { formatSignificantString } from '../../utils/bignumber'
 import { getPriceDecimals } from '../../utils/prices'
 import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
@@ -96,12 +96,12 @@ export const LimitForm = ({
     : getPriceDecimals(Number(priceInput))
 
   const [debouncedPriceInput, setDebouncedPriceInput] = useState('')
-  const minimumPrice = toPlacesString(
+  const minimumPrice = formatSignificantString(
     new BigNumber(0.1).pow(minimumDecimalPlaces).toString(),
     minimumDecimalPlaces,
     isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
   )
-  const maximumPrice = toPlacesString(
+  const maximumPrice = formatSignificantString(
     '8662020672688495886265',
     minimumDecimalPlaces,
     isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
@@ -316,7 +316,7 @@ export const LimitForm = ({
                             marketBaseCurrency: selectedMarket.base,
                             bidTick: currentTick,
                           })
-                          const nextPrice = toPlacesString(
+                          const nextPrice = formatSignificantString(
                             price,
                             minimumDecimalPlaces,
                             isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
@@ -379,7 +379,7 @@ export const LimitForm = ({
                             marketBaseCurrency: selectedMarket.base,
                             bidTick: currentTick,
                           })
-                          const nextPrice = toPlacesString(
+                          const nextPrice = formatSignificantString(
                             price,
                             minimumDecimalPlaces,
                             isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,

@@ -25,7 +25,7 @@ import {
 } from '../../model/decimals'
 import { useChainContext } from '../chain-context'
 import { getCurrencyAddress } from '../../utils/currency'
-import { toPlacesString } from '../../utils/bignumber'
+import { formatSignificantString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { fetchPrice } from '../../apis/price'
 
@@ -353,7 +353,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     if (depthClickedIndex && inputCurrency && outputCurrency) {
       if (depthClickedIndex.isBid && bids[depthClickedIndex.index]) {
         setPriceInput(
-          toPlacesString(
+          formatSignificantString(
             bids[depthClickedIndex.index].price,
             minimumDecimalPlaces,
           ),
@@ -361,7 +361,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setDepthClickedIndex(undefined)
       } else if (!depthClickedIndex.isBid && asks[depthClickedIndex.index]) {
         setPriceInput(
-          toPlacesString(
+          formatSignificantString(
             asks[depthClickedIndex.index].price,
             minimumDecimalPlaces,
           ),
