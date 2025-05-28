@@ -34,7 +34,7 @@ export const SwapRouteList = ({
     [quotes],
   )
   return (
-    <div className="flex flex-col sm:p-4 gap-4 md:gap-2.5 sm:gap-3 relative">
+    <div className="flex flex-col sm:p-4 gap-4 md:gap-2.5 sm:gap-3">
       {bestQuote && quotes.length > 0 ? (
         [bestQuote, ...quotesWithoutBestQuote].map((quote, index) => (
           <SwapRouteCard
@@ -68,7 +68,7 @@ export const SwapRouteList = ({
           />
         ))
       ) : (
-        <div className="text-base flex font-bold text-center w-full justify-center items-center absolute top-1/2 h-full text-white">
+        <div className="text-base flex font-bold text-center w-full justify-center items-center h-full lg:h-fit lg:absolute lg:top-1/2">
           No quotes available for this swap.
         </div>
       )}
