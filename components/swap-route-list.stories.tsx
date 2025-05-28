@@ -56,7 +56,7 @@ export const Default: Story = {
       decimals: 6,
     },
     aggregatorNames: ['Uniswap', 'CloberV2'],
-    isFetchingQuotes: false,
+    latestQuotesRefreshTime: 10,
   },
 }
 
@@ -70,7 +70,7 @@ export const Null: Story = {
       decimals: 6,
     },
     aggregatorNames: ['Uniswap', 'CloberV2'],
-    isFetchingQuotes: false,
+    latestQuotesRefreshTime: 10,
   },
 }
 

@@ -248,7 +248,8 @@ export const TradeContainer = () => {
     quotes,
     refreshQuotesAction,
     priceImpact,
-    isFetchingQuotes,
+    isFetchingOnChainPrice,
+    latestQuotesRefreshTime,
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
@@ -380,7 +381,7 @@ export const TradeContainer = () => {
         onChainPrice,
         priceDeviationPercent,
         setMarketRateAction: {
-          isLoading: isFetchingQuotes,
+          isLoading: isFetchingOnChainPrice,
           action: async () => {
             await setMarketRateAction()
           },
@@ -396,7 +397,7 @@ export const TradeContainer = () => {
       inputCurrency,
       inputCurrencyAmount,
       isBid,
-      isFetchingQuotes,
+      isFetchingOnChainPrice,
       limitActionButtonProps,
       onChainPrice,
       priceDeviationPercent,
@@ -718,7 +719,7 @@ export const TradeContainer = () => {
                       selectedDecimalPlaces={selectedDecimalPlaces}
                       setSelectedDecimalPlaces={setSelectedDecimalPlaces}
                       setDepthClickedIndex={
-                        isFetchingQuotes ? () => {} : setDepthClickedIndex
+                        isFetchingOnChainPrice ? () => {} : setDepthClickedIndex
                       }
                       setShowOrderBook={setShowOrderBook}
                       setTab={setTab}
@@ -744,7 +745,7 @@ export const TradeContainer = () => {
                       aggregatorNames={aggregators.map((a) => a.name)}
                       selectedQuote={selectedQuote}
                       setSelectedQuote={setSelectedQuote}
-                      isFetchingQuotes={isFetchingQuotes}
+                      latestQuotesRefreshTime={latestQuotesRefreshTime}
                     />
                   )}
                 </div>
@@ -790,7 +791,7 @@ export const TradeContainer = () => {
         setShowMobileModal={setShowMobileModal}
         selectedQuote={selectedQuote}
         setSelectedQuote={setSelectedQuote}
-        isFetchingQuotes={isFetchingQuotes}
+        latestQuotesRefreshTime={latestQuotesRefreshTime}
         limitFormProps={limitFormProps}
         swapActionButtonProps={swapActionButtonProps}
       />

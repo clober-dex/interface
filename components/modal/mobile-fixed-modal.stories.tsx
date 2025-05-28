@@ -72,7 +72,7 @@ export const Limit: Story = {
         },
       ],
     },
-    isFetchingQuotes: false,
+    latestQuotesRefreshTime: 10,
     selectedQuote: null,
     setSelectedQuote: () => {},
     limitFormProps: {
@@ -157,7 +157,7 @@ export const Swap: Story = {
         },
       ],
     },
-    isFetchingQuotes: false,
+    latestQuotesRefreshTime: 10,
     selectedQuote: null,
     setSelectedQuote: () => {},
     limitFormProps: {
