@@ -449,38 +449,35 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   const setMarketRateAction = useCallback(async () => {
     if (inputCurrency && outputCurrency && gasPrice) {
-      setIsFetchingQuotes(true)
-      const price = await fetchPrice(
-        selectedChain.id,
-        inputCurrency,
-        outputCurrency,
-        gasPrice,
-      )
-      console.log({
-        context: 'fetching price for market rate',
-        price: price.toNumber(),
-        chainId: selectedChain.id,
-        inputCurrency: inputCurrency.symbol,
-        outputCurrency: outputCurrency.symbol,
-        gasPrice: gasPrice.toString(),
-      })
-      const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
-      if (price.isZero()) {
-        setIsFetchingQuotes(false)
-        return
-      }
-      setMarketPrice(price.toNumber())
-      setPriceInput(
-        formatToCloberPriceString(
+      try {
+        setIsFetchingQuotes(true)
+        const price = await fetchPrice(
           selectedChain.id,
-          price.toString(),
           inputCurrency,
           outputCurrency,
-          isBid,
-          minimumDecimalPlaces,
-        ),
-      )
-      setIsFetchingQuotes(false)
+          gasPrice,
+        )
+        const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
+        if (price.isZero()) {
+          setIsFetchingQuotes(false)
+          return
+        }
+        setMarketPrice(price.toNumber())
+        setPriceInput(
+          formatToCloberPriceString(
+            selectedChain.id,
+            price.toString(),
+            inputCurrency,
+            outputCurrency,
+            isBid,
+            minimumDecimalPlaces,
+          ),
+        )
+      } catch (e) {
+        console.error(`Failed to fetch price: ${e}`)
+      } finally {
+        setIsFetchingQuotes(false)
+      }
     }
   }, [
     availableDecimalPlacesGroups,
