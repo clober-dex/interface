@@ -17,7 +17,6 @@ export const MobileFixedModal = ({
   setShowMobileModal,
   selectedQuote,
   setSelectedQuote,
-  latestQuotesRefreshTime,
   limitFormProps,
   swapActionButtonProps,
 }: {
@@ -29,7 +28,6 @@ export const MobileFixedModal = ({
   setShowMobileModal: (show: boolean) => void
   selectedQuote: Quote | null
   setSelectedQuote: (quote: Quote | null) => void
-  latestQuotesRefreshTime: number
   limitFormProps: LimitFormProps
   swapActionButtonProps: ActionButtonProps
 }) => {
@@ -67,7 +65,6 @@ export const MobileFixedModal = ({
                   aggregatorNames={aggregators.map((a) => a.name)}
                   selectedQuote={selectedQuote}
                   setSelectedQuote={setSelectedQuote}
-                  latestQuotesRefreshTime={latestQuotesRefreshTime}
                 />
               </div>
 

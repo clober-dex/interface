@@ -46,7 +46,7 @@ export async function fetchQuotes(
         gasLimit: bigint
         aggregator: Aggregator
         transaction: Transaction | undefined
-      } => quote !== undefined && quote.amountOut > 0n,
+      } => quote !== undefined,
     )
   if (quotes.length === 0) {
     throw new Error('No quotes available')

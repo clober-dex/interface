@@ -249,7 +249,6 @@ export const TradeContainer = () => {
     refreshQuotesAction,
     priceImpact,
     isFetchingOnChainPrice,
-    latestQuotesRefreshTime,
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
@@ -745,7 +744,6 @@ export const TradeContainer = () => {
                       aggregatorNames={aggregators.map((a) => a.name)}
                       selectedQuote={selectedQuote}
                       setSelectedQuote={setSelectedQuote}
-                      latestQuotesRefreshTime={latestQuotesRefreshTime}
                     />
                   )}
                 </div>
@@ -791,7 +789,6 @@ export const TradeContainer = () => {
         setShowMobileModal={setShowMobileModal}
         selectedQuote={selectedQuote}
         setSelectedQuote={setSelectedQuote}
-        latestQuotesRefreshTime={latestQuotesRefreshTime}
         limitFormProps={limitFormProps}
         swapActionButtonProps={swapActionButtonProps}
       />

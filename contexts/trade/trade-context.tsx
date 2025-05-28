@@ -59,7 +59,6 @@ type TradeContext = {
   priceImpact: number
   isFetchingOnChainPrice: boolean
   setIsFetchingOnChainPrice: (isFetching: boolean) => void
-  latestQuotesRefreshTime: number
 }
 
 const Context = React.createContext<TradeContext>({
@@ -92,7 +91,6 @@ const Context = React.createContext<TradeContext>({
   priceImpact: 0,
   isFetchingOnChainPrice: false,
   setIsFetchingOnChainPrice: () => {},
-  latestQuotesRefreshTime: Date.now(),
 })
 
 export const TRADE_SLIPPAGE_KEY = 'trade-slippage'
@@ -513,7 +511,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         priceImpact,
         isFetchingOnChainPrice,
         setIsFetchingOnChainPrice,
-        latestQuotesRefreshTime,
       }}
     >
       {children}

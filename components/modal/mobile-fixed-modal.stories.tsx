@@ -72,7 +72,6 @@ export const Limit: Story = {
         },
       ],
     },
-    latestQuotesRefreshTime: 10,
     selectedQuote: null,
     setSelectedQuote: () => {},
     limitFormProps: {
@@ -157,7 +156,6 @@ export const Swap: Story = {
         },
       ],
     },
-    latestQuotesRefreshTime: 10,
     selectedQuote: null,
     setSelectedQuote: () => {},
     limitFormProps: {

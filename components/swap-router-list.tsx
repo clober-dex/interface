@@ -12,7 +12,6 @@ export const SwapRouteList = ({
   aggregatorNames,
   selectedQuote,
   setSelectedQuote,
-  latestQuotesRefreshTime,
 }: {
   quotes: Quote[]
   bestQuote: Quote | null
@@ -20,7 +19,6 @@ export const SwapRouteList = ({
   aggregatorNames: string[]
   selectedQuote: Quote | null
   setSelectedQuote: (quote: Quote | null) => void
-  latestQuotesRefreshTime: number
 }) => {
   const quotesWithoutBestQuote = useMemo(
     () =>
@@ -28,6 +26,12 @@ export const SwapRouteList = ({
         (quote) => quote.aggregator.name !== (bestQuote?.aggregator.name ?? ''),
       ) as Quote[],
     [quotes, bestQuote],
+  )
+  const noRoute = useMemo(
+    () =>
+      quotes.length > 0 &&
+      quotes.reduce((acc, quote) => acc && quote.amountOut === 0n, true),
+    [quotes],
   )
   return (
     <div className="flex flex-col sm:p-4 gap-4 md:gap-2.5 sm:gap-3 relative">
@@ -50,7 +54,7 @@ export const SwapRouteList = ({
             setSelectedQuote={setSelectedQuote}
           />
         ))
-      ) : true ? (
+      ) : !noRoute ? (
         aggregatorNames.map((name) => (
           <SwapRouteCard
             quote={undefined}
