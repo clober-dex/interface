@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
-import { getQuoteToken } from '@clober/v2-sdk'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
@@ -25,7 +24,6 @@ import { SwapForm, SwapFormProps } from '../components/form/swap-form'
 import { useSwapContractContext } from '../contexts/trade/swap-contract-context'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { SwapRouteList } from '../components/swap-router-list'
-import { Quote } from '../model/aggregator/quote'
 import { MobileFixedModal } from '../components/modal/mobile-fixed-modal'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
@@ -218,6 +216,8 @@ export const TradeContainer = () => {
     marketPrice,
     setMarketRateAction,
     marketRateDiff,
+    quoteCurrency,
+    baseCurrency,
   } = useMarketContext()
   const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
@@ -242,10 +242,14 @@ export const TradeContainer = () => {
     setPriceInput,
     slippageInput,
     setSlippageInput,
+    showOrderBook,
+    setShowOrderBook,
+    selectedQuote,
+    setSelectedQuote,
   } = useTradeContext()
+
   const { openConnectModal } = useConnectModal()
   const { balances, prices, currencies, setCurrencies } = useCurrencyContext()
-  const [showOrderBook, setShowOrderBook] = useState(false)
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [latestRefreshTime, setLatestRefreshTime] = useState(Date.now())
@@ -255,30 +259,6 @@ export const TradeContainer = () => {
   const [tab, setTab] = useState<'limit' | 'swap'>(
     CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
   )
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
-
-  useEffect(() => {
-    if (selectedChain.testnet) {
-      setShowOrderBook(true)
-    } else {
-      setShowOrderBook(false)
-    }
-  }, [selectedChain.testnet])
-
-  const [quoteCurrency, baseCurrency] = useMemo(() => {
-    if (inputCurrency && outputCurrency) {
-      const quote = getQuoteToken({
-        chainId: selectedChain.id,
-        token0: inputCurrency.address,
-        token1: outputCurrency.address,
-      })
-      return isAddressEqual(quote, inputCurrency.address)
-        ? [inputCurrency, outputCurrency]
-        : [outputCurrency, inputCurrency]
-    } else {
-      return [undefined, undefined]
-    }
-  }, [inputCurrency, outputCurrency, selectedChain.id])
 
   const amountIn = useMemo(
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
@@ -295,15 +275,6 @@ export const TradeContainer = () => {
       setShowMetaInfo(false)
     }
   }, [amountIn, tab])
-
-  useEffect(() => {
-    if (
-      selectedMarket &&
-      selectedMarket.asks.length + selectedMarket.bids.length === 0
-    ) {
-      setShowOrderBook(false)
-    }
-  }, [selectedMarket])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -365,7 +336,7 @@ export const TradeContainer = () => {
     } else {
       setSelectedQuote(null)
     }
-  }, [quotes.best])
+  }, [quotes.best, setSelectedQuote])
 
   const priceImpact = useMemo(() => {
     if (
@@ -802,7 +773,7 @@ export const TradeContainer = () => {
                     </button>
                   </div>
 
-                  {!showOrderBook && baseCurrency ? (
+                  {!showOrderBook && baseCurrency && quoteCurrency ? (
                     !selectedChain.testnet ? (
                       <IframeChartContainer
                         setShowOrderBook={setShowOrderBook}

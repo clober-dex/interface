@@ -3,6 +3,7 @@ import {
   getMarket,
   getMarketId,
   getMarketSnapshot,
+  getQuoteToken,
   Market,
   MarketSnapshot,
 } from '@clober/v2-sdk'
@@ -27,6 +28,7 @@ import { useChainContext } from '../chain-context'
 import { getCurrencyAddress } from '../../utils/currency'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { fetchPrice } from '../../apis/price'
+import { Currency } from '../../model/currency'
 
 import { useTradeContext } from './trade-context'
 
@@ -63,6 +65,8 @@ type MarketContext = {
   }[]
   setMarketRateAction: () => Promise<void>
   marketRateDiff: number
+  quoteCurrency: Currency | undefined
+  baseCurrency: Currency | undefined
 }
 
 const Context = React.createContext<MarketContext>({
@@ -82,6 +86,8 @@ const Context = React.createContext<MarketContext>({
     return Promise.resolve()
   },
   marketRateDiff: 0,
+  quoteCurrency: undefined,
+  baseCurrency: undefined,
 })
 
 export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
@@ -497,6 +503,21 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     [isBid, marketPrice, priceInput],
   )
 
+  const [quoteCurrency, baseCurrency] = useMemo(() => {
+    if (inputCurrency && outputCurrency) {
+      const quote = getQuoteToken({
+        chainId: selectedChain.id,
+        token0: inputCurrency.address,
+        token1: outputCurrency.address,
+      })
+      return isAddressEqual(quote, inputCurrency.address)
+        ? [inputCurrency, outputCurrency]
+        : [outputCurrency, inputCurrency]
+    } else {
+      return [undefined, undefined]
+    }
+  }, [inputCurrency, outputCurrency, selectedChain.id])
+
   return (
     <Context.Provider
       value={{
@@ -514,6 +535,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         asks,
         setMarketRateAction,
         marketRateDiff,
+        quoteCurrency,
+        baseCurrency,
       }}
     >
       {children}

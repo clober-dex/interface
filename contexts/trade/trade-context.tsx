@@ -5,7 +5,6 @@ import { useAccount, useDisconnect } from 'wagmi'
 
 import { Currency } from '../../model/currency'
 import {
-  deduplicateCurrencies,
   fetchCurrenciesDone,
   fetchCurrency,
   LOCAL_STORAGE_INPUT_CURRENCY_KEY,
@@ -15,6 +14,7 @@ import { getQueryParams } from '../../utils/url'
 import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { Quote } from '../../model/aggregator/quote'
 
 type TradeContext = {
   isBid: boolean
@@ -35,6 +35,10 @@ type TradeContext = {
   setPriceInput: (priceInput: string) => void
   slippageInput: string
   setSlippageInput: (slippage: string) => void
+  showOrderBook: boolean
+  setShowOrderBook: (showOrderBook: boolean) => void
+  selectedQuote: Quote | null
+  setSelectedQuote: (quote: Quote | null) => void
 }
 
 const Context = React.createContext<TradeContext>({
@@ -56,6 +60,10 @@ const Context = React.createContext<TradeContext>({
   setPriceInput: () => {},
   slippageInput: '1',
   setSlippageInput: () => {},
+  showOrderBook: true,
+  setShowOrderBook: () => {},
+  selectedQuote: null,
+  setSelectedQuote: () => {},
 })
 
 export const TRADE_SLIPPAGE_KEY = 'trade-slippage'
@@ -70,6 +78,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { whitelistCurrencies, setCurrencies } = useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
+  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
+  const [showOrderBook, setShowOrderBook] = useState(true)
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
   const [inputCurrency, _setInputCurrency] = useState<Currency | undefined>(
     undefined,
@@ -280,6 +290,10 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setPriceInput,
         slippageInput,
         setSlippageInput,
+        showOrderBook,
+        setShowOrderBook,
+        selectedQuote,
+        setSelectedQuote,
       }}
     >
       {children}
