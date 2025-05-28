@@ -322,7 +322,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   // When depthClickedIndex is changed, reset the priceInput
   useEffect(() => {
-    console.log('availableDecimalPlacesGroups', availableDecimalPlacesGroups)
     if (
       !availableDecimalPlacesGroups ||
       availableDecimalPlacesGroups.length === 0

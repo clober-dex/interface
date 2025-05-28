@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
-import { CHAIN_IDS, getPriceNeighborhood } from '@clober/v2-sdk'
+import { CHAIN_IDS, getMarketPrice, getQuoteToken } from '@clober/v2-sdk'
+import { isAddressEqual } from 'viem'
 
 import { Currency } from '../model/currency'
 
@@ -14,50 +15,52 @@ export const getPriceDecimals = (price: number) => {
   ) {
     i += 1
   }
-  return i + 1
+  return i
 }
 
 export const formatCloberPriceString = (
   chainId: CHAIN_IDS,
-  price: string,
+  tick: bigint,
   currency0: Currency,
   currency1: Currency,
   isBid: boolean,
   decimalPlaces?: number,
 ): string => {
+  const [marketQuoteCurrency, marketBaseCurrency] = isAddressEqual(
+    getQuoteToken({
+      chainId,
+      token0: currency0.address,
+      token1: currency1.address,
+    }),
+    currency0.address,
+  )
+    ? [currency0, currency1]
+    : [currency1, currency0]
+
+  const price = isBid
+    ? getMarketPrice({
+        marketQuoteCurrency,
+        marketBaseCurrency,
+        bidTick: tick,
+      })
+    : getMarketPrice({
+        marketQuoteCurrency,
+        marketBaseCurrency,
+        askTick: tick,
+      })
+
   decimalPlaces =
     decimalPlaces !== undefined
       ? decimalPlaces
       : getPriceDecimals(Number(price))
-  try {
-    const {
-      normal: {
-        now: { marketPrice },
-      },
-    } = getPriceNeighborhood({
-      chainId,
-      price,
-      currency0,
-      currency1,
-    })
-    if (decimalPlaces < 0) {
-      return new BigNumber(marketPrice)
-        .minus(new BigNumber(marketPrice).mod(10 ** -decimalPlaces))
-        .toFixed()
-    }
-    return new BigNumber(marketPrice).toFixed(
-      decimalPlaces,
-      isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
-    )
-  } catch {
-    if (decimalPlaces < 0) {
-      return new BigNumber(price)
-        .minus(new BigNumber(price).mod(10 ** -decimalPlaces))
-        .toFixed()
-    }
-    return new BigNumber(price).toFixed(
-      decimalPlaces,
-      isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
-    )
+
+  if (decimalPlaces < 0) {
+    return new BigNumber(price)
+      .minus(new BigNumber(price).mod(10 ** -decimalPlaces))
+      .toFixed()
   }
+  return new BigNumber(price).toFixed(
+    decimalPlaces,
+    isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
+  )
 }

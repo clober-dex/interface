@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { isAddressEqual } from 'viem'
-import { getMarketPrice, getPriceNeighborhood, Market } from '@clober/v2-sdk'
+import { getPriceNeighborhood, Market } from '@clober/v2-sdk'
 import BigNumber from 'bignumber.js'
 
 import NumberInput from '../input/number-input'
@@ -125,15 +125,15 @@ export const LimitForm = ({
         minimumDecimalPlaces &&
         !new BigNumber(debouncedPriceInput).isNaN()
       ) {
-        const price = formatCloberPriceString(
-          chain.id,
-          debouncedPriceInput,
-          inputCurrency,
-          outputCurrency,
-          isBid,
-          minimumDecimalPlaces,
-        )
-        setPriceInput(price)
+        // const price = formatCloberPriceString(
+        //   chain.id,
+        //   debouncedPriceInput,
+        //   inputCurrency,
+        //   outputCurrency,
+        //   isBid,
+        //   minimumDecimalPlaces,
+        // )
+        // setPriceInput(price)
       }
     }, 1000)
 
@@ -301,7 +301,10 @@ export const LimitForm = ({
                         }
                         const {
                           normal: {
-                            now: { tick },
+                            now: { tick: bidTick },
+                          },
+                          inverted: {
+                            now: { tick: askTick },
                           },
                         } = getPriceNeighborhood({
                           chainId: chain.id,
@@ -309,17 +312,12 @@ export const LimitForm = ({
                           currency0: inputCurrency,
                           currency1: outputCurrency,
                         })
-                        let currentTick = tick
+                        let currentTick = isBid ? bidTick : askTick
                         // eslint-disable-next-line no-constant-condition
                         while (true) {
-                          const price = getMarketPrice({
-                            marketQuoteCurrency: selectedMarket.quote,
-                            marketBaseCurrency: selectedMarket.base,
-                            bidTick: currentTick,
-                          })
                           const nextPrice = formatCloberPriceString(
                             chain.id,
-                            price,
+                            currentTick,
                             inputCurrency,
                             outputCurrency,
                             isBid,
@@ -333,7 +331,9 @@ export const LimitForm = ({
                             setPriceInput(nextPrice)
                             break
                           }
-                          currentTick = currentTick + 1n
+                          currentTick = isBid
+                            ? currentTick + 1n
+                            : currentTick - 1n
                         }
                       }
                     }}
@@ -369,7 +369,10 @@ export const LimitForm = ({
                         }
                         const {
                           normal: {
-                            now: { tick },
+                            now: { tick: bidTick },
+                          },
+                          inverted: {
+                            now: { tick: askTick },
                           },
                         } = getPriceNeighborhood({
                           chainId: chain.id,
@@ -377,17 +380,12 @@ export const LimitForm = ({
                           currency0: inputCurrency,
                           currency1: outputCurrency,
                         })
-                        let currentTick = tick
+                        let currentTick = isBid ? bidTick : askTick
                         // eslint-disable-next-line no-constant-condition
                         while (true) {
-                          const price = getMarketPrice({
-                            marketQuoteCurrency: selectedMarket.quote,
-                            marketBaseCurrency: selectedMarket.base,
-                            bidTick: currentTick,
-                          })
                           const nextPrice = formatCloberPriceString(
                             chain.id,
-                            price,
+                            currentTick,
                             inputCurrency,
                             outputCurrency,
                             isBid,
@@ -401,7 +399,9 @@ export const LimitForm = ({
                             setPriceInput(nextPrice)
                             break
                           }
-                          currentTick = currentTick - 1n
+                          currentTick = isBid
+                            ? currentTick - 1n
+                            : currentTick + 1n
                         }
                       }
                     }}

@@ -59,7 +59,7 @@ export const OpenOrderCard = ({
                 <p className="text-white">
                   {formatCloberPriceString(
                     chainId,
-                    openOrder.price,
+                    BigInt(openOrder.tick),
                     openOrder.inputCurrency,
                     openOrder.outputCurrency,
                     openOrder.isBid,
@@ -142,7 +142,7 @@ export const OpenOrderCard = ({
           <div className="w-[120px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             {formatCloberPriceString(
               chainId,
-              openOrder.price,
+              BigInt(openOrder.tick),
               openOrder.inputCurrency,
               openOrder.outputCurrency,
               openOrder.isBid,

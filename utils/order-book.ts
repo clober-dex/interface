@@ -60,13 +60,14 @@ export function parseDepth(
         return {
           price: x.price,
           size: new BigNumber(x.baseAmount),
+          tick: BigInt(x.tick),
         }
       })
       .reduce(
         (prev, curr) => {
           const key = formatCloberPriceString(
             chainId,
-            curr.price,
+            curr.tick,
             market.quote,
             market.base,
             isBid,
