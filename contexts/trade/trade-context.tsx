@@ -3,6 +3,7 @@ import { getAddress, isAddress, isAddressEqual, parseUnits } from 'viem'
 import { getQuoteToken } from '@clober/v2-sdk'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
+import BigNumber from 'bignumber.js'
 
 import { Currency } from '../../model/currency'
 import {
@@ -19,6 +20,10 @@ import { Quote } from '../../model/aggregator/quote'
 import { fetchQuotes } from '../../apis/swap/quote'
 import { aggregators } from '../../chain-configs/aggregators'
 import { formatUnits } from '../../utils/bigint'
+import {
+  calculateInputCurrencyAmountString,
+  calculateOutputCurrencyAmountString,
+} from '../../utils/order-book'
 
 type TradeContext = {
   isBid: boolean
@@ -126,6 +131,11 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     Date.now(),
   )
   const [debouncedValue, setDebouncedValue] = useState('')
+  const previousValues = useRef({
+    priceInput,
+    outputCurrencyAmount,
+    inputCurrencyAmount,
+  })
 
   const setInputCurrency = useCallback(
     (currency: Currency | undefined) => {
@@ -250,6 +260,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     initialData: { best: null, all: [] },
   })
 
+  // when the best quote updates, set it as the selected quote
   useEffect(() => {
     if (quotes.best) {
       setSelectedQuote(quotes.best)
@@ -258,6 +269,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     }
   }, [quotes.best, setSelectedQuote])
 
+  // debounce inputCurrencyAmount for 500ms to avoid unnecessary quote fetches while typing
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedValue(inputCurrencyAmount)
@@ -266,6 +278,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     return () => clearTimeout(timer)
   }, [inputCurrencyAmount])
 
+  // load slippage setting from localStorage on mount
   useEffect(() => {
     const slippage = localStorage.getItem(TRADE_SLIPPAGE_KEY)
     if (slippage) {
@@ -273,6 +286,9 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     }
   }, [])
 
+  // initialize input/output currencies and bid direction based on URL query or localStorage
+  // if the chain in the query is different from the connected one, disconnect and reload
+  // also removes the input/outputCurrency params from the URL after setup
   useEffect(
     () => {
       const action = async () => {
@@ -376,6 +392,97 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       chainId,
     ],
   )
+
+  // keep inputCurrencyAmount and outputCurrencyAmount in sync when one changes, using priceInput as reference
+  useEffect(() => {
+    if (!outputCurrency?.decimals || !inputCurrency?.decimals) {
+      return
+    }
+
+    // when setting `outputCurrencyAmount` first time
+    if (
+      (new BigNumber(inputCurrencyAmount).isNaN() ||
+        new BigNumber(inputCurrencyAmount).isZero()) &&
+      !new BigNumber(priceInput).isNaN() &&
+      !new BigNumber(priceInput).isZero() &&
+      !new BigNumber(outputCurrencyAmount).isNaN() &&
+      !new BigNumber(outputCurrencyAmount).isZero() &&
+      previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
+    ) {
+      const inputCurrencyAmount = calculateInputCurrencyAmountString(
+        isBid,
+        outputCurrencyAmount,
+        priceInput,
+        inputCurrency.decimals,
+      )
+      setInputCurrencyAmount(inputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+      return
+    }
+
+    // `priceInput` is changed -> `outputCurrencyAmount` will be changed
+    if (previousValues.current.priceInput !== priceInput) {
+      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
+        isBid,
+        inputCurrencyAmount,
+        priceInput,
+        outputCurrency.decimals,
+      )
+      setOutputCurrencyAmount(outputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+    // `outputCurrencyAmount` is changed -> `inputCurrencyAmount` will be changed
+    else if (
+      previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
+    ) {
+      const inputCurrencyAmount = calculateInputCurrencyAmountString(
+        isBid,
+        outputCurrencyAmount,
+        priceInput,
+        inputCurrency.decimals,
+      )
+      setInputCurrencyAmount(inputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+    // `inputCurrencyAmount` is changed -> `outputCurrencyAmount` will be changed
+    else if (
+      previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
+    ) {
+      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
+        isBid,
+        inputCurrencyAmount,
+        priceInput,
+        outputCurrency.decimals,
+      )
+      setOutputCurrencyAmount(outputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+  }, [
+    inputCurrency?.decimals,
+    outputCurrency?.decimals,
+    inputCurrencyAmount,
+    isBid,
+    outputCurrencyAmount,
+    priceInput,
+    setInputCurrencyAmount,
+    setOutputCurrencyAmount,
+  ])
 
   return (
     <Context.Provider

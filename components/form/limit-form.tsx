@@ -224,7 +224,16 @@ export const LimitForm = ({
       <div className="flex flex-col gap-6 self-stretch w-full">
         <div className="flex items-start gap-4 self-stretch">
           <div className="flex flex-row gap-1 items-center h-6 opacity-90 text-white text-base font-semibold">
-            {isBid ? 'Buy' : 'Sell'} {selectedMarket?.base?.symbol} at rate
+            {isBid ? (
+              <div className="px-1.5 sm:px-2 py-0.5 bg-green-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-green-500 text-sm sm:text-base">
+                Bid
+              </div>
+            ) : (
+              <div className="px-1.5 sm:px-2 py-0.5 bg-red-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-red-500 text-sm sm:text-base">
+                Ask
+              </div>
+            )}{' '}
+            {selectedMarket?.base?.symbol} at rate
             {marketPrice > 0 && marketRateDiff >= 10000 ? (
               <div className="text-xs sm:text-sm font-semibold text-green-400">
                 (&gt;10000%)
