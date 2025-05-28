@@ -250,7 +250,11 @@ export const MarketInfoCard = ({
                 </div>
                 <div className="text-white text-xs font-semibold text-right">
                   {!isFetchingMarketSnapshot ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
+                    liquidityUsd > 0 ? (
+                      `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
+                    ) : (
+                      '-'
+                    )
                   ) : (
                     <div className="w-10 h-4 rounded animate-pulse bg-gray-500" />
                   )}
@@ -262,7 +266,11 @@ export const MarketInfoCard = ({
                 </div>
                 <div className="text-white text-xs font-semibold text-right">
                   {!isFetchingMarketSnapshot ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
+                    dailyVolume > 0 ? (
+                      `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
+                    ) : (
+                      '-'
+                    )
                   ) : (
                     <div className="w-10 h-4 rounded animate-pulse bg-gray-500" />
                   )}
@@ -277,7 +285,11 @@ export const MarketInfoCard = ({
                 </div>
                 <div className="text-white text-xs font-semibold text-right">
                   {!isFetchingMarketSnapshot ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+                    fdv > 0 ? (
+                      `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+                    ) : (
+                      '-'
+                    )
                   ) : (
                     <div className="w-10 h-4 rounded animate-pulse bg-gray-500" />
                   )}
@@ -289,7 +301,11 @@ export const MarketInfoCard = ({
                 </div>
                 <div className="text-white text-xs font-semibold text-right">
                   {!isFetchingMarketSnapshot ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
+                    marketCap > 0 ? (
+                      `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
+                    ) : (
+                      '-'
+                    )
                   ) : (
                     <div className="w-10 h-4 rounded animate-pulse bg-gray-500" />
                   )}
@@ -316,7 +332,11 @@ export const MarketInfoCard = ({
               </div>
               <div className="w-[61px] text-white text-[13px] font-bold">
                 {!isFetchingMarketSnapshot ? (
-                  `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
+                  liquidityUsd > 0 ? (
+                    `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
+                  ) : (
+                    '-'
+                  )
                 ) : (
                   <div className="w-[61px] h-[19px] rounded animate-pulse bg-gray-500" />
                 )}
@@ -329,7 +349,11 @@ export const MarketInfoCard = ({
               </div>
               <div className="w-[61px] text-white text-[13px] font-bold">
                 {!isFetchingMarketSnapshot ? (
-                  `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+                  fdv > 0 ? (
+                    `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+                  ) : (
+                    '-'
+                  )
                 ) : (
                   <div className="w-[61px] h-[19px] rounded animate-pulse bg-gray-500" />
                 )}
@@ -342,7 +366,11 @@ export const MarketInfoCard = ({
               </div>
               <div className="w-[61px] text-white text-[13px] font-bold">
                 {!isFetchingMarketSnapshot ? (
-                  `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
+                  marketCap > 0 ? (
+                    `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
+                  ) : (
+                    '-'
+                  )
                 ) : (
                   <div className="w-[61px] h-[19px] rounded animate-pulse bg-gray-500" />
                 )}
@@ -355,7 +383,11 @@ export const MarketInfoCard = ({
               </div>
               <div className="w-[61px] text-white text-[13px] font-bold">
                 {!isFetchingMarketSnapshot ? (
-                  `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
+                  dailyVolume > 0 ? (
+                    `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
+                  ) : (
+                    '-'
+                  )
                 ) : (
                   <div className="w-[61px] h-[19px] rounded animate-pulse bg-gray-500" />
                 )}

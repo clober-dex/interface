@@ -28,7 +28,7 @@ import { useTradeContext } from './trade-context'
 
 type MarketContext = {
   selectedMarket?: Market
-  selectedMarketSnapshot?: MarketSnapshot
+  selectedMarketSnapshot: MarketSnapshot | undefined | null
   setSelectedMarket: (market: Market | undefined) => void
   selectedDecimalPlaces: Decimals | undefined
   onChainPrice: number
@@ -108,7 +108,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     undefined,
   )
   const [selectedMarketSnapshot, setSelectedMarketSnapshot] = useState<
-    MarketSnapshot | undefined
+    // null means market is not found, undefined means market is loading
+    MarketSnapshot | undefined | null
   >(undefined)
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     | {
@@ -298,7 +299,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     } else if (!isMarketEqual(selectedMarket, data.market)) {
       setSelectedDecimalPlaces(undefined)
       setSelectedMarket(data.market)
-      if (data.marketSnapshot) {
+      if (data.marketSnapshot !== undefined) {
         setSelectedMarketSnapshot(data.marketSnapshot)
       }
     } else if (
@@ -320,7 +321,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   useEffect(
     () => {
       const action = async () => {
-        setIsFetchingQuotes(true)
         if (inputCurrency && outputCurrency && gasPrice) {
           previousValue.current.inputCurrencyAddress = inputCurrency.address
           previousValue.current.outputCurrencyAddress = outputCurrency.address

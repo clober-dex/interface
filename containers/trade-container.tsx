@@ -216,6 +216,7 @@ export const TradeContainer = () => {
     quoteCurrency,
     baseCurrency,
   } = useMarketContext()
+  console.log('selectedMarketSnapshot', selectedMarketSnapshot)
   const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
   const { address: userAddress } = useAccount()
