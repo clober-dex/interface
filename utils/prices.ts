@@ -18,7 +18,7 @@ export const getPriceDecimals = (price: number) => {
   return i
 }
 
-export const formatCloberPriceString = (
+export const formatTickPriceString = (
   chainId: CHAIN_IDS,
   tick: bigint,
   currency0: Currency,

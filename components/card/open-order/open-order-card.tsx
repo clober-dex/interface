@@ -5,7 +5,7 @@ import { NextRouter } from 'next/router'
 import { OutlinkSvg } from '../../svg/outlink-svg'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
 import { formatSignificantString } from '../../../utils/bignumber'
-import { formatCloberPriceString } from '../../../utils/prices'
+import { formatTickPriceString } from '../../../utils/prices'
 
 export const OpenOrderCard = ({
   chainId,
@@ -57,7 +57,7 @@ export const OpenOrderCard = ({
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Price</label>
                 <p className="text-white">
-                  {formatCloberPriceString(
+                  {formatTickPriceString(
                     chainId,
                     BigInt(openOrder.tick),
                     openOrder.inputCurrency,
@@ -140,7 +140,7 @@ export const OpenOrderCard = ({
           </div>
 
           <div className="w-[120px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
-            {formatCloberPriceString(
+            {formatTickPriceString(
               chainId,
               BigInt(openOrder.tick),
               openOrder.inputCurrency,

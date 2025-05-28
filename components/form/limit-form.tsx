@@ -11,7 +11,7 @@ import CurrencySelect from '../selector/currency-select'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
 import { formatSignificantString } from '../../utils/bignumber'
-import { formatCloberPriceString, getPriceDecimals } from '../../utils/prices'
+import { formatTickPriceString, getPriceDecimals } from '../../utils/prices'
 import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
 
@@ -315,7 +315,7 @@ export const LimitForm = ({
                         let currentTick = isBid ? bidTick : askTick
                         // eslint-disable-next-line no-constant-condition
                         while (true) {
-                          const nextPrice = formatCloberPriceString(
+                          const nextPrice = formatTickPriceString(
                             chain.id,
                             currentTick,
                             inputCurrency,
@@ -383,7 +383,7 @@ export const LimitForm = ({
                         let currentTick = isBid ? bidTick : askTick
                         // eslint-disable-next-line no-constant-condition
                         while (true) {
-                          const nextPrice = formatCloberPriceString(
+                          const nextPrice = formatTickPriceString(
                             chain.id,
                             currentTick,
                             inputCurrency,
