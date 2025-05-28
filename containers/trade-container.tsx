@@ -248,7 +248,7 @@ export const TradeContainer = () => {
     quotes,
     refreshQuotesAction,
     priceImpact,
-    isFetchingQuotes,
+    isFetchingOnChainPrice,
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
@@ -380,7 +380,7 @@ export const TradeContainer = () => {
         onChainPrice,
         priceDeviationPercent,
         setMarketRateAction: {
-          isLoading: isFetchingQuotes,
+          isLoading: isFetchingOnChainPrice,
           action: async () => {
             await setMarketRateAction()
           },
@@ -396,7 +396,7 @@ export const TradeContainer = () => {
       inputCurrency,
       inputCurrencyAmount,
       isBid,
-      isFetchingQuotes,
+      isFetchingOnChainPrice,
       limitActionButtonProps,
       onChainPrice,
       priceDeviationPercent,
@@ -718,7 +718,7 @@ export const TradeContainer = () => {
                       selectedDecimalPlaces={selectedDecimalPlaces}
                       setSelectedDecimalPlaces={setSelectedDecimalPlaces}
                       setDepthClickedIndex={
-                        isFetchingQuotes ? () => {} : setDepthClickedIndex
+                        isFetchingOnChainPrice ? () => {} : setDepthClickedIndex
                       }
                       setShowOrderBook={setShowOrderBook}
                       setTab={setTab}

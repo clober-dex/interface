@@ -57,8 +57,8 @@ type TradeContext = {
   }
   refreshQuotesAction: () => void
   priceImpact: number
-  isFetchingQuotes: boolean
-  setIsFetchingQuotes: (isFetching: boolean) => void
+  isFetchingOnChainPrice: boolean
+  setIsFetchingOnChainPrice: (isFetching: boolean) => void
 }
 
 const Context = React.createContext<TradeContext>({
@@ -89,8 +89,8 @@ const Context = React.createContext<TradeContext>({
   quotes: { best: null, all: [] },
   refreshQuotesAction: () => {},
   priceImpact: 0,
-  isFetchingQuotes: false,
-  setIsFetchingQuotes: () => {},
+  isFetchingOnChainPrice: false,
+  setIsFetchingOnChainPrice: () => {},
 })
 
 export const TRADE_SLIPPAGE_KEY = 'trade-slippage'
@@ -110,7 +110,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [tab, setTab] = useState<'limit' | 'swap'>(
     CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
   )
-  const [isFetchingQuotes, setIsFetchingQuotes] = useState(false)
+  const [isFetchingOnChainPrice, setIsFetchingOnChainPrice] = useState(false)
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
   const [showOrderBook, setShowOrderBook] = useState(true)
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
@@ -509,8 +509,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         quotes,
         refreshQuotesAction,
         priceImpact,
-        isFetchingQuotes,
-        setIsFetchingQuotes,
+        isFetchingOnChainPrice,
+        setIsFetchingOnChainPrice,
       }}
     >
       {children}

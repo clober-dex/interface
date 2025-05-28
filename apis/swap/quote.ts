@@ -46,7 +46,7 @@ export async function fetchQuotes(
         gasLimit: bigint
         aggregator: Aggregator
         transaction: Transaction | undefined
-      } => quote !== undefined && quote.amountOut > 0n,
+      } => quote !== undefined,
     )
   if (quotes.length === 0) {
     throw new Error('No quotes available')
@@ -75,23 +75,25 @@ export async function fetchQuotes(
 
     allQuotes.push(quoteWithMeta)
 
-    if (outputPrice && nativePrice) {
-      if (
-        netAmountOutUsd >
-        (bestQuote?.netAmountOutUsd ?? -Number.MAX_SAFE_INTEGER)
-      ) {
-        bestQuote = quoteWithMeta
-      }
-    } else if (!outputPrice || !nativePrice) {
-      if (
-        fallbackQuote === undefined ||
-        quote.amountOut > fallbackQuote.amountOut
-      ) {
-        fallbackQuote = {
-          amountIn,
-          ...quote,
-          gasUsd: 0,
-          netAmountOutUsd: 0,
+    if (quote.amountOut > 0n) {
+      if (outputPrice && nativePrice) {
+        if (
+          netAmountOutUsd >
+          (bestQuote?.netAmountOutUsd ?? -Number.MAX_SAFE_INTEGER)
+        ) {
+          bestQuote = quoteWithMeta
+        }
+      } else if (!outputPrice || !nativePrice) {
+        if (
+          fallbackQuote === undefined ||
+          quote.amountOut > fallbackQuote.amountOut
+        ) {
+          fallbackQuote = {
+            amountIn,
+            ...quote,
+            gasUsd: 0,
+            netAmountOutUsd: 0,
+          }
         }
       }
     }

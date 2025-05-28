@@ -28,7 +28,7 @@ import { useTradeContext } from './trade-context'
 
 type MarketContext = {
   selectedMarket?: Market
-  selectedMarketSnapshot?: MarketSnapshot
+  selectedMarketSnapshot: MarketSnapshot | undefined | null
   setSelectedMarket: (market: Market | undefined) => void
   selectedDecimalPlaces: Decimals | undefined
   onChainPrice: number
@@ -92,7 +92,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     priceInput,
     inputCurrency,
     outputCurrency,
-    setIsFetchingQuotes,
+    setIsFetchingOnChainPrice,
   } = useTradeContext()
 
   const previousValue = useRef({
@@ -108,7 +108,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     undefined,
   )
   const [selectedMarketSnapshot, setSelectedMarketSnapshot] = useState<
-    MarketSnapshot | undefined
+    // null means market is not found, undefined means market is loading
+    MarketSnapshot | undefined | null
   >(undefined)
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     | {
@@ -249,7 +250,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const setMarketRateAction = useCallback(async () => {
     if (inputCurrency && outputCurrency && gasPrice) {
       try {
-        setIsFetchingQuotes(true)
+        setIsFetchingOnChainPrice(true)
         const price = await fetchPrice(
           selectedChain.id,
           inputCurrency,
@@ -258,7 +259,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         )
         const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
         if (price.isZero()) {
-          setIsFetchingQuotes(false)
+          setIsFetchingOnChainPrice(false)
           return
         }
         setOnChainPrice(price.toNumber())
@@ -275,7 +276,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
       } catch (e) {
         console.error(`Failed to fetch price: ${e}`)
       } finally {
-        setIsFetchingQuotes(false)
+        setIsFetchingOnChainPrice(false)
       }
     }
   }, [
@@ -285,7 +286,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     isBid,
     outputCurrency,
     selectedChain.id,
-    setIsFetchingQuotes,
+    setIsFetchingOnChainPrice,
     setPriceInput,
   ])
 
@@ -298,7 +299,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     } else if (!isMarketEqual(selectedMarket, data.market)) {
       setSelectedDecimalPlaces(undefined)
       setSelectedMarket(data.market)
-      if (data.marketSnapshot) {
+      if (data.marketSnapshot !== undefined) {
         setSelectedMarketSnapshot(data.marketSnapshot)
       }
     } else if (
@@ -320,11 +321,11 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   useEffect(
     () => {
       const action = async () => {
-        setIsFetchingQuotes(true)
         if (inputCurrency && outputCurrency && gasPrice) {
           previousValue.current.inputCurrencyAddress = inputCurrency.address
           previousValue.current.outputCurrencyAddress = outputCurrency.address
           try {
+            setIsFetchingOnChainPrice(true)
             const price = await fetchPrice(
               selectedChain.id,
               inputCurrency,
@@ -342,6 +343,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
               ) ||
               price.isZero()
             ) {
+              setIsFetchingOnChainPrice(false)
               return
             }
             setOnChainPrice(price.toNumber())
@@ -354,9 +356,10 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
                 isBid,
               ),
             )
-            setIsFetchingQuotes(false)
           } catch (e) {
             console.error(`Failed to fetch price: ${e}`)
+          } finally {
+            setIsFetchingOnChainPrice(false)
           }
         }
       }
