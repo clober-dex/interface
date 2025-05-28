@@ -70,8 +70,10 @@ export const SwapRouteList = ({
           />
         ))
       ) : (
-        <div className="text-base flex font-bold text-center w-full justify-center items-center h-full lg:h-fit lg:absolute lg:top-1/2">
-          No quotes available for this swap.
+        <div className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 w-full">
+          <div className="flex flex-col gap-1 lg:gap-2 text-base font-bold text-center w-full justify-center items-center">
+            No quotes available for this swap
+          </div>
         </div>
       )}
     </div>
