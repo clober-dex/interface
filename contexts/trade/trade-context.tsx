@@ -233,14 +233,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         tab === 'swap' &&
         Number(debouncedValue) === Number(inputCurrencyAmount)
       ) {
-        console.log({
-          context: 'quote',
-          chainId: selectedChain.id,
-          inputCurrency: inputCurrency.symbol,
-          outputCurrency: outputCurrency.symbol,
-          inputCurrencyAmount,
-          debouncedValue,
-        })
         const { best, all } = await fetchQuotes(
           aggregators,
           inputCurrency,
@@ -338,14 +330,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         }
 
         if (_inputCurrency && _outputCurrency) {
-          console.log({
-            context: 'trade',
-            inputCurrencyAddress,
-            inputCurrency: _inputCurrency,
-            outputCurrencyAddress,
-            outputCurrency: _outputCurrency,
-            url: window.location.href,
-          })
           const quote = getQuoteToken({
             chainId: selectedChain.id,
             token0: _inputCurrency.address,

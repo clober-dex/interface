@@ -232,14 +232,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
             ) {
               return
             }
-            console.log({
-              context: 'limit',
-              price: price.toNumber(),
-              chainId: selectedChain.id,
-              inputCurrency: inputCurrency.symbol,
-              outputCurrency: outputCurrency.symbol,
-              gasPrice: gasPrice.toString(),
-            })
             setMarketPrice(price.toNumber())
             setPriceInput(
               formatToCloberPriceString(
