@@ -325,6 +325,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
           previousValue.current.inputCurrencyAddress = inputCurrency.address
           previousValue.current.outputCurrencyAddress = outputCurrency.address
           try {
+            setIsFetchingQuotes(true)
             const price = await fetchPrice(
               selectedChain.id,
               inputCurrency,
@@ -357,6 +358,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
             setIsFetchingQuotes(false)
           } catch (e) {
             console.error(`Failed to fetch price: ${e}`)
+          } finally {
+            setIsFetchingQuotes(false)
           }
         }
       }
