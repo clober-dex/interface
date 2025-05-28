@@ -223,13 +223,13 @@ export const LimitForm = ({
     <div className="flex flex-col gap-5 h-full w-full">
       <div className="flex flex-col gap-6 self-stretch w-full">
         <div className="flex items-start gap-4 self-stretch">
-          <div className="flex flex-row gap-1 items-center h-6 opacity-90 text-white text-base font-semibold">
+          <div className="flex flex-row gap-2 items-center h-6 opacity-90 text-white text-base font-semibold">
             {isBid ? (
-              <div className="px-1.5 sm:px-2 py-0.5 bg-green-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-green-500 text-sm sm:text-base">
+              <div className="px-1.5 sm:px-2 py-0.5 bg-green-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-green-500 text-xs sm:text-sm">
                 Bid
               </div>
             ) : (
-              <div className="px-1.5 sm:px-2 py-0.5 bg-red-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-red-500 text-sm sm:text-base">
+              <div className="px-1.5 sm:px-2 py-0.5 bg-red-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-red-500 text-xs sm:text-sm">
                 Ask
               </div>
             )}{' '}
@@ -270,7 +270,7 @@ export const LimitForm = ({
               <div className="h-[92px] sm:h-[104px] items-center hover:ring-1 hover:ring-gray-700 flex rounded-xl border-solid border-2 border-gray-700 p-4">
                 <div className="flex flex-col flex-1 gap-2">
                   {setMarketRateAction && setMarketRateAction.isLoading ? (
-                    <span className="flex justify-start items-start w-[235px] sm:w-[340px] h-[32px] sm:h-[34px] rounded animate-pulse bg-gray-500" />
+                    <span className="flex justify-start items-start w-[235px] sm:w-[340px] h-[28px] sm:h-[36px] rounded animate-pulse bg-gray-500" />
                   ) : (
                     <NumberInput
                       value={priceInput}
