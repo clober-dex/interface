@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { isAddressEqual } from 'viem'
 import Image from 'next/image'
 
@@ -37,18 +37,6 @@ const CurrencyIconBase = ({
   unoptimized,
   ...props
 }: CurrencyIconProps) => {
-  const [src, setSrc] = useState('/unknown.svg')
-
-  useEffect(() => {
-    if (!isLpCurrency(currency)) {
-      const whitelisted = CHAIN_CONFIG.WHITELISTED_CURRENCIES.find((c) =>
-        isAddressEqual(c.address, currency.address),
-      )
-      const defaultSrc = whitelisted?.icon ?? getLogo(chain, currency)
-      setSrc(defaultSrc)
-    }
-  }, [currency, chain])
-
   if (isLpCurrency(currency)) {
     return (
       <LpCurrencyIcon
@@ -60,6 +48,11 @@ const CurrencyIconBase = ({
       />
     )
   }
+
+  const whitelisted = CHAIN_CONFIG.WHITELISTED_CURRENCIES.find((c) =>
+    isAddressEqual(c.address, currency.address),
+  )
+  const src = whitelisted?.icon ?? getLogo(chain, currency)
 
   return (
     <div {...props}>
