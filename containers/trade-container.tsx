@@ -216,7 +216,6 @@ export const TradeContainer = () => {
     quoteCurrency,
     baseCurrency,
   } = useMarketContext()
-  console.log('selectedMarketSnapshot', selectedMarketSnapshot)
   const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
   const { address: userAddress } = useAccount()
@@ -745,6 +744,7 @@ export const TradeContainer = () => {
                       aggregatorNames={aggregators.map((a) => a.name)}
                       selectedQuote={selectedQuote}
                       setSelectedQuote={setSelectedQuote}
+                      isFetchingQuotes={isFetchingQuotes}
                     />
                   )}
                 </div>
@@ -790,6 +790,7 @@ export const TradeContainer = () => {
         setShowMobileModal={setShowMobileModal}
         selectedQuote={selectedQuote}
         setSelectedQuote={setSelectedQuote}
+        isFetchingQuotes={isFetchingQuotes}
         limitFormProps={limitFormProps}
         swapActionButtonProps={swapActionButtonProps}
       />

@@ -238,6 +238,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         tab === 'swap' &&
         Number(debouncedValue) === Number(inputCurrencyAmount)
       ) {
+        setIsFetchingQuotes(true)
         const { best, all } = await fetchQuotes(
           aggregators,
           inputCurrency,
@@ -248,6 +249,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
           prices,
           userAddress,
         )
+        setIsFetchingQuotes(false)
         return { best, all }
       }
       return { best: null, all: [] }
