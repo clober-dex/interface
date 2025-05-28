@@ -9,8 +9,10 @@ import { isAddressEqual } from 'viem'
 
 import { Currency } from '../model/currency'
 
+export const BPS = 10000 // Basis Points
+
 export const getPriceDecimals = (price: number) => {
-  const priceNumber = new BigNumber(price).div(10000) // 1bp
+  const priceNumber = new BigNumber(price).div(BPS)
   let i = 0
   while (
     priceNumber

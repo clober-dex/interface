@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js'
 
+import { BPS } from './prices'
+
 export const POLLY_FILL_DECIMALS = 4
 const TINY_NUMBER_LIST = [
   '₀',
@@ -206,7 +208,7 @@ export const formatTinyNumber = (number: BigNumber.Value): string => {
   const integer = bn.integerValue()
   if (integer.gt(0)) {
     // minimum tick is 0.1bp
-    const fractionDigits = findFirstNonZeroDecimalIndex(integer.div(100000))
+    const fractionDigits = findFirstNonZeroDecimalIndex(integer.div(BPS))
     return formatWithCommas(
       removeZeroTail(bn.toFixed(fractionDigits, BigNumber.ROUND_DOWN)),
     )
@@ -217,7 +219,7 @@ export const formatTinyNumber = (number: BigNumber.Value): string => {
       return '0'
     }
     // minimum tick is 0.1bp
-    const fractionDigits = findFirstNonZeroDecimalIndex(integer.div(100000))
+    const fractionDigits = findFirstNonZeroDecimalIndex(integer.div(BPS))
     return formatWithCommas(
       removeZeroTail(bn.toFixed(fractionDigits, BigNumber.ROUND_DOWN)),
     )
