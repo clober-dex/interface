@@ -37,11 +37,6 @@ const CurrencyAmountInput = ({
   >) => {
   const decimals = useMemo(() => currency?.decimals ?? 18, [currency])
 
-  const onBlur = useCallback(() => {
-    const amount = parseUnits(value, decimals)
-    onValueChange(amount ? formatUnits(amount, decimals) : '')
-  }, [decimals, onValueChange, value])
-
   const onMaxClick = useCallback(() => {
     onValueChange(
       availableAmount
@@ -57,7 +52,6 @@ const CurrencyAmountInput = ({
           className="flex-1 text-xl w-full sm:text-3xl bg-transparent placeholder-gray-500 text-white outline-none"
           value={value}
           onValueChange={onValueChange}
-          onBlur={onBlur}
           placeholder="0.0000"
           {...props}
         />
