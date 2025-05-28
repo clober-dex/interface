@@ -103,7 +103,7 @@ const Profit = ({
   return (
     <div className="flex flex-col sm:flex-row group relative gap-1 sm:gap-2 py-2">
       {data.length > 0 && (
-        <div className="hidden group-hover:flex absolute top-8 -left-20 sm:left-2 z-[1000]">
+        <div className="hidden group-hover:flex text-white absolute top-8 -left-20 sm:left-2 z-[1000]">
           <Legend data={data} />
         </div>
       )}
@@ -121,7 +121,7 @@ const Profit = ({
           .map(({ currency }, i) => (
             <CurrencyIcon
               chain={chain}
-              key={`trading-competition-currency-icon-${i}`}
+              key={`trading-competition-currency-icon-${currency.address}`}
               currency={currency}
               unoptimized={true}
               className={`rounded-full ${i > 0 ? 'absolute' : ''} w-[16px] h-[16px]`}
