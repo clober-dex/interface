@@ -4,7 +4,10 @@ import { NextRouter } from 'next/router'
 
 import { OutlinkSvg } from '../../svg/outlink-svg'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
-import { formatSignificantString } from '../../../utils/bignumber'
+import {
+  formatSignificantString,
+  formatWithCommas,
+} from '../../../utils/bignumber'
 import { formatTickPriceString } from '../../../utils/prices'
 
 export const OpenOrderCard = ({
@@ -69,7 +72,9 @@ export const OpenOrderCard = ({
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Amount</label>
                 <p className="flex gap-1 text-white">
-                  {formatSignificantString(openOrder.amount.value)}{' '}
+                  {formatWithCommas(
+                    formatSignificantString(openOrder.amount.value),
+                  )}{' '}
                   <span className="text-[#8690a5]">
                     {openOrder.amount.currency.symbol}
                   </span>
@@ -94,7 +99,9 @@ export const OpenOrderCard = ({
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Claimable</label>
                 <p className="flex gap-1 text-white">
-                  {formatSignificantString(openOrder.claimable.value)}{' '}
+                  {formatWithCommas(
+                    formatSignificantString(openOrder.claimable.value),
+                  )}{' '}
                   <span className="text-[#8690a5]">
                     {openOrder.claimable.currency.symbol}
                   </span>
@@ -140,18 +147,22 @@ export const OpenOrderCard = ({
           </div>
 
           <div className="w-[120px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
-            {formatTickPriceString(
-              chainId,
-              BigInt(openOrder.tick),
-              openOrder.inputCurrency,
-              openOrder.outputCurrency,
-              openOrder.isBid,
+            {formatWithCommas(
+              formatTickPriceString(
+                chainId,
+                BigInt(openOrder.tick),
+                openOrder.inputCurrency,
+                openOrder.outputCurrency,
+                openOrder.isBid,
+              ),
             )}
           </div>
 
           <div className="w-[180px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             <p className="flex gap-1 text-white">
-              {formatSignificantString(openOrder.amount.value)}{' '}
+              {formatWithCommas(
+                formatSignificantString(openOrder.amount.value),
+              )}{' '}
               <span className="text-[#8690a5]">
                 {openOrder.amount.currency.symbol}
               </span>
@@ -164,7 +175,9 @@ export const OpenOrderCard = ({
 
           <div className="w-[200px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             <p className="flex gap-1 text-white">
-              {formatSignificantString(openOrder.claimable.value)}{' '}
+              {formatWithCommas(
+                formatSignificantString(openOrder.claimable.value),
+              )}{' '}
               <span className="text-[#8690a5]">
                 {openOrder.claimable.currency.symbol}
               </span>
