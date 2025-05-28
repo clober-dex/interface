@@ -62,30 +62,20 @@ export const LeaderBoard = ({
         }}
         className={`self-stretch px-4 sm:px-8 min-h-10 ${
           rank === 1
-            ? 'bg-[#ffce50]/20'
+            ? 'bg-[#ffce50]/35 text-[#ffe607]'
             : rank === 2
-              ? 'bg-[#d0d6ec]/20'
+              ? 'bg-[#d0d6ec]/35 text-[#e4e5f5]'
               : rank === 3
-                ? 'bg-[#ffc581]/20'
-                : 'bg-gray-900'
+                ? 'bg-[#ffc581]/35 text-[#ffc038]'
+                : 'bg-gray-900 text-white'
         } flex rounded-lg justify-center items-center gap-1.5 sm:text-sm text-xs`}
         key={`vault-liquidity-point-rank-${address}-${rank}`}
       >
-        <div
-          className={`${
-            rank === 1
-              ? 'text-[#ffe607]'
-              : rank === 2
-                ? 'text-[#e4e5f5]'
-                : rank === 3
-                  ? 'text-[#ffc038]'
-                  : 'text-white'
-          } w-16 flex justify-start items-center gap-2.5 font-bold`}
-        >
+        <div className="w-16 flex justify-start items-center gap-2.5 font-bold">
           {rank}
         </div>
         <div className="flex w-full">
-          <div className="flex flex-1 justify-start items-center text-white gap-1">
+          <div className="flex flex-1 justify-start items-center gap-1">
             <span className="flex sm:hidden">{shortAddress(address, 2)}</span>
             <span className="hidden sm:flex">{shortAddress(address, 8)}</span>
             <a
@@ -96,7 +86,7 @@ export const LeaderBoard = ({
               <OutlinkSvg className="w-2 h-2 sm:w-3 sm:h-3 flex items-center" />
             </a>
           </div>
-          <div className="flex flex-1 justify-start items-center text-white font-semibold">
+          <div className="flex flex-1 justify-start items-center font-semibold">
             {value}
           </div>
         </div>
