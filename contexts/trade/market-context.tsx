@@ -32,7 +32,7 @@ type MarketContext = {
   selectedMarketSnapshot?: MarketSnapshot
   setSelectedMarket: (market: Market | undefined) => void
   selectedDecimalPlaces: Decimals | undefined
-  marketPrice: number
+  onChainPrice: number
   setSelectedDecimalPlaces: (decimalPlaces: Decimals | undefined) => void
   availableDecimalPlacesGroups: Decimals[] | null
   depthClickedIndex:
@@ -69,7 +69,7 @@ const Context = React.createContext<MarketContext>({
   setSelectedMarket: (_) => _,
   selectedDecimalPlaces: undefined,
   setSelectedDecimalPlaces: () => {},
-  marketPrice: 0,
+  onChainPrice: 0,
   availableDecimalPlacesGroups: null,
   depthClickedIndex: undefined,
   setDepthClickedIndex: () => {},
@@ -101,7 +101,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     outputCurrencyAddress: outputCurrency?.address,
   })
 
-  const [marketPrice, setMarketPrice] = useState(0)
+  const [onChainPrice, setOnChainPrice] = useState(0)
   const [selectedDecimalPlaces, setSelectedDecimalPlaces] = useState<
     Decimals | undefined
   >(undefined)
@@ -122,10 +122,10 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const marketRateDiff = useMemo(
     () =>
       (isBid
-        ? new BigNumber(marketPrice).dividedBy(priceInput).minus(1).times(100)
-        : new BigNumber(priceInput).dividedBy(marketPrice).minus(1).times(100)
+        ? new BigNumber(onChainPrice).dividedBy(priceInput).minus(1).times(100)
+        : new BigNumber(priceInput).dividedBy(onChainPrice).minus(1).times(100)
       ).toNumber(),
-    [isBid, marketPrice, priceInput],
+    [isBid, onChainPrice, priceInput],
   )
 
   const { inputCurrencyAddress, outputCurrencyAddress } = getCurrencyAddress(
@@ -247,7 +247,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
           setIsFetchingQuotes(false)
           return
         }
-        setMarketPrice(price.toNumber())
+        setOnChainPrice(price.toNumber())
         setPriceInput(
           formatToCloberPriceString(
             selectedChain.id,
@@ -345,7 +345,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
             ) {
               return
             }
-            setMarketPrice(price.toNumber())
+            setOnChainPrice(price.toNumber())
             setPriceInput(
               formatToCloberPriceString(
                 selectedChain.id,
@@ -364,7 +364,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
       setDepthClickedIndex(undefined)
       setPriceInput('')
-      setMarketPrice(0)
+      setOnChainPrice(0)
 
       action()
     }, // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -412,7 +412,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setSelectedMarket,
         selectedDecimalPlaces,
         setSelectedDecimalPlaces,
-        marketPrice,
+        onChainPrice,
         availableDecimalPlacesGroups,
         depthClickedIndex,
         setDepthClickedIndex,

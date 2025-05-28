@@ -210,7 +210,7 @@ export const TradeContainer = () => {
     asks,
     depthClickedIndex,
     setDepthClickedIndex,
-    marketPrice,
+    onChainPrice,
     setMarketRateAction,
     marketRateDiff,
     quoteCurrency,
@@ -377,7 +377,7 @@ export const TradeContainer = () => {
           setOutputCurrency(_inputCurrency)
         },
         minimumDecimalPlaces: availableDecimalPlacesGroups?.[0]?.value,
-        marketPrice,
+        onChainPrice,
         marketRateDiff,
         setMarketRateAction: {
           isLoading: isFetchingQuotes,
@@ -398,7 +398,7 @@ export const TradeContainer = () => {
       isBid,
       isFetchingQuotes,
       limitActionButtonProps,
-      marketPrice,
+      onChainPrice,
       marketRateDiff,
       outputCurrency,
       outputCurrencyAmount,
@@ -565,7 +565,7 @@ export const TradeContainer = () => {
     <>
       {showWarningModal ? (
         <WarningLimitModal
-          marketPrice={marketPrice}
+          onChainPrice={onChainPrice}
           priceInput={priceInput}
           marketRateDiff={marketRateDiff}
           closeModal={() => setShowWarningModal(false)}

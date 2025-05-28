@@ -4,13 +4,13 @@ import { createPortal } from 'react-dom'
 import { formatTinyNumber } from '../../utils/bignumber'
 
 const WarningLimitModal = ({
-  marketPrice,
+  onChainPrice,
   priceInput,
   marketRateDiff,
   limit,
   closeModal,
 }: {
-  marketPrice: number
+  onChainPrice: number
   priceInput: string
   marketRateDiff: number
   limit: () => void
@@ -71,7 +71,7 @@ const WarningLimitModal = ({
                 Current market price
               </div>
               <div className="flex ml-auto font-semibold text-xs sm:text-sm">
-                {marketPrice > 0 ? formatTinyNumber(marketPrice) : 'Unknown'}
+                {onChainPrice > 0 ? formatTinyNumber(onChainPrice) : 'Unknown'}
               </div>
             </div>
             <div className="flex flex-row w-full items-start gap-1 self-stretch">

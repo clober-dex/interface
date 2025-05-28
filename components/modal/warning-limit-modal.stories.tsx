@@ -21,7 +21,7 @@ type Story = StoryObj<typeof WarningLimitModal>
 
 export const Default: Story = {
   args: {
-    marketPrice: 0.00001,
+    onChainPrice: 0.00001,
     priceInput: '0.00001',
     marketRateDiff: 50,
     closeModal: () => {},

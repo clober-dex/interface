@@ -51,7 +51,7 @@ export type LimitFormProps = {
   availableOutputCurrencyBalance: bigint
   swapInputCurrencyAndOutputCurrency: () => void
   minimumDecimalPlaces: number | undefined
-  marketPrice: number
+  onChainPrice: number
   marketRateDiff: number
   setMarketRateAction:
     | {
@@ -91,7 +91,7 @@ export const LimitForm = ({
   availableOutputCurrencyBalance,
   swapInputCurrencyAndOutputCurrency,
   minimumDecimalPlaces,
-  marketPrice,
+  onChainPrice,
   marketRateDiff,
   setMarketRateAction,
   closeLimitFormAction,
@@ -234,7 +234,7 @@ export const LimitForm = ({
               </div>
             )}{' '}
             {selectedMarket?.base?.symbol} at rate
-            {marketPrice > 0 && marketRateDiff >= 10000 ? (
+            {onChainPrice > 0 && marketRateDiff >= 10000 ? (
               <div className="text-xs sm:text-sm font-semibold text-green-400">
                 (&gt;10000%)
               </div>
