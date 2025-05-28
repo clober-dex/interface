@@ -18,14 +18,13 @@ import {
   isOrderBookEqual,
   parseDepth,
 } from '../../utils/order-book'
-import { getPriceDecimals } from '../../utils/prices'
+import { formatToCloberPriceString, getPriceDecimals } from '../../utils/prices'
 import {
   Decimals,
   DEFAULT_DECIMAL_PLACE_GROUP_LENGTH,
 } from '../../model/decimals'
 import { useChainContext } from '../chain-context'
 import { getCurrencyAddress } from '../../utils/currency'
-import { formatSignificantString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { fetchPrice } from '../../apis/price'
 
@@ -238,7 +237,15 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
               gasPrice: gasPrice.toString(),
             })
             setMarketPrice(price.toNumber())
-            setPriceInput(price.toNumber().toString())
+            setPriceInput(
+              formatToCloberPriceString(
+                selectedChain.id,
+                price.toString(),
+                inputCurrency,
+                outputCurrency,
+                isBid,
+              ),
+            )
             setIsFetchingQuotes(false)
           } catch (e) {
             console.error(`Failed to fetch price: ${e}`)
@@ -322,42 +329,22 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   // When depthClickedIndex is changed, reset the priceInput
   useEffect(() => {
-    if (
-      !availableDecimalPlacesGroups ||
-      availableDecimalPlacesGroups.length === 0
-    ) {
-      return
-    }
-    const minimumDecimalPlaces = availableDecimalPlacesGroups[0].value
-
     if (depthClickedIndex && inputCurrency && outputCurrency) {
       if (depthClickedIndex.isBid && bids[depthClickedIndex.index]) {
-        setPriceInput(
-          formatSignificantString(
-            bids[depthClickedIndex.index].price,
-            minimumDecimalPlaces,
-          ),
-        )
+        setPriceInput(bids[depthClickedIndex.index].price)
         setDepthClickedIndex(undefined)
       } else if (!depthClickedIndex.isBid && asks[depthClickedIndex.index]) {
-        setPriceInput(
-          formatSignificantString(
-            asks[depthClickedIndex.index].price,
-            minimumDecimalPlaces,
-          ),
-        )
+        setPriceInput(asks[depthClickedIndex.index].price)
         setDepthClickedIndex(undefined)
       }
     }
   }, [
-    availableDecimalPlacesGroups,
     asks,
     bids,
     depthClickedIndex,
-    setPriceInput,
     inputCurrency,
     outputCurrency,
-    selectedChain.id,
+    setPriceInput,
   ])
 
   const previousValues = useRef({
@@ -480,9 +467,14 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
       setMarketPrice(price.toNumber())
       setPriceInput(
-        minimumDecimalPlaces
-          ? formatSignificantString(price, minimumDecimalPlaces)
-          : price.toFixed(),
+        formatToCloberPriceString(
+          selectedChain.id,
+          price.toString(),
+          inputCurrency,
+          outputCurrency,
+          isBid,
+          minimumDecimalPlaces,
+        ),
       )
       setIsFetchingQuotes(false)
     }
@@ -490,6 +482,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     availableDecimalPlacesGroups,
     gasPrice,
     inputCurrency,
+    isBid,
     outputCurrency,
     selectedChain.id,
     setPriceInput,

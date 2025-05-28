@@ -11,7 +11,11 @@ import CurrencySelect from '../selector/currency-select'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
 import { formatSignificantString } from '../../utils/bignumber'
-import { formatTickPriceString, getPriceDecimals } from '../../utils/prices'
+import {
+  formatTickPriceString,
+  formatToCloberPriceString,
+  getPriceDecimals,
+} from '../../utils/prices'
 import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
 
@@ -125,15 +129,16 @@ export const LimitForm = ({
         minimumDecimalPlaces &&
         !new BigNumber(debouncedPriceInput).isNaN()
       ) {
-        // const price = formatCloberPriceString(
-        //   chain.id,
-        //   debouncedPriceInput,
-        //   inputCurrency,
-        //   outputCurrency,
-        //   isBid,
-        //   minimumDecimalPlaces,
-        // )
-        // setPriceInput(price)
+        setPriceInput(
+          formatToCloberPriceString(
+            chain.id,
+            debouncedPriceInput,
+            inputCurrency,
+            outputCurrency,
+            isBid,
+            minimumDecimalPlaces,
+          ),
+        )
       }
     }, 1000)
 

@@ -1,5 +1,10 @@
 import BigNumber from 'bignumber.js'
-import { CHAIN_IDS, getMarketPrice, getQuoteToken } from '@clober/v2-sdk'
+import {
+  CHAIN_IDS,
+  getMarketPrice,
+  getPriceNeighborhood,
+  getQuoteToken,
+} from '@clober/v2-sdk'
 import { isAddressEqual } from 'viem'
 
 import { Currency } from '../model/currency'
@@ -16,6 +21,37 @@ export const getPriceDecimals = (price: number) => {
     i += 1
   }
   return i
+}
+
+export const formatToCloberPriceString = (
+  chainId: CHAIN_IDS,
+  price: string,
+  currency0: Currency,
+  currency1: Currency,
+  isBid: boolean,
+  decimalPlaces?: number,
+): string => {
+  const {
+    normal: {
+      now: { tick: bidTick },
+    },
+    inverted: {
+      now: { tick: askTick },
+    },
+  } = getPriceNeighborhood({
+    chainId,
+    price,
+    currency0,
+    currency1,
+  })
+  return formatTickPriceString(
+    chainId,
+    isBid ? bidTick : askTick,
+    currency0,
+    currency1,
+    isBid,
+    decimalPlaces,
+  )
 }
 
 export const formatTickPriceString = (
