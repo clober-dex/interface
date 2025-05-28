@@ -1,4 +1,4 @@
-import { OpenOrder } from '@clober/v2-sdk'
+import { CHAIN_IDS, OpenOrder } from '@clober/v2-sdk'
 import { isAddressEqual, parseUnits } from 'viem'
 import React from 'react'
 import { NextRouter } from 'next/router'
@@ -6,12 +6,14 @@ import { NextRouter } from 'next/router'
 import { OpenOrderCard } from './open-order-card'
 
 export const OpenOrderCardList = ({
+  chainId,
   userAddress,
   openOrders,
   claims,
   cancels,
   router,
 }: {
+  chainId: CHAIN_IDS
   userAddress: `0x${string}`
   openOrders: OpenOrder[]
   claims: (openOrders: OpenOrder[]) => Promise<void>
@@ -20,6 +22,7 @@ export const OpenOrderCardList = ({
 }) => {
   return openOrders.map((openOrder, index) => (
     <OpenOrderCard
+      chainId={chainId}
       openOrder={openOrder}
       key={index}
       router={router}

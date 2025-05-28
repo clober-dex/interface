@@ -38,7 +38,6 @@ export const fetchPrice = async (
       gasPrice,
       {}, // arbitrary prices
     )
-    console.log('best quote:', best)
     return new BigNumber(
       formatUnits(best?.amountOut ?? 0n, quoteCurrency.decimals),
     )

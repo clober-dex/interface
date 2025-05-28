@@ -13,7 +13,7 @@ import { maxApprove } from '../../utils/approve20'
 import { Aggregator } from '../../model/aggregator'
 import { useChainContext } from '../chain-context'
 import { currentTimestampInSeconds } from '../../utils/date'
-import { toPlacesAmountString } from '../../utils/bignumber'
+import { formatPreciseAmountString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 
 type SwapContractContext = {
@@ -128,7 +128,7 @@ export const SwapContractProvider = ({
               currency: inputCurrency,
               label: inputCurrency.symbol,
               direction: 'in',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(amountIn, inputCurrency.decimals),
                 prices[getAddress(inputCurrency.address)] ?? 0,
               ),
@@ -137,7 +137,7 @@ export const SwapContractProvider = ({
               currency: outputCurrency,
               label: outputCurrency.symbol,
               direction: 'out',
-              value: toPlacesAmountString(
+              value: formatPreciseAmountString(
                 formatUnits(expectedAmountOut, outputCurrency.decimals),
                 prices[getAddress(outputCurrency.address)] ?? 0,
               ),

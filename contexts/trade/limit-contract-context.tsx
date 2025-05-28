@@ -19,7 +19,7 @@ import { Confirmation, useTransactionContext } from '../transaction-context'
 import { sendTransaction, waitTransaction } from '../../utils/transaction'
 import { useCurrencyContext } from '../currency-context'
 import { maxApprove } from '../../utils/approve20'
-import { toPlacesAmountString } from '../../utils/bignumber'
+import { formatPreciseAmountString } from '../../utils/bignumber'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
 
@@ -204,8 +204,8 @@ export const LimitContractProvider = ({
             rpcUrl: CHAIN_CONFIG.RPC_URL,
             roundingUpMakeBid: true,
             roundingDownMakeAsk: true,
-            roundingDownTakenBid: true,
-            roundingUpTakenAsk: true,
+            roundingDownTakenBid: false,
+            roundingUpTakenAsk: false,
           },
         }
         const { transaction, result } = await limitOrder(args)
@@ -223,7 +223,7 @@ export const LimitContractProvider = ({
                 direction: result.make.direction,
                 currency: result.make.currency,
                 label: result.make.currency.symbol,
-                value: toPlacesAmountString(
+                value: formatPreciseAmountString(
                   result.make.amount,
                   prices[inputCurrency.address] ?? 0,
                 ),
@@ -260,7 +260,7 @@ export const LimitContractProvider = ({
                 direction: result.make.direction,
                 currency: result.make.currency,
                 label: result.make.currency.symbol,
-                value: toPlacesAmountString(
+                value: formatPreciseAmountString(
                   Number(result.make.amount) + Number(result.spent.amount),
                   prices[inputCurrency.address] ?? 0,
                 ),
@@ -269,7 +269,7 @@ export const LimitContractProvider = ({
                 direction: result.taken.direction,
                 currency: result.taken.currency,
                 label: result.taken.currency.symbol,
-                value: toPlacesAmountString(
+                value: formatPreciseAmountString(
                   result.taken.amount,
                   prices[outputCurrency.address] ?? 0,
                 ),
@@ -379,7 +379,10 @@ export const LimitContractProvider = ({
           fields: result.map(({ currency, amount, direction }) => ({
             currency,
             label: currency.symbol,
-            value: toPlacesAmountString(amount, prices[currency.address] ?? 0),
+            value: formatPreciseAmountString(
+              amount,
+              prices[currency.address] ?? 0,
+            ),
             direction,
           })),
         }
@@ -470,7 +473,10 @@ export const LimitContractProvider = ({
           fields: result.map(({ currency, amount, direction }) => ({
             currency,
             label: currency.symbol,
-            value: toPlacesAmountString(amount, prices[currency.address] ?? 0),
+            value: formatPreciseAmountString(
+              amount,
+              prices[currency.address] ?? 0,
+            ),
             direction,
           })),
         }

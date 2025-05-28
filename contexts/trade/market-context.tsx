@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   getMarket,
   getMarketId,
   getMarketSnapshot,
+  getQuoteToken,
   Market,
   MarketSnapshot,
 } from '@clober/v2-sdk'
@@ -12,22 +13,16 @@ import { getAddress, isAddressEqual } from 'viem'
 import { useGasPrice } from 'wagmi'
 
 import { isMarketEqual } from '../../utils/market'
-import {
-  calculateInputCurrencyAmountString,
-  calculateOutputCurrencyAmountString,
-  isOrderBookEqual,
-  parseDepth,
-} from '../../utils/order-book'
-import { getPriceDecimals } from '../../utils/prices'
+import { isOrderBookEqual, parseDepth } from '../../utils/order-book'
+import { formatToCloberPriceString, getPriceDecimals } from '../../utils/prices'
 import {
   Decimals,
   DEFAULT_DECIMAL_PLACE_GROUP_LENGTH,
 } from '../../model/decimals'
 import { useChainContext } from '../chain-context'
-import { getCurrencyAddress } from '../../utils/currency'
-import { toPlacesString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { fetchPrice } from '../../apis/price'
+import { Currency } from '../../model/currency'
 
 import { useTradeContext } from './trade-context'
 
@@ -36,10 +31,7 @@ type MarketContext = {
   selectedMarketSnapshot?: MarketSnapshot
   setSelectedMarket: (market: Market | undefined) => void
   selectedDecimalPlaces: Decimals | undefined
-  isFetchingQuotes: boolean
-  setIsFetchingQuotes: (isFetchingQuotes: boolean) => void
-  marketPrice: number
-  setMarketPrice: (price: number) => void
+  onChainPrice: number
   setSelectedDecimalPlaces: (decimalPlaces: Decimals | undefined) => void
   availableDecimalPlacesGroups: Decimals[] | null
   depthClickedIndex:
@@ -64,6 +56,10 @@ type MarketContext = {
     price: string
     size: string
   }[]
+  setMarketRateAction: () => Promise<void>
+  priceDeviationPercent: number
+  quoteCurrency: Currency | undefined
+  baseCurrency: Currency | undefined
 }
 
 const Context = React.createContext<MarketContext>({
@@ -72,15 +68,18 @@ const Context = React.createContext<MarketContext>({
   setSelectedMarket: (_) => _,
   selectedDecimalPlaces: undefined,
   setSelectedDecimalPlaces: () => {},
-  isFetchingQuotes: false,
-  setIsFetchingQuotes: () => {},
-  marketPrice: 0,
-  setMarketPrice: () => {},
+  onChainPrice: 0,
   availableDecimalPlacesGroups: null,
   depthClickedIndex: undefined,
   setDepthClickedIndex: () => {},
   bids: [],
   asks: [],
+  setMarketRateAction: async () => {
+    return Promise.resolve()
+  },
+  priceDeviationPercent: 0,
+  quoteCurrency: undefined,
+  baseCurrency: undefined,
 })
 
 export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
@@ -91,12 +90,9 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     isBid,
     setPriceInput,
     priceInput,
-    outputCurrencyAmount,
-    inputCurrencyAmount,
     inputCurrency,
     outputCurrency,
-    setInputCurrencyAmount,
-    setOutputCurrencyAmount,
+    setIsFetchingQuotes,
   } = useTradeContext()
 
   const previousValue = useRef({
@@ -104,8 +100,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     outputCurrencyAddress: outputCurrency?.address,
   })
 
-  const [isFetchingQuotes, setIsFetchingQuotes] = useState(false)
-  const [marketPrice, setMarketPrice] = useState(0)
+  const [onChainPrice, setOnChainPrice] = useState(0)
   const [selectedDecimalPlaces, setSelectedDecimalPlaces] = useState<
     Decimals | undefined
   >(undefined)
@@ -123,21 +118,45 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     | undefined
   >(undefined)
 
-  const { inputCurrencyAddress, outputCurrencyAddress } = getCurrencyAddress(
-    'trade',
-    selectedChain,
+  const priceDeviationPercent = useMemo(
+    () =>
+      (isBid
+        ? new BigNumber(onChainPrice).dividedBy(priceInput).minus(1).times(100)
+        : new BigNumber(priceInput).dividedBy(onChainPrice).minus(1).times(100)
+      ).toNumber(),
+    [isBid, onChainPrice, priceInput],
   )
-  const marketId =
-    inputCurrencyAddress && outputCurrencyAddress
-      ? getMarketId(selectedChain.id, [
-          getAddress(inputCurrencyAddress),
-          getAddress(outputCurrencyAddress),
-        ]).marketId
-      : ''
+
+  const [quoteCurrency, baseCurrency, marketId] = useMemo(() => {
+    if (inputCurrency && outputCurrency) {
+      const quote = getQuoteToken({
+        chainId: selectedChain.id,
+        token0: inputCurrency.address,
+        token1: outputCurrency.address,
+      })
+      const [quoteCurrency, baseCurrency] = isAddressEqual(
+        quote,
+        inputCurrency.address,
+      )
+        ? [inputCurrency, outputCurrency]
+        : [outputCurrency, inputCurrency]
+      return [
+        quoteCurrency,
+        baseCurrency,
+        getMarketId(selectedChain.id, [
+          quoteCurrency.address,
+          baseCurrency.address,
+        ]).marketId,
+      ]
+    } else {
+      return [undefined, undefined, '']
+    }
+  }, [inputCurrency, outputCurrency, selectedChain.id])
+
   const { data } = useQuery({
     queryKey: ['market', selectedChain.id, marketId],
     queryFn: async () => {
-      if (inputCurrencyAddress && outputCurrencyAddress) {
+      if (baseCurrency?.address && quoteCurrency?.address) {
         const queryKeys = queryClient
           .getQueryCache()
           .getAll()
@@ -151,8 +170,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         const [market, marketSnapshot] = await Promise.all([
           getMarket({
             chainId: selectedChain.id,
-            token0: getAddress(inputCurrencyAddress),
-            token1: getAddress(outputCurrencyAddress),
+            token0: getAddress(baseCurrency.address),
+            token1: getAddress(quoteCurrency.address),
             options: {
               rpcUrl: CHAIN_CONFIG.RPC_URL,
               useSubgraph: false,
@@ -160,8 +179,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
           }),
           getMarketSnapshot({
             chainId: selectedChain.id,
-            token0: getAddress(inputCurrencyAddress),
-            token1: getAddress(outputCurrencyAddress),
+            token0: getAddress(baseCurrency.address),
+            token1: getAddress(quoteCurrency.address),
           }),
         ])
         return { market, marketSnapshot }
@@ -174,100 +193,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     refetchIntervalInBackground: true,
   })
 
-  useEffect(() => {
-    if (!data?.market) {
-      setSelectedMarket(undefined)
-      setSelectedMarketSnapshot(undefined)
-    } else if (!isMarketEqual(selectedMarket, data.market)) {
-      setSelectedMarket(data.market)
-      if (data.marketSnapshot) {
-        setSelectedMarketSnapshot(data.marketSnapshot)
-      }
-    } else if (
-      selectedMarket &&
-      data.market &&
-      isMarketEqual(selectedMarket, data.market) &&
-      (!isOrderBookEqual(selectedMarket?.asks ?? [], data.market?.asks ?? []) ||
-        !isOrderBookEqual(selectedMarket?.bids ?? [], data.market?.bids ?? []))
-    ) {
-      setSelectedMarket(data.market)
-      if (data.marketSnapshot) {
-        setSelectedMarketSnapshot(data.marketSnapshot)
-      }
-    }
-  }, [data, selectedMarket])
-
-  // once
-  useEffect(
-    () => {
-      const action = async () => {
-        setIsFetchingQuotes(true)
-        if (inputCurrency && outputCurrency && gasPrice) {
-          previousValue.current.inputCurrencyAddress = inputCurrency.address
-          previousValue.current.outputCurrencyAddress = outputCurrency.address
-          try {
-            const price = await fetchPrice(
-              selectedChain.id,
-              inputCurrency,
-              outputCurrency,
-              gasPrice,
-            )
-            if (
-              !isAddressEqual(
-                previousValue.current.inputCurrencyAddress,
-                inputCurrency.address,
-              ) ||
-              !isAddressEqual(
-                previousValue.current.outputCurrencyAddress,
-                outputCurrency.address,
-              ) ||
-              price.isZero()
-            ) {
-              return
-            }
-            console.log({
-              context: 'limit',
-              price: price.toNumber(),
-              chainId: selectedChain.id,
-              inputCurrency: inputCurrency.symbol,
-              outputCurrency: outputCurrency.symbol,
-              gasPrice: gasPrice.toString(),
-            })
-            setMarketPrice(price.toNumber())
-            setPriceInput(price.toNumber().toString())
-            setIsFetchingQuotes(false)
-          } catch (e) {
-            console.error(`Failed to fetch price: ${e}`)
-          }
-        }
-      }
-
-      setDepthClickedIndex(undefined)
-      setPriceInput('')
-      setMarketPrice(0)
-
-      action()
-    }, // eslint-disable-next-line react-hooks/exhaustive-deps
-    [inputCurrency, outputCurrency, selectedChain.id, gasPrice === undefined],
-  )
-
   const availableDecimalPlacesGroups = useMemo(() => {
-    if (marketPrice > 0) {
-      const decimalPlaces = getPriceDecimals(marketPrice)
-      return Array.from(Array(DEFAULT_DECIMAL_PLACE_GROUP_LENGTH).keys())
-        .map((i) => {
-          const label = (10 ** (i - decimalPlaces)).toFixed(
-            Math.max(decimalPlaces - i, 0),
-          )
-          if (new BigNumber(marketPrice).gt(label)) {
-            return {
-              label,
-              value: decimalPlaces - i,
-            }
-          }
-        })
-        .filter((x) => x) as Decimals[]
-    }
     return selectedMarket &&
       selectedMarket.bids.length + selectedMarket.asks.length > 0
       ? (Array.from(Array(DEFAULT_DECIMAL_PLACE_GROUP_LENGTH).keys())
@@ -297,173 +223,184 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
           })
           .filter((x) => x) as Decimals[])
       : null
-  }, [marketPrice, selectedMarket])
+  }, [selectedMarket])
 
   const [bids, asks] = useMemo(
     () =>
       selectedMarket && selectedDecimalPlaces
         ? [
-            parseDepth(true, selectedMarket, selectedDecimalPlaces),
-            parseDepth(false, selectedMarket, selectedDecimalPlaces),
+            parseDepth(
+              selectedChain.id,
+              true,
+              selectedMarket,
+              selectedDecimalPlaces,
+            ),
+            parseDepth(
+              selectedChain.id,
+              false,
+              selectedMarket,
+              selectedDecimalPlaces,
+            ),
           ]
         : [[], []],
-    [selectedDecimalPlaces, selectedMarket],
+    [selectedChain.id, selectedDecimalPlaces, selectedMarket],
+  )
+
+  const setMarketRateAction = useCallback(async () => {
+    if (inputCurrency && outputCurrency && gasPrice) {
+      try {
+        setIsFetchingQuotes(true)
+        const price = await fetchPrice(
+          selectedChain.id,
+          inputCurrency,
+          outputCurrency,
+          gasPrice,
+        )
+        const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
+        if (price.isZero()) {
+          setIsFetchingQuotes(false)
+          return
+        }
+        setOnChainPrice(price.toNumber())
+        setPriceInput(
+          formatToCloberPriceString(
+            selectedChain.id,
+            price.toString(),
+            inputCurrency,
+            outputCurrency,
+            isBid,
+            minimumDecimalPlaces,
+          ),
+        )
+      } catch (e) {
+        console.error(`Failed to fetch price: ${e}`)
+      } finally {
+        setIsFetchingQuotes(false)
+      }
+    }
+  }, [
+    availableDecimalPlacesGroups,
+    gasPrice,
+    inputCurrency,
+    isBid,
+    outputCurrency,
+    selectedChain.id,
+    setIsFetchingQuotes,
+    setPriceInput,
+  ])
+
+  // update selectedMarket and selectedMarketSnapshot when market data changes
+  useEffect(() => {
+    if (!data?.market) {
+      setSelectedDecimalPlaces(undefined)
+      setSelectedMarket(undefined)
+      setSelectedMarketSnapshot(undefined)
+    } else if (!isMarketEqual(selectedMarket, data.market)) {
+      setSelectedDecimalPlaces(undefined)
+      setSelectedMarket(data.market)
+      if (data.marketSnapshot) {
+        setSelectedMarketSnapshot(data.marketSnapshot)
+      }
+    } else if (
+      selectedMarket &&
+      data.market &&
+      isMarketEqual(selectedMarket, data.market) &&
+      (!isOrderBookEqual(selectedMarket?.asks ?? [], data.market?.asks ?? []) ||
+        !isOrderBookEqual(selectedMarket?.bids ?? [], data.market?.bids ?? []))
+    ) {
+      setSelectedMarket(data.market)
+      if (data.marketSnapshot) {
+        setSelectedMarketSnapshot(data.marketSnapshot)
+      }
+    }
+  }, [data, selectedMarket])
+
+  // once
+  // on initial load or currency change, fetch the current market price and initialize price input
+  useEffect(
+    () => {
+      const action = async () => {
+        setIsFetchingQuotes(true)
+        if (inputCurrency && outputCurrency && gasPrice) {
+          previousValue.current.inputCurrencyAddress = inputCurrency.address
+          previousValue.current.outputCurrencyAddress = outputCurrency.address
+          try {
+            const price = await fetchPrice(
+              selectedChain.id,
+              inputCurrency,
+              outputCurrency,
+              gasPrice,
+            )
+            if (
+              !isAddressEqual(
+                previousValue.current.inputCurrencyAddress,
+                inputCurrency.address,
+              ) ||
+              !isAddressEqual(
+                previousValue.current.outputCurrencyAddress,
+                outputCurrency.address,
+              ) ||
+              price.isZero()
+            ) {
+              return
+            }
+            setOnChainPrice(price.toNumber())
+            setPriceInput(
+              formatToCloberPriceString(
+                selectedChain.id,
+                price.toString(),
+                inputCurrency,
+                outputCurrency,
+                isBid,
+              ),
+            )
+            setIsFetchingQuotes(false)
+          } catch (e) {
+            console.error(`Failed to fetch price: ${e}`)
+          }
+        }
+      }
+
+      setDepthClickedIndex(undefined)
+      setPriceInput('')
+      setOnChainPrice(0)
+
+      action()
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [inputCurrency, outputCurrency, selectedChain.id, gasPrice === undefined],
   )
 
   // once
-  useEffect(
-    () => {
-      if (
-        !availableDecimalPlacesGroups ||
-        availableDecimalPlacesGroups.length === 0
-      ) {
-        setSelectedDecimalPlaces(undefined)
-        return
-      }
-      setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      selectedChain.id,
-      selectedMarket?.quote?.address,
-      selectedMarket?.base?.address,
-    ],
-  )
-
-  // When depthClickedIndex is changed, reset the priceInput
+  // when availableDecimalPlacesGroups is populated, set the first one as the default selectedDecimalPlaces
   useEffect(() => {
     if (
       !availableDecimalPlacesGroups ||
       availableDecimalPlacesGroups.length === 0
     ) {
+      setSelectedDecimalPlaces(undefined)
       return
     }
-    const minimumDecimalPlaces = availableDecimalPlacesGroups[0].value
+    setSelectedDecimalPlaces(availableDecimalPlacesGroups[0])
+  }, [availableDecimalPlacesGroups])
 
+  // when user clicks a depth level, update price input to the clicked level and reset the clicked state
+  useEffect(() => {
     if (depthClickedIndex && inputCurrency && outputCurrency) {
       if (depthClickedIndex.isBid && bids[depthClickedIndex.index]) {
-        setPriceInput(
-          toPlacesString(
-            bids[depthClickedIndex.index].price,
-            minimumDecimalPlaces,
-          ),
-        )
+        setPriceInput(bids[depthClickedIndex.index].price)
         setDepthClickedIndex(undefined)
       } else if (!depthClickedIndex.isBid && asks[depthClickedIndex.index]) {
-        setPriceInput(
-          toPlacesString(
-            asks[depthClickedIndex.index].price,
-            minimumDecimalPlaces,
-          ),
-        )
+        setPriceInput(asks[depthClickedIndex.index].price)
         setDepthClickedIndex(undefined)
       }
     }
   }, [
-    availableDecimalPlacesGroups,
     asks,
     bids,
     depthClickedIndex,
-    setPriceInput,
     inputCurrency,
     outputCurrency,
-    selectedChain.id,
-  ])
-
-  const previousValues = useRef({
-    priceInput,
-    outputCurrencyAmount,
-    inputCurrencyAmount,
-  })
-
-  useEffect(() => {
-    if (!outputCurrency?.decimals || !inputCurrency?.decimals) {
-      return
-    }
-
-    // when setting `outputCurrencyAmount` first time
-    if (
-      (new BigNumber(inputCurrencyAmount).isNaN() ||
-        new BigNumber(inputCurrencyAmount).isZero()) &&
-      !new BigNumber(priceInput).isNaN() &&
-      !new BigNumber(priceInput).isZero() &&
-      !new BigNumber(outputCurrencyAmount).isNaN() &&
-      !new BigNumber(outputCurrencyAmount).isZero() &&
-      previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
-    ) {
-      const inputCurrencyAmount = calculateInputCurrencyAmountString(
-        isBid,
-        outputCurrencyAmount,
-        priceInput,
-        inputCurrency.decimals,
-      )
-      setInputCurrencyAmount(inputCurrencyAmount)
-      previousValues.current = {
-        priceInput,
-        outputCurrencyAmount,
-        inputCurrencyAmount,
-      }
-      return
-    }
-
-    // `priceInput` is changed -> `outputCurrencyAmount` will be changed
-    if (previousValues.current.priceInput !== priceInput) {
-      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
-        isBid,
-        inputCurrencyAmount,
-        priceInput,
-        outputCurrency.decimals,
-      )
-      setOutputCurrencyAmount(outputCurrencyAmount)
-      previousValues.current = {
-        priceInput,
-        outputCurrencyAmount,
-        inputCurrencyAmount,
-      }
-    }
-    // `outputCurrencyAmount` is changed -> `inputCurrencyAmount` will be changed
-    else if (
-      previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
-    ) {
-      const inputCurrencyAmount = calculateInputCurrencyAmountString(
-        isBid,
-        outputCurrencyAmount,
-        priceInput,
-        inputCurrency.decimals,
-      )
-      setInputCurrencyAmount(inputCurrencyAmount)
-      previousValues.current = {
-        priceInput,
-        outputCurrencyAmount,
-        inputCurrencyAmount,
-      }
-    }
-    // `inputCurrencyAmount` is changed -> `outputCurrencyAmount` will be changed
-    else if (
-      previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
-    ) {
-      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
-        isBid,
-        inputCurrencyAmount,
-        priceInput,
-        outputCurrency.decimals,
-      )
-      setOutputCurrencyAmount(outputCurrencyAmount)
-      previousValues.current = {
-        priceInput,
-        outputCurrencyAmount,
-        inputCurrencyAmount,
-      }
-    }
-  }, [
-    inputCurrency?.decimals,
-    outputCurrency?.decimals,
-    inputCurrencyAmount,
-    isBid,
-    outputCurrencyAmount,
-    priceInput,
-    setInputCurrencyAmount,
-    setOutputCurrencyAmount,
+    setPriceInput,
   ])
 
   return (
@@ -474,15 +411,16 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setSelectedMarket,
         selectedDecimalPlaces,
         setSelectedDecimalPlaces,
-        isFetchingQuotes,
-        setIsFetchingQuotes,
-        marketPrice,
-        setMarketPrice,
+        onChainPrice,
         availableDecimalPlacesGroups,
         depthClickedIndex,
         setDepthClickedIndex,
         bids,
         asks,
+        setMarketRateAction,
+        priceDeviationPercent,
+        quoteCurrency,
+        baseCurrency,
       }}
     >
       {children}

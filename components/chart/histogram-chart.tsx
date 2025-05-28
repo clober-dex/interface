@@ -2,7 +2,7 @@ import React from 'react'
 import { TamaguiProvider } from '@tamagui/web'
 
 import tamaguiConfig from '../../tamagui.config'
-import { toCommaSeparated } from '../../utils/number'
+import { formatWithCommas } from '../../utils/bignumber'
 
 import { Chart } from './chart-model'
 import { CustomVolumeChartModel } from './volume/custom-volume-chart-model'
@@ -53,13 +53,13 @@ export const HistogramChart = ({
                       <span>
                         {prefix ?? ''}
                         {crosshairData && crosshairData.values
-                          ? toCommaSeparated(total.toFixed(0))
-                          : toCommaSeparated(defaultValue.toFixed(0))}
+                          ? formatWithCommas(total.toFixed(0))
+                          : formatWithCommas(defaultValue.toFixed(0))}
                         {crosshairData && crosshairData.values ? '' : ' Total'}
                       </span>
                       <span className="flex text-gray-500 text-lg md:text-xl font-semibold items-end">
                         {crosshairData && crosshairData.values
-                          ? `(${toCommaSeparated(defaultValue.toFixed(0))} Total)`
+                          ? `(${formatWithCommas(defaultValue.toFixed(0))} Total)`
                           : ''}
                       </span>
                     </div>
@@ -71,7 +71,7 @@ export const HistogramChart = ({
                           .map(({ label, color }) => ({
                             label,
                             value: crosshairData.values[label]
-                              ? `${prefix ?? ''}${toCommaSeparated(crosshairData.values[label]!.toFixed(0))}`
+                              ? `${prefix ?? ''}${formatWithCommas(crosshairData.values[label]!.toFixed(0))}`
                               : undefined,
                             color,
                           }))

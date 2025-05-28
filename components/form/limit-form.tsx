@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { isAddressEqual } from 'viem'
-import { getMarketPrice, getPriceNeighborhood, Market } from '@clober/v2-sdk'
+import { getPriceNeighborhood, Market } from '@clober/v2-sdk'
 import BigNumber from 'bignumber.js'
 
 import NumberInput from '../input/number-input'
@@ -10,8 +10,12 @@ import { ActionButton, ActionButtonProps } from '../button/action-button'
 import CurrencySelect from '../selector/currency-select'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
-import { toPlacesString } from '../../utils/bignumber'
-import { getPriceDecimals } from '../../utils/prices'
+import { formatSignificantString } from '../../utils/bignumber'
+import {
+  formatTickPriceString,
+  formatToCloberPriceString,
+  getPriceDecimals,
+} from '../../utils/prices'
 import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
 
@@ -26,6 +30,7 @@ export type LimitFormProps = {
   setPriceInput: (priceInput: string) => void
   selectedMarket?: Market
   isBid: boolean
+  depthClickedIndex: number | undefined
   showInputCurrencySelect: boolean
   setShowInputCurrencySelect:
     | ((showInputCurrencySelect: boolean) => void)
@@ -46,8 +51,8 @@ export type LimitFormProps = {
   availableOutputCurrencyBalance: bigint
   swapInputCurrencyAndOutputCurrency: () => void
   minimumDecimalPlaces: number | undefined
-  marketPrice: number
-  marketRateDiff: number
+  onChainPrice: number
+  priceDeviationPercent: number
   setMarketRateAction:
     | {
         isLoading: boolean
@@ -69,6 +74,7 @@ export const LimitForm = ({
   setPriceInput,
   selectedMarket,
   isBid,
+  depthClickedIndex,
   showInputCurrencySelect,
   setShowInputCurrencySelect,
   inputCurrency,
@@ -85,25 +91,70 @@ export const LimitForm = ({
   availableOutputCurrencyBalance,
   swapInputCurrencyAndOutputCurrency,
   minimumDecimalPlaces,
-  marketPrice,
-  marketRateDiff,
+  onChainPrice,
+  priceDeviationPercent,
   setMarketRateAction,
   closeLimitFormAction,
   actionButtonProps,
 }: LimitFormProps) => {
-  minimumDecimalPlaces = minimumDecimalPlaces
-    ? minimumDecimalPlaces
-    : getPriceDecimals(Number(priceInput))
-  const minimumPrice = toPlacesString(
+  minimumDecimalPlaces =
+    minimumDecimalPlaces !== undefined
+      ? minimumDecimalPlaces
+      : getPriceDecimals(Number(priceInput))
+
+  const [debouncedPriceInput, setDebouncedPriceInput] = useState('')
+  const minimumPrice = formatSignificantString(
     new BigNumber(0.1).pow(minimumDecimalPlaces).toString(),
     minimumDecimalPlaces,
-    BigNumber.ROUND_CEIL,
+    BigNumber.ROUND_DOWN,
   )
-  const maximumPrice = toPlacesString(
+  const maximumPrice = formatSignificantString(
     '8662020672688495886265',
     minimumDecimalPlaces,
-    BigNumber.ROUND_FLOOR,
+    BigNumber.ROUND_DOWN,
   )
+
+  useEffect(() => {
+    if (depthClickedIndex) {
+      setDebouncedPriceInput('')
+    }
+  }, [depthClickedIndex])
+
+  // only when user change priceInput directly
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (
+        inputCurrency &&
+        outputCurrency &&
+        minimumDecimalPlaces &&
+        !new BigNumber(debouncedPriceInput).isNaN()
+      ) {
+        setPriceInput(
+          formatToCloberPriceString(
+            chain.id,
+            debouncedPriceInput,
+            inputCurrency,
+            outputCurrency,
+            isBid,
+            minimumDecimalPlaces,
+          ),
+        )
+      }
+    }, 1000)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [
+    chain.id,
+    debouncedPriceInput,
+    inputCurrency,
+    isBid,
+    minimumDecimalPlaces,
+    outputCurrency,
+    setPriceInput,
+  ])
+
   return showInputCurrencySelect ? (
     <CurrencySelect
       chain={chain}
@@ -173,22 +224,31 @@ export const LimitForm = ({
       <div className="flex flex-col gap-6 self-stretch w-full">
         <div className="flex items-start gap-4 self-stretch">
           <div className="flex flex-row gap-1 items-center h-6 opacity-90 text-white text-base font-semibold">
-            {isBid ? 'Buy' : 'Sell'} {selectedMarket?.base?.symbol} at rate
-            {marketPrice > 0 && marketRateDiff >= 10000 ? (
+            {isBid ? (
+              <div className="px-1.5 sm:px-2 py-0.5 bg-green-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-green-500 text-sm sm:text-base">
+                Bid
+              </div>
+            ) : (
+              <div className="px-1.5 sm:px-2 py-0.5 bg-red-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-red-500 text-sm sm:text-base">
+                Ask
+              </div>
+            )}{' '}
+            {selectedMarket?.base?.symbol} at rate
+            {onChainPrice > 0 && priceDeviationPercent >= 10000 ? (
               <div className="text-xs sm:text-sm font-semibold text-green-400">
                 (&gt;10000%)
               </div>
-            ) : marketRateDiff === -100 ? (
+            ) : priceDeviationPercent === -100 ? (
               <></>
-            ) : !isNaN(marketRateDiff) &&
-              isFinite(marketRateDiff) &&
-              marketRateDiff.toFixed(2) !== '0.00' ? (
+            ) : !isNaN(priceDeviationPercent) &&
+              isFinite(priceDeviationPercent) &&
+              priceDeviationPercent.toFixed(2) !== '0.00' ? (
               <div
                 className={`text-gray-200 ${
-                  marketRateDiff >= 0 ? 'text-green-400' : 'text-red-400'
+                  priceDeviationPercent >= 0 ? 'text-green-400' : 'text-red-400'
                 } sm:text-sm font-semibold`}
               >
-                ({marketRateDiff.toFixed(2)}%)
+                ({priceDeviationPercent.toFixed(2)}%)
               </div>
             ) : (
               <></>
@@ -214,7 +274,10 @@ export const LimitForm = ({
                   ) : (
                     <NumberInput
                       value={priceInput}
-                      onValueChange={setPriceInput}
+                      onValueChange={(value) => {
+                        setDebouncedPriceInput(value)
+                        setPriceInput(value)
+                      }}
                       className="text-xl w-full sm:text-3xl bg-transparent placeholder-gray-500 text-white outline-none"
                     />
                   )}
@@ -223,6 +286,7 @@ export const LimitForm = ({
                       <button
                         disabled={false}
                         onClick={async () => {
+                          setDebouncedPriceInput('')
                           await setMarketRateAction.action()
                         }}
                         className="text-center text-blue-400 text-xs font-semibold px-1.5 py-[5px] sm:px-2 sm:py-[5px] bg-blue-500/25 rounded-xl justify-center items-center gap-2.5 flex"
@@ -237,10 +301,12 @@ export const LimitForm = ({
                 <div className="flex items-center w-[34px] sm:w-11 h-full flex-col gap-2">
                   <button
                     onClick={() => {
+                      setDebouncedPriceInput('')
                       if (
                         selectedMarket &&
                         inputCurrency &&
                         outputCurrency &&
+                        minimumDecimalPlaces &&
                         !new BigNumber(priceInput).isNaN()
                       ) {
                         if (new BigNumber(priceInput).gte(maximumPrice)) {
@@ -249,7 +315,10 @@ export const LimitForm = ({
                         }
                         const {
                           normal: {
-                            now: { tick },
+                            now: { tick: bidTick },
+                          },
+                          inverted: {
+                            now: { tick: askTick },
                           },
                         } = getPriceNeighborhood({
                           chainId: chain.id,
@@ -257,18 +326,16 @@ export const LimitForm = ({
                           currency0: inputCurrency,
                           currency1: outputCurrency,
                         })
-                        let currentTick = tick
+                        let currentTick = isBid ? bidTick : askTick
                         // eslint-disable-next-line no-constant-condition
                         while (true) {
-                          const price = getMarketPrice({
-                            marketQuoteCurrency: selectedMarket.quote,
-                            marketBaseCurrency: selectedMarket.base,
-                            bidTick: currentTick,
-                          })
-                          const nextPrice = toPlacesString(
-                            price,
+                          const nextPrice = formatTickPriceString(
+                            chain.id,
+                            currentTick,
+                            inputCurrency,
+                            outputCurrency,
+                            isBid,
                             minimumDecimalPlaces,
-                            BigNumber.ROUND_CEIL,
                           )
                           if (new BigNumber(nextPrice).lt(minimumPrice)) {
                             setPriceInput(minimumPrice)
@@ -278,7 +345,9 @@ export const LimitForm = ({
                             setPriceInput(nextPrice)
                             break
                           }
-                          currentTick = currentTick + 1n
+                          currentTick = isBid
+                            ? currentTick + 1n
+                            : currentTick - 1n
                         }
                       }
                     }}
@@ -300,10 +369,12 @@ export const LimitForm = ({
                   </button>
                   <button
                     onClick={() => {
+                      setDebouncedPriceInput('')
                       if (
                         selectedMarket &&
                         inputCurrency &&
                         outputCurrency &&
+                        minimumDecimalPlaces &&
                         !new BigNumber(priceInput).isNaN()
                       ) {
                         if (new BigNumber(priceInput).gte(maximumPrice)) {
@@ -312,7 +383,10 @@ export const LimitForm = ({
                         }
                         const {
                           normal: {
-                            now: { tick },
+                            now: { tick: bidTick },
+                          },
+                          inverted: {
+                            now: { tick: askTick },
                           },
                         } = getPriceNeighborhood({
                           chainId: chain.id,
@@ -320,18 +394,16 @@ export const LimitForm = ({
                           currency0: inputCurrency,
                           currency1: outputCurrency,
                         })
-                        let currentTick = tick
+                        let currentTick = isBid ? bidTick : askTick
                         // eslint-disable-next-line no-constant-condition
                         while (true) {
-                          const price = getMarketPrice({
-                            marketQuoteCurrency: selectedMarket.quote,
-                            marketBaseCurrency: selectedMarket.base,
-                            bidTick: currentTick,
-                          })
-                          const nextPrice = toPlacesString(
-                            price,
+                          const nextPrice = formatTickPriceString(
+                            chain.id,
+                            currentTick,
+                            inputCurrency,
+                            outputCurrency,
+                            isBid,
                             minimumDecimalPlaces,
-                            BigNumber.ROUND_CEIL,
                           )
                           if (new BigNumber(nextPrice).lte(minimumPrice)) {
                             setPriceInput(minimumPrice)
@@ -341,7 +413,9 @@ export const LimitForm = ({
                             setPriceInput(nextPrice)
                             break
                           }
-                          currentTick = currentTick - 1n
+                          currentTick = isBid
+                            ? currentTick - 1n
+                            : currentTick + 1n
                         }
                       }
                     }}

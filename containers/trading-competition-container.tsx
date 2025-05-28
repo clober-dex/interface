@@ -6,7 +6,6 @@ import CountUp from 'react-countup'
 import { useRouter } from 'next/router'
 
 import { ActionButton } from '../components/button/action-button'
-import { toCommaSeparated } from '../utils/number'
 import { useChainContext } from '../contexts/chain-context'
 import { buildTransaction, sendTransaction } from '../utils/transaction'
 import { useTransactionContext } from '../contexts/transaction-context'
@@ -22,6 +21,7 @@ import { TradingCompetitionPnlCard } from '../components/card/trading-competitio
 import { CHAIN_CONFIG } from '../chain-configs'
 import { Legend } from '../components/chart/legend'
 import { TradingCompetition } from '../apis/trading-competition'
+import { formatWithCommas } from '../utils/bignumber'
 
 const ASSETS: Currency[] = [
   {
@@ -95,7 +95,7 @@ const Profit = ({
         .map(({ currency, pnl }) => ({
           label: (currency.symbol.split('-')?.[0] ?? '').toUpperCase(),
           color: tokenColorMap[getAddress(currency.address)],
-          value: `${pnl === 0 ? '' : pnl > 0 ? '+' : '-'}$${toCommaSeparated(Math.abs(pnl).toFixed(4))}`,
+          value: `${pnl === 0 ? '' : pnl > 0 ? '+' : '-'}$${formatWithCommas(Math.abs(pnl).toFixed(4))}`,
         })) ?? [],
     [tokenColorMap, trades],
   )
@@ -112,7 +112,7 @@ const Profit = ({
         className={`flex flex-1 justify-start items-center ${profit === 0 ? 'text-white' : profit > 0 ? 'text-green-500' : 'text-red-500'} font-semibold`}
       >
         {profit === 0 ? ' ' : profit > 0 ? '+' : '-'}$
-        {toCommaSeparated(Math.abs(profit).toFixed(4))}
+        {formatWithCommas(Math.abs(profit).toFixed(4))}
       </div>
 
       <div className="items-center flex relative">
@@ -158,7 +158,7 @@ export const TradingCompetitionContainer = () => {
   })
 
   const countUpFormatter = useCallback((value: number): string => {
-    return toCommaSeparated(value.toFixed(0))
+    return formatWithCommas(value.toFixed(0))
   }, [])
 
   const { data: allUserPnL } = useQuery({

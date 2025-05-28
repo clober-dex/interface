@@ -1,9 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import React, { useEffect, useMemo, useState } from 'react'
+import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
-import { useQuery } from '@tanstack/react-query'
-import { getQuoteToken } from '@clober/v2-sdk'
-import BigNumber from 'bignumber.js'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
@@ -15,20 +12,16 @@ import { useMarketContext } from '../contexts/trade/market-context'
 import { useLimitContractContext } from '../contexts/trade/limit-contract-context'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { isAddressesEqual } from '../utils/address'
-import { fetchQuotes } from '../apis/swap/quote'
 import { aggregators } from '../chain-configs/aggregators'
 import { formatUnits } from '../utils/bigint'
-import { toPlacesString } from '../utils/bignumber'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
 import { useTradeContext } from '../contexts/trade/trade-context'
 import { SwapForm, SwapFormProps } from '../components/form/swap-form'
 import { useSwapContractContext } from '../contexts/trade/swap-contract-context'
-import { fetchPrice } from '../apis/price'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { SwapRouteList } from '../components/swap-router-list'
-import { Quote } from '../model/aggregator/quote'
 import { MobileFixedModal } from '../components/modal/mobile-fixed-modal'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
@@ -215,11 +208,13 @@ export const TradeContainer = () => {
     setSelectedDecimalPlaces,
     bids,
     asks,
+    depthClickedIndex,
     setDepthClickedIndex,
-    isFetchingQuotes,
-    setIsFetchingQuotes,
-    marketPrice,
-    setMarketPrice,
+    onChainPrice,
+    setMarketRateAction,
+    priceDeviationPercent,
+    quoteCurrency,
+    baseCurrency,
   } = useMarketContext()
   const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
@@ -244,43 +239,24 @@ export const TradeContainer = () => {
     setPriceInput,
     slippageInput,
     setSlippageInput,
+    showOrderBook,
+    setShowOrderBook,
+    selectedQuote,
+    setSelectedQuote,
+    tab,
+    setTab,
+    quotes,
+    refreshQuotesAction,
+    priceImpact,
+    isFetchingQuotes,
   } = useTradeContext()
+
   const { openConnectModal } = useConnectModal()
   const { balances, prices, currencies, setCurrencies } = useCurrencyContext()
-  const [showOrderBook, setShowOrderBook] = useState(false)
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
-  const [latestRefreshTime, setLatestRefreshTime] = useState(Date.now())
 
   const [showMetaInfo, setShowMetaInfo] = useState(false)
-  const [debouncedValue, setDebouncedValue] = useState('')
-  const [tab, setTab] = useState<'limit' | 'swap'>(
-    CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
-  )
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
-
-  useEffect(() => {
-    if (selectedChain.testnet) {
-      setShowOrderBook(true)
-    } else {
-      setShowOrderBook(false)
-    }
-  }, [selectedChain.testnet])
-
-  const [quoteCurrency, baseCurrency] = useMemo(() => {
-    if (inputCurrency && outputCurrency) {
-      const quote = getQuoteToken({
-        chainId: selectedChain.id,
-        token0: inputCurrency.address,
-        token1: outputCurrency.address,
-      })
-      return isAddressEqual(quote, inputCurrency.address)
-        ? [inputCurrency, outputCurrency]
-        : [outputCurrency, inputCurrency]
-    } else {
-      return [undefined, undefined]
-    }
-  }, [inputCurrency, outputCurrency, selectedChain.id])
 
   const amountIn = useMemo(
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
@@ -297,152 +273,6 @@ export const TradeContainer = () => {
       setShowMetaInfo(false)
     }
   }, [amountIn, tab])
-
-  const marketRateDiff = useMemo(
-    () =>
-      (isBid
-        ? new BigNumber(marketPrice).dividedBy(priceInput).minus(1).times(100)
-        : new BigNumber(priceInput).dividedBy(marketPrice).minus(1).times(100)
-      ).toNumber(),
-    [isBid, marketPrice, priceInput],
-  )
-
-  useEffect(() => {
-    if (
-      selectedMarket &&
-      selectedMarket.asks.length + selectedMarket.bids.length === 0
-    ) {
-      setShowOrderBook(false)
-    }
-  }, [selectedMarket])
-
-  const setMarketRateAction = useCallback(async () => {
-    if (inputCurrency && outputCurrency && gasPrice) {
-      setIsFetchingQuotes(true)
-      const price = await fetchPrice(
-        selectedChain.id,
-        inputCurrency,
-        outputCurrency,
-        gasPrice,
-      )
-      console.log({
-        context: 'fetching price for market rate',
-        price: price.toNumber(),
-        chainId: selectedChain.id,
-        inputCurrency: inputCurrency.symbol,
-        outputCurrency: outputCurrency.symbol,
-        gasPrice: gasPrice.toString(),
-      })
-      const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
-      if (price.isZero()) {
-        setIsFetchingQuotes(false)
-        return
-      }
-      setMarketPrice(price.toNumber())
-      setPriceInput(
-        minimumDecimalPlaces
-          ? toPlacesString(price, minimumDecimalPlaces)
-          : price.toFixed(),
-      )
-      setIsFetchingQuotes(false)
-    }
-  }, [
-    availableDecimalPlacesGroups,
-    gasPrice,
-    inputCurrency,
-    outputCurrency,
-    selectedChain.id,
-    setIsFetchingQuotes,
-    setMarketPrice,
-    setPriceInput,
-  ])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(inputCurrencyAmount)
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [inputCurrencyAmount])
-
-  const { data: quotes } = useQuery({
-    queryKey: [
-      'quotes',
-      inputCurrency?.address,
-      outputCurrency?.address,
-      Number(inputCurrencyAmount),
-      slippageInput,
-      userAddress,
-      selectedChain.id,
-      tab,
-      latestRefreshTime,
-      debouncedValue,
-    ],
-    queryFn: async () => {
-      if (
-        gasPrice &&
-        inputCurrency &&
-        outputCurrency &&
-        amountIn > 0n &&
-        tab === 'swap' &&
-        Number(debouncedValue) === Number(inputCurrencyAmount)
-      ) {
-        console.log({
-          context: 'quote',
-          chainId: selectedChain.id,
-          inputCurrency: inputCurrency.symbol,
-          outputCurrency: outputCurrency.symbol,
-          amount: amountIn,
-        })
-        const { best, all } = await fetchQuotes(
-          aggregators,
-          inputCurrency,
-          amountIn,
-          outputCurrency,
-          parseFloat(slippageInput),
-          gasPrice,
-          prices,
-          userAddress,
-        )
-        return { best, all }
-      }
-      return { best: null, all: [] }
-    },
-    initialData: { best: null, all: [] },
-  })
-
-  useEffect(() => {
-    if (quotes.best) {
-      setSelectedQuote(quotes.best)
-    } else {
-      setSelectedQuote(null)
-    }
-  }, [quotes.best])
-
-  const priceImpact = useMemo(() => {
-    if (
-      selectedQuote &&
-      selectedQuote.amountIn > 0n &&
-      selectedQuote.amountOut > 0n &&
-      inputCurrency &&
-      outputCurrency &&
-      prices[getAddress(inputCurrency.address)] &&
-      prices[getAddress(outputCurrency.address)]
-    ) {
-      const amountIn = Number(
-        formatUnits(selectedQuote.amountIn, inputCurrency.decimals),
-      )
-      const amountOut = Number(
-        formatUnits(selectedQuote.amountOut, outputCurrency.decimals),
-      )
-      const inputValue = amountIn * prices[getAddress(inputCurrency.address)]
-      const outputValue = amountOut * prices[getAddress(outputCurrency.address)]
-      return inputValue > outputValue
-        ? ((outputValue - inputValue) / inputValue) * 100
-        : 0
-    }
-    return Number.NaN
-  }, [inputCurrency, outputCurrency, prices, selectedQuote])
 
   const limitActionButtonProps = useMemo(
     () => ({
@@ -465,7 +295,7 @@ export const TradeContainer = () => {
         if (!inputCurrency || !outputCurrency || !selectedMarket) {
           return
         }
-        if (marketRateDiff < -2) {
+        if (priceDeviationPercent < -2) {
           setShowWarningModal(true)
           return
         }
@@ -495,7 +325,7 @@ export const TradeContainer = () => {
       inputCurrency,
       inputCurrencyAmount,
       limit,
-      marketRateDiff,
+      priceDeviationPercent,
       openConnectModal,
       outputCurrency,
       priceInput,
@@ -517,6 +347,7 @@ export const TradeContainer = () => {
         setPriceInput,
         selectedMarket,
         isBid,
+        depthClickedIndex,
         showInputCurrencySelect,
         setShowInputCurrencySelect,
         inputCurrency,
@@ -546,8 +377,8 @@ export const TradeContainer = () => {
           setOutputCurrency(_inputCurrency)
         },
         minimumDecimalPlaces: availableDecimalPlacesGroups?.[0]?.value,
-        marketPrice,
-        marketRateDiff,
+        onChainPrice,
+        priceDeviationPercent,
         setMarketRateAction: {
           isLoading: isFetchingQuotes,
           action: async () => {
@@ -561,13 +392,14 @@ export const TradeContainer = () => {
       availableDecimalPlacesGroups,
       balances,
       currencies,
+      depthClickedIndex,
       inputCurrency,
       inputCurrencyAmount,
       isBid,
       isFetchingQuotes,
       limitActionButtonProps,
-      marketPrice,
-      marketRateDiff,
+      onChainPrice,
+      priceDeviationPercent,
       outputCurrency,
       outputCurrencyAmount,
       priceInput,
@@ -700,8 +532,8 @@ export const TradeContainer = () => {
         setSlippageInput,
         aggregatorName: selectedQuote?.aggregator?.name ?? '',
         gasEstimateValue: selectedQuote?.gasUsd ?? 0,
-        priceImpact: priceImpact,
-        refreshQuotesAction: () => setLatestRefreshTime(Date.now()),
+        priceImpact,
+        refreshQuotesAction,
       }) as SwapFormProps,
     [
       balances,
@@ -711,6 +543,7 @@ export const TradeContainer = () => {
       outputCurrency,
       priceImpact,
       prices,
+      refreshQuotesAction,
       selectedChain,
       selectedQuote?.aggregator?.name,
       selectedQuote?.amountOut,
@@ -732,9 +565,9 @@ export const TradeContainer = () => {
     <>
       {showWarningModal ? (
         <WarningLimitModal
-          marketPrice={marketPrice}
-          priceInput={Number(priceInput)}
-          marketRateDiff={marketRateDiff}
+          onChainPrice={onChainPrice}
+          priceInput={priceInput}
+          priceDeviationPercent={priceDeviationPercent}
           closeModal={() => setShowWarningModal(false)}
           limit={async () => {
             if (!inputCurrency || !outputCurrency || !selectedMarket) {
@@ -852,7 +685,7 @@ export const TradeContainer = () => {
                     </button>
                   </div>
 
-                  {!showOrderBook && baseCurrency ? (
+                  {!showOrderBook && baseCurrency && quoteCurrency ? (
                     !selectedChain.testnet ? (
                       <IframeChartContainer
                         setShowOrderBook={setShowOrderBook}
@@ -938,7 +771,10 @@ export const TradeContainer = () => {
         </div>
 
         {tab === 'limit' && userAddress ? (
-          <OpenOrderContainer selectedMarket={selectedMarket} />
+          <OpenOrderContainer
+            chainId={selectedChain.id}
+            selectedMarket={selectedMarket}
+          />
         ) : (
           <div className="hidden sm:flex mb-28 lg:mb-2" />
         )}

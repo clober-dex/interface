@@ -10,8 +10,8 @@ import { formatUnits } from '../../../utils/bigint'
 import { Asset } from '../../../model/futures/asset'
 import { Prices } from '../../../model/prices'
 import { ActionButtonProps } from '../../button/action-button'
-import { toCommaSeparated, toShortNumber } from '../../../utils/number'
 import { Chain } from '../../../model/chain'
+import { formatTinyNumber, formatWithCommas } from '../../../utils/bignumber'
 
 export const FuturesRedeemCard = ({
   chain,
@@ -89,7 +89,7 @@ export const FuturesRedeemCard = ({
               Mark Price
             </div>
             <div className="text-sm sm:text-base">
-              {toShortNumber(prices[asset.currency.address] ?? 0)}
+              {formatTinyNumber(prices[asset.currency.address] ?? 0)}
             </div>
           </div>
 
@@ -113,7 +113,7 @@ export const FuturesRedeemCard = ({
             </div>
             <div className="text-sm sm:text-base">
               {asset.settlePrice > 0n ? (
-                <>${toCommaSeparated(asset.settlePrice.toFixed(2))}</>
+                <>${formatWithCommas(asset.settlePrice.toFixed(2))}</>
               ) : (
                 <>-</>
               )}
