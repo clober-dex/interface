@@ -37,7 +37,6 @@ type MarketContext = {
   selectedMarketSnapshot?: MarketSnapshot
   setSelectedMarket: (market: Market | undefined) => void
   selectedDecimalPlaces: Decimals | undefined
-  isFetchingQuotes: boolean
   marketPrice: number
   setSelectedDecimalPlaces: (decimalPlaces: Decimals | undefined) => void
   availableDecimalPlacesGroups: Decimals[] | null
@@ -75,7 +74,6 @@ const Context = React.createContext<MarketContext>({
   setSelectedMarket: (_) => _,
   selectedDecimalPlaces: undefined,
   setSelectedDecimalPlaces: () => {},
-  isFetchingQuotes: false,
   marketPrice: 0,
   availableDecimalPlacesGroups: null,
   depthClickedIndex: undefined,
@@ -104,6 +102,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     outputCurrency,
     setInputCurrencyAmount,
     setOutputCurrencyAmount,
+    setIsFetchingQuotes,
   } = useTradeContext()
 
   const previousValue = useRef({
@@ -111,7 +110,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     outputCurrencyAddress: outputCurrency?.address,
   })
 
-  const [isFetchingQuotes, setIsFetchingQuotes] = useState(false)
   const [marketPrice, setMarketPrice] = useState(0)
   const [selectedDecimalPlaces, setSelectedDecimalPlaces] = useState<
     Decimals | undefined
@@ -491,6 +489,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     isBid,
     outputCurrency,
     selectedChain.id,
+    setIsFetchingQuotes,
     setPriceInput,
   ])
 
@@ -526,7 +525,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setSelectedMarket,
         selectedDecimalPlaces,
         setSelectedDecimalPlaces,
-        isFetchingQuotes,
         marketPrice,
         availableDecimalPlacesGroups,
         depthClickedIndex,

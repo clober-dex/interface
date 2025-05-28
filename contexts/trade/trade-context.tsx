@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { getAddress, isAddress, isAddressEqual } from 'viem'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { getAddress, isAddress, isAddressEqual, parseUnits } from 'viem'
 import { getQuoteToken } from '@clober/v2-sdk'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
+import { useQuery } from '@tanstack/react-query'
 
 import { Currency } from '../../model/currency'
 import {
@@ -15,6 +16,9 @@ import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { Quote } from '../../model/aggregator/quote'
+import { fetchQuotes } from '../../apis/swap/quote'
+import { aggregators } from '../../chain-configs/aggregators'
+import { formatUnits } from '../../utils/bigint'
 
 type TradeContext = {
   isBid: boolean
@@ -39,6 +43,16 @@ type TradeContext = {
   setShowOrderBook: (showOrderBook: boolean) => void
   selectedQuote: Quote | null
   setSelectedQuote: (quote: Quote | null) => void
+  tab: 'limit' | 'swap'
+  setTab: (tab: 'limit' | 'swap') => void
+  quotes: {
+    best: Quote | null
+    all: Quote[]
+  }
+  refreshQuotesAction: () => void
+  priceImpact: number
+  isFetchingQuotes: boolean
+  setIsFetchingQuotes: (isFetching: boolean) => void
 }
 
 const Context = React.createContext<TradeContext>({
@@ -64,20 +78,33 @@ const Context = React.createContext<TradeContext>({
   setShowOrderBook: () => {},
   selectedQuote: null,
   setSelectedQuote: () => {},
+  tab: 'limit',
+  setTab: () => {},
+  quotes: { best: null, all: [] },
+  refreshQuotesAction: () => {},
+  priceImpact: 0,
+  isFetchingQuotes: false,
+  setIsFetchingQuotes: () => {},
 })
 
 export const TRADE_SLIPPAGE_KEY = 'trade-slippage'
 
 export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { disconnectAsync } = useDisconnect()
+  const { data: gasPrice } = useGasPrice()
+  const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
   const previousChain = useRef({
     chain: selectedChain,
   })
   const { chainId } = useAccount()
-  const { whitelistCurrencies, setCurrencies } = useCurrencyContext()
+  const { whitelistCurrencies, setCurrencies, prices } = useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
+  const [tab, setTab] = useState<'limit' | 'swap'>(
+    CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
+  )
+  const [isFetchingQuotes, setIsFetchingQuotes] = useState(false)
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
   const [showOrderBook, setShowOrderBook] = useState(true)
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
@@ -95,6 +122,10 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   const [priceInput, setPriceInput] = useState('')
   const [slippageInput, _setSlippageInput] = useState('0.5')
+  const [latestQuotesRefreshTime, setLatestQuotesRefreshTime] = useState(
+    Date.now(),
+  )
+  const [debouncedValue, setDebouncedValue] = useState('')
 
   const setInputCurrency = useCallback(
     (currency: Currency | undefined) => {
@@ -134,6 +165,11 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     [selectedChain],
   )
 
+  const refreshQuotesAction = useCallback(
+    () => setLatestQuotesRefreshTime(Date.now()),
+    [],
+  )
+
   const [inputCurrencyAddress, outputCurrencyAddress] = [
     getQueryParams()?.inputCurrency ??
       localStorage.getItem(
@@ -145,10 +181,98 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       ),
   ].map((address) => (isAddress(address) ? getAddress(address) : address))
 
+  const priceImpact = useMemo(() => {
+    if (
+      selectedQuote &&
+      selectedQuote.amountIn > 0n &&
+      selectedQuote.amountOut > 0n &&
+      inputCurrency &&
+      outputCurrency &&
+      prices[getAddress(inputCurrency.address)] &&
+      prices[getAddress(outputCurrency.address)]
+    ) {
+      const amountIn = Number(
+        formatUnits(selectedQuote.amountIn, inputCurrency.decimals),
+      )
+      const amountOut = Number(
+        formatUnits(selectedQuote.amountOut, outputCurrency.decimals),
+      )
+      const inputValue = amountIn * prices[getAddress(inputCurrency.address)]
+      const outputValue = amountOut * prices[getAddress(outputCurrency.address)]
+      return inputValue > outputValue
+        ? ((outputValue - inputValue) / inputValue) * 100
+        : 0
+    }
+    return Number.NaN
+  }, [inputCurrency, outputCurrency, prices, selectedQuote])
+
   const setSlippageInput = useCallback((slippage: string) => {
     localStorage.setItem(TRADE_SLIPPAGE_KEY, slippage)
     _setSlippageInput(slippage)
   }, [])
+
+  const { data: quotes } = useQuery({
+    queryKey: [
+      'quotes',
+      inputCurrency?.address,
+      outputCurrency?.address,
+      Number(inputCurrencyAmount),
+      slippageInput,
+      userAddress,
+      selectedChain.id,
+      tab,
+      latestQuotesRefreshTime,
+      debouncedValue,
+    ],
+    queryFn: async () => {
+      if (
+        gasPrice &&
+        inputCurrency &&
+        outputCurrency &&
+        Number(inputCurrencyAmount) > 0 &&
+        tab === 'swap' &&
+        Number(debouncedValue) === Number(inputCurrencyAmount)
+      ) {
+        console.log({
+          context: 'quote',
+          chainId: selectedChain.id,
+          inputCurrency: inputCurrency.symbol,
+          outputCurrency: outputCurrency.symbol,
+          inputCurrencyAmount,
+          debouncedValue,
+        })
+        const { best, all } = await fetchQuotes(
+          aggregators,
+          inputCurrency,
+          parseUnits(inputCurrencyAmount, inputCurrency.decimals),
+          outputCurrency,
+          parseFloat(slippageInput),
+          gasPrice,
+          prices,
+          userAddress,
+        )
+        return { best, all }
+      }
+      return { best: null, all: [] }
+    },
+    initialData: { best: null, all: [] },
+  })
+
+  useEffect(() => {
+    if (quotes.best) {
+      setSelectedQuote(quotes.best)
+    } else {
+      setSelectedQuote(null)
+    }
+  }, [quotes.best, setSelectedQuote])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(inputCurrencyAmount)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [inputCurrencyAmount])
 
   useEffect(() => {
     const slippage = localStorage.getItem(TRADE_SLIPPAGE_KEY)
@@ -294,6 +418,13 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setShowOrderBook,
         selectedQuote,
         setSelectedQuote,
+        tab,
+        setTab,
+        quotes,
+        refreshQuotesAction,
+        priceImpact,
+        isFetchingQuotes,
+        setIsFetchingQuotes,
       }}
     >
       {children}

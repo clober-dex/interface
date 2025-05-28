@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
-import { useQuery } from '@tanstack/react-query'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
@@ -13,7 +12,6 @@ import { useMarketContext } from '../contexts/trade/market-context'
 import { useLimitContractContext } from '../contexts/trade/limit-contract-context'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { isAddressesEqual } from '../utils/address'
-import { fetchQuotes } from '../apis/swap/quote'
 import { aggregators } from '../chain-configs/aggregators'
 import { formatUnits } from '../utils/bigint'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
@@ -212,7 +210,6 @@ export const TradeContainer = () => {
     asks,
     depthClickedIndex,
     setDepthClickedIndex,
-    isFetchingQuotes,
     marketPrice,
     setMarketRateAction,
     marketRateDiff,
@@ -246,19 +243,20 @@ export const TradeContainer = () => {
     setShowOrderBook,
     selectedQuote,
     setSelectedQuote,
+    tab,
+    setTab,
+    quotes,
+    refreshQuotesAction,
+    priceImpact,
+    isFetchingQuotes,
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
   const { balances, prices, currencies, setCurrencies } = useCurrencyContext()
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
-  const [latestRefreshTime, setLatestRefreshTime] = useState(Date.now())
 
   const [showMetaInfo, setShowMetaInfo] = useState(false)
-  const [debouncedValue, setDebouncedValue] = useState('')
-  const [tab, setTab] = useState<'limit' | 'swap'>(
-    CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
-  )
 
   const amountIn = useMemo(
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
@@ -275,93 +273,6 @@ export const TradeContainer = () => {
       setShowMetaInfo(false)
     }
   }, [amountIn, tab])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(inputCurrencyAmount)
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [inputCurrencyAmount])
-
-  const { data: quotes } = useQuery({
-    queryKey: [
-      'quotes',
-      inputCurrency?.address,
-      outputCurrency?.address,
-      Number(inputCurrencyAmount),
-      slippageInput,
-      userAddress,
-      selectedChain.id,
-      tab,
-      latestRefreshTime,
-      debouncedValue,
-    ],
-    queryFn: async () => {
-      if (
-        gasPrice &&
-        inputCurrency &&
-        outputCurrency &&
-        amountIn > 0n &&
-        tab === 'swap' &&
-        Number(debouncedValue) === Number(inputCurrencyAmount)
-      ) {
-        console.log({
-          context: 'quote',
-          chainId: selectedChain.id,
-          inputCurrency: inputCurrency.symbol,
-          outputCurrency: outputCurrency.symbol,
-          amount: amountIn,
-        })
-        const { best, all } = await fetchQuotes(
-          aggregators,
-          inputCurrency,
-          amountIn,
-          outputCurrency,
-          parseFloat(slippageInput),
-          gasPrice,
-          prices,
-          userAddress,
-        )
-        return { best, all }
-      }
-      return { best: null, all: [] }
-    },
-    initialData: { best: null, all: [] },
-  })
-
-  useEffect(() => {
-    if (quotes.best) {
-      setSelectedQuote(quotes.best)
-    } else {
-      setSelectedQuote(null)
-    }
-  }, [quotes.best, setSelectedQuote])
-
-  const priceImpact = useMemo(() => {
-    if (
-      selectedQuote &&
-      selectedQuote.amountIn > 0n &&
-      selectedQuote.amountOut > 0n &&
-      inputCurrency &&
-      outputCurrency &&
-      prices[getAddress(inputCurrency.address)] &&
-      prices[getAddress(outputCurrency.address)]
-    ) {
-      const amountIn = Number(
-        formatUnits(selectedQuote.amountIn, inputCurrency.decimals),
-      )
-      const amountOut = Number(
-        formatUnits(selectedQuote.amountOut, outputCurrency.decimals),
-      )
-      const inputValue = amountIn * prices[getAddress(inputCurrency.address)]
-      const outputValue = amountOut * prices[getAddress(outputCurrency.address)]
-      return inputValue > outputValue
-        ? ((outputValue - inputValue) / inputValue) * 100
-        : 0
-    }
-    return Number.NaN
-  }, [inputCurrency, outputCurrency, prices, selectedQuote])
 
   const limitActionButtonProps = useMemo(
     () => ({
@@ -621,8 +532,8 @@ export const TradeContainer = () => {
         setSlippageInput,
         aggregatorName: selectedQuote?.aggregator?.name ?? '',
         gasEstimateValue: selectedQuote?.gasUsd ?? 0,
-        priceImpact: priceImpact,
-        refreshQuotesAction: () => setLatestRefreshTime(Date.now()),
+        priceImpact,
+        refreshQuotesAction,
       }) as SwapFormProps,
     [
       balances,
@@ -632,6 +543,7 @@ export const TradeContainer = () => {
       outputCurrency,
       priceImpact,
       prices,
+      refreshQuotesAction,
       selectedChain,
       selectedQuote?.aggregator?.name,
       selectedQuote?.amountOut,
