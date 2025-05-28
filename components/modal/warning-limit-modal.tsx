@@ -6,13 +6,13 @@ import { formatTinyNumber } from '../../utils/bignumber'
 const WarningLimitModal = ({
   onChainPrice,
   priceInput,
-  marketRateDiff,
+  priceDeviationPercent,
   limit,
   closeModal,
 }: {
   onChainPrice: number
   priceInput: string
-  marketRateDiff: number
+  priceDeviationPercent: number
   limit: () => void
   closeModal: () => void
 }) => {
@@ -77,19 +77,21 @@ const WarningLimitModal = ({
             <div className="flex flex-row w-full items-start gap-1 self-stretch">
               <div className="text-gray-300 text-xs sm:text-sm flex flex-row gap-1">
                 Your order price
-                {marketRateDiff >= 10000 ? (
+                {priceDeviationPercent >= 10000 ? (
                   <div className="font-semibold text-green-400">
                     (&gt;10000%)
                   </div>
-                ) : marketRateDiff === -100 ? (
+                ) : priceDeviationPercent === -100 ? (
                   <></>
-                ) : !isNaN(marketRateDiff) ? (
+                ) : !isNaN(priceDeviationPercent) ? (
                   <div
                     className={`text-gray-200 ${
-                      marketRateDiff >= 0 ? 'text-green-400' : 'text-red-400'
+                      priceDeviationPercent >= 0
+                        ? 'text-green-400'
+                        : 'text-red-400'
                     } sm:text-sm font-semibold`}
                   >
-                    ({marketRateDiff.toFixed(2)}%)
+                    ({priceDeviationPercent.toFixed(2)}%)
                   </div>
                 ) : (
                   <></>

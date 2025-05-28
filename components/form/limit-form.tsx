@@ -52,7 +52,7 @@ export type LimitFormProps = {
   swapInputCurrencyAndOutputCurrency: () => void
   minimumDecimalPlaces: number | undefined
   onChainPrice: number
-  marketRateDiff: number
+  priceDeviationPercent: number
   setMarketRateAction:
     | {
         isLoading: boolean
@@ -92,7 +92,7 @@ export const LimitForm = ({
   swapInputCurrencyAndOutputCurrency,
   minimumDecimalPlaces,
   onChainPrice,
-  marketRateDiff,
+  priceDeviationPercent,
   setMarketRateAction,
   closeLimitFormAction,
   actionButtonProps,
@@ -234,21 +234,21 @@ export const LimitForm = ({
               </div>
             )}{' '}
             {selectedMarket?.base?.symbol} at rate
-            {onChainPrice > 0 && marketRateDiff >= 10000 ? (
+            {onChainPrice > 0 && priceDeviationPercent >= 10000 ? (
               <div className="text-xs sm:text-sm font-semibold text-green-400">
                 (&gt;10000%)
               </div>
-            ) : marketRateDiff === -100 ? (
+            ) : priceDeviationPercent === -100 ? (
               <></>
-            ) : !isNaN(marketRateDiff) &&
-              isFinite(marketRateDiff) &&
-              marketRateDiff.toFixed(2) !== '0.00' ? (
+            ) : !isNaN(priceDeviationPercent) &&
+              isFinite(priceDeviationPercent) &&
+              priceDeviationPercent.toFixed(2) !== '0.00' ? (
               <div
                 className={`text-gray-200 ${
-                  marketRateDiff >= 0 ? 'text-green-400' : 'text-red-400'
+                  priceDeviationPercent >= 0 ? 'text-green-400' : 'text-red-400'
                 } sm:text-sm font-semibold`}
               >
-                ({marketRateDiff.toFixed(2)}%)
+                ({priceDeviationPercent.toFixed(2)}%)
               </div>
             ) : (
               <></>

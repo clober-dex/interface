@@ -212,7 +212,7 @@ export const TradeContainer = () => {
     setDepthClickedIndex,
     onChainPrice,
     setMarketRateAction,
-    marketRateDiff,
+    priceDeviationPercent,
     quoteCurrency,
     baseCurrency,
   } = useMarketContext()
@@ -295,7 +295,7 @@ export const TradeContainer = () => {
         if (!inputCurrency || !outputCurrency || !selectedMarket) {
           return
         }
-        if (marketRateDiff < -2) {
+        if (priceDeviationPercent < -2) {
           setShowWarningModal(true)
           return
         }
@@ -325,7 +325,7 @@ export const TradeContainer = () => {
       inputCurrency,
       inputCurrencyAmount,
       limit,
-      marketRateDiff,
+      priceDeviationPercent,
       openConnectModal,
       outputCurrency,
       priceInput,
@@ -378,7 +378,7 @@ export const TradeContainer = () => {
         },
         minimumDecimalPlaces: availableDecimalPlacesGroups?.[0]?.value,
         onChainPrice,
-        marketRateDiff,
+        priceDeviationPercent,
         setMarketRateAction: {
           isLoading: isFetchingQuotes,
           action: async () => {
@@ -399,7 +399,7 @@ export const TradeContainer = () => {
       isFetchingQuotes,
       limitActionButtonProps,
       onChainPrice,
-      marketRateDiff,
+      priceDeviationPercent,
       outputCurrency,
       outputCurrencyAmount,
       priceInput,
@@ -567,7 +567,7 @@ export const TradeContainer = () => {
         <WarningLimitModal
           onChainPrice={onChainPrice}
           priceInput={priceInput}
-          marketRateDiff={marketRateDiff}
+          priceDeviationPercent={priceDeviationPercent}
           closeModal={() => setShowWarningModal(false)}
           limit={async () => {
             if (!inputCurrency || !outputCurrency || !selectedMarket) {

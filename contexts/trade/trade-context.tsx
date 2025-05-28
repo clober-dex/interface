@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getAddress, isAddress, isAddressEqual, parseUnits } from 'viem'
+import { getAddress, isAddressEqual, parseUnits } from 'viem'
 import { getQuoteToken } from '@clober/v2-sdk'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -9,6 +9,7 @@ import { Currency } from '../../model/currency'
 import {
   fetchCurrenciesDone,
   fetchCurrency,
+  getCurrencyAddress,
   LOCAL_STORAGE_INPUT_CURRENCY_KEY,
   LOCAL_STORAGE_OUTPUT_CURRENCY_KEY,
 } from '../../utils/currency'
@@ -180,16 +181,10 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     [],
   )
 
-  const [inputCurrencyAddress, outputCurrencyAddress] = [
-    getQueryParams()?.inputCurrency ??
-      localStorage.getItem(
-        LOCAL_STORAGE_INPUT_CURRENCY_KEY('trade', selectedChain),
-      ),
-    getQueryParams()?.outputCurrency ??
-      localStorage.getItem(
-        LOCAL_STORAGE_OUTPUT_CURRENCY_KEY('trade', selectedChain),
-      ),
-  ].map((address) => (isAddress(address) ? getAddress(address) : address))
+  const { inputCurrencyAddress, outputCurrencyAddress } = getCurrencyAddress(
+    'trade',
+    selectedChain,
+  )
 
   const priceImpact = useMemo(() => {
     if (

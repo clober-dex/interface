@@ -23,7 +23,7 @@ export const Default: Story = {
   args: {
     onChainPrice: 0.00001,
     priceInput: '0.00001',
-    marketRateDiff: 50,
+    priceDeviationPercent: 50,
     closeModal: () => {},
     limit: async () => {},
   },

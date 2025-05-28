@@ -20,7 +20,6 @@ import {
   DEFAULT_DECIMAL_PLACE_GROUP_LENGTH,
 } from '../../model/decimals'
 import { useChainContext } from '../chain-context'
-import { getCurrencyAddress } from '../../utils/currency'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { fetchPrice } from '../../apis/price'
 import { Currency } from '../../model/currency'
@@ -58,7 +57,7 @@ type MarketContext = {
     size: string
   }[]
   setMarketRateAction: () => Promise<void>
-  marketRateDiff: number
+  priceDeviationPercent: number
   quoteCurrency: Currency | undefined
   baseCurrency: Currency | undefined
 }
@@ -78,7 +77,7 @@ const Context = React.createContext<MarketContext>({
   setMarketRateAction: async () => {
     return Promise.resolve()
   },
-  marketRateDiff: 0,
+  priceDeviationPercent: 0,
   quoteCurrency: undefined,
   baseCurrency: undefined,
 })
@@ -119,7 +118,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     | undefined
   >(undefined)
 
-  const marketRateDiff = useMemo(
+  const priceDeviationPercent = useMemo(
     () =>
       (isBid
         ? new BigNumber(onChainPrice).dividedBy(priceInput).minus(1).times(100)
@@ -128,21 +127,36 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     [isBid, onChainPrice, priceInput],
   )
 
-  const { inputCurrencyAddress, outputCurrencyAddress } = getCurrencyAddress(
-    'trade',
-    selectedChain,
-  )
-  const marketId =
-    inputCurrencyAddress && outputCurrencyAddress
-      ? getMarketId(selectedChain.id, [
-          getAddress(inputCurrencyAddress),
-          getAddress(outputCurrencyAddress),
-        ]).marketId
-      : ''
+  const [quoteCurrency, baseCurrency, marketId] = useMemo(() => {
+    if (inputCurrency && outputCurrency) {
+      const quote = getQuoteToken({
+        chainId: selectedChain.id,
+        token0: inputCurrency.address,
+        token1: outputCurrency.address,
+      })
+      const [quoteCurrency, baseCurrency] = isAddressEqual(
+        quote,
+        inputCurrency.address,
+      )
+        ? [inputCurrency, outputCurrency]
+        : [outputCurrency, inputCurrency]
+      return [
+        quoteCurrency,
+        baseCurrency,
+        getMarketId(selectedChain.id, [
+          quoteCurrency.address,
+          baseCurrency.address,
+        ]).marketId,
+      ]
+    } else {
+      return [undefined, undefined, '']
+    }
+  }, [inputCurrency, outputCurrency, selectedChain.id])
+
   const { data } = useQuery({
     queryKey: ['market', selectedChain.id, marketId],
     queryFn: async () => {
-      if (inputCurrencyAddress && outputCurrencyAddress) {
+      if (baseCurrency?.address && quoteCurrency?.address) {
         const queryKeys = queryClient
           .getQueryCache()
           .getAll()
@@ -156,8 +170,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         const [market, marketSnapshot] = await Promise.all([
           getMarket({
             chainId: selectedChain.id,
-            token0: getAddress(inputCurrencyAddress),
-            token1: getAddress(outputCurrencyAddress),
+            token0: getAddress(baseCurrency.address),
+            token1: getAddress(quoteCurrency.address),
             options: {
               rpcUrl: CHAIN_CONFIG.RPC_URL,
               useSubgraph: false,
@@ -165,8 +179,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
           }),
           getMarketSnapshot({
             chainId: selectedChain.id,
-            token0: getAddress(inputCurrencyAddress),
-            token1: getAddress(outputCurrencyAddress),
+            token0: getAddress(baseCurrency.address),
+            token1: getAddress(quoteCurrency.address),
           }),
         ])
         return { market, marketSnapshot }
@@ -274,21 +288,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setIsFetchingQuotes,
     setPriceInput,
   ])
-
-  const [quoteCurrency, baseCurrency] = useMemo(() => {
-    if (inputCurrency && outputCurrency) {
-      const quote = getQuoteToken({
-        chainId: selectedChain.id,
-        token0: inputCurrency.address,
-        token1: outputCurrency.address,
-      })
-      return isAddressEqual(quote, inputCurrency.address)
-        ? [inputCurrency, outputCurrency]
-        : [outputCurrency, inputCurrency]
-    } else {
-      return [undefined, undefined]
-    }
-  }, [inputCurrency, outputCurrency, selectedChain.id])
 
   // update selectedMarket and selectedMarketSnapshot when market data changes
   useEffect(() => {
@@ -419,7 +418,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         bids,
         asks,
         setMarketRateAction,
-        marketRateDiff,
+        priceDeviationPercent,
         quoteCurrency,
         baseCurrency,
       }}
