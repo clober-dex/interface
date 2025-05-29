@@ -15,11 +15,14 @@ type CurrencyIconProps = {
 } & React.HTMLAttributes<HTMLDivElement>
 
 function getLogo(chain: Chain, currency?: Currency): string {
-  if (!currency || chain.testnet) {
+  if (!currency) {
     return '/unknown.svg'
   }
   if (currency.icon) {
     return currency.icon
+  }
+  if (chain.testnet) {
+    return '/unknown.svg'
   }
   return `https://assets.odos.xyz/tokens/${encodeURIComponent(currency.symbol)}.webp`
 }
