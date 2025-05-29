@@ -1,17 +1,16 @@
-import { createPublicClient, http, isAddressEqual, zeroAddress } from 'viem'
 import {
-  CHAIN_IDS,
-  CHART_LOG_INTERVALS,
-  getChartLogs,
-  Market,
-} from '@clober/v2-sdk'
-import { getCurrentTimestamp } from 'hardhat/internal/hardhat-network/provider/utils/getCurrentTimestamp'
+  createPublicClient,
+  getAddress,
+  http,
+  isAddressEqual,
+  zeroAddress,
+} from 'viem'
+import { CHAIN_IDS } from '@clober/v2-sdk'
 
 import { ERC20_PERMIT_ABI } from '../abis/@openzeppelin/erc20-permit-abi'
-import { DEFAULT_TOKEN_INFO, TokenInfo } from '../model/token-info'
-import { formatUnits } from '../utils/bigint'
 import { Chain } from '../model/chain'
 import { CHAIN_CONFIG } from '../chain-configs'
+import { Currency } from '../model/currency'
 
 const buildTotalSupplyCacheKey = (
   chainId: CHAIN_IDS,
@@ -64,62 +63,36 @@ async function fetchTotalSupplyInner(
   })
 }
 
-export async function fetchTokenInfoFromOrderBook(
+export async function fetchWhitelistCurrenciesFromGithub(
   chain: Chain,
-  selectedMarket: Market,
-  quoteValue: number,
-): Promise<TokenInfo> {
-  const currentTimestampInSeconds = getCurrentTimestamp()
-  const [totalSupply, chartLog] = await Promise.all([
-    fetchTotalSupply(chain, selectedMarket.base.address),
-    getChartLogs({
-      chainId: chain.id,
-      quote: selectedMarket.quote.address,
-      base: selectedMarket.base.address,
-      intervalType: CHART_LOG_INTERVALS.fiveMinutes,
-      from: currentTimestampInSeconds - 24 * 60 * 60,
-      to: currentTimestampInSeconds,
-    }),
-  ])
-  const price = Number(
-    (chartLog ?? []).sort((a, b) => b.timestamp - a.timestamp)[0]?.close ?? 0,
+): Promise<Currency[]> {
+  const response = await fetch(
+    `https://raw.githubusercontent.com/clober-dex/assets/refs/heads/main/${chain.id}/assets.json`,
   )
-  const volume = Number(
-    (chartLog ?? [])
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, Math.floor((24 * 60) / 5))
-      .reduce((acc, { volume }) => acc + Number(volume), 0),
-  )
-  return {
-    ...DEFAULT_TOKEN_INFO,
-    volume: {
-      ...DEFAULT_TOKEN_INFO.volume,
-      h24: volume * price * quoteValue,
-    },
-    liquidity: {
-      ...DEFAULT_TOKEN_INFO.liquidity,
-      usd:
-        selectedMarket.bids.reduce(
-          (acc, { price, baseAmount }) =>
-            acc + Number(price) * Number(baseAmount) * quoteValue,
-          0,
-        ) +
-        selectedMarket.asks.reduce(
-          (acc, { baseAmount }) => acc + Number(baseAmount),
-          0,
-        ) *
-          price *
-          quoteValue,
-    },
-    priceUsd: price * quoteValue,
-    priceNative: price,
-    fdv:
-      price *
-      quoteValue *
-      Number(formatUnits(totalSupply, selectedMarket.base.decimals)),
-    marketCap:
-      price *
-      quoteValue *
-      Number(formatUnits(totalSupply, selectedMarket.base.decimals)),
+  if (!response.ok) {
+    throw new Error(`Failed to fetch whitelist for ${chain.name}`)
   }
+  const currencies = (await response.json()) as {
+    address: `0x${string}`
+    decimals: number
+    symbol: string
+    name: string
+    icon?: string
+  }[]
+  return currencies.map((currency) =>
+    currency.icon
+      ? {
+          address: getAddress(currency.address),
+          decimals: currency.decimals,
+          symbol: currency.symbol,
+          name: currency.name,
+          icon: `https://raw.githubusercontent.com/clober-dex/assets/refs/heads/main/${chain.id}/icons/${currency.icon}`,
+        }
+      : {
+          address: getAddress(currency.address),
+          decimals: currency.decimals,
+          symbol: currency.symbol,
+          name: currency.name,
+        },
+  )
 }

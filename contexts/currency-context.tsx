@@ -19,6 +19,7 @@ import { aggregators } from '../chain-configs/aggregators'
 import { Allowances } from '../model/allowances'
 import { deduplicateCurrencies } from '../utils/currency'
 import { CHAIN_CONFIG } from '../chain-configs'
+import { fetchWhitelistCurrenciesFromGithub } from '../apis/token'
 
 import { useChainContext } from './chain-context'
 
@@ -82,7 +83,12 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { data: whitelistCurrencies } = useQuery({
     queryKey: ['currencies', selectedChain.id],
     queryFn: async () => {
-      return CHAIN_CONFIG.WHITELISTED_CURRENCIES.map((currency) => ({
+      const whitelistCurrencies =
+        await fetchWhitelistCurrenciesFromGithub(selectedChain)
+      return deduplicateCurrencies([
+        ...whitelistCurrencies,
+        ...CHAIN_CONFIG.WHITELISTED_CURRENCIES,
+      ]).map((currency) => ({
         ...currency,
         isVerified: true,
       }))
