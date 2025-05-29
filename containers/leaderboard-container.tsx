@@ -284,16 +284,23 @@ export const LeaderboardContainer = () => {
   })
 
   // user data
-  const { data: myVaultPoint } = useQuery({
+  const {
+    data: { points: myVaultPoint, lpBalance: myVaultLpBalance },
+  } = useQuery({
     queryKey: ['my-vault-point', selectedChain.id, userAddress],
     queryFn: async () => {
       if (!userAddress) {
-        return 0
+        return { points: 0, lpBalance: 0 }
       }
       return fetchLiquidVaultPoint(userAddress)
     },
-    initialData: 0,
-  })
+    initialData: { points: 0, lpBalance: 0 },
+  }) as {
+    data: {
+      points: number
+      lpBalance: number
+    }
+  }
 
   const { data: myNativeVolume } = useQuery({
     queryKey: ['my-native-volume', selectedChain.id, userAddress],
@@ -549,7 +556,7 @@ export const LeaderboardContainer = () => {
                       ? {
                           address: userAddress,
                           rank: myLPRank,
-                          value: `${formatWithCommas(myVaultPoint.toFixed(4))}`,
+                          value: `${formatWithCommas(myVaultLpBalance.toFixed(4))}`,
                         }
                       : undefined
                   }
