@@ -17,10 +17,14 @@ export const aggregators: Aggregator[] = [
   //   getAddress('0x6352a56caadC4F1E25CD6c75970Fa768A3304e64'),
   //   monadTestnet,
   // ),
-  new MonorailAggregator(
-    getAddress('0x7c8f8076b3e59f00000aea4e4bf197d22a5e4f6d'),
+  new AggregatorRouterGateway(
+    getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
-  ), // TODO: move to AggregatorRouterGateway
+    new MonorailAggregator(
+      getAddress('0x7c8f8076b3e59f00000aea4e4bf197d22a5e4f6d'),
+      monadTestnet,
+    ),
+  ),
   new AggregatorRouterGateway(
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,

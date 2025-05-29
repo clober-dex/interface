@@ -11,7 +11,7 @@ import { Aggregator } from './index'
 
 export class MonorailAggregator implements Aggregator {
   public readonly name = 'Monorail'
-  public readonly baseUrl = 'https://testnet-pathfinder-v2.monorail.xyz'
+  public readonly baseUrl = 'https://testnet-pathfinder.monorail.xyz'
   public readonly contract: `0x${string}`
   public readonly minimumSlippage = 0.01 // 0.01% slippage
   public readonly maximumSlippage = 50 // 50% slippage
@@ -69,8 +69,9 @@ export class MonorailAggregator implements Aggregator {
       }
     }
 
-    const { output, transaction } = await fetchApi<{
+    const { output, transaction, gas_estimate } = await fetchApi<{
       output: string
+      gas_estimate: string
       transaction: {
         to: string
         data: string
@@ -85,15 +86,13 @@ export class MonorailAggregator implements Aggregator {
       params,
     })
 
-    // TOOD: estimatedGas
-    const estimatedGas = 1_000_000n
     return {
       amountOut: BigInt(output),
-      gasLimit: BigInt(estimatedGas),
+      gasLimit: BigInt(gas_estimate),
       aggregator: this,
       transaction: {
         data: transaction.data as `0x${string}`,
-        gas: BigInt(estimatedGas),
+        gas: BigInt(gas_estimate),
         value: BigInt(transaction.value),
         to: getAddress(transaction.to),
         gasPrice: gasPrice,
