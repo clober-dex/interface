@@ -66,9 +66,12 @@ async function fetchTotalSupplyInner(
 export async function fetchWhitelistCurrenciesFromGithub(
   chain: Chain,
 ): Promise<Currency[]> {
+  if (!CHAIN_CONFIG.ASSETS_GITHUB_REPO) {
+    return [] as Currency[]
+  }
   try {
     const response = await fetch(
-      `https://raw.githubusercontent.com/clober-dex/assets/refs/heads/main/${chain.id}/assets.json`,
+      `https://raw.githubusercontent.com/${CHAIN_CONFIG.ASSETS_GITHUB_REPO}/refs/heads/main/${chain.id}/assets.json`,
     )
     if (!response.ok) {
       throw new Error(`Failed to fetch whitelist for ${chain.name}`)
@@ -87,7 +90,7 @@ export async function fetchWhitelistCurrenciesFromGithub(
             decimals: currency.decimals,
             symbol: currency.symbol,
             name: currency.name,
-            icon: `https://raw.githubusercontent.com/clober-dex/assets/refs/heads/main/${chain.id}/icons/${currency.icon}`,
+            icon: `https://raw.githubusercontent.com/${CHAIN_CONFIG.ASSETS_GITHUB_REPO}/refs/heads/main/${chain.id}/icons/${currency.icon}`,
           }
         : {
             address: getAddress(currency.address),
