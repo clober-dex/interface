@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import { Asset } from '../model/futures/asset'
 import { Currency } from '../model/currency'
 
-import { dollarValue } from './bigint'
+import { getDollarValue } from './bigint'
 
 export const getLTVTextColor = (ltv: number, asset: Asset): string => {
   const liquidationThreshold =
@@ -76,10 +76,10 @@ export const calculateLtv = (
     : collateralAmount === 0n
       ? 0
       : Math.max(
-          dollarValue(debtAmount, debtCurrency.decimals, debtCurrencyPrice)
+          getDollarValue(debtAmount, debtCurrency.decimals, debtCurrencyPrice)
             .times(100)
             .div(
-              dollarValue(
+              getDollarValue(
                 collateralAmount,
                 collateral.decimals,
                 collateralPrice,
@@ -106,8 +106,10 @@ export const calculateLiquidationPrice = (
   const factor = new BigNumber(
     Number(liquidationThreshold) / Number(ltvPrecision),
   )
-    .times(dollarValue(collateralAmount, collateral.decimals, collateralPrice))
-    .div(dollarValue(loanAmount, loanCurrency.decimals, loanAssetPrice))
+    .times(
+      getDollarValue(collateralAmount, collateral.decimals, collateralPrice),
+    )
+    .div(getDollarValue(loanAmount, loanCurrency.decimals, loanAssetPrice))
   const currentPrice =
     loanAssetPrice && collateralPrice
       ? Number(loanAssetPrice) / Number(collateralPrice)

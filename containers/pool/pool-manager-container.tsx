@@ -12,11 +12,13 @@ import { useCurrencyContext } from '../../contexts/currency-context'
 import { usePoolContractContext } from '../../contexts/pool/pool-contract-context'
 import { usePoolContext } from '../../contexts/pool/pool-context'
 import { CurrencyIcon } from '../../components/icon/currency-icon'
-import { toPlacesAmountString } from '../../utils/bignumber'
+import {
+  formatPreciseAmountString,
+  formatWithCommas,
+} from '../../utils/bignumber'
 import { QuestionMarkSvg } from '../../components/svg/question-mark-svg'
 import { AddLiquidityForm } from '../../components/form/pool/add-liquidity-form'
 import { RemoveLiquidityForm } from '../../components/form/pool/remove-liquidity-form'
-import { toCommaSeparated } from '../../utils/number'
 import { Pool, PoolSnapshot } from '../../model/pool'
 import { CHAIN_CONFIG } from '../../chain-configs'
 
@@ -329,15 +331,15 @@ export const PoolManagerContainer = ({
                       />
                     </div>
                     <div className="text-blue-500 text-sm md:text-lg font-bold flex flex-col text-left items-center h-full">
-                      {toCommaSeparated(
-                        toPlacesAmountString(
+                      {formatWithCommas(
+                        formatPreciseAmountString(
                           pool.liquidityA.total.value.toString(),
                           prices[pool.currencyA.address] ?? 0,
                         ),
                       )}
                       <span className="text-gray-400 font-medium text-sm">
                         ($
-                        {toCommaSeparated(
+                        {formatWithCommas(
                           new BigNumber(pool.liquidityA.total.value)
                             .times(prices[pool.currencyA.address] ?? 0)
                             .toFixed(2),
@@ -355,15 +357,15 @@ export const PoolManagerContainer = ({
                       />
                     </div>
                     <div className="text-cyan-400 text-sm md:text-lg font-bold flex flex-col text-left items-center h-full">
-                      {toCommaSeparated(
-                        toPlacesAmountString(
+                      {formatWithCommas(
+                        formatPreciseAmountString(
                           pool.liquidityB.total.value.toString(),
                           prices[pool.currencyB.address] ?? 0,
                         ),
                       )}
                       <span className="text-gray-400 font-medium text-sm">
                         ($
-                        {toCommaSeparated(
+                        {formatWithCommas(
                           new BigNumber(pool.liquidityB.total.value)
                             .times(prices[pool.currencyB.address] ?? 0)
                             .toFixed(2),

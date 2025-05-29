@@ -30,7 +30,15 @@ let fetchCurrencyJobResultCode: number = 0
 
 export const deduplicateCurrencies = (currencies: Currency[]) => {
   return currencies
-    .sort((a, b) => (b.isVerified ? 1 : 0) - (a.isVerified ? 1 : 0))
+    .sort((a, b) => {
+      if (a.isVerified !== b.isVerified) {
+        return b.isVerified ? 1 : -1
+      }
+      if (!!a.icon !== !!b.icon) {
+        return a.icon ? -1 : 1
+      }
+      return 0
+    })
     .filter(
       (currency, index, self) =>
         self.findIndex((c) => isAddressEqual(c.address, currency.address)) ===

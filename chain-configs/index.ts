@@ -29,6 +29,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   LANDING_PAGE_URL: 'https://clober.io',
   TWITTER_HANDLE: '@CloberDEX',
   GITHIB_URL: 'https://github.com/clober-dex/',
+  ASSETS_GITHUB_REPO: 'clober-dex/assets',
   DISCORD_URL: 'https://discord.gg/clober-dex',
   DOCS_URL: 'https://docs.clober.io/',
   RAINBOW_KIT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',

@@ -20,6 +20,7 @@ export type ChainConfig = {
   CHAIN: Chain
   TWITTER_HANDLE: string | null
   GITHIB_URL: string | null
+  ASSETS_GITHUB_REPO: string | null
   DISCORD_URL: string | null
   DOCS_URL: string | null
   RAINBOW_KIT_PROJECT_ID: string

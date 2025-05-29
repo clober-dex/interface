@@ -4,10 +4,10 @@ import BigNumber from 'bignumber.js'
 import { Tooltip } from 'react-tooltip'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
-import { toCommaSeparated } from '../../../utils/number'
 import { QuestionMarkSvg } from '../../svg/question-mark-svg'
 import { Chain } from '../../../model/chain'
 import { Currency } from '../../../model/currency'
+import { formatWithCommas } from '../../../utils/bignumber'
 
 export const PoolSnapshotCard = ({
   chain,
@@ -54,10 +54,10 @@ export const PoolSnapshotCard = ({
           {`${!BigNumber(apy).isNaN() && !BigNumber(apy).isZero() && BigNumber(apy).lt(10000) ? `${apy.toFixed(2)}%` : '-'}`}
         </div>
         <div className="w-[140px] text-white text-base font-bold">
-          ${toCommaSeparated(tvl.toFixed(0))}
+          ${formatWithCommas(tvl.toFixed(0))}
         </div>
         <div className="w-[140px] text-white text-base font-bold">
-          ${toCommaSeparated(volume24h.toFixed(0))}
+          ${formatWithCommas(volume24h.toFixed(0))}
         </div>
         <div className="flex gap-2">
           <button
@@ -153,7 +153,7 @@ export const PoolSnapshotCard = ({
               Total Liquidity
             </div>
             <div className="self-stretch text-center text-white text-sm font-bold">
-              ${toCommaSeparated(tvl.toFixed(0))}
+              ${formatWithCommas(tvl.toFixed(0))}
             </div>
           </div>
           <div className="flex w-full flex-col justify-start items-center gap-2">
@@ -161,7 +161,7 @@ export const PoolSnapshotCard = ({
               24h Volume
             </div>
             <div className="self-stretch text-right text-white text-sm font-bold">
-              ${toCommaSeparated(volume24h.toFixed(0))}
+              ${formatWithCommas(volume24h.toFixed(0))}
             </div>
           </div>
         </div>

@@ -1,4 +1,3 @@
-import { CHAIN_IDS } from '@clober/v2-sdk'
 import BigNumber from 'bignumber.js'
 import { getAddress, isAddressEqual } from 'viem'
 
@@ -20,9 +19,8 @@ const CONSTANTS: {
 }
 
 export async function fetchLiquidVaultPoint(
-  chainId: CHAIN_IDS,
   userAddress: `0x${string}`,
-): Promise<number> {
+): Promise<{ points: number; lpBalance: number }> {
   const {
     data: { user: liquidityVaultPoint },
   } = await Subgraph.get<{
@@ -46,21 +44,34 @@ export async function fetchLiquidVaultPoint(
     },
   )
   const now = currentTimestampInSeconds()
-  return liquidityVaultPoint.vaultBalances.reduce((acc, vaultBalance) => {
-    const startedAt = CONSTANTS?.[vaultBalance.pool.id].START_AT ?? 0
-    const pointsPerSecond =
-      CONSTANTS?.[vaultBalance.pool.id].POINT_PER_SECOND ?? 0
-    if (startedAt === 0 || pointsPerSecond === 0 || startedAt > now) {
-      return acc
-    }
-    const timeDelta = now - Math.max(Number(vaultBalance.updatedAt), startedAt)
-    const point = new BigNumber(vaultBalance.amount)
-      .times(timeDelta)
-      .times(pointsPerSecond)
-      .div('1000000000000000000')
-      .toNumber()
-    return acc + point
-  }, Number(liquidityVaultPoint.accumulatedPoints))
+  return {
+    points: liquidityVaultPoint.vaultBalances.reduce((acc, vaultBalance) => {
+      const startedAt = CONSTANTS?.[vaultBalance.pool.id]?.START_AT ?? 0
+      const pointsPerSecond =
+        CONSTANTS?.[vaultBalance.pool.id]?.POINT_PER_SECOND ?? 0
+      if (startedAt === 0 || pointsPerSecond === 0 || startedAt > now) {
+        return acc
+      }
+      const timeDelta =
+        now - Math.max(Number(vaultBalance.updatedAt), startedAt)
+      const point = new BigNumber(vaultBalance.amount)
+        .times(timeDelta)
+        .times(pointsPerSecond)
+        .div('1000000000000000000')
+        .toNumber()
+      return acc + point
+    }, Number(liquidityVaultPoint.accumulatedPoints)),
+    lpBalance: liquidityVaultPoint.vaultBalances.reduce(
+      (acc, vaultBalance) =>
+        acc +
+        Number(
+          CONSTANTS?.[vaultBalance.pool.id]?.POINT_PER_SECOND > 0
+            ? formatUnits(BigInt(vaultBalance.amount), 18)
+            : '0',
+        ),
+      0,
+    ),
+  }
 }
 
 export async function fetchLiquidVaultBalanceLeaderboard(): Promise<

@@ -241,10 +241,19 @@ export default function Analytics() {
                 <HistogramChart
                   data={(analytics?.analyticsSnapshots ?? []).map((item) => ({
                     time: item.timestamp as UTCTimestamp,
-                    values: item.transactionTypeCounts,
+                    values: {
+                      ...Object.fromEntries(
+                        Object.entries(item.transactionTypeCounts)
+                          .map(
+                            ([type, count]) =>
+                              [type, count] as [string, number],
+                          )
+                          .filter(([type]) => type !== 'Unknown'),
+                      ),
+                    },
                   }))}
                   colors={Object.entries(transactionTypeColorMap)
-                    .filter(([type]) => type !== 'unknown')
+                    .filter(([type]) => type !== 'Unknown')
                     .map(([type, color]) => ({
                       label: type,
                       color,

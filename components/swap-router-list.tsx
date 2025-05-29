@@ -27,10 +27,18 @@ export const SwapRouteList = ({
       ) as Quote[],
     [quotes, bestQuote],
   )
+  const noRoute = useMemo(
+    () =>
+      quotes.length > 0 &&
+      quotes.reduce((acc, quote) => acc && quote.amountOut === 0n, true),
+    [quotes],
+  )
   return (
     <div className="flex flex-col sm:p-4 gap-4 md:gap-2.5 sm:gap-3">
-      {bestQuote && quotes.length > 0
-        ? [bestQuote, ...quotesWithoutBestQuote].map((quote, index) => (
+      {bestQuote && quotes.length > 0 ? (
+        [bestQuote, ...quotesWithoutBestQuote]
+          .filter((quote) => quote.amountOut > 0n)
+          .map((quote, index) => (
             <SwapRouteCard
               quote={quote}
               key={index}
@@ -48,18 +56,26 @@ export const SwapRouteList = ({
               setSelectedQuote={setSelectedQuote}
             />
           ))
-        : aggregatorNames.map((name) => (
-            <SwapRouteCard
-              quote={undefined}
-              key={name}
-              isBestQuote={false}
-              priceDifference={0}
-              outputCurrency={outputCurrency}
-              aggregatorName={name}
-              isSelected={false}
-              setSelectedQuote={undefined}
-            />
-          ))}
+      ) : !noRoute ? (
+        aggregatorNames.map((name) => (
+          <SwapRouteCard
+            quote={undefined}
+            key={name}
+            isBestQuote={false}
+            priceDifference={0}
+            outputCurrency={outputCurrency}
+            aggregatorName={name}
+            isSelected={false}
+            setSelectedQuote={undefined}
+          />
+        ))
+      ) : (
+        <div className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 w-full">
+          <div className="flex flex-col gap-1 lg:gap-2 text-base font-bold text-center w-full justify-center items-center">
+            No quotes available for this swap
+          </div>
+        </div>
+      )}
     </div>
   )
 }

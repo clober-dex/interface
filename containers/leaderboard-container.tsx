@@ -13,7 +13,6 @@ import {
 import { useChainContext } from '../contexts/chain-context'
 import { Legend } from '../components/chart/legend'
 import { Loading } from '../components/loading'
-import { toCommaSeparated } from '../utils/number'
 import { useWindowWidth } from '../hooks/useWindowWidth'
 import { LeaderBoard } from '../components/leader-board'
 import {
@@ -22,6 +21,7 @@ import {
 } from '../apis/point'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { TradingCompetition } from '../apis/trading-competition'
+import { formatWithCommas } from '../utils/bignumber'
 
 type HeatmapProps = {
   userDailyVolumes: UserVolumeSnapshot[]
@@ -255,7 +255,7 @@ function Heatmap({ userDailyVolumes, monthLabels }: HeatmapProps) {
                 ...hoverInfo.volumes.map(({ label, value, address }) => ({
                   label,
                   color: tokenColorMap[getAddress(address)] ?? '#ffffff',
-                  value: `$${toCommaSeparated(value.toFixed(2))}`,
+                  value: `$${formatWithCommas(value.toFixed(2))}`,
                 })),
               ]}
             />
@@ -284,16 +284,23 @@ export const LeaderboardContainer = () => {
   })
 
   // user data
-  const { data: myVaultPoint } = useQuery({
+  const {
+    data: { points: myVaultPoint, lpBalance: myVaultLpBalance },
+  } = useQuery({
     queryKey: ['my-vault-point', selectedChain.id, userAddress],
     queryFn: async () => {
       if (!userAddress) {
-        return 0
+        return { points: 0, lpBalance: 0 }
       }
-      return fetchLiquidVaultPoint(selectedChain.id, userAddress)
+      return fetchLiquidVaultPoint(userAddress)
     },
-    initialData: 0,
-  })
+    initialData: { points: 0, lpBalance: 0 },
+  }) as {
+    data: {
+      points: number
+      lpBalance: number
+    }
+  }
 
   const { data: myNativeVolume } = useQuery({
     queryKey: ['my-native-volume', selectedChain.id, userAddress],
@@ -416,43 +423,45 @@ export const LeaderboardContainer = () => {
   }, [allUserTradingCompetitionSeason1PnL, userAddress])
 
   const countUpFormatter = useCallback((value: number): string => {
-    return toCommaSeparated(value.toFixed(2))
+    return formatWithCommas(value.toFixed(2))
   }, [])
 
   return (
-    <div className="w-full flex items-center flex-col text-white mb-4 px-4 gap-8">
+    <div className="w-full flex items-center flex-col text-white px-4 gap-8">
       <div className="w-full lg:w-[960px] flex flex-col sm:gap-12 items-center">
-        <div className="flex w-full h-20 mt-6 sm:mt-0 sm:h-28 px-4 justify-start items-center gap-3 sm:gap-4">
-          <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">
-            <div className="text-center text-gray-400 text-sm sm:text-base font-semibold text-nowrap">
-              Volume Point
+        {userAddress && (
+          <div className="flex w-full h-20 mt-6 sm:mt-0 sm:h-28 px-4 justify-start items-center gap-3 sm:gap-4">
+            <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">
+              <div className="text-center text-gray-400 text-sm sm:text-base font-semibold text-nowrap">
+                Volume Point
+              </div>
+              <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">
+                <CountUp
+                  end={myNativeVolume / 10}
+                  formattingFn={countUpFormatter}
+                  preserveValue
+                  useEasing={false}
+                  duration={0.5}
+                />
+              </div>
             </div>
-            <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">
-              <CountUp
-                end={myNativeVolume / 10}
-                formattingFn={countUpFormatter}
-                preserveValue
-                useEasing={false}
-                duration={0.5}
-              />
-            </div>
-          </div>
 
-          <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">
-            <div className="text-center text-gray-400 text-sm sm:text-base font-semibold text-nowrap">
-              Vault Point
-            </div>
-            <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">
-              <CountUp
-                end={myVaultPoint}
-                formattingFn={countUpFormatter}
-                preserveValue
-                useEasing={false}
-                duration={0.5}
-              />
+            <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">
+              <div className="text-center text-gray-400 text-sm sm:text-base font-semibold text-nowrap">
+                Vault Point
+              </div>
+              <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">
+                <CountUp
+                  end={myVaultPoint}
+                  formattingFn={countUpFormatter}
+                  preserveValue
+                  useEasing={false}
+                  duration={0.5}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {userAddress && <Heatmap userDailyVolumes={myDailyVolumes} />}
@@ -500,7 +509,7 @@ export const LeaderboardContainer = () => {
                     {tab === 'volume'
                       ? `Total ${CHAIN_CONFIG.CHAIN.nativeCurrency.symbol} Volume`
                       : tab === 'vault'
-                        ? 'Vault Points'
+                        ? 'Lp Balance'
                         : 'Season1 PnL'}
                   </div>
                 </div>
@@ -518,14 +527,14 @@ export const LeaderboardContainer = () => {
                       ? {
                           address: userAddress,
                           rank: myVolumeRank,
-                          value: `${toCommaSeparated(myNativeVolume.toFixed(4))}`,
+                          value: `${formatWithCommas(myNativeVolume.toFixed(4))}`,
                         }
                       : undefined
                   }
                   values={allUserNativeVolume.map(
                     ({ address, nativeVolume }, index) => ({
                       address: getAddress(address),
-                      value: `${toCommaSeparated(nativeVolume.toFixed(4))}`,
+                      value: `${formatWithCommas(nativeVolume.toFixed(4))}`,
                       rank: index + 1,
                     }),
                   )}
@@ -547,13 +556,13 @@ export const LeaderboardContainer = () => {
                       ? {
                           address: userAddress,
                           rank: myLPRank,
-                          value: `${toCommaSeparated(myVaultPoint.toFixed(4))}`,
+                          value: `${formatWithCommas(myVaultLpBalance.toFixed(4))}`,
                         }
                       : undefined
                   }
                   values={allUserLP.map(({ address, balance }, index) => ({
                     address: getAddress(address),
-                    value: `${toCommaSeparated(balance.toFixed(4))}`,
+                    value: `${formatWithCommas(balance.toFixed(4))}`,
                     rank: index + 1,
                   }))}
                   maxDisplayRank={1000}
@@ -574,7 +583,7 @@ export const LeaderboardContainer = () => {
                       ? {
                           address: userAddress,
                           rank: myTradingCompetitionSeason1Rank,
-                          value: `${toCommaSeparated((myTradingCompetitionSeason1PnL?.totalPnl ?? 0).toFixed(4))}`,
+                          value: `${formatWithCommas((myTradingCompetitionSeason1PnL?.totalPnl ?? 0).toFixed(4))}`,
                         }
                       : undefined
                   }
@@ -582,7 +591,7 @@ export const LeaderboardContainer = () => {
                     allUserTradingCompetitionSeason1PnL,
                   ).map(([address, { totalPnl }], index) => ({
                     address: getAddress(address),
-                    value: `${toCommaSeparated(totalPnl.toFixed(4))}`,
+                    value: `${formatWithCommas(totalPnl.toFixed(4))}`,
                     rank: index + 1,
                   }))}
                   maxDisplayRank={1000}

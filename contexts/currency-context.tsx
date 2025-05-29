@@ -5,6 +5,7 @@ import {
   createPublicClient,
   getAddress,
   http,
+  isAddress,
   isAddressEqual,
   zeroAddress,
 } from 'viem'
@@ -19,6 +20,7 @@ import { aggregators } from '../chain-configs/aggregators'
 import { Allowances } from '../model/allowances'
 import { deduplicateCurrencies } from '../utils/currency'
 import { CHAIN_CONFIG } from '../chain-configs'
+import { fetchWhitelistCurrenciesFromGithub } from '../apis/token'
 
 import { useChainContext } from './chain-context'
 
@@ -82,7 +84,12 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { data: whitelistCurrencies } = useQuery({
     queryKey: ['currencies', selectedChain.id],
     queryFn: async () => {
-      return CHAIN_CONFIG.WHITELISTED_CURRENCIES.map((currency) => ({
+      const whitelistCurrencies =
+        await fetchWhitelistCurrenciesFromGithub(selectedChain)
+      return deduplicateCurrencies([
+        ...whitelistCurrencies,
+        ...CHAIN_CONFIG.WHITELISTED_CURRENCIES,
+      ]).map((currency) => ({
         ...currency,
         isVerified: true,
       }))
@@ -187,7 +194,12 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         getContractAddresses({ chainId: selectedChain.id }).Minter,
         ...aggregators.map((aggregator) => aggregator.contract),
         CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
-      ]
+      ].filter(
+        (spender) =>
+          spender &&
+          isAddress(spender) &&
+          !isAddressEqual(spender, zeroAddress),
+      )
       const _currencies = currencies.filter(
         (currency) => !isAddressEqual(currency.address, zeroAddress),
       )

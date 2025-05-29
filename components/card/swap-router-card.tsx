@@ -2,9 +2,9 @@ import React from 'react'
 
 import { Quote } from '../../model/aggregator/quote'
 import { Currency } from '../../model/currency'
-import { toCommaSeparated } from '../../utils/number'
 import { formatUnits } from '../../utils/bigint'
 import { GasSvg } from '../svg/gas-svg'
+import { formatWithCommas } from '../../utils/bignumber'
 
 export const SwapRouteCard = ({
   quote,
@@ -35,7 +35,7 @@ export const SwapRouteCard = ({
         <div className="self-stretch inline-flex justify-start items-center gap-1.5">
           {quote && outputCurrency ? (
             <div className="justify-start text-white text-sm sm:text-base font-semibold">
-              {toCommaSeparated(
+              {formatWithCommas(
                 formatUnits(quote?.amountOut ?? 0n, outputCurrency.decimals),
               )}
             </div>
@@ -71,7 +71,7 @@ export const SwapRouteCard = ({
           {quote ? (
             <div className="justify-start text-[#838b99] text-xs sm:text-sm font-medium">
               = {quote.netAmountOutUsd >= 0 ? '' : '-'}$
-              {toCommaSeparated(Math.abs(quote.netAmountOutUsd).toFixed(4))}
+              {formatWithCommas(Math.abs(quote.netAmountOutUsd).toFixed(4))}
             </div>
           ) : (
             <div className="w-[70px] h-4 sm:h-5 rounded animate-pulse bg-gray-500" />
@@ -83,7 +83,7 @@ export const SwapRouteCard = ({
         <div className="flex justify-start items-center gap-1.5">
           {quote ? (
             <div className="flex flex-row gap-0.5 items-center justify-start text-[#838b99] text-xs sm:text-sm font-medium">
-              <GasSvg /> ${toCommaSeparated(quote.gasUsd.toFixed(6))}
+              <GasSvg /> ${formatWithCommas(quote.gasUsd.toFixed(6))}
             </div>
           ) : (
             <div className="w-[70px] h-4 sm:h-5 rounded animate-pulse bg-gray-500" />

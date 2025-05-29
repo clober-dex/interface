@@ -1,9 +1,10 @@
 import BigNumber from 'bignumber.js'
-import { Depth, Market } from '@clober/v2-sdk'
+import { CHAIN_IDS, Depth, Market } from '@clober/v2-sdk'
 
 import { Decimals } from '../model/decimals'
 
-import { toPlacesString } from './bignumber'
+import { formatSignificantString } from './bignumber'
+import { formatTickPriceString } from './prices'
 
 export function calculateInputCurrencyAmountString(
   isBid: boolean,
@@ -14,7 +15,7 @@ export function calculateInputCurrencyAmountString(
   const inputCurrencyAmount = isBid
     ? new BigNumber(outputCurrencyAmount).times(priceInput)
     : new BigNumber(outputCurrencyAmount).div(priceInput)
-  return toPlacesString(
+  return formatSignificantString(
     inputCurrencyAmount.isNaN() || !inputCurrencyAmount.isFinite()
       ? new BigNumber(0)
       : inputCurrencyAmount,
@@ -31,7 +32,7 @@ export function calculateOutputCurrencyAmountString(
   const outputCurrencyAmount = isBid
     ? new BigNumber(inputCurrencyAmount).div(priceInput)
     : new BigNumber(inputCurrencyAmount).times(priceInput)
-  return toPlacesString(
+  return formatSignificantString(
     outputCurrencyAmount.isNaN() || !outputCurrencyAmount.isFinite()
       ? new BigNumber(0)
       : outputCurrencyAmount,
@@ -40,6 +41,7 @@ export function calculateOutputCurrencyAmountString(
 }
 
 export function parseDepth(
+  chainId: CHAIN_IDS,
   isBid: boolean,
   market: Market,
   decimalPlaces: Decimals,
@@ -58,20 +60,19 @@ export function parseDepth(
         return {
           price: x.price,
           size: new BigNumber(x.baseAmount),
+          tick: BigInt(x.tick),
         }
       })
       .reduce(
         (prev, curr) => {
-          const price = new BigNumber(curr.price)
-          const key =
-            decimalPlaces.value >= 0
-              ? new BigNumber(price).toFixed(
-                  decimalPlaces.value,
-                  isBid ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN,
-                )
-              : new BigNumber(price)
-                  .minus(new BigNumber(price).mod(10 ** -decimalPlaces.value))
-                  .toFixed()
+          const key = formatTickPriceString(
+            chainId,
+            curr.tick,
+            market.quote,
+            market.base,
+            isBid,
+            decimalPlaces.value,
+          )
           if (!new BigNumber(key).eq(0)) {
             prev.set(
               key,
@@ -100,7 +101,7 @@ export function parseDepth(
   ).map((x) => {
     return {
       price: x.price,
-      size: toPlacesString(x.size, market.base.decimals),
+      size: formatSignificantString(x.size, market.base.decimals),
     }
   })
 }

@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { getAddress, isAddress, isAddressEqual } from 'viem'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { getAddress, isAddressEqual, parseUnits } from 'viem'
 import { getQuoteToken } from '@clober/v2-sdk'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
+import { useQuery } from '@tanstack/react-query'
+import BigNumber from 'bignumber.js'
 
 import { Currency } from '../../model/currency'
 import {
-  deduplicateCurrencies,
   fetchCurrenciesDone,
   fetchCurrency,
+  getCurrencyAddress,
   LOCAL_STORAGE_INPUT_CURRENCY_KEY,
   LOCAL_STORAGE_OUTPUT_CURRENCY_KEY,
 } from '../../utils/currency'
@@ -15,6 +17,14 @@ import { getQueryParams } from '../../utils/url'
 import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { Quote } from '../../model/aggregator/quote'
+import { fetchQuotes } from '../../apis/swap/quote'
+import { aggregators } from '../../chain-configs/aggregators'
+import { formatUnits } from '../../utils/bigint'
+import {
+  calculateInputCurrencyAmountString,
+  calculateOutputCurrencyAmountString,
+} from '../../utils/order-book'
 
 type TradeContext = {
   isBid: boolean
@@ -35,6 +45,20 @@ type TradeContext = {
   setPriceInput: (priceInput: string) => void
   slippageInput: string
   setSlippageInput: (slippage: string) => void
+  showOrderBook: boolean
+  setShowOrderBook: (showOrderBook: boolean) => void
+  selectedQuote: Quote | null
+  setSelectedQuote: (quote: Quote | null) => void
+  tab: 'limit' | 'swap'
+  setTab: (tab: 'limit' | 'swap') => void
+  quotes: {
+    best: Quote | null
+    all: Quote[]
+  }
+  refreshQuotesAction: () => void
+  priceImpact: number
+  isFetchingOnChainPrice: boolean
+  setIsFetchingOnChainPrice: (isFetching: boolean) => void
 }
 
 const Context = React.createContext<TradeContext>({
@@ -56,20 +80,39 @@ const Context = React.createContext<TradeContext>({
   setPriceInput: () => {},
   slippageInput: '1',
   setSlippageInput: () => {},
+  showOrderBook: true,
+  setShowOrderBook: () => {},
+  selectedQuote: null,
+  setSelectedQuote: () => {},
+  tab: 'limit',
+  setTab: () => {},
+  quotes: { best: null, all: [] },
+  refreshQuotesAction: () => {},
+  priceImpact: 0,
+  isFetchingOnChainPrice: false,
+  setIsFetchingOnChainPrice: () => {},
 })
 
 export const TRADE_SLIPPAGE_KEY = 'trade-slippage'
 
 export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { disconnectAsync } = useDisconnect()
+  const { data: gasPrice } = useGasPrice()
+  const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
   const previousChain = useRef({
     chain: selectedChain,
   })
   const { chainId } = useAccount()
-  const { whitelistCurrencies, setCurrencies } = useCurrencyContext()
+  const { whitelistCurrencies, setCurrencies, prices } = useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
+  const [tab, setTab] = useState<'limit' | 'swap'>(
+    CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
+  )
+  const [isFetchingOnChainPrice, setIsFetchingOnChainPrice] = useState(false)
+  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
+  const [showOrderBook, setShowOrderBook] = useState(true)
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
   const [inputCurrency, _setInputCurrency] = useState<Currency | undefined>(
     undefined,
@@ -85,6 +128,15 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   const [priceInput, setPriceInput] = useState('')
   const [slippageInput, _setSlippageInput] = useState('0.5')
+  const [latestQuotesRefreshTime, setLatestQuotesRefreshTime] = useState(
+    Date.now(),
+  )
+  const [debouncedValue, setDebouncedValue] = useState('')
+  const previousValues = useRef({
+    priceInput,
+    outputCurrencyAmount,
+    inputCurrencyAmount,
+  })
 
   const setInputCurrency = useCallback(
     (currency: Currency | undefined) => {
@@ -124,22 +176,104 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     [selectedChain],
   )
 
-  const [inputCurrencyAddress, outputCurrencyAddress] = [
-    getQueryParams()?.inputCurrency ??
-      localStorage.getItem(
-        LOCAL_STORAGE_INPUT_CURRENCY_KEY('trade', selectedChain),
-      ),
-    getQueryParams()?.outputCurrency ??
-      localStorage.getItem(
-        LOCAL_STORAGE_OUTPUT_CURRENCY_KEY('trade', selectedChain),
-      ),
-  ].map((address) => (isAddress(address) ? getAddress(address) : address))
+  const refreshQuotesAction = useCallback(
+    () => setLatestQuotesRefreshTime(Date.now()),
+    [],
+  )
+
+  const { inputCurrencyAddress, outputCurrencyAddress } = getCurrencyAddress(
+    'trade',
+    selectedChain,
+  )
+
+  const priceImpact = useMemo(() => {
+    if (
+      selectedQuote &&
+      selectedQuote.amountIn > 0n &&
+      selectedQuote.amountOut > 0n &&
+      inputCurrency &&
+      outputCurrency &&
+      prices[getAddress(inputCurrency.address)] &&
+      prices[getAddress(outputCurrency.address)]
+    ) {
+      const amountIn = Number(
+        formatUnits(selectedQuote.amountIn, inputCurrency.decimals),
+      )
+      const amountOut = Number(
+        formatUnits(selectedQuote.amountOut, outputCurrency.decimals),
+      )
+      const inputValue = amountIn * prices[getAddress(inputCurrency.address)]
+      const outputValue = amountOut * prices[getAddress(outputCurrency.address)]
+      return inputValue > outputValue
+        ? ((outputValue - inputValue) / inputValue) * 100
+        : 0
+    }
+    return Number.NaN
+  }, [inputCurrency, outputCurrency, prices, selectedQuote])
 
   const setSlippageInput = useCallback((slippage: string) => {
     localStorage.setItem(TRADE_SLIPPAGE_KEY, slippage)
     _setSlippageInput(slippage)
   }, [])
 
+  const { data: quotes } = useQuery({
+    queryKey: [
+      'quotes',
+      inputCurrency?.address,
+      outputCurrency?.address,
+      Number(inputCurrencyAmount),
+      slippageInput,
+      userAddress,
+      selectedChain.id,
+      tab,
+      latestQuotesRefreshTime,
+      debouncedValue,
+    ],
+    queryFn: async () => {
+      if (
+        gasPrice &&
+        inputCurrency &&
+        outputCurrency &&
+        Number(inputCurrencyAmount) > 0 &&
+        tab === 'swap' &&
+        Number(debouncedValue) === Number(inputCurrencyAmount)
+      ) {
+        const { best, all } = await fetchQuotes(
+          aggregators,
+          inputCurrency,
+          parseUnits(inputCurrencyAmount, inputCurrency.decimals),
+          outputCurrency,
+          parseFloat(slippageInput),
+          gasPrice,
+          prices,
+          userAddress,
+        )
+        return { best, all }
+      }
+      return { best: null, all: [] }
+    },
+    initialData: { best: null, all: [] },
+  })
+
+  // when the best quote updates, set it as the selected quote
+  useEffect(() => {
+    if (quotes.best) {
+      setSelectedQuote(quotes.best)
+    } else {
+      setSelectedQuote(null)
+    }
+  }, [quotes.best, setSelectedQuote])
+
+  // debounce inputCurrencyAmount for 500ms to avoid unnecessary quote fetches while typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(inputCurrencyAmount)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [inputCurrencyAmount])
+
+  // load slippage setting from localStorage on mount
   useEffect(() => {
     const slippage = localStorage.getItem(TRADE_SLIPPAGE_KEY)
     if (slippage) {
@@ -147,6 +281,9 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     }
   }, [])
 
+  // initialize input/output currencies and bid direction based on URL query or localStorage
+  // if the chain in the query is different from the connected one, disconnect and reload
+  // also removes the input/outputCurrency params from the URL after setup
   useEffect(
     () => {
       const action = async () => {
@@ -204,14 +341,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         }
 
         if (_inputCurrency && _outputCurrency) {
-          console.log({
-            context: 'trade',
-            inputCurrencyAddress,
-            inputCurrency: _inputCurrency,
-            outputCurrencyAddress,
-            outputCurrency: _outputCurrency,
-            url: window.location.href,
-          })
           const quote = getQuoteToken({
             chainId: selectedChain.id,
             token0: _inputCurrency.address,
@@ -259,6 +388,97 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     ],
   )
 
+  // keep inputCurrencyAmount and outputCurrencyAmount in sync when one changes, using priceInput as reference
+  useEffect(() => {
+    if (!outputCurrency?.decimals || !inputCurrency?.decimals) {
+      return
+    }
+
+    // when setting `outputCurrencyAmount` first time
+    if (
+      (new BigNumber(inputCurrencyAmount).isNaN() ||
+        new BigNumber(inputCurrencyAmount).isZero()) &&
+      !new BigNumber(priceInput).isNaN() &&
+      !new BigNumber(priceInput).isZero() &&
+      !new BigNumber(outputCurrencyAmount).isNaN() &&
+      !new BigNumber(outputCurrencyAmount).isZero() &&
+      previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
+    ) {
+      const inputCurrencyAmount = calculateInputCurrencyAmountString(
+        isBid,
+        outputCurrencyAmount,
+        priceInput,
+        inputCurrency.decimals,
+      )
+      setInputCurrencyAmount(inputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+      return
+    }
+
+    // `priceInput` is changed -> `outputCurrencyAmount` will be changed
+    if (previousValues.current.priceInput !== priceInput) {
+      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
+        isBid,
+        inputCurrencyAmount,
+        priceInput,
+        outputCurrency.decimals,
+      )
+      setOutputCurrencyAmount(outputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+    // `outputCurrencyAmount` is changed -> `inputCurrencyAmount` will be changed
+    else if (
+      previousValues.current.outputCurrencyAmount !== outputCurrencyAmount
+    ) {
+      const inputCurrencyAmount = calculateInputCurrencyAmountString(
+        isBid,
+        outputCurrencyAmount,
+        priceInput,
+        inputCurrency.decimals,
+      )
+      setInputCurrencyAmount(inputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+    // `inputCurrencyAmount` is changed -> `outputCurrencyAmount` will be changed
+    else if (
+      previousValues.current.inputCurrencyAmount !== inputCurrencyAmount
+    ) {
+      const outputCurrencyAmount = calculateOutputCurrencyAmountString(
+        isBid,
+        inputCurrencyAmount,
+        priceInput,
+        outputCurrency.decimals,
+      )
+      setOutputCurrencyAmount(outputCurrencyAmount)
+      previousValues.current = {
+        priceInput,
+        outputCurrencyAmount,
+        inputCurrencyAmount,
+      }
+    }
+  }, [
+    inputCurrency?.decimals,
+    outputCurrency?.decimals,
+    inputCurrencyAmount,
+    isBid,
+    outputCurrencyAmount,
+    priceInput,
+    setInputCurrencyAmount,
+    setOutputCurrencyAmount,
+  ])
+
   return (
     <Context.Provider
       value={{
@@ -280,6 +500,17 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setPriceInput,
         slippageInput,
         setSlippageInput,
+        showOrderBook,
+        setShowOrderBook,
+        selectedQuote,
+        setSelectedQuote,
+        tab,
+        setTab,
+        quotes,
+        refreshQuotesAction,
+        priceImpact,
+        isFetchingOnChainPrice,
+        setIsFetchingOnChainPrice,
       }}
     >
       {children}

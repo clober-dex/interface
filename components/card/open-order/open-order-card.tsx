@@ -1,19 +1,24 @@
 import React from 'react'
-import { OpenOrder } from '@clober/v2-sdk'
+import { CHAIN_IDS, OpenOrder } from '@clober/v2-sdk'
 import { NextRouter } from 'next/router'
 
 import { OutlinkSvg } from '../../svg/outlink-svg'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
-import { toPlacesString } from '../../../utils/bignumber'
-import { toShortNumber } from '../../../utils/number'
+import {
+  formatSignificantString,
+  formatWithCommas,
+} from '../../../utils/bignumber'
+import { formatTickPriceString } from '../../../utils/prices'
 
 export const OpenOrderCard = ({
+  chainId,
   openOrder,
   router,
   claimActionButtonProps,
   cancelActionButtonProps,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & {
+  chainId: CHAIN_IDS
   openOrder: OpenOrder
   router: NextRouter
   claimActionButtonProps: ActionButtonProps
@@ -54,12 +59,22 @@ export const OpenOrderCard = ({
             <div className="flex flex-col align-baseline justify-between gap-3">
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Price</label>
-                <p className="text-white">{toShortNumber(openOrder.price)}</p>
+                <p className="text-white">
+                  {formatTickPriceString(
+                    chainId,
+                    BigInt(openOrder.tick),
+                    openOrder.inputCurrency,
+                    openOrder.outputCurrency,
+                    openOrder.isBid,
+                  )}
+                </p>
               </div>
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Amount</label>
                 <p className="flex gap-1 text-white">
-                  {toPlacesString(openOrder.amount.value)}{' '}
+                  {formatWithCommas(
+                    formatSignificantString(openOrder.amount.value),
+                  )}{' '}
                   <span className="text-[#8690a5]">
                     {openOrder.amount.currency.symbol}
                   </span>
@@ -84,7 +99,9 @@ export const OpenOrderCard = ({
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Claimable</label>
                 <p className="flex gap-1 text-white">
-                  {toPlacesString(openOrder.claimable.value)}{' '}
+                  {formatWithCommas(
+                    formatSignificantString(openOrder.claimable.value),
+                  )}{' '}
                   <span className="text-[#8690a5]">
                     {openOrder.claimable.currency.symbol}
                   </span>
@@ -130,12 +147,22 @@ export const OpenOrderCard = ({
           </div>
 
           <div className="w-[120px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
-            {toShortNumber(openOrder.price)}
+            {formatWithCommas(
+              formatTickPriceString(
+                chainId,
+                BigInt(openOrder.tick),
+                openOrder.inputCurrency,
+                openOrder.outputCurrency,
+                openOrder.isBid,
+              ),
+            )}
           </div>
 
           <div className="w-[180px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             <p className="flex gap-1 text-white">
-              {toPlacesString(openOrder.amount.value)}{' '}
+              {formatWithCommas(
+                formatSignificantString(openOrder.amount.value),
+              )}{' '}
               <span className="text-[#8690a5]">
                 {openOrder.amount.currency.symbol}
               </span>
@@ -148,7 +175,9 @@ export const OpenOrderCard = ({
 
           <div className="w-[200px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             <p className="flex gap-1 text-white">
-              {toPlacesString(openOrder.claimable.value)}{' '}
+              {formatWithCommas(
+                formatSignificantString(openOrder.claimable.value),
+              )}{' '}
               <span className="text-[#8690a5]">
                 {openOrder.claimable.currency.symbol}
               </span>

@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 import { Prices } from '../../../model/prices'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
 import CurrencyAmountInput from '../../input/currency-amount-input'
-import { toPlacesString } from '../../../utils/bignumber'
+import { formatSignificantString } from '../../../utils/bignumber'
 import { formatDollarValue, formatUnits } from '../../../utils/bigint'
 import { SlippageToggle } from '../../toggle/slippage-toggle'
 import { Chain } from '../../../model/chain'
@@ -103,7 +103,7 @@ export const AddLiquidityForm = ({
             ) : (
               <div className="flex items-center gap-1 text-white text-sm md:text-base font-semibold">
                 <div>
-                  {toPlacesString(
+                  {formatSignificantString(
                     formatUnits(
                       receiveLpCurrencyAmount,
                       pool.currencyLp.decimals,

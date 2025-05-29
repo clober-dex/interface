@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 
 import { ChartModelParams } from '../chart-model'
 import { ChartHeader } from '../chart-header'
-import { toCommaSeparated } from '../../../utils/number'
+import { formatWithCommas } from '../../../utils/bignumber'
 
 import { SingleHistogramData } from './renderer'
 import {
@@ -115,7 +115,7 @@ export function VolumeChartHeader({
 
   return (
     <ChartHeader
-      value={`$${toCommaSeparated(Number(display.volume).toFixed(2))}`}
+      value={`$${formatWithCommas(Number(display.volume).toFixed(2))}`}
       time={crosshairData?.time}
       timePlaceholder="Total"
     />
