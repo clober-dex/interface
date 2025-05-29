@@ -502,7 +502,7 @@ export const LeaderboardContainer = () => {
                     {tab === 'volume'
                       ? `Total ${CHAIN_CONFIG.CHAIN.nativeCurrency.symbol} Volume`
                       : tab === 'vault'
-                        ? 'Vault Points'
+                        ? 'Lp Balance'
                         : 'Season1 PnL'}
                   </div>
                 </div>
