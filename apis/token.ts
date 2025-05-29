@@ -66,33 +66,38 @@ async function fetchTotalSupplyInner(
 export async function fetchWhitelistCurrenciesFromGithub(
   chain: Chain,
 ): Promise<Currency[]> {
-  const response = await fetch(
-    `https://raw.githubusercontent.com/clober-dex/assets/refs/heads/main/${chain.id}/assets.json`,
-  )
-  if (!response.ok) {
-    throw new Error(`Failed to fetch whitelist for ${chain.name}`)
+  try {
+    const response = await fetch(
+      `https://raw.githubusercontent.com/clober-dex/assets/refs/heads/main/${chain.id}/assets.json`,
+    )
+    if (!response.ok) {
+      throw new Error(`Failed to fetch whitelist for ${chain.name}`)
+    }
+    const currencies = (await response.json()) as {
+      address: `0x${string}`
+      decimals: number
+      symbol: string
+      name: string
+      icon?: string
+    }[]
+    return currencies.map((currency) =>
+      currency.icon
+        ? {
+            address: getAddress(currency.address),
+            decimals: currency.decimals,
+            symbol: currency.symbol,
+            name: currency.name,
+            icon: `https://raw.githubusercontent.com/clober-dex/assets/refs/heads/main/${chain.id}/icons/${currency.icon}`,
+          }
+        : {
+            address: getAddress(currency.address),
+            decimals: currency.decimals,
+            symbol: currency.symbol,
+            name: currency.name,
+          },
+    )
+  } catch (e) {
+    console.error(`Failed to fetch whitelist for ${chain.name}`, e)
+    return [] as Currency[]
   }
-  const currencies = (await response.json()) as {
-    address: `0x${string}`
-    decimals: number
-    symbol: string
-    name: string
-    icon?: string
-  }[]
-  return currencies.map((currency) =>
-    currency.icon
-      ? {
-          address: getAddress(currency.address),
-          decimals: currency.decimals,
-          symbol: currency.symbol,
-          name: currency.name,
-          icon: `https://raw.githubusercontent.com/clober-dex/assets/refs/heads/main/${chain.id}/icons/${currency.icon}`,
-        }
-      : {
-          address: getAddress(currency.address),
-          decimals: currency.decimals,
-          symbol: currency.symbol,
-          name: currency.name,
-        },
-  )
 }
