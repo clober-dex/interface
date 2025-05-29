@@ -1,4 +1,3 @@
-import { CHAIN_IDS } from '@clober/v2-sdk'
 import BigNumber from 'bignumber.js'
 import { getAddress, isAddressEqual } from 'viem'
 
@@ -20,7 +19,6 @@ const CONSTANTS: {
 }
 
 export async function fetchLiquidVaultPoint(
-  chainId: CHAIN_IDS,
   userAddress: `0x${string}`,
 ): Promise<number> {
   const {
@@ -47,9 +45,9 @@ export async function fetchLiquidVaultPoint(
   )
   const now = currentTimestampInSeconds()
   return liquidityVaultPoint.vaultBalances.reduce((acc, vaultBalance) => {
-    const startedAt = CONSTANTS?.[vaultBalance.pool.id].START_AT ?? 0
+    const startedAt = CONSTANTS?.[vaultBalance.pool.id]?.START_AT ?? 0
     const pointsPerSecond =
-      CONSTANTS?.[vaultBalance.pool.id].POINT_PER_SECOND ?? 0
+      CONSTANTS?.[vaultBalance.pool.id]?.POINT_PER_SECOND ?? 0
     if (startedAt === 0 || pointsPerSecond === 0 || startedAt > now) {
       return acc
     }

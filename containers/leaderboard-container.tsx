@@ -290,7 +290,7 @@ export const LeaderboardContainer = () => {
       if (!userAddress) {
         return 0
       }
-      return fetchLiquidVaultPoint(selectedChain.id, userAddress)
+      return fetchLiquidVaultPoint(userAddress)
     },
     initialData: 0,
   })
