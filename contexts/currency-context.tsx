@@ -5,6 +5,7 @@ import {
   createPublicClient,
   getAddress,
   http,
+  isAddress,
   isAddressEqual,
   zeroAddress,
 } from 'viem'
@@ -193,7 +194,12 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         getContractAddresses({ chainId: selectedChain.id }).Minter,
         ...aggregators.map((aggregator) => aggregator.contract),
         CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
-      ]
+      ].filter(
+        (spender) =>
+          spender &&
+          isAddress(spender) &&
+          !isAddressEqual(spender, zeroAddress),
+      )
       const _currencies = currencies.filter(
         (currency) => !isAddressEqual(currency.address, zeroAddress),
       )
