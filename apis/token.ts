@@ -6,11 +6,13 @@ import {
   zeroAddress,
 } from 'viem'
 import { CHAIN_IDS } from '@clober/v2-sdk'
+import axios from 'axios'
 
 import { ERC20_PERMIT_ABI } from '../abis/@openzeppelin/erc20-permit-abi'
 import { Chain } from '../model/chain'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { Currency } from '../model/currency'
+import { TokenInfo } from '../model/token-info'
 
 const buildTotalSupplyCacheKey = (
   chainId: CHAIN_IDS,
@@ -102,5 +104,31 @@ export async function fetchWhitelistCurrenciesFromGithub(
   } catch (e) {
     console.error(`Failed to fetch whitelist for ${chain.name}`, e)
     return [] as Currency[]
+  }
+}
+
+export async function fetchTokenInfo({
+  chain,
+  base,
+  quote,
+}: {
+  chain: Chain
+  base: `0x${string}`
+  quote: `0x${string}`
+}): Promise<TokenInfo | null> {
+  if (chain.testnet) {
+    return null
+  }
+  try {
+    const {
+      data: { tokenInfo },
+    } = (await axios.get(
+      `/api/chains/${chain.id}/base-tokens/${base}/quote-tokens/${quote}`,
+    )) as {
+      data: { tokenInfo: TokenInfo }
+    }
+    return tokenInfo
+  } catch (error) {
+    return null
   }
 }

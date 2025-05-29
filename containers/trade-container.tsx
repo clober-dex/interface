@@ -203,6 +203,7 @@ export const TradeContainer = () => {
   const {
     selectedMarket,
     selectedMarketSnapshot,
+    selectedTokenInfo,
     availableDecimalPlacesGroups,
     selectedDecimalPlaces,
     setSelectedDecimalPlaces,
@@ -648,19 +649,40 @@ export const TradeContainer = () => {
                         )?.icon,
                       } as Currency
                     }
-                    price={selectedMarketSnapshot?.price ?? 0}
-                    dollarValue={selectedMarketSnapshot?.priceUSD ?? 0}
-                    fdv={selectedMarketSnapshot?.fdv ?? 0}
-                    marketCap={selectedMarketSnapshot?.fdv ?? 0}
-                    dailyVolume={selectedMarketSnapshot?.volume24hUSD ?? 0}
-                    liquidityUsd={
-                      selectedMarketSnapshot?.totalValueLockedUSD ?? 0
+                    price={
+                      selectedTokenInfo?.price ||
+                      selectedMarketSnapshot?.price ||
+                      0
                     }
-                    websiteUrl={''}
-                    twitterUrl={''}
-                    telegramUrl={''}
+                    dollarValue={
+                      selectedTokenInfo?.priceUsd ||
+                      selectedMarketSnapshot?.priceUSD ||
+                      0
+                    }
+                    fdv={
+                      selectedTokenInfo?.fdv || selectedMarketSnapshot?.fdv || 0
+                    }
+                    marketCap={
+                      selectedTokenInfo?.marketCap ||
+                      selectedMarketSnapshot?.fdv ||
+                      0
+                    }
+                    dailyVolume={
+                      selectedTokenInfo?.volume24hUSD ||
+                      selectedMarketSnapshot?.volume24hUSD ||
+                      0
+                    }
+                    liquidityUsd={
+                      selectedTokenInfo?.totalValueLockedUSD ||
+                      selectedMarketSnapshot?.totalValueLockedUSD ||
+                      0
+                    }
+                    websiteUrl={selectedTokenInfo?.website ?? ''}
+                    twitterUrl={selectedTokenInfo?.twitter ?? ''}
+                    telegramUrl={selectedTokenInfo?.telegram ?? ''}
                     isFetchingMarketSnapshot={
-                      selectedMarketSnapshot === undefined
+                      selectedMarketSnapshot === undefined ||
+                      selectedTokenInfo === undefined
                     }
                   />
                 )}

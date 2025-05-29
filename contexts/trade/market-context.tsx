@@ -23,12 +23,15 @@ import { useChainContext } from '../chain-context'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { fetchPrice } from '../../apis/price'
 import { Currency } from '../../model/currency'
+import { fetchTokenInfo } from '../../apis/token'
+import { TokenInfo } from '../../model/token-info'
 
 import { useTradeContext } from './trade-context'
 
 type MarketContext = {
   selectedMarket?: Market
   selectedMarketSnapshot: MarketSnapshot | undefined | null
+  selectedTokenInfo: TokenInfo | undefined | null
   setSelectedMarket: (market: Market | undefined) => void
   selectedDecimalPlaces: Decimals | undefined
   onChainPrice: number
@@ -65,6 +68,7 @@ type MarketContext = {
 const Context = React.createContext<MarketContext>({
   selectedMarket: {} as Market,
   selectedMarketSnapshot: {} as MarketSnapshot,
+  selectedTokenInfo: undefined,
   setSelectedMarket: (_) => _,
   selectedDecimalPlaces: undefined,
   setSelectedDecimalPlaces: () => {},
@@ -110,6 +114,10 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [selectedMarketSnapshot, setSelectedMarketSnapshot] = useState<
     // null means market is not found, undefined means market is loading
     MarketSnapshot | undefined | null
+  >(undefined)
+  const [selectedTokenInfo, setSelectedTokenInfo] = useState<
+    // null means market is not found, undefined means market is loading
+    TokenInfo | undefined | null
   >(undefined)
   const [depthClickedIndex, setDepthClickedIndex] = useState<
     | {
@@ -168,7 +176,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
             queryClient.removeQueries({ queryKey: key })
           }
         }
-        const [market, marketSnapshot] = await Promise.all([
+        const [market, marketSnapshot, tokenInfo] = await Promise.all([
           getMarket({
             chainId: selectedChain.id,
             token0: getAddress(baseCurrency.address),
@@ -183,8 +191,13 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
             token0: getAddress(baseCurrency.address),
             token1: getAddress(quoteCurrency.address),
           }),
+          fetchTokenInfo({
+            chain: selectedChain,
+            base: baseCurrency.address,
+            quote: quoteCurrency.address,
+          }),
         ])
-        return { market, marketSnapshot }
+        return { market, marketSnapshot, tokenInfo }
       } else {
         return null
       }
@@ -296,11 +309,15 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
       setSelectedDecimalPlaces(undefined)
       setSelectedMarket(undefined)
       setSelectedMarketSnapshot(undefined)
+      setSelectedTokenInfo(undefined)
     } else if (!isMarketEqual(selectedMarket, data.market)) {
       setSelectedDecimalPlaces(undefined)
       setSelectedMarket(data.market)
       if (data.marketSnapshot !== undefined) {
         setSelectedMarketSnapshot(data.marketSnapshot)
+      }
+      if (data.tokenInfo !== undefined) {
+        setSelectedTokenInfo(data.tokenInfo)
       }
     } else if (
       selectedMarket &&
@@ -312,6 +329,9 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
       setSelectedMarket(data.market)
       if (data.marketSnapshot) {
         setSelectedMarketSnapshot(data.marketSnapshot)
+      }
+      if (data.tokenInfo) {
+        setSelectedTokenInfo(data.tokenInfo)
       }
     }
   }, [data, selectedMarket])
@@ -411,6 +431,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
       value={{
         selectedMarket,
         selectedMarketSnapshot,
+        selectedTokenInfo,
         setSelectedMarket,
         selectedDecimalPlaces,
         setSelectedDecimalPlaces,
