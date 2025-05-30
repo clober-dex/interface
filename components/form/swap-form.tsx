@@ -7,8 +7,8 @@ import CurrencyAmountInput from '../input/currency-amount-input'
 import { Currency } from '../../model/currency'
 import CurrencySelect from '../selector/currency-select'
 import {
-  formatPreciseAmountString,
   formatSignificantString,
+  formatWithCommas,
 } from '../../utils/bignumber'
 import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
@@ -397,11 +397,8 @@ export const SwapForm = ({
                         </span>
                         =
                         <span className="text-white">
-                          {formatPreciseAmountString(
-                            exchangeRate,
-                            baseCurrency
-                              ? prices[baseCurrency.address]
-                              : undefined,
+                          {formatWithCommas(
+                            formatSignificantString(exchangeRate),
                           )}{' '}
                           {quoteCurrency.symbol}
                         </span>

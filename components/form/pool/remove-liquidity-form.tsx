@@ -8,6 +8,7 @@ import { formatDollarValue, formatUnits } from '../../../utils/bigint'
 import { SlippageToggle } from '../../toggle/slippage-toggle'
 import { Chain } from '../../../model/chain'
 import { Pool } from '../../../model/pool'
+import { formatWithCommas } from '../../../utils/bignumber'
 
 export const RemoveLiquidityForm = ({
   chain,
@@ -68,10 +69,12 @@ export const RemoveLiquidityForm = ({
                   <div className="flex items-center gap-1">
                     <div className="flex items-center gap-1 text-white font-bold">
                       <div>
-                        {formatUnits(
-                          receiveCurrency.amount,
-                          receiveCurrency.currency.decimals,
-                          prices[receiveCurrency.currency.address] ?? 0,
+                        {formatWithCommas(
+                          formatUnits(
+                            receiveCurrency.amount,
+                            receiveCurrency.currency.decimals,
+                            prices[receiveCurrency.currency.address] ?? 0,
+                          ),
                         )}
                       </div>
                       <div>{receiveCurrency.currency.symbol}</div>

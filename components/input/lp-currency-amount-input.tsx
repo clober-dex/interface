@@ -4,7 +4,10 @@ import { parseUnits } from 'viem'
 import { Currency } from '../../model/currency'
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
 import { formatDollarValue, formatUnits } from '../../utils/bigint'
-import { formatSignificantString } from '../../utils/bignumber'
+import {
+  formatSignificantString,
+  formatWithCommas,
+} from '../../utils/bignumber'
 import { Chain } from '../../model/chain'
 import { LpCurrencyIcon } from '../icon/lp-currency-icon'
 
@@ -112,8 +115,10 @@ const LpCurrencyAmountInput = ({
             <div className="flex items-center text-xs sm:text-sm gap-1 sm:gap-2">
               <div className="text-gray-500">Available</div>
               <div className="text-white">
-                {formatSignificantString(
-                  formatUnits(availableAmount, currency.decimals, price),
+                {formatWithCommas(
+                  formatSignificantString(
+                    formatUnits(availableAmount, currency.decimals, price),
+                  ),
                 )}
               </div>
               <button

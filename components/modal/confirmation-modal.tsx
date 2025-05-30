@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { Confirmation } from '../../contexts/transaction-context'
 import { CurrencyIcon } from '../icon/currency-icon'
 import ChainIcon from '../icon/chain-icon'
+import { formatWithCommas } from '../../utils/bignumber'
 
 const ConfirmationModal = ({
   confirmation,
@@ -101,7 +102,7 @@ const ConfirmationModal = ({
                   )}
                   <div>{field.label}</div>
                 </div>
-                <div>{field.value}</div>
+                <div>{formatWithCommas(field.value)}</div>
               </div>
             </div>
           ))}
