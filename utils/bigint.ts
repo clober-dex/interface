@@ -3,7 +3,7 @@ import { formatUnits as _formatUnits } from 'viem'
 
 import {
   findFirstNonZeroDecimalIndex,
-  formatWithCommas,
+  formatAbbreviatedNumberString,
   POLLY_FILL_DECIMALS,
 } from './bignumber'
 
@@ -45,7 +45,7 @@ export const formatDollarValue = (
   decimals: number,
   price?: number,
 ): string => {
-  return `$${formatWithCommas(getDollarValue(value, decimals, price).toFixed(2))}`
+  return `$${formatAbbreviatedNumberString(getDollarValue(value, decimals, price).toFixed(2))}`
 }
 
 /**
