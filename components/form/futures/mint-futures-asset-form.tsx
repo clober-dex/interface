@@ -6,7 +6,6 @@ import { getLTVTextColor } from '../../../utils/ltv'
 import { Balances } from '../../../model/balances'
 import { Prices } from '../../../model/prices'
 import { Asset } from '../../../model/futures/asset'
-import { formatDollarValue } from '../../../utils/bigint'
 import { Chain } from '../../../model/chain'
 import { formatTinyNumber, formatWithCommas } from '../../../utils/bignumber'
 
