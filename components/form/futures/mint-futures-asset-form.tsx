@@ -8,7 +8,7 @@ import { Prices } from '../../../model/prices'
 import { Asset } from '../../../model/futures/asset'
 import { formatDollarValue } from '../../../utils/bigint'
 import { Chain } from '../../../model/chain'
-import { formatWithCommas } from '../../../utils/bignumber'
+import { formatTinyNumber, formatWithCommas } from '../../../utils/bignumber'
 
 export const MintFuturesAssetForm = ({
   chain,
@@ -81,11 +81,7 @@ export const MintFuturesAssetForm = ({
                 Mark Price
               </div>
               <div className="ml-auto text-sm sm:text-base">
-                {formatDollarValue(
-                  1000000000000000000n,
-                  18,
-                  prices[asset.currency.address] ?? 0,
-                )}
+                {formatTinyNumber(prices[asset.currency.address] ?? 0)}
               </div>
             </div>
             <div className="flex w-full">
