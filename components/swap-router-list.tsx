@@ -38,6 +38,11 @@ export const SwapRouteList = ({
       {bestQuote && quotes.length > 0 ? (
         [bestQuote, ...quotesWithoutBestQuote]
           .filter((quote) => quote.amountOut > 0n)
+          .sort(
+            (a, b) =>
+              (b.netAmountOutUsd ?? 0) - (a.netAmountOutUsd ?? 0) ||
+              Number(b.amountOut) - Number(a.amountOut),
+          )
           .map((quote, index) => (
             <SwapRouteCard
               quote={quote}
