@@ -54,9 +54,7 @@ export const RemoveLiquidityForm = ({
       </div>
       <div className="flex flex-col items-start gap-3 md:gap-4 self-stretch">
         <div className="flex justify-start items-center gap-2 self-stretch text-xs sm:text-sm">
-          <div className="flex h-full text-gray-400 font-semibold">
-            You will receive
-          </div>
+          <div className="flex h-full text-gray-400 font-semibold">Receive</div>
           <div className="flex h-full flex-col ml-auto gap-2">
             {receiveCurrencies.map((receiveCurrency, index) => (
               <div
@@ -64,7 +62,7 @@ export const RemoveLiquidityForm = ({
                 className="flex ml-auto items-center gap-1 text-white text-sm md:text-base font-semibold"
               >
                 {isCalculatingReceiveCurrencies ? (
-                  <span className="w-[100px] h-6 mx-1 rounded animate-pulse bg-gray-500"></span>
+                  <span className="w-[100px] h-5 sm:h-6 mx-1 rounded animate-pulse bg-gray-500"></span>
                 ) : (
                   <div className="flex items-center gap-1">
                     <div className="flex items-center gap-1 text-white font-bold">

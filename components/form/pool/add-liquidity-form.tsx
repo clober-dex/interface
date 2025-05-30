@@ -96,7 +96,7 @@ export const AddLiquidityForm = ({
       </div>
       <div className="flex flex-col items-start gap-3 md:gap-4 self-stretch text-xs sm:text-sm">
         <div className="flex items-center gap-2 self-stretch">
-          <div className="text-gray-400 font-semibold">You will receive</div>
+          <div className="text-gray-400 font-semibold">Receive</div>
           <div className="flex items-center gap-1 ml-auto">
             {isCalculatingReceiveLpAmount ? (
               <span className="w-[100px] h-6 mx-1 rounded animate-pulse bg-gray-500"></span>
