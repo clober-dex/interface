@@ -8,4 +8,5 @@ export type TokenInfo = {
   website: string
   twitter: string
   telegram: string
+  pairAddress: `0x${string}` | null
 }

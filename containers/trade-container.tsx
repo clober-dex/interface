@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
@@ -603,15 +603,11 @@ export const TradeContainer = () => {
                   </div>
 
                   {!showOrderBook && baseCurrency && quoteCurrency ? (
-                    !selectedChain.testnet ? (
+                    !selectedChain.testnet && selectedTokenInfo?.pairAddress ? (
                       <IframeChartContainer
                         setShowOrderBook={setShowOrderBook}
-                        baseCurrency={
-                          isAddressEqual(zeroAddress, baseCurrency.address)
-                            ? CHAIN_CONFIG.REFERENCE_CURRENCY
-                            : baseCurrency
-                        }
-                        chainName={selectedChain.name.toLowerCase()}
+                        pairAddress={getAddress(selectedTokenInfo.pairAddress)}
+                        chainId={selectedChain.id}
                       />
                     ) : (
                       <NativeChartContainer

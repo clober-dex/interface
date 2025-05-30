@@ -62,6 +62,10 @@ const buildTokenInfo = (pairs: PairDto[]): TokenInfo => {
     telegram:
       mainPair?.info?.socials.find((social) => social.type === 'telegram')
         ?.url ?? '',
+    pairAddress:
+      mainPair && mainPair.pairAddress && isAddress(mainPair.pairAddress)
+        ? getAddress(mainPair.pairAddress)
+        : null,
   }
 }
 
