@@ -248,7 +248,7 @@ export const PoolManagerContainer = ({
 
   return (
     <div className="flex w-full h-full justify-center mt-8 mb-[30px] md:mb-20">
-      <div className="w-full lg:w-[992px] h-full flex flex-col items-start gap-8 md:gap-12 px-4 lg:px-0">
+      <div className="w-full lg:w-[992px] h-full flex flex-col items-start gap-8 md:gap-12 px-2 sm:px-4 lg:px-0">
         <div className="flex w-full h-full items-center">
           <button
             onClick={() => router.push('/earn')}
