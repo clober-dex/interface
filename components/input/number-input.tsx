@@ -4,11 +4,13 @@ const NumberInput = ({
   value,
   onValueChange,
   supportNegative = false,
+  maxLength = 15,
   ...props
 }: {
   value: string
   onValueChange: (value: string) => void
   supportNegative?: boolean
+  maxLength?: number
 } & React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
@@ -19,12 +21,12 @@ const NumberInput = ({
 
       const regex = supportNegative ? /^-?\d*\.?\d*$/ : /^\d*\.?\d*$/
       if (regex.test(newValue)) {
-        if (newValue.length <= 20) {
+        if (newValue.length <= maxLength) {
           onValueChange(newValue)
         }
       }
     },
-    [onValueChange, supportNegative],
+    [maxLength, onValueChange, supportNegative],
   )
   return <input value={value} onChange={handleChange} {...props} />
 }
