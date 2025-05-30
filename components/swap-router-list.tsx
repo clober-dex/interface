@@ -50,8 +50,12 @@ export const SwapRouteList = ({
               isBestQuote={quote.aggregator.name === bestQuote.aggregator.name}
               priceDifference={
                 100 *
-                ((Number(quote.amountOut) - Number(bestQuote.amountOut)) /
-                  Number(bestQuote.amountOut))
+                (quote.netAmountOutUsd > 0 && bestQuote.netAmountOutUsd > 0
+                  ? (Number(quote.netAmountOutUsd) -
+                      Number(bestQuote.netAmountOutUsd)) /
+                    Number(bestQuote.netAmountOutUsd)
+                  : (Number(quote.amountOut) - Number(bestQuote.amountOut)) /
+                    Number(bestQuote.amountOut))
               }
               outputCurrency={outputCurrency}
               aggregatorName={quote.aggregator.name}
