@@ -21,7 +21,7 @@ export const aggregators: Aggregator[] = [
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
     new MonorailAggregator(
-      getAddress('0x7c8f8076b3e59f00000aea4e4bf197d22a5e4f6d'),
+      getAddress('0x7B5dF408da2356e9Eecda0492104E758A2B6913d'),
       monadTestnet,
     ),
   ),
