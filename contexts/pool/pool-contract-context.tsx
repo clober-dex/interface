@@ -7,13 +7,7 @@ import {
   getQuoteToken,
   removeLiquidity,
 } from '@clober/v2-sdk'
-import {
-  getAddress,
-  isAddressEqual,
-  parseUnits,
-  zeroAddress,
-  zeroHash,
-} from 'viem'
+import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
 
 import { Currency } from '../../model/currency'
@@ -381,7 +375,10 @@ export const PoolContractProvider = ({
               ? undefined
               : {
                   direction: result.lpCurrency.direction,
-                  currency: result.lpCurrency.currency,
+                  currency: {
+                    currencyA: result.currencyA.currency,
+                    currencyB: result.currencyB.currency,
+                  },
                   label: result.lpCurrency.currency.symbol,
                   value: formatPreciseAmountString(
                     result.lpCurrency.amount,
