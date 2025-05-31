@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useWalletClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
-import { parseUnits, zeroAddress, zeroHash } from 'viem'
+import { parseUnits, zeroAddress } from 'viem'
 import { removeLiquidity } from '@clober/v2-sdk'
 import BigNumber from 'bignumber.js'
 import { Tooltip } from 'react-tooltip'
@@ -125,7 +125,7 @@ export const PoolManagerContainer = ({
         userAddress: zeroAddress,
         token0: pool.currencyA.address,
         token1: pool.currencyB.address,
-        salt: zeroHash,
+        salt: pool.salt,
         amount: lpCurrencyAmount,
         options: {
           useSubgraph: false,
@@ -572,6 +572,7 @@ export const PoolManagerContainer = ({
                       await mint(
                         pool.currencyA,
                         pool.currencyB,
+                        pool.salt,
                         currency0Amount,
                         currency1Amount,
                         !isNoLiquidity ? disableSwap : true,
@@ -653,6 +654,7 @@ export const PoolManagerContainer = ({
                       await burn(
                         pool.currencyA,
                         pool.currencyB,
+                        pool.salt,
                         lpCurrencyAmount,
                         slippageInput,
                       )

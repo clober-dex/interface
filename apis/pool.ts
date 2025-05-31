@@ -1,5 +1,5 @@
 import { getPool, getPoolSnapshot, getPoolSnapshots } from '@clober/v2-sdk'
-import { getAddress, zeroHash } from 'viem'
+import { getAddress } from 'viem'
 
 import { Chain } from '../model/chain'
 import { Prices } from '../model/prices'
@@ -80,7 +80,7 @@ export async function fetchPool(
     chainId: chain.id,
     token0: poolSnapshot.currencyA.address,
     token1: poolSnapshot.currencyB.address,
-    salt: zeroHash,
+    salt: poolSnapshot.salt,
     options: {
       useSubgraph: true, // doesn't matter since to get pool liquidity, we need to use on-chain call
       rpcUrl: CHAIN_CONFIG.RPC_URL,

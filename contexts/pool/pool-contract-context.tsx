@@ -30,6 +30,7 @@ type PoolContractContext = {
   mint: (
     currency0: Currency,
     currency1: Currency,
+    salt: `0x${string}`,
     amount0: string,
     amount1: string,
     disableSwap: boolean,
@@ -38,6 +39,7 @@ type PoolContractContext = {
   burn: (
     currency0: Currency,
     currency1: Currency,
+    salt: `0x${string}`,
     lpCurrencyAmount: string,
     slippageInput: string,
   ) => Promise<void>
@@ -80,6 +82,7 @@ export const PoolContractProvider = ({
     async (
       currency0: Currency,
       currency1: Currency,
+      salt: `0x${string}`,
       amount0: string,
       amount1: string,
       disableSwap: boolean,
@@ -92,6 +95,7 @@ export const PoolContractProvider = ({
       console.log('mint', {
         currency0,
         currency1,
+        salt,
         amount0,
         amount1,
         disableSwap,
@@ -191,7 +195,7 @@ export const PoolContractProvider = ({
           userAddress: walletClient.account.address,
           token0: currency0.address,
           token1: currency1.address,
-          salt: zeroHash,
+          salt,
           amount0,
           amount1,
           options: {
@@ -297,6 +301,7 @@ export const PoolContractProvider = ({
     async (
       currency0: Currency,
       currency1: Currency,
+      salt: `0x${string}`,
       lpCurrencyAmount: string,
       slippageInput: string,
     ) => {
@@ -306,6 +311,7 @@ export const PoolContractProvider = ({
       console.log('burn', {
         currency0,
         currency1,
+        salt,
         lpCurrencyAmount,
         slippageInput,
       })
@@ -334,7 +340,7 @@ export const PoolContractProvider = ({
           userAddress: walletClient.account.address,
           token0: currency0.address,
           token1: currency1.address,
-          salt: zeroHash,
+          salt,
           amount: lpCurrencyAmount,
           options: {
             gasLimit: 2_000_000n,
