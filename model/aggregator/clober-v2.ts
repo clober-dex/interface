@@ -31,7 +31,8 @@ export class CloberV2Aggregator implements Aggregator {
   private readonly nativeTokenAddress = zeroAddress
   public readonly chain: Chain
   public readonly weth: `0x${string}`
-  private defaultGasLimit = 200_000n
+  private marketOrderGasLimit = 200_000n
+  private wrapOrUnWrapGasLimit = 39_000n
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
@@ -88,14 +89,14 @@ export class CloberV2Aggregator implements Aggregator {
         )
         return {
           amountOut,
-          gasLimit: this.defaultGasLimit,
+          gasLimit: this.wrapOrUnWrapGasLimit,
           aggregator: this,
           transaction,
         }
       }
       return {
         amountOut: amountIn,
-        gasLimit: this.defaultGasLimit,
+        gasLimit: this.wrapOrUnWrapGasLimit,
         aggregator: this,
         transaction: undefined,
       }
@@ -113,7 +114,7 @@ export class CloberV2Aggregator implements Aggregator {
         )
         return {
           amountOut,
-          gasLimit: transaction.gas ?? this.defaultGasLimit,
+          gasLimit: transaction.gas,
           aggregator: this,
           transaction,
         }
@@ -130,7 +131,7 @@ export class CloberV2Aggregator implements Aggregator {
         })
         return {
           amountOut: parseUnits(takenAmount, outputCurrency.decimals),
-          gasLimit: this.defaultGasLimit,
+          gasLimit: this.marketOrderGasLimit,
           aggregator: this,
           transaction: undefined,
         }
@@ -138,7 +139,7 @@ export class CloberV2Aggregator implements Aggregator {
     } catch {
       return {
         amountOut: 0n,
-        gasLimit: this.defaultGasLimit,
+        gasLimit: this.marketOrderGasLimit,
         aggregator: this,
         transaction: undefined,
       }
@@ -166,7 +167,7 @@ export class CloberV2Aggregator implements Aggregator {
             abi: WETH_ABI,
             functionName: 'deposit',
           }),
-          gas: this.defaultGasLimit,
+          gas: this.wrapOrUnWrapGasLimit,
           value: amountIn,
           to: CHAIN_CONFIG.REFERENCE_CURRENCY.address,
           gasPrice,
@@ -185,7 +186,7 @@ export class CloberV2Aggregator implements Aggregator {
             functionName: 'withdraw',
             args: [amountIn],
           }),
-          gas: this.defaultGasLimit,
+          gas: this.wrapOrUnWrapGasLimit,
           value: 0n,
           to: CHAIN_CONFIG.REFERENCE_CURRENCY.address,
           gasPrice,
