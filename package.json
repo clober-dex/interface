@@ -21,6 +21,8 @@
     "@tamagui/next-plugin": "^1.112.22",
     "@tanstack/react-query": "^5.62.8",
     "@vercel/blob": "^1.0.0",
+    "@web3auth/ethereum-provider": "^9.7.0",
+    "@web3auth/web3auth-wagmi-connector": "^7.0.0",
     "axios": "^1.5.0",
     "bignumber.js": "^9.1.1",
     "html2canvas": "^1.4.1",
