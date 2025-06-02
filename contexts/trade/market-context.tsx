@@ -207,37 +207,41 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     refetchIntervalInBackground: true,
   })
 
-  const availableDecimalPlacesGroups = useMemo(() => {
-    return selectedMarket &&
-      selectedMarket.bids.length + selectedMarket.asks.length > 0
-      ? (Array.from(Array(DEFAULT_DECIMAL_PLACE_GROUP_LENGTH).keys())
-          .map((i) => {
-            const minPrice = Math.min(
-              Number(
-                selectedMarket.bids.sort(
-                  (a, b) => Number(b.price) - Number(a.price),
-                )[0]?.price ?? Number.MAX_VALUE,
-              ),
-              Number(
-                selectedMarket.asks.sort(
-                  (a, b) => Number(a.price) - Number(b.price),
-                )[0]?.price ?? Number.MAX_VALUE,
-              ),
-            )
-            const decimalPlaces = getPriceDecimals(minPrice)
-            const label = (10 ** (i - decimalPlaces)).toFixed(
-              Math.max(decimalPlaces - i, 0),
-            )
-            if (new BigNumber(minPrice).gt(label)) {
-              return {
-                label,
-                value: decimalPlaces - i,
+  const availableDecimalPlacesGroups = useMemo(
+    () => {
+      return selectedMarket &&
+        selectedMarket.bids.length + selectedMarket.asks.length > 0
+        ? (Array.from(Array(DEFAULT_DECIMAL_PLACE_GROUP_LENGTH).keys())
+            .map((i) => {
+              const minPrice = Math.min(
+                Number(
+                  selectedMarket.bids.sort(
+                    (a, b) => Number(b.price) - Number(a.price),
+                  )[0]?.price ?? Number.MAX_VALUE,
+                ),
+                Number(
+                  selectedMarket.asks.sort(
+                    (a, b) => Number(a.price) - Number(b.price),
+                  )[0]?.price ?? Number.MAX_VALUE,
+                ),
+              )
+              const decimalPlaces = getPriceDecimals(minPrice)
+              const label = (10 ** (i - decimalPlaces)).toFixed(
+                Math.max(decimalPlaces - i, 0),
+              )
+              if (new BigNumber(minPrice).gt(label)) {
+                return {
+                  label,
+                  value: decimalPlaces - i,
+                }
               }
-            }
-          })
-          .filter((x) => x) as Decimals[])
-      : null
-  }, [selectedMarket])
+            })
+            .filter((x) => x) as Decimals[])
+        : null
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedMarket?.base, selectedMarket?.quote],
+  )
 
   const [bids, asks] = useMemo(
     () =>
