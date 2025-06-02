@@ -104,7 +104,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     chain: selectedChain,
   })
   const { chainId } = useAccount()
-  const { whitelistCurrencies, setCurrencies, prices } = useCurrencyContext()
+  const { whitelistCurrencies, setCurrencies, prices, balances } =
+    useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
   const [tab, setTab] = useState<'limit' | 'swap'>(
@@ -238,15 +239,18 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         tab === 'swap' &&
         Number(debouncedValue) === Number(inputCurrencyAmount)
       ) {
+        const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
+        const insufficientFunds =
+          (balances[getAddress(inputCurrency.address)] ?? 0n) < amountIn
         const { best, all } = await fetchQuotes(
           aggregators,
           inputCurrency,
-          parseUnits(inputCurrencyAmount, inputCurrency.decimals),
+          amountIn,
           outputCurrency,
           parseFloat(slippageInput),
           gasPrice,
           prices,
-          userAddress,
+          insufficientFunds ? undefined : userAddress,
         )
         return { best, all }
       }
