@@ -37,6 +37,7 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
     <div className="hidden lg:block">
       <div className="absolute flex justify-center w-full top-40 z-[2]">
         <Image
+          className="rounded-xl"
           src="/chain-configs/meta-aggregator-logo.svg"
           alt="Meta Aggregator"
           width={94}
