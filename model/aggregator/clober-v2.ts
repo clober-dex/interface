@@ -32,7 +32,7 @@ export class CloberV2Aggregator implements Aggregator {
   public readonly chain: Chain
   public readonly weth: `0x${string}`
   private marketOrderGasLimit = 200_000n
-  private wrapOrUnWrapGasLimit = 39_000n
+  private wrapOrUnWrapGasLimit = 60_000n
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
