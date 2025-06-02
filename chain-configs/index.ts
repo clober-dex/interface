@@ -6,11 +6,19 @@ import {
   coinbaseWallet,
   metaMaskWallet,
   phantomWallet,
+  rabbyWallet,
   rainbowWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
+
+import {
+  appleWallet,
+  discordWallet,
+  googleWallet,
+  xWallet,
+} from '../utils/web3auth'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
@@ -32,6 +40,8 @@ export const CHAIN_CONFIG: ChainConfig = {
   ASSETS_GITHUB_REPO: 'clober-dex/assets',
   DISCORD_URL: 'https://discord.gg/clober-dex',
   DOCS_URL: 'https://docs.clober.io/',
+  WEB3_AUTH_CLIENT_ID:
+    'BH8RNo9NNVaFUjXjf0x96jiVLuYpFhTJkotoNF9sVLnVYu5kV4yADw4bjH7ngElE0EXG_eDD1YOa0yhu4YbEg6I',
   WALLET_CONNECT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',
   GOOGLE_ANALYTICS_TRACKING_ID: 'G-TE8CSB6JP2',
   IS_SWAP_DEFAULT: true,
@@ -97,6 +107,11 @@ export const getClientConfig = () => {
       {
         groupName: 'Recommended',
         wallets: [
+          rabbyWallet,
+          googleWallet,
+          xWallet,
+          discordWallet,
+          appleWallet,
           backpackWallet,
           metaMaskWallet,
           coinbaseWallet,
