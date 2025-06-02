@@ -13,12 +13,7 @@ import {
 import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
 
-import {
-  appleWallet,
-  discordWallet,
-  googleWallet,
-  xWallet,
-} from '../utils/web3auth'
+import { discordWallet, googleWallet, xWallet } from '../utils/web3auth'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
@@ -111,7 +106,6 @@ export const getClientConfig = () => {
           googleWallet,
           xWallet,
           discordWallet,
-          appleWallet,
           backpackWallet,
           metaMaskWallet,
           coinbaseWallet,
