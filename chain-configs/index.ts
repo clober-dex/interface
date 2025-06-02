@@ -32,7 +32,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   ASSETS_GITHUB_REPO: 'clober-dex/assets',
   DISCORD_URL: 'https://discord.gg/clober-dex',
   DOCS_URL: 'https://docs.clober.io/',
-  RAINBOW_KIT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',
+  WALLET_CONNECT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',
   GOOGLE_ANALYTICS_TRACKING_ID: 'G-TE8CSB6JP2',
   IS_SWAP_DEFAULT: true,
   RPC_URL:
@@ -88,7 +88,7 @@ export const getClientConfig = () => {
 
   config = getDefaultConfig({
     appName: CHAIN_CONFIG.DEX_NAME,
-    projectId: CHAIN_CONFIG.RAINBOW_KIT_PROJECT_ID,
+    projectId: CHAIN_CONFIG.WALLET_CONNECT_PROJECT_ID,
     chains: [CHAIN],
     transports: {
       [CHAIN.id]: http(CHAIN_CONFIG.RPC_URL),

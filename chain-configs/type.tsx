@@ -23,7 +23,7 @@ export type ChainConfig = {
   ASSETS_GITHUB_REPO: string | null
   DISCORD_URL: string | null
   DOCS_URL: string | null
-  RAINBOW_KIT_PROJECT_ID: string
+  WALLET_CONNECT_PROJECT_ID: string
   GOOGLE_ANALYTICS_TRACKING_ID: string
   IS_SWAP_DEFAULT: boolean
   RPC_URL: string
