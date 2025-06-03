@@ -1,19 +1,20 @@
 import { monadTestnet } from 'viem/chains'
-import { getDefaultConfig } from '@rainbow-me/rainbowkit'
+import { connectorsForWallets } from '@rainbow-me/rainbowkit'
 import { getAddress, http, zeroAddress } from 'viem'
+import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
+import colors from 'tailwindcss/colors'
+import { createConfig, injected } from 'wagmi'
 import {
   backpackWallet,
   coinbaseWallet,
   metaMaskWallet,
   phantomWallet,
   rabbyWallet,
-  rainbowWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets'
-import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
-import colors from 'tailwindcss/colors'
 
-import { discordWallet, googleWallet, xWallet } from '../utils/web3auth'
+import { socialAccountWallet } from '../utils/web3auth'
+import { hasInjectedProvider } from '../utils/wallet'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
@@ -91,29 +92,81 @@ export const getClientConfig = () => {
     return config
   }
 
-  config = getDefaultConfig({
-    appName: CHAIN_CONFIG.DEX_NAME,
-    projectId: CHAIN_CONFIG.WALLET_CONNECT_PROJECT_ID,
+  const isMetaMaskInjected = hasInjectedProvider({ flag: 'isMetaMask' })
+  const shouldUseWalletConnect = !isMetaMaskInjected
+
+  // https://github.com/rainbow-me/rainbowkit/tree/main/packages/rainbowkit/src/wallets/walletConnectors
+  const wallets = [
+    { wallet: socialAccountWallet, installed: true, injectedWallet: false },
+    {
+      wallet: rabbyWallet,
+      installed: hasInjectedProvider({ flag: 'isRabby' }),
+      injectedWallet: true,
+    },
+    {
+      wallet: backpackWallet,
+      installed: hasInjectedProvider({ namespace: 'backpack.ethereum' }),
+      injectedWallet: true,
+    },
+    {
+      wallet: phantomWallet,
+      installed: hasInjectedProvider({ namespace: 'phantom.ethereum' }),
+      injectedWallet: true,
+    },
+    {
+      wallet: phantomWallet,
+      installed: hasInjectedProvider({ namespace: 'phantom.ethereum' }),
+      injectedWallet: true,
+    },
+    {
+      wallet: metaMaskWallet,
+      installed: !shouldUseWalletConnect ? isMetaMaskInjected : false,
+      injectedWallet: true,
+    },
+    {
+      wallet: walletConnectWallet,
+      installed: true,
+      injectedWallet: false,
+    },
+    {
+      wallet: coinbaseWallet,
+      installed: true,
+      injectedWallet: false,
+    },
+  ]
+
+  config = createConfig({
     chains: [CHAIN],
     transports: {
       [CHAIN.id]: http(CHAIN_CONFIG.RPC_URL),
     },
-    wallets: [
-      {
-        groupName: 'Recommended',
-        wallets: [
-          rabbyWallet,
-          googleWallet,
-          xWallet,
-          discordWallet,
-          backpackWallet,
-          metaMaskWallet,
-          coinbaseWallet,
-          rainbowWallet,
-          walletConnectWallet,
-          phantomWallet,
+    ssr: false,
+    connectors: [
+      injected({ shimDisconnect: true }),
+      ...connectorsForWallets(
+        [
+          {
+            groupName: 'Recommended',
+            wallets: [
+              // sns login
+              ...wallets
+                .filter(({ injectedWallet }) => !injectedWallet)
+                .map(({ wallet }) => wallet),
+              // injected wallets
+              ...wallets
+                .filter(
+                  ({ installed, injectedWallet }) =>
+                    injectedWallet && !installed,
+                )
+                .map(({ wallet }) => wallet),
+            ],
+          },
         ],
-      },
+        {
+          appName: CHAIN_CONFIG.DEX_NAME,
+          projectId: CHAIN_CONFIG.WALLET_CONNECT_PROJECT_ID,
+        },
+      ),
     ],
   })
 
