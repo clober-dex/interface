@@ -1,10 +1,9 @@
 import { Web3Auth } from '@web3auth/modal'
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider'
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from '@web3auth/base'
+import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector'
 
 import { CHAIN_CONFIG } from '../../chain-configs'
-
-import { Web3AuthConnector } from './connector'
 
 export let web3AuthInstance: Web3Auth | null = null
 
@@ -38,11 +37,11 @@ export default function Web3AuthConnectorInstance() {
       ? WEB3AUTH_NETWORK.SAPPHIRE_DEVNET
       : WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
     uiConfig: {
-      loginMethodsOrder: ['github', 'google'],
+      loginMethodsOrder: [],
       defaultLanguage: 'en',
       modalZIndex: '2147483647',
-      logoLight: 'https://web3auth.io/images/w3a-L-Favicon-1.svg',
-      logoDark: 'https://web3auth.io/images/w3a-D-Favicon-1.svg',
+      logoLight: '/chain-configs/favicon.svg',
+      logoDark: '/chain-configs/favicon.svg',
       uxMode: 'popup',
       mode: 'dark',
     },

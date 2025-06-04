@@ -19,7 +19,6 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { PAGE_BUTTONS } from '../chain-configs/page-button'
 import useDropdown from '../hooks/useDropdown'
 import { PageSelector } from '../components/selector/page-selector'
-import { walletServicesPlugin } from '../utils/web3auth/connector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
 
 const WrongNetwork = ({
@@ -193,16 +192,9 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
               <UserButton
                 chain={selectedChain}
                 address={address}
-                openTransactionHistoryModal={async () => {
-                  if (connector?.id !== 'web3auth') {
-                    setOpenTransactionHistoryModal(true)
-                  } else {
-                    // If using Web3Auth, open the account modal instead
-                    await walletServicesPlugin?.showWalletUi({
-                      show: true,
-                    })
-                  }
-                }}
+                openTransactionHistoryModal={() =>
+                  setOpenTransactionHistoryModal(true)
+                }
                 walletIconUrl={
                   connector?.icon ?? web3AuthData?.profileImage ?? ''
                 }

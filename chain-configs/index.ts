@@ -5,16 +5,11 @@ import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
 import { createConfig, injected } from 'wagmi'
 import {
-  backpackWallet,
   coinbaseWallet,
-  metaMaskWallet,
-  phantomWallet,
-  rabbyWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 
 import { socialAccountWallet } from '../utils/web3auth'
-import { hasInjectedProvider } from '../utils/wallet'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
@@ -92,49 +87,6 @@ export const getClientConfig = () => {
     return config
   }
 
-  const isMetaMaskInjected = hasInjectedProvider({ flag: 'isMetaMask' })
-  const shouldUseWalletConnect = !isMetaMaskInjected
-
-  // https://github.com/rainbow-me/rainbowkit/tree/main/packages/rainbowkit/src/wallets/walletConnectors
-  const wallets = [
-    { wallet: socialAccountWallet, installed: true, injectedWallet: false },
-    {
-      wallet: rabbyWallet,
-      installed: hasInjectedProvider({ flag: 'isRabby' }),
-      injectedWallet: true,
-    },
-    {
-      wallet: backpackWallet,
-      installed: hasInjectedProvider({ namespace: 'backpack.ethereum' }),
-      injectedWallet: true,
-    },
-    {
-      wallet: phantomWallet,
-      installed: hasInjectedProvider({ namespace: 'phantom.ethereum' }),
-      injectedWallet: true,
-    },
-    {
-      wallet: phantomWallet,
-      installed: hasInjectedProvider({ namespace: 'phantom.ethereum' }),
-      injectedWallet: true,
-    },
-    {
-      wallet: metaMaskWallet,
-      installed: !shouldUseWalletConnect ? isMetaMaskInjected : false,
-      injectedWallet: true,
-    },
-    {
-      wallet: walletConnectWallet,
-      installed: true,
-      injectedWallet: false,
-    },
-    {
-      wallet: coinbaseWallet,
-      installed: true,
-      injectedWallet: false,
-    },
-  ]
-
   config = createConfig({
     chains: [CHAIN],
     transports: {
@@ -147,19 +99,7 @@ export const getClientConfig = () => {
         [
           {
             groupName: 'Recommended',
-            wallets: [
-              // sns login
-              ...wallets
-                .filter(({ injectedWallet }) => !injectedWallet)
-                .map(({ wallet }) => wallet),
-              // injected wallets
-              ...wallets
-                .filter(
-                  ({ installed, injectedWallet }) =>
-                    injectedWallet && !installed,
-                )
-                .map(({ wallet }) => wallet),
-            ],
+            wallets: [socialAccountWallet, coinbaseWallet, walletConnectWallet],
           },
         ],
         {
