@@ -65,7 +65,11 @@ const WalletProvider = ({ children }: React.PropsWithChildren) => {
   return (
     <WagmiProvider config={clientConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={darkTheme()}>
+        <RainbowKitProvider
+          initialChain={CHAIN_CONFIG.CHAIN}
+          modalSize="compact"
+          theme={darkTheme()}
+        >
           <CacheProvider>{children}</CacheProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
