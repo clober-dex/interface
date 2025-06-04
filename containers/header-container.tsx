@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useRouter } from 'next/router'
-import {
-  useAccountModal,
-  useChainModal,
-  useConnectModal,
-} from '@rainbow-me/rainbowkit'
+import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 
@@ -23,6 +19,7 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { PAGE_BUTTONS } from '../chain-configs/page-button'
 import useDropdown from '../hooks/useDropdown'
 import { PageSelector } from '../components/selector/page-selector'
+import { web3AuthInstance } from '../utils/web3auth/instance'
 
 const WrongNetwork = ({
   openChainModal,
@@ -91,7 +88,6 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { chainId, address, status, connector } = useAccount()
   const { openChainModal } = useChainModal()
   const { openConnectModal } = useConnectModal()
-  const { openAccountModal } = useAccountModal()
   const { disconnectAsync } = useDisconnect()
   const [openTransactionHistoryModal, setOpenTransactionHistoryModal] =
     useState(false)
@@ -108,13 +104,24 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
     initialData: null,
   })
 
+  const { data: web3AuthData } = useQuery({
+    queryKey: ['web3auth', selectedChain.id, address],
+    queryFn: async () => {
+      if (!web3AuthInstance) {
+        return null
+      }
+      return web3AuthInstance.getUserInfo()
+    },
+    initialData: null,
+  })
+
   return (
     <>
       {openTransactionHistoryModal && address && connector && (
         <UserTransactionsModal
           chain={selectedChain}
           userAddress={address}
-          connector={connector}
+          walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}
           pendingTransactions={pendingTransactions}
           transactionHistory={transactionHistory}
           disconnectAsync={disconnectAsync}
@@ -181,14 +188,16 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           <div className="flex items-center flex-row gap-1 sm:gap-3">
             {status === 'disconnected' || status === 'connecting' ? (
               <ConnectButton openConnectModal={openConnectModal} />
-            ) : openAccountModal && address && connector && chainId ? (
+            ) : address && connector && chainId ? (
               <UserButton
                 chain={selectedChain}
                 address={address}
                 openTransactionHistoryModal={() =>
                   setOpenTransactionHistoryModal(true)
                 }
-                connector={connector}
+                walletIconUrl={
+                  connector?.icon ?? web3AuthData?.profileImage ?? ''
+                }
                 shiny={pendingTransactions.length > 0}
                 ens={ens}
               />

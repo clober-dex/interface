@@ -1,18 +1,13 @@
-// Web3Auth Libraries
-import { CHAIN_NAMESPACES, UX_MODE, WEB3AUTH_NETWORK } from '@web3auth/base'
+import { Web3Auth } from '@web3auth/modal'
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider'
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from '@web3auth/base'
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector'
-import { AuthAdapter } from '@web3auth/auth-adapter'
-import { Web3AuthNoModal } from '@web3auth/no-modal'
-import { LOGIN_PROVIDER_TYPE } from '@web3auth/auth'
 
 import { CHAIN_CONFIG } from '../../chain-configs'
 
-export default function Web3AuthConnectorInstance({
-  socialType,
-}: {
-  socialType: LOGIN_PROVIDER_TYPE
-}) {
+export let web3AuthInstance: Web3Auth | null = null
+
+export default function Web3AuthConnectorInstance() {
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
     chainId: `0x${CHAIN_CONFIG.CHAIN.id.toString(16)}`,
@@ -28,34 +23,31 @@ export default function Web3AuthConnectorInstance({
     config: { chainConfig },
   })
 
-  const web3AuthInstance = new Web3AuthNoModal({
+  if (web3AuthInstance) {
+    // If an instance already exists, return it
+    return Web3AuthConnector({
+      web3AuthInstance,
+    })
+  }
+
+  web3AuthInstance = new Web3Auth({
     clientId: CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID,
     privateKeyProvider,
     web3AuthNetwork: CHAIN_CONFIG.CHAIN.testnet
       ? WEB3AUTH_NETWORK.SAPPHIRE_DEVNET
       : WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-  })
-
-  // Add openlogin adapter for customisations
-  const authAdapterInstance = new AuthAdapter({
-    adapterSettings: {
-      uxMode: UX_MODE.POPUP,
+    uiConfig: {
+      loginMethodsOrder: [],
+      defaultLanguage: 'en',
+      modalZIndex: '2147483647',
+      logoLight: '/chain-configs/favicon.svg',
+      logoDark: '/chain-configs/favicon.svg',
+      uxMode: 'popup',
+      mode: 'dark',
     },
   })
-  web3AuthInstance.configureAdapter(authAdapterInstance)
 
   return Web3AuthConnector({
     web3AuthInstance,
-    name: socialType,
-    loginParams: {
-      loginProvider: socialType,
-      redirectUrl: window.location.origin,
-      extraLoginOptions: {
-        domain: window.location.hostname,
-      },
-    },
-    id: socialType,
-    type: socialType,
-    modalConfig: {},
   })
 }

@@ -204,6 +204,7 @@ export const Default: Story = {
         ],
       },
     ],
+    walletIconUrl: 'https://web3auth.io/images/w3a-L-Favicon-1.svg',
     ens: null,
   },
 }

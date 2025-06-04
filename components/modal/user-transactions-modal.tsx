@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Connector } from 'wagmi'
 
 import { Transaction } from '../../contexts/transaction-context'
 import UserTransactionCard from '../card/user-transaction-card'
@@ -33,7 +32,7 @@ const getTimeAgo = (timestamp: number, cache: Map<string, boolean>) => {
 export const UserTransactionsModal = ({
   chain,
   userAddress,
-  connector,
+  walletIconUrl,
   pendingTransactions,
   transactionHistory,
   disconnectAsync,
@@ -42,7 +41,7 @@ export const UserTransactionsModal = ({
 }: {
   chain: Chain
   userAddress: `0x${string}`
-  connector: Connector
+  walletIconUrl: string | null
   pendingTransactions: Transaction[]
   transactionHistory: Transaction[]
   disconnectAsync: () => Promise<void>
@@ -81,10 +80,10 @@ export const UserTransactionsModal = ({
           <div className="self-stretch px-4 py-2 sm:py-3 bg-gray-800 rounded-xl flex justify-center items-center gap-[17px] h-full">
             <div className="flex flex-row gap-2 h-full items-center">
               <div className="flex w-8 sm:w-10 h-4 sm:h-6 relative items-center">
-                {connector?.icon ? (
+                {walletIconUrl ? (
                   <img
-                    src={connector.icon}
-                    alt={connector.uid}
+                    src={walletIconUrl}
+                    alt="User Icon"
                     className="w-4 sm:w-6 h-4 sm:h-6 absolute left-0 top-0 z-[2] rounded-full"
                   />
                 ) : (

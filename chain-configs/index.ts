@@ -1,19 +1,15 @@
 import { monadTestnet } from 'viem/chains'
-import { getDefaultConfig } from '@rainbow-me/rainbowkit'
+import { connectorsForWallets } from '@rainbow-me/rainbowkit'
 import { getAddress, http, zeroAddress } from 'viem'
-import {
-  backpackWallet,
-  coinbaseWallet,
-  metaMaskWallet,
-  phantomWallet,
-  rabbyWallet,
-  rainbowWallet,
-  walletConnectWallet,
-} from '@rainbow-me/rainbowkit/wallets'
 import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
+import { createConfig, injected } from 'wagmi'
+import {
+  coinbaseWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets'
 
-import { discordWallet, googleWallet, xWallet } from '../utils/web3auth'
+import { socialAccountWallet } from '../utils/web3auth'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
@@ -91,29 +87,26 @@ export const getClientConfig = () => {
     return config
   }
 
-  config = getDefaultConfig({
-    appName: CHAIN_CONFIG.DEX_NAME,
-    projectId: CHAIN_CONFIG.WALLET_CONNECT_PROJECT_ID,
+  config = createConfig({
     chains: [CHAIN],
     transports: {
       [CHAIN.id]: http(CHAIN_CONFIG.RPC_URL),
     },
-    wallets: [
-      {
-        groupName: 'Recommended',
-        wallets: [
-          rabbyWallet,
-          googleWallet,
-          xWallet,
-          discordWallet,
-          backpackWallet,
-          metaMaskWallet,
-          coinbaseWallet,
-          rainbowWallet,
-          walletConnectWallet,
-          phantomWallet,
+    ssr: false,
+    connectors: [
+      injected({ shimDisconnect: true }),
+      ...connectorsForWallets(
+        [
+          {
+            groupName: 'Recommended',
+            wallets: [socialAccountWallet, coinbaseWallet, walletConnectWallet],
+          },
         ],
-      },
+        {
+          appName: CHAIN_CONFIG.DEX_NAME,
+          projectId: CHAIN_CONFIG.WALLET_CONNECT_PROJECT_ID,
+        },
+      ),
     ],
   })
 

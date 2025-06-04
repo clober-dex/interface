@@ -316,7 +316,7 @@ export function Chart<
       height={height}
       className={className}
       // Prevents manipulating the chart with touch so that it doesn't interfere with scrolling the page.
-      onTouchMove={(e) => e.stopPropagation()}
+      onTouchMove={(e: any) => e.stopPropagation()}
     >
       {children && children(crosshairData)}
     </View>
