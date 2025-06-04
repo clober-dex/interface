@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Connector } from 'wagmi'
 
 import { Transaction } from '../../contexts/transaction-context'
 import UserTransactionCard from '../card/user-transaction-card'
