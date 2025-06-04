@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useRouter } from 'next/router'
-import {
-  useAccountModal,
-  useChainModal,
-  useConnectModal,
-} from '@rainbow-me/rainbowkit'
+import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 
@@ -23,7 +19,8 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { PAGE_BUTTONS } from '../chain-configs/page-button'
 import useDropdown from '../hooks/useDropdown'
 import { PageSelector } from '../components/selector/page-selector'
-import { web3AuthInstance } from '../utils/web3auth/connector'
+import { walletServicesPlugin } from '../utils/web3auth/connector'
+import { web3AuthInstance } from '../utils/web3auth/instance'
 
 const WrongNetwork = ({
   openChainModal,
@@ -92,7 +89,6 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { chainId, address, status, connector } = useAccount()
   const { openChainModal } = useChainModal()
   const { openConnectModal } = useConnectModal()
-  const { openAccountModal } = useAccountModal()
   const { disconnectAsync } = useDisconnect()
   const [openTransactionHistoryModal, setOpenTransactionHistoryModal] =
     useState(false)
@@ -193,13 +189,20 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           <div className="flex items-center flex-row gap-1 sm:gap-3">
             {status === 'disconnected' || status === 'connecting' ? (
               <ConnectButton openConnectModal={openConnectModal} />
-            ) : openAccountModal && address && connector && chainId ? (
+            ) : address && connector && chainId ? (
               <UserButton
                 chain={selectedChain}
                 address={address}
-                openTransactionHistoryModal={() =>
-                  setOpenTransactionHistoryModal(true)
-                }
+                openTransactionHistoryModal={async () => {
+                  if (connector?.id !== 'web3auth') {
+                    setOpenTransactionHistoryModal(true)
+                  } else {
+                    // If using Web3Auth, open the account modal instead
+                    await walletServicesPlugin?.showWalletUi({
+                      show: true,
+                    })
+                  }
+                }}
                 walletIconUrl={
                   connector?.icon ?? web3AuthData?.profileImage ?? ''
                 }
