@@ -6,6 +6,8 @@ import { Web3Auth } from '@web3auth/modal'
 
 import { CHAIN_CONFIG } from '../../chain-configs'
 
+export let web3AuthInstance: Web3Auth | null = null
+
 export default function Web3AuthConnectorInstance() {
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -22,7 +24,14 @@ export default function Web3AuthConnectorInstance() {
     config: { chainConfig },
   })
 
-  const web3AuthInstance = new Web3Auth({
+  if (web3AuthInstance) {
+    // If an instance already exists, return it
+    return Web3AuthConnector({
+      web3AuthInstance,
+    })
+  }
+
+  web3AuthInstance = new Web3Auth({
     clientId: CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID,
     privateKeyProvider,
     web3AuthNetwork: CHAIN_CONFIG.CHAIN.testnet

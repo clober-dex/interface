@@ -23,6 +23,7 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { PAGE_BUTTONS } from '../chain-configs/page-button'
 import useDropdown from '../hooks/useDropdown'
 import { PageSelector } from '../components/selector/page-selector'
+import { web3AuthInstance } from '../utils/web3auth/connector'
 
 const WrongNetwork = ({
   openChainModal,
@@ -108,13 +109,24 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
     initialData: null,
   })
 
+  const { data: web3AuthData } = useQuery({
+    queryKey: ['web3auth', selectedChain.id, address],
+    queryFn: async () => {
+      if (!web3AuthInstance) {
+        return null
+      }
+      return web3AuthInstance.getUserInfo()
+    },
+    initialData: null,
+  })
+
   return (
     <>
       {openTransactionHistoryModal && address && connector && (
         <UserTransactionsModal
           chain={selectedChain}
           userAddress={address}
-          connector={connector}
+          walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}
           pendingTransactions={pendingTransactions}
           transactionHistory={transactionHistory}
           disconnectAsync={disconnectAsync}
@@ -188,7 +200,9 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 openTransactionHistoryModal={() =>
                   setOpenTransactionHistoryModal(true)
                 }
-                connector={connector}
+                walletIconUrl={
+                  connector?.icon ?? web3AuthData?.profileImage ?? ''
+                }
                 shiny={pendingTransactions.length > 0}
                 ens={ens}
               />

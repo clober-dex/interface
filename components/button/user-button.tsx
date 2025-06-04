@@ -1,5 +1,4 @@
 import React from 'react'
-import { Connector } from 'wagmi'
 
 import { textStyles } from '../../constants/text-styles'
 import { formatAddress } from '../../utils/string'
@@ -10,14 +9,14 @@ import { Chain } from '../../model/chain'
 export const UserButton = ({
   chain,
   address,
-  connector,
+  walletIconUrl,
   openTransactionHistoryModal,
   shiny,
   ens,
 }: {
   chain: Chain
   address: `0x${string}`
-  connector: Connector
+  walletIconUrl: string | null
   openTransactionHistoryModal: () => void
   shiny?: boolean
   ens: string | null
@@ -35,9 +34,9 @@ export const UserButton = ({
         <span className="relative whitespace-nowrap">
           <span className="z-10 transition-opacity ease-in-out flex items-center justify-center gap-2 md:justify-start rounded md:w-full py-0 px-2 md:px-4 cursor-pointer h-8 bg-gray-800 active::bg-gray-600">
             <div className="w-6 h-4 relative">
-              {connector.icon ? (
+              {walletIconUrl ? (
                 <img
-                  src={connector.icon}
+                  src={walletIconUrl}
                   alt="user-icon"
                   className="w-4 h-4 absolute left-0 top-0 z-[2] rounded-full"
                 />
