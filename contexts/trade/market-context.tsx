@@ -184,7 +184,6 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
             options: {
               rpcUrl: CHAIN_CONFIG.RPC_URL,
               useSubgraph: false,
-              n: 1000,
             },
           }),
           getMarketSnapshot({
