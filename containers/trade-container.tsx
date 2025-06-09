@@ -101,8 +101,6 @@ export const TradeContainer = () => {
     selectedMarketSnapshot,
     selectedTokenInfo,
     availableDecimalPlacesGroups,
-    selectedDecimalPlaces,
-    setSelectedDecimalPlaces,
     bids,
     asks,
     depthClickedIndex,
@@ -626,11 +624,6 @@ export const TradeContainer = () => {
                       market={selectedMarket}
                       bids={bids}
                       asks={asks}
-                      availableDecimalPlacesGroups={
-                        availableDecimalPlacesGroups ?? []
-                      }
-                      selectedDecimalPlaces={selectedDecimalPlaces}
-                      setSelectedDecimalPlaces={setSelectedDecimalPlaces}
                       setDepthClickedIndex={
                         isFetchingOnChainPrice ? () => {} : setDepthClickedIndex
                       }

@@ -2,10 +2,8 @@ import React from 'react'
 import BigNumber from 'bignumber.js'
 import { Market } from '@clober/v2-sdk'
 
-import { Decimals } from '../model/decimals'
 import { formatSignificantString } from '../utils/bignumber'
 
-import DecimalsSelector from './selector/decimals-selector'
 import { Loading } from './loading'
 
 const MAX_N = 18
@@ -14,9 +12,6 @@ export default function OrderBook({
   market,
   bids,
   asks,
-  availableDecimalPlacesGroups,
-  selectedDecimalPlaces,
-  setSelectedDecimalPlaces,
   setDepthClickedIndex,
   setShowOrderBook,
   setTab,
@@ -25,9 +20,6 @@ export default function OrderBook({
   market: Market | undefined
   bids: { price: string; size: string }[]
   asks: { price: string; size: string }[]
-  availableDecimalPlacesGroups: Decimals[]
-  selectedDecimalPlaces: Decimals | undefined
-  setSelectedDecimalPlaces: (decimals: Decimals) => void
   setDepthClickedIndex: (index: { isBid: boolean; index: number }) => void
   setShowOrderBook: (showOrderBook: boolean) => void
   setTab: (tab: 'swap' | 'limit') => void
@@ -87,18 +79,6 @@ export default function OrderBook({
             View Chart
           </div>
         </button>
-
-        {selectedDecimalPlaces && availableDecimalPlacesGroups.length > 0 ? (
-          <div className="ml-auto flex items-center gap-2 mr-1.5 md:mr-0">
-            <DecimalsSelector
-              availableDecimalPlacesGroups={availableDecimalPlacesGroups}
-              value={selectedDecimalPlaces}
-              onValueChange={setSelectedDecimalPlaces}
-            />
-          </div>
-        ) : (
-          <></>
-        )}
       </div>
 
       {/*mobile*/}
