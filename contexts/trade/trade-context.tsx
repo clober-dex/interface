@@ -238,6 +238,12 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       debouncedValue,
     ],
     queryFn: async () => {
+      if (inputCurrencyAmount === '') {
+        setQuotes({
+          best: null,
+          all: [],
+        })
+      }
       if (
         gasPrice &&
         inputCurrency &&
