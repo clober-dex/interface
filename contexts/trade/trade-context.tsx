@@ -268,6 +268,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
       return null
     },
+    refetchOnWindowFocus: false,
   })
 
   // when the best quote updates, set it as the selected quote
