@@ -7,51 +7,20 @@ import { Quote } from '../../model/aggregator/quote'
 import { Prices } from '../../model/prices'
 import { formatUnits } from '../../utils/bigint'
 
-export async function fetchQuotes(
-  aggregators: Aggregator[],
-  inputCurrency: Currency,
+type QuoteDto = {
+  amountOut: bigint
+  gasLimit: bigint
+  aggregator: Aggregator
+  transaction: Transaction | undefined
+}
+
+const findBestQuote = (
+  quotes: QuoteDto[],
   amountIn: bigint,
   outputCurrency: Currency,
-  slippageLimitPercent: number,
   gasPrice: bigint,
   prices: Prices,
-  userAddress?: `0x${string}`,
-): Promise<{ best: Quote | null; all: Quote[] }> {
-  const quotes = (
-    await Promise.allSettled(
-      aggregators.map((aggregator) =>
-        aggregator
-          .quote(
-            inputCurrency,
-            amountIn,
-            outputCurrency,
-            slippageLimitPercent,
-            gasPrice,
-            userAddress,
-          )
-          .catch((error) => {
-            console.error(
-              `Failed to get quote from ${aggregator.name}: ${error}`,
-            )
-          }),
-      ),
-    )
-  )
-    .map((result) => (result.status === 'fulfilled' ? result.value : undefined))
-    .filter(
-      (
-        quote,
-      ): quote is {
-        amountOut: bigint
-        gasLimit: bigint
-        aggregator: Aggregator
-        transaction: Transaction | undefined
-      } => quote !== undefined,
-    )
-  if (quotes.length === 0) {
-    throw new Error('No quotes available')
-  }
-
+): { best: Quote | null; all: Quote[] } => {
   let bestQuote: Quote | null = null
   let fallbackQuote: Quote | undefined = undefined
   const allQuotes: Quote[] = []
@@ -107,4 +76,52 @@ export async function fetchQuotes(
     best: bestQuote,
     all: allQuotes,
   }
+}
+
+export async function fetchAllQuotesAndSelectBest(
+  aggregators: Aggregator[],
+  inputCurrency: Currency,
+  amountIn: bigint,
+  outputCurrency: Currency,
+  slippageLimitPercent: number,
+  gasPrice: bigint,
+  prices: Prices,
+  userAddress?: `0x${string}`,
+): Promise<{ best: Quote | null; all: Quote[] }> {
+  const quotes = (
+    await Promise.allSettled(
+      aggregators.map((aggregator) =>
+        aggregator
+          .quote(
+            inputCurrency,
+            amountIn,
+            outputCurrency,
+            slippageLimitPercent,
+            gasPrice,
+            userAddress,
+          )
+          .catch((error) => {
+            console.error(
+              `Failed to get quote from ${aggregator.name}: ${error}`,
+            )
+          }),
+      ),
+    )
+  )
+    .map((result) => (result.status === 'fulfilled' ? result.value : undefined))
+    .filter(
+      (
+        quote,
+      ): quote is {
+        amountOut: bigint
+        gasLimit: bigint
+        aggregator: Aggregator
+        transaction: Transaction | undefined
+      } => quote !== undefined,
+    )
+  if (quotes.length === 0) {
+    throw new Error('No quotes available')
+  }
+
+  return findBestQuote(quotes, amountIn, outputCurrency, gasPrice, prices)
 }

@@ -18,7 +18,7 @@ import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { Quote } from '../../model/aggregator/quote'
-import { fetchQuotes } from '../../apis/swap/quote'
+import { fetchAllQuotesAndSelectBest } from '../../apis/swap/quote'
 import { aggregators } from '../../chain-configs/aggregators'
 import { formatUnits } from '../../utils/bigint'
 import {
@@ -242,7 +242,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds =
           (balances[getAddress(inputCurrency.address)] ?? 0n) < amountIn
-        const { best, all } = await fetchQuotes(
+        const { best, all } = await fetchAllQuotesAndSelectBest(
           aggregators,
           inputCurrency,
           amountIn,

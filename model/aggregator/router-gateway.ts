@@ -13,6 +13,7 @@ export class AggregatorRouterGateway implements Aggregator {
   public readonly contract: `0x${string}`
   public readonly minimumSlippage = 0 // 0% slippage
   public readonly maximumSlippage = 50 // 50% slippage
+  public readonly supportsPriceCalculation: boolean
   public readonly chain: Chain
   private readonly aggregator: Aggregator
 
@@ -21,6 +22,7 @@ export class AggregatorRouterGateway implements Aggregator {
     this.chain = chain
     this.aggregator = aggregator
     this.name = aggregator.name
+    this.supportsPriceCalculation = aggregator.supportsPriceCalculation
   }
 
   public async currencies(): Promise<Currency[]> {
