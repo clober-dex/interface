@@ -11,6 +11,7 @@ export interface Aggregator {
   chain: Chain
   minimumSlippage: number
   maximumSlippage: number
+  supportsPriceCalculation: boolean
   currencies(): Promise<Currency[]>
   prices(): Promise<Prices>
 
