@@ -31,7 +31,7 @@ export class CloberV2Aggregator implements Aggregator {
   private readonly nativeTokenAddress = zeroAddress
   public readonly chain: Chain
   public readonly weth: `0x${string}`
-  private marketOrderGasLimit = 200_000n
+  private marketOrderGasLimit = 300_000n
   private wrapOrUnWrapGasLimit = 60_000n
 
   constructor(contract: `0x${string}`, chain: Chain) {
@@ -198,27 +198,51 @@ export class CloberV2Aggregator implements Aggregator {
     slippageLimitPercent = Math.max(slippageLimitPercent, this.minimumSlippage)
     slippageLimitPercent = Math.min(slippageLimitPercent, this.maximumSlippage)
 
-    const {
-      transaction,
-      result: {
-        taken: {
-          amount,
-          currency: { decimals },
+    try {
+      const {
+        transaction,
+        result: {
+          taken: {
+            amount,
+            currency: { decimals },
+          },
         },
-      },
-    } = await marketOrder({
-      chainId: this.chain.id,
-      userAddress,
-      inputToken: inputCurrency.address,
-      outputToken: outputCurrency.address,
-      amountIn: formatUnits(amountIn, inputCurrency.decimals),
-      options: {
-        rpcUrl: CHAIN_CONFIG.RPC_URL,
-        useSubgraph: false,
-        slippage: slippageLimitPercent,
-        // gasLimit: this.defaultGasLimit,
-      },
-    })
-    return { transaction, amountOut: parseUnits(amount, decimals) }
+      } = await marketOrder({
+        chainId: this.chain.id,
+        userAddress,
+        inputToken: inputCurrency.address,
+        outputToken: outputCurrency.address,
+        amountIn: formatUnits(amountIn, inputCurrency.decimals),
+        options: {
+          rpcUrl: CHAIN_CONFIG.RPC_URL,
+          useSubgraph: false,
+          slippage: slippageLimitPercent,
+        },
+      })
+      return { transaction, amountOut: parseUnits(amount, decimals) }
+    } catch {
+      const {
+        transaction,
+        result: {
+          taken: {
+            amount,
+            currency: { decimals },
+          },
+        },
+      } = await marketOrder({
+        chainId: this.chain.id,
+        userAddress,
+        inputToken: inputCurrency.address,
+        outputToken: outputCurrency.address,
+        amountIn: formatUnits(amountIn, inputCurrency.decimals),
+        options: {
+          rpcUrl: CHAIN_CONFIG.RPC_URL,
+          useSubgraph: false,
+          slippage: slippageLimitPercent,
+          gasLimit: this.marketOrderGasLimit,
+        },
+      })
+      return { transaction, amountOut: parseUnits(amount, decimals) }
+    }
   }
 }
