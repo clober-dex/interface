@@ -17,7 +17,7 @@ export class MonorailAggregator implements Aggregator {
   public readonly maximumSlippage = 50 // 50% slippage
   public readonly supportsPriceCalculation = true
   public readonly chain: Chain
-  private readonly TIMEOUT = 2000
+  private readonly TIMEOUT = 4000
   private readonly nativeTokenAddress = zeroAddress
 
   constructor(contract: `0x${string}`, chain: Chain) {

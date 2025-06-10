@@ -16,7 +16,7 @@ export class OpenOceanAggregator implements Aggregator {
   public readonly maximumSlippage = 50 // 50% slippage
   public readonly supportsPriceCalculation = true
   public readonly chain: Chain
-  private readonly TIMEOUT = 2000
+  private readonly TIMEOUT = 4000
   private readonly nativeTokenAddress = zeroAddress
   private readonly referrer: `0x${string}` =
     '0x331fa4a4f7b906491f37bdc8b042b894234e101f'
