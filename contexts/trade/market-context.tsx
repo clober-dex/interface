@@ -25,6 +25,7 @@ import { fetchPrice } from '../../apis/price'
 import { Currency } from '../../model/currency'
 import { fetchTokenInfo } from '../../apis/token'
 import { TokenInfo } from '../../model/token-info'
+import { useCurrencyContext } from '../currency-context'
 
 import { useTradeContext } from './trade-context'
 
@@ -89,6 +90,7 @@ const Context = React.createContext<MarketContext>({
 export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
+  const { prices } = useCurrencyContext()
   const queryClient = useQueryClient()
   const {
     isBid,
@@ -273,6 +275,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
           inputCurrency,
           outputCurrency,
           gasPrice,
+          prices,
         )
         const minimumDecimalPlaces = availableDecimalPlacesGroups?.[0]?.value
         if (price.isZero()) {
@@ -302,6 +305,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     inputCurrency,
     isBid,
     outputCurrency,
+    prices,
     selectedChain.id,
     setIsFetchingOnChainPrice,
     setPriceInput,
@@ -355,6 +359,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
               inputCurrency,
               outputCurrency,
               gasPrice,
+              prices,
             )
             if (
               !isAddressEqual(
@@ -394,7 +399,15 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
       action()
     }, // eslint-disable-next-line react-hooks/exhaustive-deps
-    [inputCurrency, outputCurrency, selectedChain.id, gasPrice === undefined],
+    [
+      inputCurrency,
+      outputCurrency,
+      selectedChain.id,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      gasPrice === undefined,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      prices === undefined,
+    ],
   )
 
   // once

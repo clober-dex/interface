@@ -16,9 +16,10 @@ export const fetchPrice = async (
   currency0: Currency,
   currency1: Currency,
   gasPrice: bigint,
+  prices: Prices,
 ): Promise<BigNumber> => {
   const quoteToken = getQuoteToken({
-    chainId: chainId,
+    chainId,
     token0: currency0.address,
     token1: currency1.address,
   })
@@ -28,19 +29,30 @@ export const fetchPrice = async (
   )
     ? [currency0, currency1]
     : [currency1, currency0]
+  const TARGET_USD_AMOUNT = 100 // USD
+  const amountIn = new BigNumber(TARGET_USD_AMOUNT).div(
+    prices[getAddress(baseCurrency.address)]
+      ? prices[getAddress(baseCurrency.address)]
+      : 1,
+  )
   try {
     const { best } = await fetchQuotes(
       aggregators,
       baseCurrency,
-      parseUnits('1', baseCurrency.decimals),
+      BigInt(
+        amountIn
+          .multipliedBy(parseUnits('1', baseCurrency.decimals))
+          .toFixed(0),
+      ),
       quoteCurrency,
       5,
       gasPrice,
       {}, // arbitrary prices
     )
-    return new BigNumber(
+    const amountOut = new BigNumber(
       formatUnits(best?.amountOut ?? 0n, quoteCurrency.decimals),
     )
+    return amountOut.div(amountIn)
   } catch (e) {
     console.error(e)
     return new BigNumber(0)
