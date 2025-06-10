@@ -18,7 +18,7 @@ import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { Quote } from '../../model/aggregator/quote'
-import { fetchAllQuotesAndSelectBest } from '../../apis/swap/quote'
+import { fetchQuotesLive } from '../../apis/swap/quote'
 import { aggregators } from '../../chain-configs/aggregators'
 import { formatUnits } from '../../utils/bigint'
 import {
@@ -112,6 +112,13 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
   )
   const [isFetchingOnChainPrice, setIsFetchingOnChainPrice] = useState(false)
+  const [quotes, setQuotes] = useState<{
+    best: Quote | null
+    all: Quote[]
+  }>({
+    best: null,
+    all: [],
+  })
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
   const [showOrderBook, setShowOrderBook] = useState(true)
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
@@ -217,7 +224,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     _setSlippageInput(slippage)
   }, [])
 
-  const { data: quotes } = useQuery({
+  useQuery({
     queryKey: [
       'quotes',
       inputCurrency?.address,
@@ -239,10 +246,15 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         tab === 'swap' &&
         Number(debouncedValue) === Number(inputCurrencyAmount)
       ) {
+        setQuotes({
+          best: null,
+          all: [],
+        })
+
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds =
           (balances[getAddress(inputCurrency.address)] ?? 0n) < amountIn
-        const { best, all } = await fetchAllQuotesAndSelectBest(
+        await fetchQuotesLive(
           aggregators,
           inputCurrency,
           amountIn,
@@ -251,12 +263,11 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
           gasPrice,
           prices,
           insufficientFunds ? undefined : userAddress,
+          setQuotes,
         )
-        return { best, all }
       }
-      return { best: null, all: [] }
+      return null
     },
-    initialData: { best: null, all: [] },
   })
 
   // when the best quote updates, set it as the selected quote
