@@ -28,6 +28,7 @@ export class CloberV2Aggregator implements Aggregator {
   public readonly contract: `0x${string}`
   public readonly minimumSlippage = 0 // 0% slippage
   public readonly maximumSlippage = 100 // 100% slippage
+  public readonly supportsPriceCalculation = true
   private readonly nativeTokenAddress = zeroAddress
   public readonly chain: Chain
   public readonly weth: `0x${string}`

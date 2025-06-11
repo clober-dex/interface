@@ -9,7 +9,7 @@ import { Currency } from '../model/currency'
 import { Prices } from '../model/prices'
 import { CHAIN_CONFIG } from '../chain-configs'
 
-import { fetchQuotes } from './swap/quote'
+import { fetchAllQuotesAndSelectBest } from './swap/quote'
 
 export const fetchPrice = async (
   chainId: CHAIN_IDS,
@@ -36,8 +36,8 @@ export const fetchPrice = async (
       : 1,
   )
   try {
-    const { best } = await fetchQuotes(
-      aggregators,
+    const { best } = await fetchAllQuotesAndSelectBest(
+      aggregators.filter((aggregator) => aggregator.supportsPriceCalculation),
       baseCurrency,
       BigInt(
         amountIn
