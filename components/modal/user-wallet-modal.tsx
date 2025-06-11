@@ -71,7 +71,7 @@ export const UserWalletModal = ({
         <h1 className="flex font-bold mb-6 sm:text-xl items-center justify-center w-full">
           My Transactions
         </h1>
-        <div className="flex flex-col justify-start items-start gap-6 mb-4">
+        <div className="flex flex-col justify-start items-start gap-6">
           <div className="self-stretch px-4 py-2 sm:py-3 bg-gray-800 rounded-xl flex justify-center items-center gap-[17px] h-full">
             <div className="flex flex-row gap-2 h-full items-center">
               <div className="flex w-8 sm:w-10 h-4 sm:h-6 relative items-center">
@@ -214,24 +214,32 @@ export const UserWalletModal = ({
               </button>
             </div>
           </div>
-          <div className="flex items-center justify-center w-full gap-12">
-            <button
-              onClick={() => setTab('my-tokens')}
-              disabled={tab === 'my-tokens'}
-              className="flex flex-row gap-2 text-sm sm:text-base text-gray-500 disabled:text-white font-semibold"
-            >
-              My Tokens
-            </button>
-            <button
-              onClick={() => setTab('my-transactions')}
-              disabled={tab === 'my-transactions'}
-              className="flex flex-row gap-2 text-sm sm:text-base text-gray-500 disabled:text-white font-semibold"
-            >
-              My Transactions
-            </button>
+          <div className="flex items-center justify-center w-full border-b border-[#2f313d]">
+            <div className="flex gap-10">
+              <button
+                onClick={() => setTab('my-tokens')}
+                className={`pb-2 text-sm sm:text-base font-semibold transition-all duration-150 ${
+                  tab === 'my-tokens'
+                    ? 'text-white border-b-2 border-white'
+                    : 'text-gray-500 border-b-2 border-transparent'
+                }`}
+              >
+                My Tokens
+              </button>
+              <button
+                onClick={() => setTab('my-transactions')}
+                className={`pb-2 text-sm sm:text-base font-semibold transition-all duration-150 ${
+                  tab === 'my-transactions'
+                    ? 'text-white border-b-2 border-white'
+                    : 'text-gray-500 border-b-2 border-transparent'
+                }`}
+              >
+                My Transactions
+              </button>
+            </div>
           </div>
         </div>
-        <div className="pt-3 border-t border-[#2f313d] border-solid flex flex-col w-full overflow-y-scroll">
+        <div className="pt-6 border-t border-[#2f313d] border-solid flex flex-col w-full overflow-y-scroll">
           <AnimatePresence mode="wait">
             {tab === 'my-tokens' ? (
               <motion.div
