@@ -5,6 +5,7 @@ import { Currency } from '../../model/currency'
 import { formatUnits } from '../../utils/bigint'
 import { GasSvg } from '../svg/gas-svg'
 import { formatWithCommas } from '../../utils/bignumber'
+import { TimerSvg } from '../svg/timer-svg'
 
 export const SwapRouteCard = ({
   quote,
@@ -67,7 +68,7 @@ export const SwapRouteCard = ({
         </div>
       </div>
       <div className="self-stretch flex flex-col sm:flex-row justify-center sm:justify-start items-start gap-2 sm:gap-3">
-        <div className="flex justify-start items-center gap-1.5">
+        <div className="flex justify-start items-center gap-1.5 text-nowrap">
           {quote ? (
             <div className="justify-start text-[#838b99] text-xs sm:text-sm font-medium">
               = {quote.netAmountOutUsd >= 0 ? '' : '-'}$
@@ -80,7 +81,7 @@ export const SwapRouteCard = ({
             after gas fees
           </div>
         </div>
-        <div className="flex justify-start items-center gap-1.5">
+        <div className="flex justify-start items-center gap-1.5 w-full">
           {quote ? (
             <div className="flex flex-row gap-0.5 items-center justify-start text-[#838b99] text-xs sm:text-sm font-medium">
               <GasSvg /> ${formatWithCommas(quote.gasUsd.toFixed(6))}
@@ -88,8 +89,16 @@ export const SwapRouteCard = ({
           ) : (
             <div className="w-[70px] h-4 sm:h-5 rounded animate-pulse bg-gray-500" />
           )}
-          <div className="justify-start text-blue-400 text-xs sm:text-sm font-medium">
-            via {aggregatorName}
+          <div className="w-full flex flex-row justify-between items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium">
+            <div className="text-blue-400 self-start sm:self-center">
+              via {aggregatorName}
+            </div>
+            {quote && (
+              <div className="flex flex-row gap-0.5 items-center text-[#838b99] text-nowrap">
+                <TimerSvg /> {(quote.executionMilliseconds / 1000).toFixed(2)}{' '}
+                sec
+              </div>
+            )}
           </div>
         </div>
       </div>
