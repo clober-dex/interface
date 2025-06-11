@@ -234,7 +234,7 @@ export const TradingCompetitionContainer = () => {
       }
 
       const confirmation = {
-        title: `Register for Competition`,
+        title: `Register for the Competition`,
         body: 'Please confirm in your wallet.',
         chain: selectedChain,
         fields: [],
