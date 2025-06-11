@@ -94,6 +94,7 @@ const Context = React.createContext<TradeContext>({
 })
 
 export const TRADE_SLIPPAGE_KEY = 'trade-slippage'
+export const TRADE_TAB_KEY = 'trade-tab'
 
 export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { disconnectAsync } = useDisconnect()
@@ -108,9 +109,15 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
-  const [tab, setTab] = useState<'limit' | 'swap'>(
-    CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit',
-  )
+  const [tab, _setTab] = useState<'limit' | 'swap'>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(TRADE_TAB_KEY)
+      if (stored === 'limit' || stored === 'swap') {
+        return stored
+      }
+    }
+    return CHAIN_CONFIG.IS_SWAP_DEFAULT ? 'swap' : 'limit'
+  })
   const [isFetchingOnChainPrice, setIsFetchingOnChainPrice] = useState(false)
   const [quotes, setQuotes] = useState<{
     best: Quote | null
@@ -145,6 +152,11 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     outputCurrencyAmount,
     inputCurrencyAmount,
   })
+
+  const setTab = useCallback((tab: 'limit' | 'swap') => {
+    _setTab(tab)
+    localStorage.setItem(TRADE_TAB_KEY, tab)
+  }, [])
 
   const setInputCurrency = useCallback(
     (currency: Currency | undefined) => {
