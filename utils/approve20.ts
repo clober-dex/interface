@@ -9,6 +9,7 @@ import { Currency } from '../model/currency'
 import { ERC20_PERMIT_ABI } from '../abis/@openzeppelin/erc20-permit-abi'
 import { Chain } from '../model/chain'
 import { CHAIN_CONFIG } from '../chain-configs'
+import { Confirmation } from '../contexts/transaction-context'
 
 import { buildTransaction, sendTransaction } from './transaction'
 
@@ -18,6 +19,7 @@ export const maxApprove = async (
   currency: Currency,
   spender: `0x${string}`,
   disconnectAsync: () => Promise<void>,
+  setConfirmation: (confirmation: Confirmation | undefined) => void,
 ): Promise<TransactionReceipt | undefined> => {
   if (!walletClient) {
     return
@@ -34,5 +36,11 @@ export const maxApprove = async (
     account: walletClient.account!,
     chain,
   })
-  return sendTransaction(chain, walletClient, transaction, disconnectAsync)
+  return sendTransaction(
+    chain,
+    walletClient,
+    transaction,
+    disconnectAsync,
+    setConfirmation,
+  )
 }

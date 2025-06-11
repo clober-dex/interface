@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import { useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
@@ -22,8 +22,6 @@ import { maxApprove } from '../../utils/approve20'
 import { formatPreciseAmountString } from '../../utils/bignumber'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
-
-import { useOpenOrderContext } from './open-order-context'
 
 type LimitContractContext = {
   limit: (
@@ -50,54 +48,9 @@ export const LimitContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { openOrders } = useOpenOrderContext()
-  const {
-    setConfirmation,
-    pendingTransactions,
-    queuePendingTransaction,
-    dequeuePendingTransaction,
-    latestSubgraphBlockNumber,
-  } = useTransactionContext()
+  const { setConfirmation, queuePendingTransaction } = useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { isOpenOrderApproved, allowances, prices, balances } =
-    useCurrencyContext()
-
-  useEffect(() => {
-    pendingTransactions.forEach((transaction) => {
-      if (latestSubgraphBlockNumber.chainId !== selectedChain.id) {
-        return
-      }
-      if (!transaction.success) {
-        dequeuePendingTransaction(transaction.txHash)
-        return
-      }
-      if (
-        latestSubgraphBlockNumber.blockNumber === 0 ||
-        transaction.blockNumber > latestSubgraphBlockNumber.blockNumber
-      ) {
-        if (transaction.type === 'take') {
-          dequeuePendingTransaction(transaction.txHash)
-        }
-        return
-      }
-
-      if (
-        transaction.type === 'make' ||
-        transaction.type === 'limit' ||
-        transaction.type === 'cancel' ||
-        transaction.type === 'claim'
-      ) {
-        dequeuePendingTransaction(transaction.txHash)
-      }
-    })
-  }, [
-    dequeuePendingTransaction,
-    pendingTransactions,
-    openOrders,
-    balances,
-    latestSubgraphBlockNumber,
-    selectedChain.id,
-  ])
+  const { isOpenOrderApproved, allowances, prices } = useCurrencyContext()
 
   const limit = useCallback(
     async (
@@ -148,6 +101,7 @@ export const LimitContractProvider = ({
               walletClient,
               openTransaction,
               disconnectAsync,
+              setConfirmation,
             )
           }
         }
@@ -180,6 +134,7 @@ export const LimitContractProvider = ({
             inputCurrency,
             spender,
             disconnectAsync,
+            setConfirmation,
           )
           if (transactionReceipt) {
             queuePendingTransaction({
@@ -237,6 +192,7 @@ export const LimitContractProvider = ({
             walletClient,
             transaction,
             disconnectAsync,
+            setConfirmation,
           )
           if (transactionReceipt) {
             queuePendingTransaction({
@@ -283,6 +239,7 @@ export const LimitContractProvider = ({
             walletClient,
             transaction,
             disconnectAsync,
+            setConfirmation,
           )
           if (transactionReceipt) {
             const makeRatio =
@@ -392,6 +349,7 @@ export const LimitContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
@@ -486,6 +444,7 @@ export const LimitContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({

@@ -268,6 +268,7 @@ export const TradingCompetitionContainer = () => {
         walletClient,
         transaction,
         disconnectAsync,
+        setConfirmation,
       )
       if (transactionReceipt) {
         queuePendingTransaction({

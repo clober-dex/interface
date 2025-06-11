@@ -350,6 +350,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           walletClient,
           transaction as SdkTransaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({

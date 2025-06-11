@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useDisconnect, useWalletClient } from 'wagmi'
 import {
@@ -51,26 +51,9 @@ export const PoolContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const {
-    setConfirmation,
-    pendingTransactions,
-    queuePendingTransaction,
-    dequeuePendingTransaction,
-  } = useTransactionContext()
+  const { setConfirmation, queuePendingTransaction } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { allowances, prices } = useCurrencyContext()
-
-  useEffect(() => {
-    pendingTransactions.forEach((transaction) => {
-      if (!transaction.success) {
-        dequeuePendingTransaction(transaction.txHash)
-        return
-      }
-      if (transaction.type === 'mint' || transaction.type === 'burn') {
-        dequeuePendingTransaction(transaction.txHash)
-      }
-    })
-  }, [dequeuePendingTransaction, pendingTransactions])
 
   const mint = useCallback(
     async (
@@ -126,6 +109,7 @@ export const PoolContractProvider = ({
             currency0,
             spender,
             disconnectAsync,
+            setConfirmation,
           )
           if (transactionReceipt) {
             queuePendingTransaction({
@@ -159,6 +143,7 @@ export const PoolContractProvider = ({
             currency1,
             spender,
             disconnectAsync,
+            setConfirmation,
           )
           if (transactionReceipt) {
             queuePendingTransaction({
@@ -253,6 +238,7 @@ export const PoolContractProvider = ({
             walletClient,
             transaction,
             disconnectAsync,
+            setConfirmation,
           )
           if (transactionReceipt) {
             queuePendingTransaction({
@@ -395,6 +381,7 @@ export const PoolContractProvider = ({
             walletClient,
             transaction,
             disconnectAsync,
+            setConfirmation,
           )
           if (transactionReceipt) {
             queuePendingTransaction({

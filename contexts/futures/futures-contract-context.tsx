@@ -82,7 +82,6 @@ export const FuturesContractProvider = ({
     setConfirmation,
     pendingTransactions,
     queuePendingTransaction,
-    dequeuePendingTransaction,
     latestSubgraphBlockNumber,
   } = useTransactionContext()
   const { positions } = useFuturesContext()
@@ -159,21 +158,10 @@ export const FuturesContractProvider = ({
       if (latestSubgraphBlockNumber.chainId !== selectedChain.id) {
         return
       }
-      if (!transaction.success) {
-        dequeuePendingTransaction(transaction.txHash)
-        return
-      }
       if (
         latestSubgraphBlockNumber.blockNumber === 0 ||
         transaction.blockNumber > latestSubgraphBlockNumber.blockNumber
       ) {
-        if (
-          transaction.type === 'close' ||
-          transaction.type === 'settle' ||
-          transaction.type === 'redeem'
-        ) {
-          dequeuePendingTransaction(transaction.txHash)
-        }
         return
       }
 
@@ -190,12 +178,10 @@ export const FuturesContractProvider = ({
           transaction.type === 'remove-collateral') &&
         debtCurrency
       ) {
-        dequeuePendingTransaction(transaction.txHash)
         dequeuePendingPositionCurrency(debtCurrency)
       }
     })
   }, [
-    dequeuePendingTransaction,
     pendingTransactions,
     positions,
     balances,
@@ -245,6 +231,7 @@ export const FuturesContractProvider = ({
             asset.collateral,
             spender,
             disconnectAsync,
+            setConfirmation,
           )
           if (transactionReceipt) {
             queuePendingTransaction({
@@ -353,6 +340,7 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
@@ -456,6 +444,7 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
@@ -609,6 +598,7 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
@@ -717,6 +707,7 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
@@ -793,6 +784,7 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
@@ -885,6 +877,7 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
@@ -964,6 +957,7 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
@@ -1086,6 +1080,7 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          setConfirmation,
         )
         if (transactionReceipt) {
           queuePendingTransaction({
