@@ -67,7 +67,7 @@ export const UserWalletModal = ({
   )
   const [selectedCurrency, setSelectedCurrency] = useState<
     Currency | undefined
-  >(currencies[0])
+  >(currencies[0]) // todo fix it
   const explorerUrl = chain.blockExplorers?.default?.url ?? ''
 
   return showTokenTransferModal ? (
