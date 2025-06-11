@@ -10,8 +10,12 @@ import { formatAddress, handleCopyClipBoard } from '../../utils/string'
 import UserIcon from '../icon/user-icon'
 import ChainIcon from '../icon/chain-icon'
 import { Chain } from '../../model/chain'
+import { Currency } from '../../model/currency'
+import { Balances } from '../../model/balances'
+import { Prices } from '../../model/prices'
 
 import Modal from './modal'
+import { TokenTransferModal } from './token-transfer-modal'
 
 const getTimeAgo = (timestamp: number, cache: Map<string, boolean>) => {
   timestamp = timestamp * 1000
@@ -33,6 +37,10 @@ const getTimeAgo = (timestamp: number, cache: Map<string, boolean>) => {
 export const UserWalletModal = ({
   chain,
   userAddress,
+  currencies,
+  setCurrencies,
+  balances,
+  prices,
   walletIconUrl,
   transactionHistory,
   disconnectAsync,
@@ -41,6 +49,10 @@ export const UserWalletModal = ({
 }: {
   chain: Chain
   userAddress: `0x${string}`
+  currencies: Currency[]
+  setCurrencies: (currencies: Currency[]) => void
+  balances: Balances
+  prices: Prices
   walletIconUrl: string | null
   transactionHistory: Transaction[]
   disconnectAsync: () => Promise<void>
@@ -48,13 +60,30 @@ export const UserWalletModal = ({
   ens: string | null
 }) => {
   const cache = new Map<string, boolean>()
+  const [showTokenTransferModal, setShowTokenTransferModal] = useState(false)
   const [isCopyToast, setIsCopyToast] = useState(false)
   const [tab, setTab] = React.useState<'my-tokens' | 'my-transactions'>(
     'my-transactions',
   )
+  const [selectedCurrency, setSelectedCurrency] = useState<
+    Currency | undefined
+  >(currencies[0])
   const explorerUrl = chain.blockExplorers?.default?.url ?? ''
 
-  return (
+  return showTokenTransferModal ? (
+    <TokenTransferModal
+      chain={chain}
+      explorerUrl={explorerUrl}
+      selectedCurrency={selectedCurrency}
+      setSelectedCurrency={setSelectedCurrency}
+      currencies={currencies}
+      setCurrencies={setCurrencies}
+      balances={balances}
+      prices={prices}
+      onBack={() => setShowTokenTransferModal(false)}
+      onClose={onClose}
+    />
+  ) : (
     <Modal show onClose={onClose}>
       <Toast
         isCopyToast={isCopyToast}
@@ -69,7 +98,7 @@ export const UserWalletModal = ({
 
       <div className="flex flex-col max-h-[460px] sm:max-h-[576px]">
         <h1 className="flex font-bold mb-6 sm:text-xl items-center justify-center w-full">
-          My Transactions
+          My Wallet
         </h1>
         <div className="flex flex-col justify-start items-start gap-6">
           <div className="self-stretch px-4 py-2 sm:py-3 bg-gray-800 rounded-xl flex justify-center items-center gap-[17px] h-full">
@@ -250,7 +279,11 @@ export const UserWalletModal = ({
                 transition={{ duration: 0.2 }}
                 className="flex flex-col w-full"
               >
-                my tokens
+                <div>
+                  <button onClick={() => setShowTokenTransferModal(true)}>
+                    token transfer model open
+                  </button>
+                </div>
               </motion.div>
             ) : tab === 'my-transactions' ? (
               <motion.div

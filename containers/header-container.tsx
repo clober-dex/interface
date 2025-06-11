@@ -22,6 +22,7 @@ import useDropdown from '../hooks/useDropdown'
 import { PageSelector } from '../components/selector/page-selector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
+import { useCurrencyContext } from '../contexts/currency-context'
 
 const TX_NOTIFICATION_BUFFER = 2
 
@@ -89,6 +90,7 @@ const PageButtons = () => {
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const router = useRouter()
   const { selectedChain } = useChainContext()
+  const { currencies, setCurrencies, balances, prices } = useCurrencyContext()
   const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
   const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
@@ -128,6 +130,10 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
         <UserWalletModal
           chain={selectedChain}
           userAddress={address}
+          currencies={currencies}
+          setCurrencies={setCurrencies}
+          balances={balances}
+          prices={prices}
           walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}
           transactionHistory={transactionHistory}
           disconnectAsync={disconnectAsync}
