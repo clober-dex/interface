@@ -28,6 +28,7 @@ export const Default: Story = {
       transaction: undefined,
       netAmountOutUsd: 10000,
       gasUsd: 0.2,
+      executionMilliseconds: 1500,
     },
     isBestQuote: false,
     priceDifference: -1.2,
@@ -37,7 +38,7 @@ export const Default: Story = {
       symbol: 'USDC',
       decimals: 6,
     },
-    aggregatorName: 'Uniswap',
+    aggregatorName: 'Clober',
   },
 }
 
@@ -51,6 +52,7 @@ export const Best: Story = {
       transaction: undefined,
       netAmountOutUsd: 10000,
       gasUsd: 0.2,
+      executionMilliseconds: 1500,
     },
     isBestQuote: true,
     priceDifference: 0,
@@ -60,7 +62,7 @@ export const Best: Story = {
       symbol: 'USDC',
       decimals: 6,
     },
-    aggregatorName: 'Uniswap',
+    aggregatorName: 'Clober',
   },
 }
 
