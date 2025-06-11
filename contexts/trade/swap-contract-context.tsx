@@ -141,6 +141,7 @@ export const SwapContractProvider = ({
           transaction as SdkTransaction,
           disconnectAsync,
           (hash) => {
+            setConfirmation(undefined)
             queuePendingTransaction({
               ...confirmation,
               txHash: hash,
@@ -148,7 +149,6 @@ export const SwapContractProvider = ({
                 aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
               timestamp: currentTimestampInSeconds(),
             })
-            setConfirmation(undefined)
           },
           (receipt) => {
             updatePendingTransaction({
