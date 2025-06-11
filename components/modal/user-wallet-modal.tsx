@@ -29,7 +29,7 @@ const getTimeAgo = (timestamp: number, cache: Map<string, boolean>) => {
   }
 }
 
-export const UserTransactionsModal = ({
+export const UserWalletModal = ({
   chain,
   userAddress,
   walletIconUrl,

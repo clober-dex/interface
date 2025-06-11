@@ -5,18 +5,18 @@ import { mainnet } from 'viem/chains'
 
 import { currentTimestampInSeconds } from '../../utils/date'
 
-import { UserTransactionsModal } from './user-transactions-modal'
+import { UserWalletModal } from './user-wallet-modal'
 
 export default {
-  title: 'Modal/UserTransactionsModal',
-  component: UserTransactionsModal,
+  title: 'Modal/UserWalletModal',
+  component: UserWalletModal,
   parameters: {
     layout: 'centered',
   },
-  render: ({ ...args }) => <UserTransactionsModal {...args} />,
-} as Meta<typeof UserTransactionsModal>
+  render: ({ ...args }) => <UserWalletModal {...args} />,
+} as Meta<typeof UserWalletModal>
 
-type Story = StoryObj<typeof UserTransactionsModal>
+type Story = StoryObj<typeof UserWalletModal>
 
 const now = currentTimestampInSeconds() - 1000000
 

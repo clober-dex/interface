@@ -11,7 +11,7 @@ import MenuSvg from '../components/svg/menu-svg'
 import { PageButton } from '../components/button/page-button'
 import { ConnectButton } from '../components/button/connect-button'
 import { UserButton } from '../components/button/user-button'
-import { UserTransactionsModal } from '../components/modal/user-transactions-modal'
+import { UserWalletModal } from '../components/modal/user-wallet-modal'
 import { useTransactionContext } from '../contexts/transaction-context'
 import ChainIcon from '../components/icon/chain-icon'
 import { textStyles } from '../constants/text-styles'
@@ -123,7 +123,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (
     <>
       {openTransactionHistoryModal && address && connector && (
-        <UserTransactionsModal
+        <UserWalletModal
           chain={selectedChain}
           userAddress={address}
           walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}
