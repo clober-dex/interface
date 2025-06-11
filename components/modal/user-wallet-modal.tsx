@@ -306,6 +306,17 @@ export const UserWalletModal = ({
                 </div>
                 <div className="w-full flex flex-col justify-start items-start gap-2">
                   {currencies
+                    .filter(
+                      (currency) =>
+                        Number(
+                          formatUnits(
+                            balances[currency.address] ?? 0n,
+                            currency.decimals,
+                          ),
+                        ) *
+                          (prices[currency.address] ?? 0) >
+                        0.01,
+                    )
                     .sort((a, b) => {
                       const priceA = prices[a.address] ?? 0
                       const priceB = prices[b.address] ?? 0
