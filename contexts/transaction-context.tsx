@@ -26,8 +26,8 @@ export type Transaction = Confirmation & {
   txHash: `0x${string}`
   type: TransactionType
   timestamp: number
-  blockNumber: number
-  success: boolean
+  blockNumber?: number
+  success?: boolean
 }
 
 type TransactionContext = {
@@ -36,6 +36,7 @@ type TransactionContext = {
   pendingTransactions: Transaction[]
   transactionHistory: Transaction[]
   queuePendingTransaction: (transaction: Transaction) => void
+  updatePendingTransaction: (transaction: Transaction) => void
   latestSubgraphBlockNumber: {
     blockNumber: number
     chainId: CHAIN_IDS
@@ -47,6 +48,7 @@ const Context = React.createContext<TransactionContext>({
   pendingTransactions: [],
   transactionHistory: [],
   queuePendingTransaction: () => {},
+  updatePendingTransaction: () => {},
   latestSubgraphBlockNumber: {
     blockNumber: 0,
     chainId: CHAIN_IDS.MONAD_TESTNET,
@@ -126,6 +128,30 @@ export const TransactionProvider = ({
     [userAddress],
   )
 
+  const updatePendingTransaction = useCallback(
+    (transaction: Transaction) => {
+      if (userAddress) {
+        setPendingTransactions((previous) => {
+          const updatedTransactions = previous.map((prevTx) =>
+            prevTx.txHash === transaction.txHash
+              ? {
+                  ...prevTx,
+                  blockNumber: transaction.blockNumber,
+                  success: transaction.success,
+                }
+              : prevTx,
+          )
+          localStorage.setItem(
+            LOCAL_STORAGE_TRANSACTIONS_KEY(userAddress, 'pending'),
+            JSON.stringify(updatedTransactions),
+          )
+          return updatedTransactions
+        })
+      }
+    },
+    [userAddress],
+  )
+
   const dequeuePendingTransaction = useCallback(
     (txHash: `0x${string}`) => {
       const transaction = pendingTransactions.find(
@@ -177,9 +203,19 @@ export const TransactionProvider = ({
       if (latestSubgraphBlockNumber.chainId !== selectedChain.id) {
         return
       }
+      // subgraph error
+      if (latestSubgraphBlockNumber.blockNumber === 0) {
+        return
+      }
+      // transaction not confirmed yet
       if (
-        latestSubgraphBlockNumber.blockNumber === 0 ||
-        transaction.blockNumber > latestSubgraphBlockNumber.blockNumber
+        transaction.blockNumber === undefined ||
+        transaction.success === undefined
+      ) {
+        return
+      }
+      if (
+        (transaction?.blockNumber ?? 0) > latestSubgraphBlockNumber.blockNumber
       ) {
         return
       }
@@ -201,6 +237,7 @@ export const TransactionProvider = ({
         pendingTransactions,
         transactionHistory,
         queuePendingTransaction,
+        updatePendingTransaction,
         latestSubgraphBlockNumber,
       }}
     >

@@ -244,7 +244,8 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                     (transaction) =>
                       !dismissedTxs.includes(transaction.txHash) &&
                       latestSubgraphBlockNumber.blockNumber > 0 &&
-                      (transaction.blockNumber + TX_NOTIFICATION_BUFFER >=
+                      ((transaction?.blockNumber ?? 0) +
+                        TX_NOTIFICATION_BUFFER >=
                         latestSubgraphBlockNumber.blockNumber ||
                         transaction.isPending),
                   )
