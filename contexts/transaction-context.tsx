@@ -97,7 +97,7 @@ export const TransactionProvider = ({
 
   const queuePendingTransaction = useCallback(
     (transaction: Transaction) => {
-      if (userAddress) {
+      if (userAddress && transaction.chain.id === selectedChain.id) {
         setPendingTransactions((previous) => {
           const updatedTransactions = [...previous, transaction]
           localStorage.setItem(
@@ -125,7 +125,7 @@ export const TransactionProvider = ({
         }
       }
     },
-    [userAddress],
+    [selectedChain.id, userAddress],
   )
 
   const updatePendingTransaction = useCallback(
@@ -234,8 +234,12 @@ export const TransactionProvider = ({
       value={{
         confirmation,
         setConfirmation,
-        pendingTransactions,
-        transactionHistory,
+        pendingTransactions: pendingTransactions.filter(
+          (tx) => tx.chain.id === selectedChain.id,
+        ),
+        transactionHistory: transactionHistory.filter(
+          (tx) => tx.chain.id === selectedChain.id,
+        ),
         queuePendingTransaction,
         updatePendingTransaction,
         latestSubgraphBlockNumber,
