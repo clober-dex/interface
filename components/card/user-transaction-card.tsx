@@ -14,21 +14,21 @@ const UserTransactionCard = ({
   const explorerUrl = transaction.chain?.blockExplorers?.default.url ?? ''
   return (
     <button
-      className="self-stretch pt-2 pb-4 flex flex-col w-full justify-start items-start gap-3 cursor-pointer"
+      className="self-stretch py-2 flex flex-col w-full justify-start items-start gap-3 cursor-pointer"
       onClick={() =>
         explorerUrl &&
         window.open(`${explorerUrl}/tx/${transaction.txHash}`, '_blank')
       }
     >
-      <div className="self-stretch flex justify-between items-center">
-        <div className="justify-center text-white text-sm font-semibold">
+      <div className="self-stretch flex flex-col justify-between items-center gap-0.5">
+        <div className="justify-center text-white text-start text-xs sm:text-sm font-semibold mr-auto text-nowrap overflow-x-scroll">
           {transaction.title}
         </div>
-        <div className="flex justify-start items-center gap-2">
+        <div className="flex justify-start items-center gap-2 ml-auto">
           {transaction.chain ? (
             <div className="flex justify-start items-center gap-1.5">
               <ChainIcon chain={transaction.chain} className="w-4 h-4" />
-              <div className="justify-center text-white text-sm font-semibold">
+              <div className="justify-center text-white text-xs sm:text-sm font-semibold">
                 {transaction.chain.name}
               </div>
             </div>

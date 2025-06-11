@@ -396,7 +396,7 @@ export const UserWalletModal = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="flex flex-col w-full"
+                className="flex flex-col w-full gap-2 sm:gap-3"
               >
                 {transactionHistory
                   .sort((a, b) => b.timestamp - a.timestamp)
