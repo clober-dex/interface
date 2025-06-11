@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useRouter } from 'next/router'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
@@ -90,7 +90,9 @@ const PageButtons = () => {
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const router = useRouter()
   const { selectedChain } = useChainContext()
-  const { currencies, setCurrencies, balances, prices } = useCurrencyContext()
+  const { data: gasPrice } = useGasPrice()
+  const { currencies, setCurrencies, balances, prices, transfer } =
+    useCurrencyContext()
   const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
   const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
@@ -134,10 +136,12 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           setCurrencies={setCurrencies}
           balances={balances}
           prices={prices}
+          gasPrice={gasPrice}
           walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}
           transactionHistory={transactionHistory}
           disconnectAsync={disconnectAsync}
           onClose={() => setOpenTransactionHistoryModal(false)}
+          onTransfer={transfer}
           ens={ens}
         />
       )}

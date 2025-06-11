@@ -1,5 +1,5 @@
 import React from 'react'
-import { isAddress, isAddressEqual, parseUnits } from 'viem'
+import { isAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 
 import { Currency } from '../../model/currency'
 import { Balances } from '../../model/balances'
@@ -9,6 +9,7 @@ import { Prices } from '../../model/prices'
 import { Chain } from '../../model/chain'
 import CurrencySelect from '../selector/currency-select'
 import { ActionButton } from '../button/action-button'
+import { formatUnits } from '../../utils/bigint'
 
 import Modal from './modal'
 
@@ -21,8 +22,10 @@ export const TokenTransferModal = ({
   setCurrencies,
   balances,
   prices,
+  gasPrice,
   onBack,
   onClose,
+  onTransfer,
 }: {
   chain: Chain
   explorerUrl: string
@@ -32,8 +35,14 @@ export const TokenTransferModal = ({
   setCurrencies: (currencies: Currency[]) => void
   balances: Balances
   prices: Prices
+  gasPrice: bigint | undefined
   onBack: () => void
   onClose: () => void
+  onTransfer: (
+    currency: Currency,
+    amount: bigint,
+    recipient: `0x${string}`,
+  ) => Promise<void>
 }) => {
   const [recipient, setRecipient] = React.useState<string>('')
   const [showCurrencySelect, setShowCurrencySelect] =
@@ -103,7 +112,9 @@ export const TokenTransferModal = ({
                   value={amount}
                   onValueChange={setAmount}
                   availableAmount={
-                    selectedCurrency ? balances[selectedCurrency.address] : 0n
+                    selectedCurrency
+                      ? (balances[selectedCurrency.address] ?? 0n)
+                      : 0n
                   }
                   onCurrencyClick={
                     setShowCurrencySelect
@@ -144,7 +155,11 @@ export const TokenTransferModal = ({
                       Up to
                     </div>
                     <div className="text-center justify-start text-white text-sm">
-                      $9.86
+                      $
+                      {(
+                        Number(formatUnits(100_000n * (gasPrice ?? 0n), 18)) *
+                        (prices[zeroAddress] ?? 0)
+                      ).toFixed(4)}
                     </div>
                   </div>
                 </div>

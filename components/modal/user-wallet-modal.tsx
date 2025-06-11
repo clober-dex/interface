@@ -14,7 +14,7 @@ import { Currency } from '../../model/currency'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
 import { CurrencyIcon } from '../icon/currency-icon'
-import { formatTinyNumber } from '../../utils/bignumber'
+import { formatTinyNumber, formatWithCommas } from '../../utils/bignumber'
 import { formatDollarValue, formatUnits } from '../../utils/bigint'
 
 import Modal from './modal'
@@ -44,11 +44,13 @@ export const UserWalletModal = ({
   setCurrencies,
   balances,
   prices,
+  gasPrice,
+  ens,
   walletIconUrl,
   transactionHistory,
   disconnectAsync,
   onClose,
-  ens,
+  onTransfer,
 }: {
   chain: Chain
   userAddress: `0x${string}`
@@ -56,11 +58,17 @@ export const UserWalletModal = ({
   setCurrencies: (currencies: Currency[]) => void
   balances: Balances
   prices: Prices
+  gasPrice: bigint | undefined
+  ens: string | null
   walletIconUrl: string | null
   transactionHistory: Transaction[]
   disconnectAsync: () => Promise<void>
   onClose: () => void
-  ens: string | null
+  onTransfer: (
+    currency: Currency,
+    amount: bigint,
+    recipient: `0x${string}`,
+  ) => Promise<void>
 }) => {
   const cache = new Map<string, boolean>()
   const [showTokenTransferModal, setShowTokenTransferModal] = useState(false)
@@ -92,8 +100,10 @@ export const UserWalletModal = ({
       setCurrencies={setCurrencies}
       balances={balances}
       prices={prices}
+      gasPrice={gasPrice}
       onBack={() => setShowTokenTransferModal(false)}
       onClose={onClose}
+      onTransfer={onTransfer}
     />
   ) : (
     <Modal show onClose={onClose}>
@@ -331,10 +341,12 @@ export const UserWalletModal = ({
                         </div>
                         <div className="flex-1 flex flex-col justify-center items-start gap-1">
                           <div className="text-center justify-start text-white text-sm font-semibold">
-                            {formatUnits(
-                              balances[currency.address] ?? 0n,
-                              currency.decimals,
-                              prices[currency.address] ?? 0,
+                            {formatWithCommas(
+                              formatUnits(
+                                balances[currency.address] ?? 0n,
+                                currency.decimals,
+                                prices[currency.address] ?? 0,
+                              ),
                             )}
                           </div>
                           <div className="text-center justify-start text-[#a9b0bc] text-xs font-semibold">
