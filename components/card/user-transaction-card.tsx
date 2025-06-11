@@ -90,7 +90,7 @@ const UserTransactionCard = ({
                 .map((field, index) => (
                   <div
                     key={`transaction-${transaction.txHash}-in-${index}`}
-                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs rounded-lg"
+                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs sm:text-sm rounded-lg"
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       {field.currency ? (
@@ -136,7 +136,7 @@ const UserTransactionCard = ({
                 .map((field, index) => (
                   <div
                     key={`transaction-${transaction.txHash}-in-${index}`}
-                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs rounded-lg"
+                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs sm:text-sm rounded-lg"
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       {field.currency ? (
@@ -182,7 +182,7 @@ const UserTransactionCard = ({
                 .map((field, index) => (
                   <div
                     key={`transaction-${transaction.txHash}-out-${index}`}
-                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs rounded-lg"
+                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs sm:text-sm rounded-lg"
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       {field.currency ? (
