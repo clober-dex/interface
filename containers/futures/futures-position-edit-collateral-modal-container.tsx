@@ -102,15 +102,9 @@ export const FuturesPositionEditCollateralModalContainer = ({
         disabled: amount === 0n || amount > availableCollateralAmount,
         onClick: async () => {
           if (isWithdrawCollateral) {
-            const hash = await removeCollateral(userPosition.asset, amount)
-            if (hash) {
-              onClose()
-            }
+            await removeCollateral(userPosition.asset, amount, onClose)
           } else {
-            const hash = await addCollateral(userPosition.asset, amount)
-            if (hash) {
-              onClose()
-            }
+            await addCollateral(userPosition.asset, amount, onClose)
           }
           setValue('')
           onClose()

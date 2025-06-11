@@ -109,27 +109,17 @@ export const FuturesPositionAdjustModalContainer = ({
       expectedCollateralAmount={expectedCollateralAmount}
       currentDebtAmount={userPosition?.debtAmount ?? 0n}
       expectedDebtAmount={expectedDebtAmount}
-      //
       loanAssetPrice={prices[userPosition.asset.currency.address] ?? 0}
       collateralPrice={prices[userPosition.asset.collateral.address] ?? 0}
       disableSlider={startLTV !== undefined}
       actionButtonProps={{
         onClick: async () => {
           if (newLTV === 0) {
-            const hash = await repayAll(userPosition)
-            if (hash) {
-              onClose()
-            }
+            await repayAll(userPosition, onClose)
           } else if (ltv < newLTV) {
-            const hash = await borrow(userPosition.asset, 0n, debtAmountDelta)
-            if (hash) {
-              onClose()
-            }
+            await borrow(userPosition.asset, 0n, debtAmountDelta, onClose)
           } else if (ltv > newLTV) {
-            const hash = await repay(userPosition.asset, -debtAmountDelta)
-            if (hash) {
-              onClose()
-            }
+            await repay(userPosition.asset, -debtAmountDelta, onClose)
           }
         },
         disabled:

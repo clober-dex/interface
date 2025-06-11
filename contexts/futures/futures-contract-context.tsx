@@ -35,9 +35,17 @@ type FuturesContractContext = {
     asset: Asset,
     collateralAmount: bigint,
     debtAmount: bigint,
+    onClose: () => void,
   ) => Promise<Hash | undefined>
-  repay: (asset: Asset, debtAmount: bigint) => Promise<Hash | undefined>
-  repayAll: (position: FuturesPosition) => Promise<Hash | undefined>
+  repay: (
+    asset: Asset,
+    debtAmount: bigint,
+    onClose: () => void,
+  ) => Promise<Hash | undefined>
+  repayAll: (
+    position: FuturesPosition,
+    onClose: () => void,
+  ) => Promise<Hash | undefined>
   settle: (asset: Asset) => Promise<Hash | undefined>
   close: (asset: Asset, collateralReceived: bigint) => Promise<Hash | undefined>
   redeem: (
@@ -45,8 +53,16 @@ type FuturesContractContext = {
     amount: bigint,
     collateralReceived: bigint,
   ) => Promise<Hash | undefined>
-  addCollateral: (asset: Asset, amount: bigint) => Promise<Hash | undefined>
-  removeCollateral: (asset: Asset, amount: bigint) => Promise<Hash | undefined>
+  addCollateral: (
+    asset: Asset,
+    amount: bigint,
+    onClose: () => void,
+  ) => Promise<Hash | undefined>
+  removeCollateral: (
+    asset: Asset,
+    amount: bigint,
+    onClose: () => void,
+  ) => Promise<Hash | undefined>
   pendingPositionCurrencies: Currency[]
 }
 
@@ -138,6 +154,7 @@ export const FuturesContractProvider = ({
       asset: Asset,
       collateralAmount: bigint,
       debtAmount: bigint,
+      onClose: () => void,
     ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
@@ -292,6 +309,7 @@ export const FuturesContractProvider = ({
           disconnectAsync,
           (hash) => {
             setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(asset.currency)
             queuePendingTransaction({
               ...confirmation,
@@ -343,7 +361,11 @@ export const FuturesContractProvider = ({
   )
 
   const repay = useCallback(
-    async (asset: Asset, debtAmount: bigint): Promise<Hash | undefined> => {
+    async (
+      asset: Asset,
+      debtAmount: bigint,
+      onClose: () => void,
+    ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
       }
@@ -404,6 +426,7 @@ export const FuturesContractProvider = ({
           disconnectAsync,
           (hash) => {
             setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(asset.currency)
             queuePendingTransaction({
               ...confirmation,
@@ -451,7 +474,10 @@ export const FuturesContractProvider = ({
   )
 
   const repayAll = useCallback(
-    async (userPosition: FuturesPosition): Promise<Hash | undefined> => {
+    async (
+      userPosition: FuturesPosition,
+      onClose: () => void,
+    ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
       }
@@ -566,6 +592,7 @@ export const FuturesContractProvider = ({
           disconnectAsync,
           (hash) => {
             setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(userPosition.asset.currency)
             queuePendingTransaction({
               ...confirmation,
@@ -914,7 +941,11 @@ export const FuturesContractProvider = ({
   )
 
   const addCollateral = useCallback(
-    async (asset: Asset, amount: bigint): Promise<Hash | undefined> => {
+    async (
+      asset: Asset,
+      amount: bigint,
+      onClose: () => void,
+    ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
       }
@@ -960,6 +991,7 @@ export const FuturesContractProvider = ({
           disconnectAsync,
           (hash) => {
             setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(asset.currency)
             queuePendingTransaction({
               ...confirmation,
@@ -1007,7 +1039,11 @@ export const FuturesContractProvider = ({
   )
 
   const removeCollateral = useCallback(
-    async (asset: Asset, amount: bigint): Promise<Hash | undefined> => {
+    async (
+      asset: Asset,
+      amount: bigint,
+      onClose: () => void,
+    ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
       }
@@ -1091,6 +1127,7 @@ export const FuturesContractProvider = ({
           disconnectAsync,
           (hash) => {
             setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(asset.currency)
             queuePendingTransaction({
               ...confirmation,
