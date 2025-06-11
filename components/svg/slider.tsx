@@ -87,8 +87,6 @@ const Slider = ({
     renderedValue = minPosition + ((100 - minPosition) / 100) * renderedValue
   }
 
-  const lastTickMark = tickMarks?.find(({ value }) => value === segments)
-
   return (
     <motion.div
       ref={ref}
@@ -169,17 +167,17 @@ const Slider = ({
                 />
               ) : null
             })}
-            {segments && lastTickMark ? (
-              <TickMark
-                label={lastTickMark.label}
-                width={lastTickMark.width}
-                disabled={disabled ?? false}
-                position={100}
-                key={100}
-              />
-            ) : (
-              <></>
-            )}
+            {/*{segments && lastTickMark ? (*/}
+            {/*  <TickMark*/}
+            {/*    label={lastTickMark.label}*/}
+            {/*    width={lastTickMark.width}*/}
+            {/*    disabled={disabled ?? false}*/}
+            {/*    position={100}*/}
+            {/*    key={100}*/}
+            {/*  />*/}
+            {/*) : (*/}
+            {/*  <></>*/}
+            {/*)}*/}
           </div>
 
           <motion.div
