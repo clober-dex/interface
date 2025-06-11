@@ -13,7 +13,7 @@ const UserTransactionCard = ({
   const explorerUrl = transaction.chain?.blockExplorers?.default.url ?? ''
   return (
     <button
-      className="self-stretch pt-1 pb-2 flex flex-col w-full justify-start items-start gap-3 cursor-pointer"
+      className="self-stretch py-2 flex flex-col w-full justify-start items-start gap-3 cursor-pointer"
       onClick={() =>
         explorerUrl &&
         window.open(`${explorerUrl}/tx/${transaction.txHash}`, '_blank')

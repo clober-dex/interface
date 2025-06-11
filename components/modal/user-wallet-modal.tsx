@@ -402,10 +402,10 @@ export const UserWalletModal = ({
                   .sort((a, b) => b.timestamp - a.timestamp)
                   .map((transaction) => (
                     <div
-                      className="flex flex-col w-full"
+                      className="flex flex-col w-full border-t border-[#2f313d] border-solid"
                       key={transaction.txHash}
                     >
-                      <div className="flex justify-start text-gray-500 text-sm font-bold">
+                      <div className="flex pt-2 justify-start text-gray-500 text-sm font-bold">
                         {getTimeAgo(transaction.timestamp, cache)}
                       </div>
                       <UserTransactionCard
