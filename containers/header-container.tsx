@@ -23,6 +23,8 @@ import { PageSelector } from '../components/selector/page-selector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
 
+const TX_NOTIFICATION_BUFFER = 2
+
 const WrongNetwork = ({
   openChainModal,
 }: { openChainModal: () => void } & any) => {
@@ -232,7 +234,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                     (transaction) =>
                       !dismissedTxs.includes(transaction.txHash) &&
                       latestSubgraphBlockNumber.blockNumber > 0 &&
-                      (transaction.blockNumber >=
+                      (transaction.blockNumber + TX_NOTIFICATION_BUFFER >=
                         latestSubgraphBlockNumber.blockNumber ||
                         transaction.isPending),
                   )
