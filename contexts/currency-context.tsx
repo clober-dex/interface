@@ -27,6 +27,7 @@ import { currentTimestampInSeconds } from '../utils/date'
 import { formatPreciseAmountString } from '../utils/bignumber'
 import { formatUnits } from '../utils/bigint'
 import { buildTransaction, sendTransaction } from '../utils/transaction'
+import { shortAddress } from '../utils/address'
 
 import { Confirmation, useTransactionContext } from './transaction-context'
 import { useChainContext } from './chain-context'
@@ -301,11 +302,11 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           fields: [
             {
               label: 'From',
-              value: userAddress,
+              value: shortAddress(userAddress, 6),
             },
             {
               label: 'To',
-              value: recipient,
+              value: shortAddress(recipient, 6),
             },
             {
               currency: currency,
