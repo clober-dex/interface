@@ -3,6 +3,7 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { useRouter } from 'next/router'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
+import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 
 import { useChainContext } from '../contexts/chain-context'
@@ -20,6 +21,7 @@ import { PAGE_BUTTONS } from '../chain-configs/page-button'
 import useDropdown from '../hooks/useDropdown'
 import { PageSelector } from '../components/selector/page-selector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
+import UserTransactionCard from '../components/card/user-transaction-card'
 
 const WrongNetwork = ({
   openChainModal,
@@ -85,13 +87,16 @@ const PageButtons = () => {
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const router = useRouter()
   const { selectedChain } = useChainContext()
+  const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
+  const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
   const { openChainModal } = useChainModal()
   const { openConnectModal } = useConnectModal()
   const { disconnectAsync } = useDisconnect()
   const [openTransactionHistoryModal, setOpenTransactionHistoryModal] =
     useState(false)
-  const { pendingTransactions, transactionHistory } = useTransactionContext()
+  const { pendingTransactions, transactionHistory, latestSubgraphBlockNumber } =
+    useTransactionContext()
 
   const { data: ens } = useQuery({
     queryKey: ['ens', selectedChain.id, address],
@@ -177,7 +182,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
         </div>
         <div className="flex gap-2 w-auto md:gap-4 ml-auto">
           <div className="flex relative justify-center items-center">
-            <div className="flex items-center justify-center lg:justify-start h-8 w-8 lg:w-auto p-0 lg:px-4 lg:gap-2 rounded bg-gray-800 hover:bg-gray-700 text-white">
+            <div className="flex items-center justify-center lg:justify-start h-8 w-8 lg:w-auto p-0 lg:px-4 lg:gap-2 rounded bg-gray-800 text-white">
               <ChainIcon className="w-4 h-4" chain={selectedChain} />
               <p className={`hidden lg:block ${textStyles.body3Bold}`}>
                 {selectedChain.name}
@@ -185,7 +190,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </div>
           </div>
 
-          <div className="flex items-center flex-row gap-1 sm:gap-3">
+          <div className="relative flex items-center flex-row gap-1 sm:gap-3">
             {status === 'disconnected' || status === 'connecting' ? (
               <ConnectButton openConnectModal={openConnectModal} />
             ) : address && connector && chainId ? (
@@ -211,6 +216,66 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 {status}
               </button>
             )}
+
+            <div className="absolute top-12 sm:top-14 -right-4 w-[300px] sm:w-[368px] z-10 border-[#2f313d] border-solid flex flex-col gap-2">
+              <AnimatePresence initial={false}>
+                {[
+                  ...pendingTransactions.map((transaction) => ({
+                    ...transaction,
+                    isPending: true,
+                  })),
+                  ...transactionHistory.map((transaction) => ({
+                    ...transaction,
+                    isPending: false,
+                  })),
+                ]
+                  .filter(
+                    (transaction) =>
+                      !dismissedTxs.includes(transaction.txHash) &&
+                      latestSubgraphBlockNumber.blockNumber > 0 &&
+                      (transaction.blockNumber >=
+                        latestSubgraphBlockNumber.blockNumber ||
+                        transaction.isPending),
+                  )
+                  // filter unique transactions by txHash
+                  .filter(
+                    (value, index, self) =>
+                      index ===
+                      self.findIndex((t) => t.txHash === value.txHash),
+                  )
+                  .sort((a, b) => b.timestamp - a.timestamp)
+                  .map((transaction) => (
+                    <motion.div
+                      key={transaction.txHash}
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      transition={{ duration: 0.25 }}
+                      onMouseEnter={() => setHoveredTx(transaction.txHash)}
+                      onMouseLeave={() => setHoveredTx(null)}
+                      className="relative flex flex-col w-full bg-[#171b24] px-4 py-1 rounded-2xl border border-white border-opacity-10 hover:border-opacity-20 border-solid cursor-pointer transition-all duration-200"
+                    >
+                      {hoveredTx === transaction.txHash && (
+                        <button
+                          onClick={() =>
+                            setDismissedTxs((prev) => [
+                              ...prev,
+                              transaction.txHash,
+                            ])
+                          }
+                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gray-700 text-white text-xs flex items-center justify-center hover:bg-gray-600 transition duration-200"
+                        >
+                          ×
+                        </button>
+                      )}
+                      <UserTransactionCard
+                        transaction={transaction}
+                        isPending={transaction.isPending}
+                      />
+                    </motion.div>
+                  ))}
+              </AnimatePresence>
+            </div>
           </div>
           <button
             className="w-8 h-8 hover:bg-gray-700 rounded sm:rounded-lg flex items-center justify-center"
