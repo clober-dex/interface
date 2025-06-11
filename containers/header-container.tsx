@@ -232,6 +232,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                   .filter(
                     (transaction) =>
                       !dismissedTxs.includes(transaction.txHash) &&
+                      latestSubgraphBlockNumber.blockNumber > 0 &&
                       (transaction.blockNumber >=
                         latestSubgraphBlockNumber.blockNumber ||
                         transaction.isPending),
