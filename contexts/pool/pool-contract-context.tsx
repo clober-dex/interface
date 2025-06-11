@@ -51,7 +51,8 @@ export const PoolContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { setConfirmation, queuePendingTransaction } = useTransactionContext()
+  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
+    useTransactionContext()
   const { selectedChain } = useChainContext()
   const { allowances, prices } = useCurrencyContext()
 
@@ -103,25 +104,33 @@ export const PoolContractProvider = ({
             fields: [],
           }
           setConfirmation(confirmation)
-          const transactionReceipt = await maxApprove(
+          await maxApprove(
             selectedChain,
             walletClient,
             currency0,
             spender,
             disconnectAsync,
-            setConfirmation,
+            (hash) => {
+              setConfirmation(undefined)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+              isAllowanceChanged = true
+            },
           )
-          if (transactionReceipt) {
-            queuePendingTransaction({
-              ...confirmation,
-              type: 'approve',
-              txHash: transactionReceipt.transactionHash,
-              success: transactionReceipt.status === 'success',
-              blockNumber: Number(transactionReceipt.blockNumber),
-              timestamp: currentTimestampInSeconds(),
-            })
-            isAllowanceChanged = true
-          }
         }
 
         // Max approve for currency1
@@ -137,25 +146,33 @@ export const PoolContractProvider = ({
             fields: [],
           }
           setConfirmation(confirmation)
-          const transactionReceipt = await maxApprove(
+          await maxApprove(
             selectedChain,
             walletClient,
             currency1,
             spender,
             disconnectAsync,
-            setConfirmation,
+            (hash) => {
+              setConfirmation(undefined)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+              isAllowanceChanged = true
+            },
           )
-          if (transactionReceipt) {
-            queuePendingTransaction({
-              ...confirmation,
-              type: 'approve',
-              txHash: transactionReceipt.transactionHash,
-              success: transactionReceipt.status === 'success',
-              blockNumber: Number(transactionReceipt.blockNumber),
-              timestamp: currentTimestampInSeconds(),
-            })
-            isAllowanceChanged = true
-          }
         }
 
         const baseCurrency = isAddressEqual(
@@ -233,23 +250,30 @@ export const PoolContractProvider = ({
         }
         setConfirmation(confirmation)
         if (transaction) {
-          const transactionReceipt = await sendTransaction(
+          await sendTransaction(
             selectedChain,
             walletClient,
             transaction,
             disconnectAsync,
-            setConfirmation,
+            (hash) => {
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'mint',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'mint',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+            },
           )
-          if (transactionReceipt) {
-            queuePendingTransaction({
-              ...confirmation,
-              type: 'mint',
-              txHash: transactionReceipt.transactionHash,
-              success: transactionReceipt.status === 'success',
-              blockNumber: Number(transactionReceipt.blockNumber),
-              timestamp: currentTimestampInSeconds(),
-            })
-          }
         }
       } catch (e) {
         console.error(e)
@@ -273,6 +297,7 @@ export const PoolContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )
@@ -376,23 +401,30 @@ export const PoolContractProvider = ({
         setConfirmation(confirmation)
 
         if (transaction) {
-          const transactionReceipt = await sendTransaction(
+          await sendTransaction(
             selectedChain,
             walletClient,
             transaction,
             disconnectAsync,
-            setConfirmation,
+            (hash) => {
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'burn',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'burn',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+            },
           )
-          if (transactionReceipt) {
-            queuePendingTransaction({
-              ...confirmation,
-              type: 'burn',
-              txHash: transactionReceipt.transactionHash,
-              success: transactionReceipt.status === 'success',
-              blockNumber: Number(transactionReceipt.blockNumber),
-              timestamp: currentTimestampInSeconds(),
-            })
-          }
         }
       } catch (e) {
         console.error(e)
@@ -412,6 +444,7 @@ export const PoolContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )

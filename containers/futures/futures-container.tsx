@@ -247,7 +247,9 @@ export const FuturesContainer = () => {
                     loanAssetPrice={
                       prices[position.asset.currency.address] ?? 0
                     }
-                    isPending={false} // We are using on-chain data
+                    isPending={pendingPositionCurrencies
+                      .map((currency) => getAddress(currency.address))
+                      .includes(getAddress(position.asset.currency.address))}
                     onEditCollateral={() => setEditCollateralPosition(position)}
                     onClickButton={async () => {
                       setStartLTV(undefined)

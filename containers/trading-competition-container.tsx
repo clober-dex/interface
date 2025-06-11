@@ -136,7 +136,8 @@ const Profit = ({
 export const TradingCompetitionContainer = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { setConfirmation, queuePendingTransaction } = useTransactionContext()
+  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
+    useTransactionContext()
   const { disconnectAsync } = useDisconnect()
   const { data: walletClient } = useWalletClient()
   const { address: userAddress } = useAccount()
@@ -263,23 +264,32 @@ export const TradingCompetitionContainer = () => {
         },
         1_000_000n,
       )
-      const transactionReceipt = await sendTransaction(
+      await sendTransaction(
         selectedChain,
         walletClient,
         transaction,
         disconnectAsync,
-        setConfirmation,
+        (hash) => {
+          setConfirmation(undefined)
+          queuePendingTransaction({
+            ...confirmation,
+            txHash: hash,
+            type: 'register',
+            timestamp: currentTimestampInSeconds(),
+          })
+        },
+        (receipt) => {
+          setConfirmation(undefined)
+          updatePendingTransaction({
+            ...confirmation,
+            txHash: receipt.transactionHash,
+            success: receipt.status === 'success',
+            blockNumber: Number(receipt.blockNumber),
+            type: 'register',
+            timestamp: currentTimestampInSeconds(),
+          })
+        },
       )
-      if (transactionReceipt) {
-        queuePendingTransaction({
-          ...confirmation,
-          txHash: transactionReceipt.transactionHash,
-          success: transactionReceipt.status === 'success',
-          blockNumber: Number(transactionReceipt.blockNumber),
-          type: 'register',
-          timestamp: currentTimestampInSeconds(),
-        })
-      }
     } catch (error) {
       console.error('Error registering for trading competition:', error)
     } finally {
@@ -295,6 +305,7 @@ export const TradingCompetitionContainer = () => {
     queuePendingTransaction,
     selectedChain,
     setConfirmation,
+    updatePendingTransaction,
     walletClient,
   ])
 

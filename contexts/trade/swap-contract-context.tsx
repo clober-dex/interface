@@ -38,7 +38,8 @@ export const SwapContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { setConfirmation, queuePendingTransaction } = useTransactionContext()
+  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
+    useTransactionContext()
   const { selectedChain } = useChainContext()
   const { allowances, prices } = useCurrencyContext()
 
@@ -78,25 +79,33 @@ export const SwapContractProvider = ({
             fields: [],
           }
           setConfirmation(confirmation)
-          const transactionReceipt = await maxApprove(
+          await maxApprove(
             selectedChain,
             walletClient,
             inputCurrency,
             spender,
             disconnectAsync,
-            setConfirmation,
+            (hash) => {
+              setConfirmation(undefined)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+              isAllowanceChanged = true
+            },
           )
-          if (transactionReceipt) {
-            queuePendingTransaction({
-              ...confirmation,
-              txHash: transactionReceipt.transactionHash,
-              success: transactionReceipt.status === 'success',
-              blockNumber: Number(transactionReceipt.blockNumber),
-              type: 'approve',
-              timestamp: currentTimestampInSeconds(),
-            })
-            isAllowanceChanged = true
-          }
         }
 
         const confirmation = {
@@ -126,23 +135,33 @@ export const SwapContractProvider = ({
         }
         setConfirmation(confirmation)
 
-        const transactionReceipt = await sendTransaction(
+        await sendTransaction(
           selectedChain,
           walletClient,
           transaction as SdkTransaction,
           disconnectAsync,
-          setConfirmation,
+          (hash) => {
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type:
+                aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
+              timestamp: currentTimestampInSeconds(),
+            })
+            setConfirmation(undefined)
+          },
+          (receipt) => {
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type:
+                aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
         )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-            timestamp: currentTimestampInSeconds(),
-          })
-        }
       } catch (e) {
         await queryClient.invalidateQueries({ queryKey: ['quotes'] })
         console.error(e)
@@ -157,14 +176,15 @@ export const SwapContractProvider = ({
       }
     },
     [
-      walletClient,
-      setConfirmation,
-      selectedChain,
       allowances,
-      prices,
       disconnectAsync,
-      queuePendingTransaction,
+      prices,
       queryClient,
+      queuePendingTransaction,
+      selectedChain,
+      setConfirmation,
+      updatePendingTransaction,
+      walletClient,
     ],
   )
 

@@ -92,7 +92,8 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { address: userAddress } = useAccount()
   const { data: walletClient } = useWalletClient()
   const { selectedChain } = useChainContext()
-  const { setConfirmation, queuePendingTransaction } = useTransactionContext()
+  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
+    useTransactionContext()
 
   const publicClient = useMemo(() => {
     return createPublicClient({
@@ -345,23 +346,32 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         if (!transaction) {
           return
         }
-        const transactionReceipt = await sendTransaction(
+        await sendTransaction(
           selectedChain,
           walletClient,
           transaction as SdkTransaction,
           disconnectAsync,
-          setConfirmation,
+          (hash) => {
+            setConfirmation(undefined)
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'transfer',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          (receipt) => {
+            setConfirmation(undefined)
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'transfer',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
         )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'transfer',
-            timestamp: currentTimestampInSeconds(),
-          })
-        }
       } catch (e) {
         console.error(e)
       } finally {
@@ -379,6 +389,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       userAddress,
       walletClient,
     ],
