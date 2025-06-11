@@ -13,6 +13,9 @@ import { Chain } from '../../model/chain'
 import { Currency } from '../../model/currency'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
+import { CurrencyIcon } from '../icon/currency-icon'
+import { formatTinyNumber } from '../../utils/bignumber'
+import { formatDollarValue, formatUnits } from '../../utils/bigint'
 
 import Modal from './modal'
 import { TokenTransferModal } from './token-transfer-modal'
@@ -67,7 +70,7 @@ export const UserWalletModal = ({
   )
   const [selectedCurrency, setSelectedCurrency] = useState<
     Currency | undefined
-  >(currencies[0]) // todo fix it
+  >(undefined)
   const explorerUrl = chain.blockExplorers?.default?.url ?? ''
 
   return showTokenTransferModal ? (
@@ -279,10 +282,76 @@ export const UserWalletModal = ({
                 transition={{ duration: 0.2 }}
                 className="flex flex-col w-full"
               >
-                <div>
-                  <button onClick={() => setShowTokenTransferModal(true)}>
-                    token transfer model open
-                  </button>
+                <div className="w-full flex flex-col justify-start items-start gap-2">
+                  {currencies
+                    .sort((a, b) => {
+                      const priceA = prices[a.address] ?? 0
+                      const priceB = prices[b.address] ?? 0
+                      return (
+                        Number(
+                          formatUnits(balances[b.address] ?? 0n, b.decimals),
+                        ) *
+                          priceB -
+                        Number(
+                          formatUnits(balances[a.address] ?? 0n, a.decimals),
+                        ) *
+                          priceA
+                      )
+                    })
+                    .map((currency) => (
+                      <div
+                        className="self-stretch px-4 py-3 bg-gray-800 rounded-xl flex justify-start items-center"
+                        key={currency.address}
+                      >
+                        <div className="w-60 flex justify-start items-center gap-3">
+                          <CurrencyIcon chain={chain} currency={currency} />
+                          <div className="text-nowrap flex-1 flex flex-col justify-center items-start gap-0.5">
+                            <div className="w-[200px] max-w-[200px] overflow-x-scroll text-start justify-start text-white text-sm font-semibold">
+                              {currency.symbol}
+                            </div>
+                            <div className="text-center justify-start text-[#a8afbc] text-xs font-semibold">
+                              $
+                              {formatTinyNumber(
+                                prices[currency.address] ?? 0,
+                              )}{' '}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex-1 flex flex-col justify-center items-start gap-1">
+                          <div className="text-center justify-start text-white text-sm font-semibold">
+                            {formatUnits(
+                              balances[currency.address] ?? 0n,
+                              currency.decimals,
+                              prices[currency.address] ?? 0,
+                            )}
+                          </div>
+                          <div className="text-center justify-start text-[#a9b0bc] text-xs font-semibold">
+                            {prices[currency.address] ? (
+                              <div className="text-gray-500 text-xs">
+                                {formatDollarValue(
+                                  balances[currency.address] ?? 0n,
+                                  currency.decimals,
+                                  prices[currency.address] ?? 0,
+                                )}
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setSelectedCurrency(currency)
+                            setShowTokenTransferModal(true)
+                          }}
+                          className="px-3 py-2 bg-blue-400/20 rounded-lg flex justify-center items-center gap-2.5"
+                        >
+                          <div className="justify-start text-blue-300 text-[13px] font-semibold">
+                            Send
+                          </div>
+                        </button>
+                      </div>
+                    ))}
                 </div>
               </motion.div>
             ) : tab === 'my-transactions' ? (
