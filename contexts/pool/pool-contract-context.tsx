@@ -256,6 +256,7 @@ export const PoolContractProvider = ({
             transaction,
             disconnectAsync,
             (hash) => {
+              setConfirmation(undefined)
               queuePendingTransaction({
                 ...confirmation,
                 txHash: hash,
@@ -407,6 +408,7 @@ export const PoolContractProvider = ({
             transaction,
             disconnectAsync,
             (hash) => {
+              setConfirmation(undefined)
               queuePendingTransaction({
                 ...confirmation,
                 txHash: hash,
