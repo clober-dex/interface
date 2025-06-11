@@ -321,17 +321,30 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         }
         setConfirmation(confirmation)
 
-        const transaction = await buildTransaction(
-          publicClient,
-          {
+        let transaction = undefined
+        if (!isAddressEqual(currency.address, zeroAddress)) {
+          transaction = await buildTransaction(
+            publicClient,
+            {
+              chain: selectedChain,
+              address: currency.address,
+              abi: erc20Abi,
+              functionName: 'transfer',
+              args: [recipient, amount],
+            },
+            100_000n,
+          )
+        } else {
+          transaction = {
             chain: selectedChain,
-            address: currency.address,
-            abi: erc20Abi,
-            functionName: 'transfer',
-            args: [recipient, amount],
-          },
-          100_000n,
-        )
+            to: recipient,
+            from: userAddress,
+            value: amount,
+          }
+        }
+        if (!transaction) {
+          return
+        }
         const transactionReceipt = await sendTransaction(
           selectedChain,
           walletClient,
