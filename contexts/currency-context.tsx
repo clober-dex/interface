@@ -310,7 +310,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
             {
               currency: currency,
               label: currency.symbol,
-              direction: 'out',
+              direction: 'in',
               value: formatPreciseAmountString(
                 formatUnits(amount, currency.decimals),
                 prices[getAddress(currency.address)] ?? 0,

@@ -1,5 +1,11 @@
 import React from 'react'
-import { isAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import {
+  getAddress,
+  isAddress,
+  isAddressEqual,
+  parseUnits,
+  zeroAddress,
+} from 'viem'
 
 import { Currency } from '../../model/currency'
 import { Balances } from '../../model/balances'
@@ -188,8 +194,14 @@ export const TokenTransferModal = ({
                             ? 'Insufficient Balance'
                             : 'Confirm'
                 }
-                onClick={() => {
-                  console.log('Send token action clicked')
+                onClick={async () => {
+                  if (selectedCurrency) {
+                    await onTransfer(
+                      selectedCurrency,
+                      parseUnits(amount, selectedCurrency.decimals),
+                      getAddress(recipient.trim() as `0x${string}`),
+                    )
+                  }
                 }}
               />
             </div>
