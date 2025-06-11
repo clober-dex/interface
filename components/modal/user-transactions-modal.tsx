@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { Transaction } from '../../contexts/transaction-context'
 import UserTransactionCard from '../card/user-transaction-card'
@@ -33,7 +33,6 @@ export const UserTransactionsModal = ({
   chain,
   userAddress,
   walletIconUrl,
-  pendingTransactions,
   transactionHistory,
   disconnectAsync,
   onClose,
@@ -42,7 +41,6 @@ export const UserTransactionsModal = ({
   chain: Chain
   userAddress: `0x${string}`
   walletIconUrl: string | null
-  pendingTransactions: Transaction[]
   transactionHistory: Transaction[]
   disconnectAsync: () => Promise<void>
   onClose: () => void
@@ -50,14 +48,10 @@ export const UserTransactionsModal = ({
 }) => {
   const cache = new Map<string, boolean>()
   const [isCopyToast, setIsCopyToast] = useState(false)
-  const [tab, setTab] = React.useState<'pending' | 'history'>('history')
+  const [tab, setTab] = React.useState<'my-tokens' | 'my-transactions'>(
+    'my-transactions',
+  )
   const explorerUrl = chain.blockExplorers?.default?.url ?? ''
-
-  useEffect(() => {
-    if (pendingTransactions.length > 0) {
-      setTab('pending')
-    }
-  }, [pendingTransactions.length])
 
   return (
     <Modal show onClose={onClose}>
@@ -221,23 +215,23 @@ export const UserTransactionsModal = ({
           </div>
           <div className="flex items-center justify-center w-full gap-12">
             <button
-              onClick={() => setTab('pending')}
-              disabled={tab === 'pending'}
+              onClick={() => setTab('my-tokens')}
+              disabled={tab === 'my-tokens'}
               className="flex flex-row gap-2 text-sm sm:text-base text-gray-500 disabled:text-white font-semibold"
             >
-              Pending ({pendingTransactions.length})
+              My Tokens
             </button>
             <button
-              onClick={() => setTab('history')}
-              disabled={tab === 'history'}
+              onClick={() => setTab('my-transactions')}
+              disabled={tab === 'my-transactions'}
               className="flex flex-row gap-2 text-sm sm:text-base text-gray-500 disabled:text-white font-semibold"
             >
-              History ({transactionHistory.length})
+              My Transactions
             </button>
           </div>
         </div>
         <div className="pt-3 border-t border-[#2f313d] border-solid flex flex-col w-full overflow-y-scroll">
-          {(tab === 'history' ? transactionHistory : pendingTransactions)
+          {transactionHistory
             .sort((a, b) => b.timestamp - a.timestamp)
             .map((transaction) => (
               <div className="flex flex-col w-full" key={transaction.txHash}>
@@ -247,7 +241,7 @@ export const UserTransactionsModal = ({
                 <UserTransactionCard
                   transaction={transaction}
                   key={transaction.txHash}
-                  isPending={tab === 'pending'}
+                  isPending={false}
                 />
               </div>
             ))}

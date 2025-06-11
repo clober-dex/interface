@@ -127,7 +127,6 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           chain={selectedChain}
           userAddress={address}
           walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}
-          pendingTransactions={pendingTransactions}
           transactionHistory={transactionHistory}
           disconnectAsync={disconnectAsync}
           onClose={() => setOpenTransactionHistoryModal(false)}
