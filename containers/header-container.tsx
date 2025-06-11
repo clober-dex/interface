@@ -177,7 +177,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
         </div>
         <div className="flex gap-2 w-auto md:gap-4 ml-auto">
           <div className="flex relative justify-center items-center">
-            <div className="flex items-center justify-center lg:justify-start h-8 w-8 lg:w-auto p-0 lg:px-4 lg:gap-2 rounded bg-gray-800 hover:bg-gray-700 text-white">
+            <div className="flex items-center justify-center lg:justify-start h-8 w-8 lg:w-auto p-0 lg:px-4 lg:gap-2 rounded bg-gray-800 text-white">
               <ChainIcon className="w-4 h-4" chain={selectedChain} />
               <p className={`hidden lg:block ${textStyles.body3Bold}`}>
                 {selectedChain.name}
