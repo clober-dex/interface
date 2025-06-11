@@ -25,5 +25,6 @@ export interface Aggregator {
     gasLimit: bigint
     aggregator: Aggregator
     transaction: Transaction | undefined
+    executionMilliseconds: number
   }>
 }

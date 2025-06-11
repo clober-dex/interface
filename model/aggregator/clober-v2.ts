@@ -72,7 +72,9 @@ export class CloberV2Aggregator implements Aggregator {
     gasLimit: bigint
     aggregator: Aggregator
     transaction: Transaction | undefined
+    executionMilliseconds: number
   }> {
+    const start = performance.now()
     if (
       (isAddressEqual(inputCurrency.address, this.nativeTokenAddress) &&
         isAddressEqual(outputCurrency.address, this.weth)) ||
@@ -93,6 +95,7 @@ export class CloberV2Aggregator implements Aggregator {
           gasLimit: this.wrapOrUnWrapGasLimit,
           aggregator: this,
           transaction,
+          executionMilliseconds: performance.now() - start,
         }
       }
       return {
@@ -100,6 +103,7 @@ export class CloberV2Aggregator implements Aggregator {
         gasLimit: this.wrapOrUnWrapGasLimit,
         aggregator: this,
         transaction: undefined,
+        executionMilliseconds: performance.now() - start,
       }
     }
 
@@ -118,6 +122,7 @@ export class CloberV2Aggregator implements Aggregator {
           gasLimit: transaction.gas,
           aggregator: this,
           transaction,
+          executionMilliseconds: performance.now() - start,
         }
       } else {
         const { takenAmount } = await getExpectedOutput({
@@ -135,6 +140,7 @@ export class CloberV2Aggregator implements Aggregator {
           gasLimit: this.marketOrderGasLimit,
           aggregator: this,
           transaction: undefined,
+          executionMilliseconds: performance.now() - start,
         }
       }
     } catch {
@@ -143,6 +149,7 @@ export class CloberV2Aggregator implements Aggregator {
         gasLimit: this.marketOrderGasLimit,
         aggregator: this,
         transaction: undefined,
+        executionMilliseconds: performance.now() - start,
       }
     }
   }

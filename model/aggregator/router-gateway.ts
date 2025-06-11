@@ -43,7 +43,9 @@ export class AggregatorRouterGateway implements Aggregator {
     gasLimit: bigint
     aggregator: Aggregator
     transaction: Transaction | undefined
+    executionMilliseconds: number
   }> {
+    const start = performance.now()
     const { amountOut, transaction } = await this.aggregator.quote(
       inputCurrency,
       amountIn,
@@ -93,6 +95,7 @@ export class AggregatorRouterGateway implements Aggregator {
           from: transaction.from,
           gasPrice: transaction.gasPrice,
         },
+        executionMilliseconds: performance.now() - start,
       }
     }
     return {
@@ -100,6 +103,7 @@ export class AggregatorRouterGateway implements Aggregator {
       gasLimit: 0n,
       aggregator: this,
       transaction: undefined,
+      executionMilliseconds: performance.now() - start,
     }
   }
 }

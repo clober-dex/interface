@@ -51,7 +51,9 @@ export class MonorailAggregator implements Aggregator {
     gasLimit: bigint
     aggregator: Aggregator
     transaction: Transaction | undefined
+    executionMilliseconds: number
   }> {
+    const start = performance.now()
     slippageLimitPercent = this.calculateSlippage(slippageLimitPercent)
     let params = {
       amount: formatUnits(amountIn, inputCurrency.decimals),
@@ -99,6 +101,7 @@ export class MonorailAggregator implements Aggregator {
         gasPrice: gasPrice,
         from: userAddress,
       },
+      executionMilliseconds: performance.now() - start,
     }
   }
 }
