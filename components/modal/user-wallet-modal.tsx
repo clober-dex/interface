@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { Transaction } from '../../contexts/transaction-context'
@@ -72,6 +72,15 @@ export const UserWalletModal = ({
     Currency | undefined
   >(undefined)
   const explorerUrl = chain.blockExplorers?.default?.url ?? ''
+  const portfolioUSD = useMemo(() => {
+    return currencies.reduce((total, currency) => {
+      const balance = Number(
+        formatUnits(balances[currency.address] ?? 0n, currency.decimals),
+      )
+      const price = prices[currency.address] ?? 0
+      return total + balance * price
+    }, 0)
+  }, [balances, currencies, prices])
 
   return showTokenTransferModal ? (
     <TokenTransferModal
@@ -282,6 +291,9 @@ export const UserWalletModal = ({
                 transition={{ duration: 0.2 }}
                 className="flex flex-col w-full"
               >
+                <div className="text-center justify-start text-white text-[28px] font-semibold mb-6">
+                  ${formatTinyNumber(portfolioUSD)}
+                </div>
                 <div className="w-full flex flex-col justify-start items-start gap-2">
                   {currencies
                     .sort((a, b) => {
