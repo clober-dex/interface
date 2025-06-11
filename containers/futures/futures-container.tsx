@@ -32,6 +32,7 @@ export const FuturesContainer = () => {
   const [tab, setTab] = React.useState<'my-cdp' | 'redeem' | 'mint'>(
     pendingPositionCurrencies.length > 0 ? 'my-cdp' : 'mint',
   )
+  const [startLTV, setStartLTV] = useState<number | undefined>(undefined)
 
   useEffect(() => {
     if (pendingPositionCurrencies.length > 0) {
@@ -249,6 +250,7 @@ export const FuturesContainer = () => {
                     isPending={false} // We are using on-chain data
                     onEditCollateral={() => setEditCollateralPosition(position)}
                     onClickButton={async () => {
+                      setStartLTV(undefined)
                       if (position.asset.expiration < now) {
                         if (position.asset.settlePrice > 0) {
                           const collateralReceived =
@@ -266,6 +268,10 @@ export const FuturesContainer = () => {
                       } else {
                         setAdjustPosition(position)
                       }
+                    }}
+                    onCloseButton={() => {
+                      setStartLTV(0)
+                      setAdjustPosition(position)
                     }}
                   />
                 ))}
@@ -286,6 +292,7 @@ export const FuturesContainer = () => {
         <FuturesPositionAdjustModalContainer
           userPosition={adjustPosition}
           onClose={() => setAdjustPosition(null)}
+          startLTV={startLTV}
         />
       ) : (
         <></>

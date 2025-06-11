@@ -50,6 +50,7 @@ export const Default: Story = {
     expectedDebtAmount: 20000000000000000000n,
     loanAssetPrice: 145.12,
     collateralPrice: 1.0001,
+    disableSlider: false,
     actionButtonProps: {
       disabled: false,
       onClick: () => {},

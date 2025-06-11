@@ -23,6 +23,7 @@ export const FuturesPositionAdjustModal = ({
   loanAssetPrice,
   collateralPrice,
   actionButtonProps,
+  disableSlider = false,
 }: {
   asset: Asset
   onClose: () => void
@@ -36,11 +37,14 @@ export const FuturesPositionAdjustModal = ({
   loanAssetPrice: number
   collateralPrice: number
   actionButtonProps: ActionButtonProps
+  disableSlider?: boolean
 }) => {
   const maxLTV = (Number(asset.maxLTV) * 100) / Number(asset.ltvPrecision)
   return (
     <Modal show onClose={() => {}} onButtonClick={onClose}>
-      <h1 className="flex font-bold text-xl mb-2">Adjust Position</h1>
+      <h1 className="flex font-bold text-xl mb-2">
+        {disableSlider ? 'Close Position' : 'Adjust Position'}
+      </h1>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col bg-[#171b24]">
           <div className="flex justify-between flex-col relative rounded-lg sm:py-10">
@@ -69,7 +73,7 @@ export const FuturesPositionAdjustModal = ({
                   ],
                 ]}
                 onValueChange={
-                  (value) => setNewLTV(value) // value is 0-based
+                  disableSlider ? () => {} : (value) => setNewLTV(value) // value is 0-based
                 }
                 renderControl={() => (
                   <div className="absolute -top-3 -left-7 flex flex-col items-center gap-2 shrink-0">

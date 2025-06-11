@@ -18,6 +18,7 @@ export const FuturesPositionCard = ({
   loanAssetPrice,
   onEditCollateral,
   onClickButton,
+  onCloseButton,
   isPending,
 }: {
   chain: Chain
@@ -25,6 +26,7 @@ export const FuturesPositionCard = ({
   loanAssetPrice: number
   onEditCollateral: () => void
   onClickButton: () => void
+  onCloseButton: () => void
   isPending: boolean
 }) => {
   const now = currentTimestampInSeconds()
@@ -140,19 +142,41 @@ export const FuturesPositionCard = ({
           </div>
         </div>
         <div className="flex items-start gap-3 self-stretch">
-          <button
-            className="w-full flex items-center font-bold justify-center rounded-xl bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-800 disabled:text-gray-500 px-3 py-2 text-sm"
-            onClick={onClickButton}
-            disabled={isPending}
-          >
-            {isPending
-              ? 'Pending Indexing'
-              : position.asset.expiration < now
-                ? position.asset.settlePrice === 0
-                  ? 'Settle'
-                  : 'Close'
-                : 'Adjust'}
-          </button>
+          {isPending ? (
+            <button
+              className="w-full flex items-center font-bold justify-center rounded-xl bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-800 disabled:text-gray-500 px-3 py-2 text-sm"
+              onClick={onClickButton}
+              disabled={true}
+            >
+              Pending Indexing
+            </button>
+          ) : position.asset.expiration < now ? (
+            <button
+              className="w-full flex items-center font-bold justify-center rounded-xl bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-800 disabled:text-gray-500 px-3 py-2 text-sm"
+              onClick={onClickButton}
+              disabled={false}
+            >
+              {position.asset.settlePrice === 0 ? 'Settle' : 'Close'}
+            </button>
+          ) : (
+            <>
+              <button
+                className="w-full flex items-center font-bold justify-center rounded-xl bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-800 disabled:text-gray-500 px-3 py-2 text-sm"
+                onClick={onClickButton}
+                disabled={false}
+              >
+                Adjust
+              </button>
+
+              <button
+                className="w-full flex items-center font-bold justify-center rounded-xl bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-800 disabled:text-gray-500 px-3 py-2 text-sm"
+                onClick={onCloseButton}
+                disabled={false}
+              >
+                Close
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
