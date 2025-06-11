@@ -129,12 +129,14 @@ export const OpenOrderCard = ({
           <div className="absolute left-0 h-full bg-green-500 w-1 rounded-l-3xl" />
         )}
 
-        <div className="justify-start items-center gap-6 flex">
-          <div className="w-[200px] max-w-[200px] text-sm font-semibold flex flex-row items-center gap-1.5 text-nowrap">
-            {openOrder.inputCurrency.symbol}{' '}
-            <p className="text-sm text-gray-500">&#x2192;</p>
-            {'  '}
-            {openOrder.outputCurrency.symbol}
+        <div className="justify-start items-center gap-6 flex text-nowrap">
+          <div className="flex flex-row gap-1.5 text-sm font-semibold">
+            <div className="flex flex-row items-center gap-1.5 w-[180px] max-w-[180px] overflow-x-scroll">
+              {openOrder.inputCurrency.symbol}{' '}
+              <p className="text-sm text-gray-500">&#x2192;</p>
+              {'  '}
+              {openOrder.outputCurrency.symbol}
+            </div>
             <button
               onClick={() =>
                 router.push(
@@ -158,7 +160,7 @@ export const OpenOrderCard = ({
             )}
           </div>
 
-          <div className="w-[180px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
+          <div className="w-[180px] max-w-[180px] overflow-x-scroll h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             <p className="flex gap-1 text-white">
               {formatWithCommas(
                 formatSignificantString(openOrder.amount.value),
@@ -173,7 +175,7 @@ export const OpenOrderCard = ({
             <p className="text-white">{filledRatio.toFixed(2)}%</p>
           </div>
 
-          <div className="w-[200px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
+          <div className="w-[180px] max-w-[180px] overflow-x-scroll h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
             <p className="flex gap-1 text-white">
               {formatWithCommas(
                 formatSignificantString(openOrder.claimable.value),
