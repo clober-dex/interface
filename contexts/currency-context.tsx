@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAccount } from 'wagmi'
-import { useQuery } from '@tanstack/react-query'
+import { useAccount, useDisconnect, useWalletClient } from 'wagmi'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createPublicClient,
+  erc20Abi,
   getAddress,
   http,
   isAddress,
@@ -10,6 +11,7 @@ import {
   zeroAddress,
 } from 'viem'
 import { getContractAddresses } from '@clober/v2-sdk'
+import { Transaction as SdkTransaction } from '@clober/v2-sdk/dist/types/types/transaction'
 
 import { Currency } from '../model/currency'
 import { Prices } from '../model/prices'
@@ -21,7 +23,13 @@ import { Allowances } from '../model/allowances'
 import { deduplicateCurrencies } from '../utils/currency'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { fetchWhitelistCurrenciesFromGithub } from '../apis/token'
+import { currentTimestampInSeconds } from '../utils/date'
+import { formatPreciseAmountString } from '../utils/bignumber'
+import { formatUnits } from '../utils/bigint'
+import { buildTransaction, sendTransaction } from '../utils/transaction'
+import { shortAddress } from '../utils/address'
 
+import { Confirmation, useTransactionContext } from './transaction-context'
 import { useChainContext } from './chain-context'
 
 type CurrencyContext = {
@@ -32,6 +40,11 @@ type CurrencyContext = {
   balances: Balances
   allowances: Allowances
   isOpenOrderApproved: boolean
+  transfer: (
+    currency: Currency,
+    amount: bigint,
+    recipient: `0x${string}`,
+  ) => Promise<void>
 }
 
 const Context = React.createContext<CurrencyContext>({
@@ -42,6 +55,7 @@ const Context = React.createContext<CurrencyContext>({
   balances: {},
   allowances: {},
   isOpenOrderApproved: false,
+  transfer: () => Promise.resolve(),
 })
 
 const _abi = [
@@ -72,8 +86,15 @@ const _abi = [
 ] as const
 
 export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
+  const queryClient = useQueryClient()
+  const { disconnectAsync } = useDisconnect()
+
   const { address: userAddress } = useAccount()
+  const { data: walletClient } = useWalletClient()
   const { selectedChain } = useChainContext()
+  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
+    useTransactionContext()
+
   const publicClient = useMemo(() => {
     return createPublicClient({
       chain: selectedChain,
@@ -268,6 +289,112 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     data: { allowances: Allowances; isOpenOrderApproved: boolean }
   }
 
+  const transfer = useCallback(
+    async (currency: Currency, amount: bigint, recipient: `0x${string}`) => {
+      if (!walletClient || !prices || !userAddress) {
+        return
+      }
+
+      try {
+        const confirmation = {
+          title: 'Transfer',
+          body: 'Please confirm in your wallet.',
+          chain: selectedChain,
+          fields: [
+            {
+              label: 'From',
+              value: shortAddress(userAddress, 6),
+            },
+            {
+              label: 'To',
+              value: shortAddress(recipient, 6),
+            },
+            {
+              currency: currency,
+              label: currency.symbol,
+              direction: 'in',
+              value: formatPreciseAmountString(
+                formatUnits(amount, currency.decimals),
+                prices[getAddress(currency.address)] ?? 0,
+              ),
+            },
+          ] as Confirmation['fields'],
+        }
+        setConfirmation(confirmation)
+
+        let transaction = undefined
+        if (!isAddressEqual(currency.address, zeroAddress)) {
+          transaction = await buildTransaction(
+            publicClient,
+            {
+              chain: selectedChain,
+              address: currency.address,
+              abi: erc20Abi,
+              functionName: 'transfer',
+              args: [recipient, amount],
+            },
+            100_000n,
+          )
+        } else {
+          transaction = {
+            chain: selectedChain,
+            to: recipient,
+            from: userAddress,
+            value: amount,
+          }
+        }
+        if (!transaction) {
+          return
+        }
+        await sendTransaction(
+          selectedChain,
+          walletClient,
+          transaction as SdkTransaction,
+          disconnectAsync,
+          (hash) => {
+            setConfirmation(undefined)
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'transfer',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          (receipt) => {
+            setConfirmation(undefined)
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'transfer',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
+        )
+      } catch (e) {
+        console.error(e)
+      } finally {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['balances'] }),
+        ])
+        setConfirmation(undefined)
+      }
+    },
+    [
+      disconnectAsync,
+      prices,
+      publicClient,
+      queryClient,
+      queuePendingTransaction,
+      selectedChain,
+      setConfirmation,
+      updatePendingTransaction,
+      userAddress,
+      walletClient,
+    ],
+  )
+
   return (
     <Context.Provider
       value={{
@@ -278,6 +405,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         isOpenOrderApproved: data?.isOpenOrderApproved ?? false,
         currencies,
         setCurrencies,
+        transfer,
       }}
     >
       {children}

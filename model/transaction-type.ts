@@ -13,8 +13,10 @@ export type TransactionType =
   | 'remove-collateral' // remove collateral from a futures asset
   | 'make' // make a limit order
   | 'take' // take a limit order
+  | 'open' // open a book
   | 'limit' // limit order
   | 'cancel' // cancel limit order(s)
   | 'claim' // claim limit order(s)
   | 'market' // market order
   | 'swap' // swap from aggregator
+  | 'transfer' // transfer currency

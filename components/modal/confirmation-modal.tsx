@@ -102,7 +102,11 @@ const ConfirmationModal = ({
                   )}
                   <div>{field.label}</div>
                 </div>
-                <div>{formatWithCommas(field.value)}</div>
+                <div>
+                  {/^\d{1,3}(,\d{3})*(\.\d+)?$|^\d+(\.\d+)?$/.test(field.value)
+                    ? formatWithCommas(field.value)
+                    : field.value}
+                </div>
               </div>
             </div>
           ))}

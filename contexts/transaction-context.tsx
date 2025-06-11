@@ -6,7 +6,6 @@ import { CHAIN_IDS, getSubgraphBlockNumber } from '@clober/v2-sdk'
 import ConfirmationModal from '../components/modal/confirmation-modal'
 import { Currency, LpCurrency } from '../model/currency'
 import { Chain } from '../model/chain'
-import { currentTimestampInSeconds } from '../utils/date'
 import { TransactionType } from '../model/transaction-type'
 
 import { useChainContext } from './chain-context'
@@ -27,8 +26,8 @@ export type Transaction = Confirmation & {
   txHash: `0x${string}`
   type: TransactionType
   timestamp: number
-  blockNumber: number
-  success: boolean
+  blockNumber?: number
+  success?: boolean
 }
 
 type TransactionContext = {
@@ -37,7 +36,7 @@ type TransactionContext = {
   pendingTransactions: Transaction[]
   transactionHistory: Transaction[]
   queuePendingTransaction: (transaction: Transaction) => void
-  dequeuePendingTransaction: (txHash: `0x${string}`) => void
+  updatePendingTransaction: (transaction: Transaction) => void
   latestSubgraphBlockNumber: {
     blockNumber: number
     chainId: CHAIN_IDS
@@ -49,7 +48,7 @@ const Context = React.createContext<TransactionContext>({
   pendingTransactions: [],
   transactionHistory: [],
   queuePendingTransaction: () => {},
-  dequeuePendingTransaction: () => {},
+  updatePendingTransaction: () => {},
   latestSubgraphBlockNumber: {
     blockNumber: 0,
     chainId: CHAIN_IDS.MONAD_TESTNET,
@@ -98,7 +97,7 @@ export const TransactionProvider = ({
 
   const queuePendingTransaction = useCallback(
     (transaction: Transaction) => {
-      if (userAddress) {
+      if (userAddress && transaction.chain.id === selectedChain.id) {
         setPendingTransactions((previous) => {
           const updatedTransactions = [...previous, transaction]
           localStorage.setItem(
@@ -124,6 +123,30 @@ export const TransactionProvider = ({
         } catch (e) {
           console.error('Error sending transaction event', e)
         }
+      }
+    },
+    [selectedChain.id, userAddress],
+  )
+
+  const updatePendingTransaction = useCallback(
+    (transaction: Transaction) => {
+      if (userAddress) {
+        setPendingTransactions((previous) => {
+          const updatedTransactions = previous.map((prevTx) =>
+            prevTx.txHash === transaction.txHash
+              ? {
+                  ...prevTx,
+                  blockNumber: transaction.blockNumber,
+                  success: transaction.success,
+                }
+              : prevTx,
+          )
+          localStorage.setItem(
+            LOCAL_STORAGE_TRANSACTIONS_KEY(userAddress, 'pending'),
+            JSON.stringify(updatedTransactions),
+          )
+          return updatedTransactions
+        })
       }
     },
     [userAddress],
@@ -159,20 +182,6 @@ export const TransactionProvider = ({
     [pendingTransactions, userAddress],
   )
 
-  useEffect(() => {
-    const now = currentTimestampInSeconds()
-    pendingTransactions.forEach((transaction) => {
-      if (transaction.type === 'approve' || transaction.type === 'register') {
-        dequeuePendingTransaction(transaction.txHash)
-        return
-      }
-      // 30 minutes
-      if (now - transaction.timestamp > 60 * 30) {
-        dequeuePendingTransaction(transaction.txHash)
-      }
-    })
-  }, [dequeuePendingTransaction, pendingTransactions])
-
   const { data: latestSubgraphBlockNumber } = useQuery({
     queryKey: ['latest-subgraph-block-number', selectedChain.id],
     queryFn: async () => {
@@ -189,15 +198,50 @@ export const TransactionProvider = ({
     refetchIntervalInBackground: true,
   })
 
+  useEffect(() => {
+    pendingTransactions.forEach((transaction) => {
+      if (latestSubgraphBlockNumber.chainId !== selectedChain.id) {
+        return
+      }
+      // subgraph error
+      if (latestSubgraphBlockNumber.blockNumber === 0) {
+        return
+      }
+      // transaction not confirmed yet
+      if (
+        transaction.blockNumber === undefined ||
+        transaction.success === undefined
+      ) {
+        return
+      }
+      if (
+        (transaction?.blockNumber ?? 0) > latestSubgraphBlockNumber.blockNumber
+      ) {
+        return
+      }
+
+      dequeuePendingTransaction(transaction.txHash)
+    })
+  }, [
+    dequeuePendingTransaction,
+    latestSubgraphBlockNumber,
+    pendingTransactions,
+    selectedChain.id,
+  ])
+
   return (
     <Context.Provider
       value={{
         confirmation,
         setConfirmation,
-        pendingTransactions,
-        transactionHistory,
+        pendingTransactions: pendingTransactions.filter(
+          (tx) => tx.chain.id === selectedChain.id,
+        ),
+        transactionHistory: transactionHistory.filter(
+          (tx) => tx.chain.id === selectedChain.id,
+        ),
         queuePendingTransaction,
-        dequeuePendingTransaction,
+        updatePendingTransaction,
         latestSubgraphBlockNumber,
       }}
     >

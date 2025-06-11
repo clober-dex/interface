@@ -15,11 +15,21 @@ import { Transaction } from '@clober/v2-sdk'
 import { Chain } from '../model/chain'
 import { CHAIN_CONFIG } from '../chain-configs'
 
+export async function waitTransaction(chain: Chain, hash: Hash): Promise<void> {
+  const publicClient = createPublicClient({
+    chain,
+    transport: http(CHAIN_CONFIG.RPC_URL),
+  })
+  await publicClient.waitForTransactionReceipt({ hash })
+}
+
 export async function sendTransaction(
   chain: Chain,
   walletClient: WalletClient,
   transaction: Transaction,
   disconnectAsync: () => Promise<void>,
+  onUserSigned: (hash: `0x${string}`) => void,
+  onTxConfirmation: (receipt: TransactionReceipt) => void,
 ): Promise<TransactionReceipt | undefined> {
   if (!walletClient) {
     return
@@ -40,19 +50,14 @@ export async function sendTransaction(
       account: walletClient.account!,
       chain,
     })
-    return publicClient.waitForTransactionReceipt({ hash })
+    onUserSigned(hash)
+    const receipt = await publicClient.waitForTransactionReceipt({ hash })
+    onTxConfirmation(receipt)
+    return receipt
   } catch (e) {
     console.error('Failed to send transaction', e)
     throw e
   }
-}
-
-export async function waitTransaction(chain: Chain, hash: Hash): Promise<void> {
-  const publicClient = createPublicClient({
-    chain,
-    transport: http(CHAIN_CONFIG.RPC_URL),
-  })
-  await publicClient.waitForTransactionReceipt({ hash })
 }
 
 export const buildTransaction = async (

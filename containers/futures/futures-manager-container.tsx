@@ -124,7 +124,12 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
           debtAmount > maxBorrowAmount ||
           isDeptSizeLessThanMinDebtSize,
         onClick: async () => {
-          const hash = await borrow(asset, collateralAmount, debtAmount)
+          const hash = await borrow(
+            asset,
+            collateralAmount,
+            debtAmount,
+            () => {},
+          )
           if (hash) {
             await router.replace('/futures')
           }

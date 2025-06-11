@@ -18,6 +18,8 @@ export const maxApprove = async (
   currency: Currency,
   spender: `0x${string}`,
   disconnectAsync: () => Promise<void>,
+  onUserSigned: (hash: `0x${string}`) => void,
+  onTxConfirmation: (receipt: TransactionReceipt) => void,
 ): Promise<TransactionReceipt | undefined> => {
   if (!walletClient) {
     return
@@ -34,5 +36,12 @@ export const maxApprove = async (
     account: walletClient.account!,
     chain,
   })
-  return sendTransaction(chain, walletClient, transaction, disconnectAsync)
+  return sendTransaction(
+    chain,
+    walletClient,
+    transaction,
+    disconnectAsync,
+    onUserSigned,
+    onTxConfirmation,
+  )
 }

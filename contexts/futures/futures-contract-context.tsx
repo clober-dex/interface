@@ -16,11 +16,7 @@ import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js'
 
 import { Asset } from '../../model/futures/asset'
 import { useCurrencyContext } from '../currency-context'
-import {
-  Confirmation,
-  Transaction,
-  useTransactionContext,
-} from '../transaction-context'
+import { Confirmation, useTransactionContext } from '../transaction-context'
 import { maxApprove } from '../../utils/approve20'
 import { useChainContext } from '../chain-context'
 import { formatUnits } from '../../utils/bigint'
@@ -34,16 +30,22 @@ import { formatPreciseAmountString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { PYTH_ORACLE_ABI } from '../../abis/futures/pyth-oracle-abi'
 
-import { useFuturesContext } from './futures-context'
-
 type FuturesContractContext = {
   borrow: (
     asset: Asset,
     collateralAmount: bigint,
     debtAmount: bigint,
+    onClose: () => void,
   ) => Promise<Hash | undefined>
-  repay: (asset: Asset, debtAmount: bigint) => Promise<Hash | undefined>
-  repayAll: (position: FuturesPosition) => Promise<Hash | undefined>
+  repay: (
+    asset: Asset,
+    debtAmount: bigint,
+    onClose: () => void,
+  ) => Promise<Hash | undefined>
+  repayAll: (
+    position: FuturesPosition,
+    onClose: () => void,
+  ) => Promise<Hash | undefined>
   settle: (asset: Asset) => Promise<Hash | undefined>
   close: (asset: Asset, collateralReceived: bigint) => Promise<Hash | undefined>
   redeem: (
@@ -51,8 +53,16 @@ type FuturesContractContext = {
     amount: bigint,
     collateralReceived: bigint,
   ) => Promise<Hash | undefined>
-  addCollateral: (asset: Asset, amount: bigint) => Promise<Hash | undefined>
-  removeCollateral: (asset: Asset, amount: bigint) => Promise<Hash | undefined>
+  addCollateral: (
+    asset: Asset,
+    amount: bigint,
+    onClose: () => void,
+  ) => Promise<Hash | undefined>
+  removeCollateral: (
+    asset: Asset,
+    amount: bigint,
+    onClose: () => void,
+  ) => Promise<Hash | undefined>
   pendingPositionCurrencies: Currency[]
 }
 
@@ -78,17 +88,11 @@ export const FuturesContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const {
-    setConfirmation,
-    pendingTransactions,
-    queuePendingTransaction,
-    dequeuePendingTransaction,
-    latestSubgraphBlockNumber,
-  } = useTransactionContext()
-  const { positions } = useFuturesContext()
+  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
+    useTransactionContext()
   const { selectedChain } = useChainContext()
   const { address: userAddress } = useAccount()
-  const { allowances, prices, balances } = useCurrencyContext()
+  const { allowances, prices } = useCurrencyContext()
   const publicClient = useMemo(() => {
     return createPublicClient({
       chain: selectedChain,
@@ -145,71 +149,12 @@ export const FuturesContractProvider = ({
     )
   }, [userAddress])
 
-  useEffect(() => {
-    if (
-      pendingTransactions.length === 0 &&
-      pendingPositionCurrencies.length > 0
-    ) {
-      pendingPositionCurrencies.forEach((currency) => {
-        dequeuePendingPositionCurrency(currency)
-      })
-    }
-
-    pendingTransactions.forEach((transaction) => {
-      if (latestSubgraphBlockNumber.chainId !== selectedChain.id) {
-        return
-      }
-      if (!transaction.success) {
-        dequeuePendingTransaction(transaction.txHash)
-        return
-      }
-      if (
-        latestSubgraphBlockNumber.blockNumber === 0 ||
-        transaction.blockNumber > latestSubgraphBlockNumber.blockNumber
-      ) {
-        if (
-          transaction.type === 'close' ||
-          transaction.type === 'settle' ||
-          transaction.type === 'redeem'
-        ) {
-          dequeuePendingTransaction(transaction.txHash)
-        }
-        return
-      }
-
-      const debtCurrency = (
-        transaction as Transaction & {
-          debtCurrency: Currency
-        }
-      )?.debtCurrency
-      if (
-        (transaction.type === 'borrow' ||
-          transaction.type === 'repay' ||
-          transaction.type === 'repay-all' ||
-          transaction.type === 'add-collateral' ||
-          transaction.type === 'remove-collateral') &&
-        debtCurrency
-      ) {
-        dequeuePendingTransaction(transaction.txHash)
-        dequeuePendingPositionCurrency(debtCurrency)
-      }
-    })
-  }, [
-    dequeuePendingTransaction,
-    pendingTransactions,
-    positions,
-    balances,
-    latestSubgraphBlockNumber,
-    dequeuePendingPositionCurrency,
-    selectedChain.id,
-    pendingPositionCurrencies,
-  ])
-
   const borrow = useCallback(
     async (
       asset: Asset,
       collateralAmount: bigint,
       debtAmount: bigint,
+      onClose: () => void,
     ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
@@ -239,24 +184,33 @@ export const FuturesContractProvider = ({
             fields: [],
           }
           setConfirmation(confirmation)
-          const transactionReceipt = await maxApprove(
+          await maxApprove(
             selectedChain,
             walletClient,
             asset.collateral,
             spender,
             disconnectAsync,
+            (hash) => {
+              setConfirmation(undefined)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+              isAllowanceChanged = true
+            },
           )
-          if (transactionReceipt) {
-            queuePendingTransaction({
-              ...confirmation,
-              txHash: transactionReceipt.transactionHash,
-              success: transactionReceipt.status === 'success',
-              blockNumber: Number(transactionReceipt.blockNumber),
-              type: 'approve',
-              timestamp: currentTimestampInSeconds(),
-            })
-            isAllowanceChanged = true
-          }
         }
 
         const confirmation = {
@@ -353,27 +307,38 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
-        )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'borrow',
-            timestamp: currentTimestampInSeconds(),
-            debtCurrency: asset.currency,
-          } as Transaction)
-          if (transactionReceipt.status === 'success') {
+          (hash) => {
+            setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(asset.currency)
-          }
-        }
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'borrow',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
+            dequeuePendingPositionCurrency(asset.currency)
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'borrow',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
+        )
         return transactionReceipt?.transactionHash
       } catch (e) {
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           isAllowanceChanged
             ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
@@ -384,6 +349,7 @@ export const FuturesContractProvider = ({
     },
     [
       allowances,
+      dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
       publicClient,
@@ -392,12 +358,17 @@ export const FuturesContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )
 
   const repay = useCallback(
-    async (asset: Asset, debtAmount: bigint): Promise<Hash | undefined> => {
+    async (
+      asset: Asset,
+      debtAmount: bigint,
+      onClose: () => void,
+    ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
       }
@@ -456,33 +427,45 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
-        )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'repay',
-            timestamp: currentTimestampInSeconds(),
-            debtCurrency: asset.currency,
-          } as Transaction)
-          if (transactionReceipt.status === 'success') {
+          (hash) => {
+            setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(asset.currency)
-          }
-        }
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'repay',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
+            dequeuePendingPositionCurrency(asset.currency)
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'repay',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
+        )
         return transactionReceipt?.transactionHash
       } catch (e) {
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
         setConfirmation(undefined)
       }
     },
     [
+      dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
       publicClient,
@@ -491,12 +474,16 @@ export const FuturesContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )
 
   const repayAll = useCallback(
-    async (userPosition: FuturesPosition): Promise<Hash | undefined> => {
+    async (
+      userPosition: FuturesPosition,
+      onClose: () => void,
+    ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
       }
@@ -609,33 +596,45 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
-        )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'repay-all',
-            timestamp: currentTimestampInSeconds(),
-            debtCurrency: userPosition.asset.currency,
-          } as Transaction)
-          if (transactionReceipt.status === 'success') {
+          (hash) => {
+            setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(userPosition.asset.currency)
-          }
-        }
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'repay-all',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
+            dequeuePendingPositionCurrency(userPosition.asset.currency)
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'repay-all',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
+        )
         return transactionReceipt?.transactionHash
       } catch (e) {
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
         setConfirmation(undefined)
       }
     },
     [
+      dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
       publicClient,
@@ -644,6 +643,7 @@ export const FuturesContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )
@@ -717,17 +717,26 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          (hash) => {
+            setConfirmation(undefined)
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'settle',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          (receipt) => {
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'settle',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
         )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'settle',
-            timestamp: currentTimestampInSeconds(),
-          })
-        }
         return transactionReceipt?.transactionHash
       } catch (e) {
         console.error(e)
@@ -745,6 +754,7 @@ export const FuturesContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )
@@ -793,17 +803,26 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          (hash) => {
+            setConfirmation(undefined)
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'close',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          (receipt) => {
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'close',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
         )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'close',
-            timestamp: currentTimestampInSeconds(),
-          })
-        }
         return transactionReceipt?.transactionHash
       } catch (e) {
         console.error(e)
@@ -823,6 +842,7 @@ export const FuturesContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )
@@ -885,17 +905,26 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
+          (hash) => {
+            setConfirmation(undefined)
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'redeem',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          (receipt) => {
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'redeem',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
         )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'redeem',
-            timestamp: currentTimestampInSeconds(),
-          })
-        }
         return transactionReceipt?.transactionHash
       } catch (e) {
         console.error(e)
@@ -915,12 +944,17 @@ export const FuturesContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )
 
   const addCollateral = useCallback(
-    async (asset: Asset, amount: bigint): Promise<Hash | undefined> => {
+    async (
+      asset: Asset,
+      amount: bigint,
+      onClose: () => void,
+    ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
       }
@@ -964,33 +998,45 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
-        )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'add-collateral',
-            timestamp: currentTimestampInSeconds(),
-            debtCurrency: asset.currency,
-          } as Transaction)
-          if (transactionReceipt.status === 'success') {
+          (hash) => {
+            setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(asset.currency)
-          }
-        }
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'add-collateral',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
+            dequeuePendingPositionCurrency(asset.currency)
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'add-collateral',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
+        )
         return transactionReceipt?.transactionHash
       } catch (e) {
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
         setConfirmation(undefined)
       }
     },
     [
+      dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
       publicClient,
@@ -999,12 +1045,17 @@ export const FuturesContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )
 
   const removeCollateral = useCallback(
-    async (asset: Asset, amount: bigint): Promise<Hash | undefined> => {
+    async (
+      asset: Asset,
+      amount: bigint,
+      onClose: () => void,
+    ): Promise<Hash | undefined> => {
       if (!walletClient) {
         return
       }
@@ -1086,33 +1137,45 @@ export const FuturesContractProvider = ({
           walletClient,
           transaction,
           disconnectAsync,
-        )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: 'remove-collateral',
-            timestamp: currentTimestampInSeconds(),
-            debtCurrency: asset.currency,
-          } as Transaction)
-          if (transactionReceipt.status === 'success') {
+          (hash) => {
+            setConfirmation(undefined)
+            onClose()
             queuePendingPositionCurrency(asset.currency)
-          }
-        }
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type: 'remove-collateral',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
+            dequeuePendingPositionCurrency(asset.currency)
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type: 'remove-collateral',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
+        )
         return transactionReceipt?.transactionHash
       } catch (e) {
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
         setConfirmation(undefined)
       }
     },
     [
+      dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
       publicClient,
@@ -1121,6 +1184,7 @@ export const FuturesContractProvider = ({
       queuePendingTransaction,
       selectedChain,
       setConfirmation,
+      updatePendingTransaction,
       walletClient,
     ],
   )

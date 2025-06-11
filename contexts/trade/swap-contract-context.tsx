@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import { getAddress, isAddressEqual, zeroAddress } from 'viem'
 import { useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
@@ -38,30 +38,10 @@ export const SwapContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const {
-    setConfirmation,
-    pendingTransactions,
-    queuePendingTransaction,
-    dequeuePendingTransaction,
-  } = useTransactionContext()
+  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
+    useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { allowances, prices, balances } = useCurrencyContext()
-
-  useEffect(() => {
-    pendingTransactions.forEach((transaction) => {
-      if (!transaction.success) {
-        dequeuePendingTransaction(transaction.txHash)
-        return
-      }
-      if (transaction.type === 'swap' || transaction.type === 'market') {
-        dequeuePendingTransaction(transaction.txHash)
-      }
-    })
-  }, [
-    dequeuePendingTransaction,
-    pendingTransactions,
-    balances, // for 'swap' type or 'market' type
-  ])
+  const { allowances, prices } = useCurrencyContext()
 
   const swap = useCallback(
     async (
@@ -99,24 +79,33 @@ export const SwapContractProvider = ({
             fields: [],
           }
           setConfirmation(confirmation)
-          const transactionReceipt = await maxApprove(
+          await maxApprove(
             selectedChain,
             walletClient,
             inputCurrency,
             spender,
             disconnectAsync,
+            (hash) => {
+              setConfirmation(undefined)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'approve',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+              isAllowanceChanged = true
+            },
           )
-          if (transactionReceipt) {
-            queuePendingTransaction({
-              ...confirmation,
-              txHash: transactionReceipt.transactionHash,
-              success: transactionReceipt.status === 'success',
-              blockNumber: Number(transactionReceipt.blockNumber),
-              type: 'approve',
-              timestamp: currentTimestampInSeconds(),
-            })
-            isAllowanceChanged = true
-          }
         }
 
         const confirmation = {
@@ -146,22 +135,33 @@ export const SwapContractProvider = ({
         }
         setConfirmation(confirmation)
 
-        const transactionReceipt = await sendTransaction(
+        await sendTransaction(
           selectedChain,
           walletClient,
           transaction as SdkTransaction,
           disconnectAsync,
+          (hash) => {
+            setConfirmation(undefined)
+            queuePendingTransaction({
+              ...confirmation,
+              txHash: hash,
+              type:
+                aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
+              timestamp: currentTimestampInSeconds(),
+            })
+          },
+          (receipt) => {
+            updatePendingTransaction({
+              ...confirmation,
+              txHash: receipt.transactionHash,
+              type:
+                aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
+              timestamp: currentTimestampInSeconds(),
+              blockNumber: Number(receipt.blockNumber),
+              success: receipt.status === 'success',
+            })
+          },
         )
-        if (transactionReceipt) {
-          queuePendingTransaction({
-            ...confirmation,
-            txHash: transactionReceipt.transactionHash,
-            success: transactionReceipt.status === 'success',
-            blockNumber: Number(transactionReceipt.blockNumber),
-            type: aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-            timestamp: currentTimestampInSeconds(),
-          })
-        }
       } catch (e) {
         await queryClient.invalidateQueries({ queryKey: ['quotes'] })
         console.error(e)
@@ -176,14 +176,15 @@ export const SwapContractProvider = ({
       }
     },
     [
-      walletClient,
-      setConfirmation,
-      selectedChain,
       allowances,
-      prices,
       disconnectAsync,
-      queuePendingTransaction,
+      prices,
       queryClient,
+      queuePendingTransaction,
+      selectedChain,
+      setConfirmation,
+      updatePendingTransaction,
+      walletClient,
     ],
   )
 

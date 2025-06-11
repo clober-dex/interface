@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useRouter } from 'next/router'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
@@ -11,7 +11,7 @@ import MenuSvg from '../components/svg/menu-svg'
 import { PageButton } from '../components/button/page-button'
 import { ConnectButton } from '../components/button/connect-button'
 import { UserButton } from '../components/button/user-button'
-import { UserTransactionsModal } from '../components/modal/user-transactions-modal'
+import { UserWalletModal } from '../components/modal/user-wallet-modal'
 import { useTransactionContext } from '../contexts/transaction-context'
 import ChainIcon from '../components/icon/chain-icon'
 import { textStyles } from '../constants/text-styles'
@@ -22,6 +22,9 @@ import useDropdown from '../hooks/useDropdown'
 import { PageSelector } from '../components/selector/page-selector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
+import { useCurrencyContext } from '../contexts/currency-context'
+
+const TX_NOTIFICATION_BUFFER = 5
 
 const WrongNetwork = ({
   openChainModal,
@@ -87,6 +90,9 @@ const PageButtons = () => {
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const router = useRouter()
   const { selectedChain } = useChainContext()
+  const { data: gasPrice } = useGasPrice()
+  const { currencies, setCurrencies, balances, prices, transfer } =
+    useCurrencyContext()
   const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
   const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
@@ -123,14 +129,19 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (
     <>
       {openTransactionHistoryModal && address && connector && (
-        <UserTransactionsModal
+        <UserWalletModal
           chain={selectedChain}
           userAddress={address}
+          currencies={currencies}
+          setCurrencies={setCurrencies}
+          balances={balances}
+          prices={prices}
+          gasPrice={gasPrice}
           walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}
-          pendingTransactions={pendingTransactions}
           transactionHistory={transactionHistory}
           disconnectAsync={disconnectAsync}
           onClose={() => setOpenTransactionHistoryModal(false)}
+          onTransfer={transfer}
           ens={ens}
         />
       )}
@@ -233,7 +244,8 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                     (transaction) =>
                       !dismissedTxs.includes(transaction.txHash) &&
                       latestSubgraphBlockNumber.blockNumber > 0 &&
-                      (transaction.blockNumber >=
+                      ((transaction?.blockNumber ?? 0) +
+                        TX_NOTIFICATION_BUFFER >=
                         latestSubgraphBlockNumber.blockNumber ||
                         transaction.isPending),
                   )
