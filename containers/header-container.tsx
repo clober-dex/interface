@@ -24,7 +24,7 @@ import { web3AuthInstance } from '../utils/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
 import { useCurrencyContext } from '../contexts/currency-context'
 
-const TX_NOTIFICATION_BUFFER = 2
+const TX_NOTIFICATION_BUFFER = 5
 
 const WrongNetwork = ({
   openChainModal,
