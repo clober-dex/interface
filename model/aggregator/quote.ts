@@ -10,4 +10,5 @@ export type Quote = {
   transaction: Transaction | undefined
   gasUsd: number
   netAmountOutUsd: number
+  executionMilliseconds: number
 }

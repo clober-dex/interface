@@ -46,6 +46,7 @@ export async function fetchAllQuotesAndSelectBest(
         gasLimit: bigint
         aggregator: Aggregator
         transaction: Transaction | undefined
+        executionMilliseconds: number
       } => quote !== undefined,
     )
   if (quotes.length === 0) {

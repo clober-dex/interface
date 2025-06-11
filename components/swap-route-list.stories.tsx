@@ -29,6 +29,7 @@ export const Default: Story = {
         transaction: undefined,
         netAmountOutUsd: 10000,
         gasUsd: 0.2,
+        executionMilliseconds: 1500,
       },
       {
         amountIn: 1020000000000000000n,
@@ -38,6 +39,7 @@ export const Default: Story = {
         transaction: undefined,
         netAmountOutUsd: 12000,
         gasUsd: 0.2,
+        executionMilliseconds: 2000,
       },
     ],
     bestQuote: {
@@ -48,6 +50,7 @@ export const Default: Story = {
       transaction: undefined,
       netAmountOutUsd: 12000,
       gasUsd: 0.2,
+      executionMilliseconds: 2000,
     },
     outputCurrency: {
       address: '0x0000000000000000000000000000000000000003',
