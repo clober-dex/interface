@@ -87,6 +87,8 @@ const PageButtons = () => {
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const router = useRouter()
   const { selectedChain } = useChainContext()
+  const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
+  const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
   const { openChainModal } = useChainModal()
   const { openConnectModal } = useConnectModal()
@@ -229,9 +231,10 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 ]
                   .filter(
                     (transaction) =>
-                      transaction.blockNumber >=
+                      !dismissedTxs.includes(transaction.txHash) &&
+                      (transaction.blockNumber >=
                         latestSubgraphBlockNumber.blockNumber ||
-                      transaction.isPending,
+                        transaction.isPending),
                   )
                   // filter unique transactions by txHash
                   .filter(
@@ -247,8 +250,23 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 20 }}
                       transition={{ duration: 0.25 }}
-                      className="flex flex-col w-full bg-[#171b24] px-4 py-1 rounded-2xl border border-white border-opacity-10 hover:border-opacity-20 border-solid cursor-pointer transition-all duration-200"
+                      onMouseEnter={() => setHoveredTx(transaction.txHash)}
+                      onMouseLeave={() => setHoveredTx(null)}
+                      className="relative flex flex-col w-full bg-[#171b24] px-4 py-1 rounded-2xl border border-white border-opacity-10 hover:border-opacity-20 border-solid cursor-pointer transition-all duration-200"
                     >
+                      {hoveredTx === transaction.txHash && (
+                        <button
+                          onClick={() =>
+                            setDismissedTxs((prev) => [
+                              ...prev,
+                              transaction.txHash,
+                            ])
+                          }
+                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gray-700 text-white text-xs flex items-center justify-center hover:bg-gray-600 transition duration-200"
+                        >
+                          ×
+                        </button>
+                      )}
                       <UserTransactionCard
                         transaction={transaction}
                         isPending={transaction.isPending}
