@@ -162,7 +162,11 @@ export const TransactionProvider = ({
   useEffect(() => {
     const now = currentTimestampInSeconds()
     pendingTransactions.forEach((transaction) => {
-      if (transaction.type === 'approve' || transaction.type === 'register') {
+      if (
+        transaction.type === 'approve' ||
+        transaction.type === 'transfer' ||
+        transaction.type === 'register'
+      ) {
         dequeuePendingTransaction(transaction.txHash)
         return
       }

@@ -18,3 +18,4 @@ export type TransactionType =
   | 'claim' // claim limit order(s)
   | 'market' // market order
   | 'swap' // swap from aggregator
+  | 'transfer' // transfer currency
