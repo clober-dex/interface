@@ -11,9 +11,11 @@ import { useFuturesContractContext } from '../../contexts/futures/futures-contra
 export const FuturesPositionAdjustModalContainer = ({
   userPosition,
   onClose,
+  startLTV,
 }: {
   userPosition: FuturesPosition
   onClose: () => void
+  startLTV: number | undefined
 }) => {
   const { prices, balances } = useCurrencyContext()
   const { borrow, repay, repayAll } = useFuturesContractContext()
@@ -26,7 +28,7 @@ export const FuturesPositionAdjustModalContainer = ({
     prices[userPosition.asset.collateral.address] ?? 0,
     userPosition?.collateralAmount ?? 0n,
   )
-  const [newLTV, setNewLTV] = useState(ltv)
+  const [newLTV, setNewLTV] = useState(startLTV === undefined ? ltv : startLTV)
   const [ltvNewBuffer, setLTVNewBuffer] = useState({
     previous: newLTV,
     updateAt: Date.now(),
@@ -110,6 +112,7 @@ export const FuturesPositionAdjustModalContainer = ({
       //
       loanAssetPrice={prices[userPosition.asset.currency.address] ?? 0}
       collateralPrice={prices[userPosition.asset.collateral.address] ?? 0}
+      disableSlider={startLTV !== undefined}
       actionButtonProps={{
         onClick: async () => {
           if (newLTV === 0) {
@@ -130,7 +133,7 @@ export const FuturesPositionAdjustModalContainer = ({
           }
         },
         disabled:
-          Math.abs(ltv - newLTV) < 0.5 ||
+          (newLTV > 0 && Math.abs(ltv - newLTV) < 0.5) ||
           (newLTV > ltv && expectedDebtAmount > maxLoanableAmount) ||
           (debtAmountDelta < 0n &&
             balances[userPosition.asset.currency.address] < -debtAmountDelta) ||
