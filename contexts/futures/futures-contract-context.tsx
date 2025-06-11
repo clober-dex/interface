@@ -318,7 +318,10 @@ export const FuturesContractProvider = ({
               timestamp: currentTimestampInSeconds(),
             })
           },
-          (receipt) => {
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
             dequeuePendingPositionCurrency(asset.currency)
             updatePendingTransaction({
               ...confirmation,
@@ -335,7 +338,7 @@ export const FuturesContractProvider = ({
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           isAllowanceChanged
             ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
@@ -435,7 +438,10 @@ export const FuturesContractProvider = ({
               timestamp: currentTimestampInSeconds(),
             })
           },
-          (receipt) => {
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
             dequeuePendingPositionCurrency(asset.currency)
             updatePendingTransaction({
               ...confirmation,
@@ -452,7 +458,7 @@ export const FuturesContractProvider = ({
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
         setConfirmation(undefined)
@@ -601,7 +607,10 @@ export const FuturesContractProvider = ({
               timestamp: currentTimestampInSeconds(),
             })
           },
-          (receipt) => {
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
             dequeuePendingPositionCurrency(userPosition.asset.currency)
             updatePendingTransaction({
               ...confirmation,
@@ -618,7 +627,7 @@ export const FuturesContractProvider = ({
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
         setConfirmation(undefined)
@@ -1000,7 +1009,10 @@ export const FuturesContractProvider = ({
               timestamp: currentTimestampInSeconds(),
             })
           },
-          (receipt) => {
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
             dequeuePendingPositionCurrency(asset.currency)
             updatePendingTransaction({
               ...confirmation,
@@ -1017,7 +1029,7 @@ export const FuturesContractProvider = ({
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
         setConfirmation(undefined)
@@ -1136,7 +1148,10 @@ export const FuturesContractProvider = ({
               timestamp: currentTimestampInSeconds(),
             })
           },
-          (receipt) => {
+          async (receipt) => {
+            await queryClient.invalidateQueries({
+              queryKey: ['futures-positions'],
+            })
             dequeuePendingPositionCurrency(asset.currency)
             updatePendingTransaction({
               ...confirmation,
@@ -1153,7 +1168,7 @@ export const FuturesContractProvider = ({
         console.error(e)
       } finally {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
+          // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
         setConfirmation(undefined)
