@@ -112,7 +112,8 @@ export const LimitContractProvider = ({
                   timestamp: currentTimestampInSeconds(),
                 })
               },
-              (receipt) => {
+              async (receipt) => {
+                await queryClient.invalidateQueries({ queryKey: ['market'] })
                 updatePendingTransaction({
                   ...confirmation,
                   txHash: receipt.transactionHash,
