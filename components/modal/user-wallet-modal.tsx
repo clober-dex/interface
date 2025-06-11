@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 import { Transaction } from '../../contexts/transaction-context'
 import UserTransactionCard from '../card/user-transaction-card'
@@ -231,20 +232,49 @@ export const UserWalletModal = ({
           </div>
         </div>
         <div className="pt-3 border-t border-[#2f313d] border-solid flex flex-col w-full overflow-y-scroll">
-          {transactionHistory
-            .sort((a, b) => b.timestamp - a.timestamp)
-            .map((transaction) => (
-              <div className="flex flex-col w-full" key={transaction.txHash}>
-                <div className="flex justify-start text-gray-500 text-sm font-bold">
-                  {getTimeAgo(transaction.timestamp, cache)}
-                </div>
-                <UserTransactionCard
-                  transaction={transaction}
-                  key={transaction.txHash}
-                  isPending={false}
-                />
-              </div>
-            ))}
+          <AnimatePresence mode="wait">
+            {tab === 'my-tokens' ? (
+              <motion.div
+                key="my-tokens"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col w-full"
+              >
+                my tokens
+              </motion.div>
+            ) : tab === 'my-transactions' ? (
+              <motion.div
+                key="my-transactions"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col w-full"
+              >
+                {transactionHistory
+                  .sort((a, b) => b.timestamp - a.timestamp)
+                  .map((transaction) => (
+                    <div
+                      className="flex flex-col w-full"
+                      key={transaction.txHash}
+                    >
+                      <div className="flex justify-start text-gray-500 text-sm font-bold">
+                        {getTimeAgo(transaction.timestamp, cache)}
+                      </div>
+                      <UserTransactionCard
+                        transaction={transaction}
+                        key={transaction.txHash}
+                        isPending={false}
+                      />
+                    </div>
+                  ))}
+              </motion.div>
+            ) : (
+              <></>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </Modal>
