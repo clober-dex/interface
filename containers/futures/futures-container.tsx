@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
-import { getAddress, isAddressEqual, parseUnits } from 'viem'
+import { getAddress, parseUnits } from 'viem'
 
 import { FuturesAssetCard } from '../../components/card/futures/futures-asset-card'
 import { FuturesPosition } from '../../model/futures/futures-position'
@@ -45,29 +45,6 @@ export const FuturesContainer = () => {
   )
   const [editCollateralPosition, setEditCollateralPosition] =
     useState<FuturesPosition | null>(null)
-  const hasPosition = useMemo(() => {
-    if (
-      !userAddress ||
-      assets.length === 0 ||
-      Object.keys(balances).length === 0
-    ) {
-      return null
-    }
-    const totalBalance = Object.entries(balances).reduce(
-      (acc, [address, value]) => {
-        if (
-          assets.some((asset) =>
-            isAddressEqual(asset.id, address as `0x${string}`),
-          )
-        ) {
-          return acc + value
-        }
-        return acc
-      },
-      0n,
-    )
-    return totalBalance > 0n
-  }, [userAddress, assets, balances])
   const now = currentTimestampInSeconds()
 
   const calculateSettledCollateral = useCallback(
@@ -123,8 +100,10 @@ export const FuturesContainer = () => {
               </button>
 
               <button
-                onClick={() => userAddress && setTab('my-cdp')}
-                disabled={tab === 'my-cdp'}
+                onClick={() =>
+                  positions.length > 0 && userAddress && setTab('my-cdp')
+                }
+                disabled={tab === 'my-cdp' && positions.length > 0}
                 className="flex flex-1 gap-2 items-center justify-center w-full h-full text-gray-500 disabled:text-white disabled:bg-gray-800 bg-transparent rounded-tl-2xl rounded-tr-2xl"
               >
                 <div className="text-center text-sm sm:text-base font-bold">
@@ -238,7 +217,7 @@ export const FuturesContainer = () => {
           <div className="flex flex-1 flex-col w-full md:w-[740px] lg:w-[1060px]">
             <div className="flex flex-1 flex-col w-full h-full sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mb-8 justify-center">
               {positions
-                .filter((position) => position.averagePrice > 0)
+                // .filter((position) => position.averagePrice > 0)
                 .map((position, index) => (
                   <FuturesPositionCard
                     chain={selectedChain}
@@ -278,12 +257,6 @@ export const FuturesContainer = () => {
                   />
                 ))}
             </div>
-
-            {tab === 'my-cdp' &&
-              hasPosition === true &&
-              positions.length === 0 && (
-                <Loading className="flex mt-8 sm:mt-0" />
-              )}
           </div>
         </div>
       ) : (
