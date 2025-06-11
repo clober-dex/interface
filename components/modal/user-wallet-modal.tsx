@@ -290,7 +290,7 @@ export const UserWalletModal = ({
             </div>
           </div>
         </div>
-        <div className="pt-6 border-t border-[#2f313d] border-solid flex flex-col w-full overflow-y-scroll">
+        <div className="flex flex-col w-full overflow-y-scroll">
           <AnimatePresence mode="wait">
             {tab === 'my-tokens' ? (
               <motion.div
