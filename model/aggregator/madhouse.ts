@@ -99,12 +99,15 @@ export class MadhouseAggregator implements Aggregator {
       params,
     })
 
-    const gasEstimate = await this.publicClient.estimateGas({
-      to: getAddress(tx.to),
-      data: tx.data as `0x${string}`,
-      value: BigInt(tx.value),
-      account: userAddress,
-    })
+    let gasEstimate = 1_000_000n
+    if (userAddress) {
+      gasEstimate = await this.publicClient.estimateGas({
+        to: getAddress(tx.to),
+        data: tx.data as `0x${string}`,
+        value: BigInt(tx.value),
+        account: userAddress,
+      })
+    }
 
     return {
       amountOut: BigInt(amountOut),

@@ -18,9 +18,13 @@ export const aggregators: Aggregator[] = [
   //   getAddress('0x6352a56caadC4F1E25CD6c75970Fa768A3304e64'),
   //   monadTestnet,
   // ),
-  new MadhouseAggregator(
-    getAddress('0x1e538356d3cfe7fa04696a92515add4a895ecb65'),
+  new AggregatorRouterGateway(
+    getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
+    new MadhouseAggregator(
+      getAddress('0x1e538356d3cfe7fa04696a92515add4a895ecb65'),
+      monadTestnet,
+    ),
   ),
   new AggregatorRouterGateway(
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
