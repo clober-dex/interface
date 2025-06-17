@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
-import { CHAIN_IDS, getSubgraphBlockNumber } from '@clober/v2-sdk'
+import { getSubgraphBlockNumber } from '@clober/v2-sdk'
 
 import ConfirmationModal from '../components/modal/confirmation-modal'
 import { Currency, LpCurrency } from '../model/currency'
@@ -37,10 +37,7 @@ type TransactionContext = {
   transactionHistory: Transaction[]
   queuePendingTransaction: (transaction: Transaction) => void
   updatePendingTransaction: (transaction: Transaction) => void
-  latestSubgraphBlockNumber: {
-    blockNumber: number
-    chainId: CHAIN_IDS
-  }
+  lastIndexedBlockNumber: number
 }
 
 const Context = React.createContext<TransactionContext>({
@@ -49,10 +46,7 @@ const Context = React.createContext<TransactionContext>({
   transactionHistory: [],
   queuePendingTransaction: () => {},
   updatePendingTransaction: () => {},
-  latestSubgraphBlockNumber: {
-    blockNumber: 0,
-    chainId: CHAIN_IDS.MONAD_TESTNET,
-  },
+  lastIndexedBlockNumber: 0,
 })
 
 export const LOCAL_STORAGE_TRANSACTIONS_KEY = (
@@ -182,29 +176,22 @@ export const TransactionProvider = ({
     [pendingTransactions, userAddress],
   )
 
-  const { data: latestSubgraphBlockNumber } = useQuery({
-    queryKey: ['latest-subgraph-block-number', selectedChain.id],
+  const { data: lastIndexedBlockNumber } = useQuery({
+    queryKey: ['last-indexed-block-number', selectedChain.id],
     queryFn: async () => {
-      const latestSubgraphBlockNumber = await getSubgraphBlockNumber({
+      return getSubgraphBlockNumber({
         chainId: selectedChain.id,
       })
-      return {
-        blockNumber: latestSubgraphBlockNumber,
-        chainId: selectedChain.id,
-      }
     },
-    initialData: { blockNumber: 0, chainId: selectedChain.id },
+    initialData: 0,
     refetchInterval: 1000, // checked
     refetchIntervalInBackground: true,
   })
 
   useEffect(() => {
     pendingTransactions.forEach((transaction) => {
-      if (latestSubgraphBlockNumber.chainId !== selectedChain.id) {
-        return
-      }
       // subgraph error
-      if (latestSubgraphBlockNumber.blockNumber === 0) {
+      if (lastIndexedBlockNumber === 0) {
         return
       }
       // transaction not confirmed yet
@@ -214,9 +201,7 @@ export const TransactionProvider = ({
       ) {
         return
       }
-      if (
-        (transaction?.blockNumber ?? 0) > latestSubgraphBlockNumber.blockNumber
-      ) {
+      if ((transaction?.blockNumber ?? 0) > lastIndexedBlockNumber) {
         return
       }
 
@@ -224,7 +209,7 @@ export const TransactionProvider = ({
     })
   }, [
     dequeuePendingTransaction,
-    latestSubgraphBlockNumber,
+    lastIndexedBlockNumber,
     pendingTransactions,
     selectedChain.id,
   ])
@@ -242,7 +227,7 @@ export const TransactionProvider = ({
         ),
         queuePendingTransaction,
         updatePendingTransaction,
-        latestSubgraphBlockNumber,
+        lastIndexedBlockNumber,
       }}
     >
       {children}

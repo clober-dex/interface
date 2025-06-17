@@ -5,9 +5,9 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { BlockNumberWidget } from './block-number-widget'
 
 const Footer = ({
-  latestSubgraphBlockNumber,
+  lastIndexedBlockNumber,
 }: {
-  latestSubgraphBlockNumber: number
+  lastIndexedBlockNumber: number
 }) => {
   return (
     <>
@@ -31,7 +31,7 @@ const Footer = ({
           {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7)})
         </a>
       </div>
-      <BlockNumberWidget latestBlockNumber={latestSubgraphBlockNumber} />
+      <BlockNumberWidget latestBlockNumber={lastIndexedBlockNumber} />
     </>
   )
 }

@@ -159,7 +159,7 @@ const MarketSnapshotGridCell = ({
 export const DiscoverContainer = () => {
   const { selectedChain } = useChainContext()
   const { currencies } = useCurrencyContext()
-  const { latestSubgraphBlockNumber } = useTransactionContext()
+  const { lastIndexedBlockNumber } = useTransactionContext()
   const prevMarketSnapshots = useRef<MarketSnapshot[]>([])
   const prevSubgraphBlockNumber = useRef<number>(0)
 
@@ -202,13 +202,10 @@ export const DiscoverContainer = () => {
   const { data: marketSnapshots } = useQuery({
     queryKey: ['market-snapshots', selectedChain.id],
     queryFn: async () => {
-      if (latestSubgraphBlockNumber.blockNumber === 0) {
+      if (lastIndexedBlockNumber === 0) {
         return [] as MarketSnapshot[]
       }
-      if (
-        prevSubgraphBlockNumber.current !==
-        latestSubgraphBlockNumber.blockNumber
-      ) {
+      if (prevSubgraphBlockNumber.current !== lastIndexedBlockNumber) {
         const marketSnapshots = await getMarketSnapshots({
           chainId: selectedChain.id,
           options: {
@@ -250,7 +247,7 @@ export const DiscoverContainer = () => {
           isAskTaken: false,
           verified: isVerifiedMarket(marketSnapshot),
         }))
-        prevSubgraphBlockNumber.current = latestSubgraphBlockNumber.blockNumber
+        prevSubgraphBlockNumber.current = lastIndexedBlockNumber
         localStorage.setItem(
           LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY(selectedChain),
           JSON.stringify(marketSnapshots),
