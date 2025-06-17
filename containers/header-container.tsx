@@ -101,7 +101,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { disconnectAsync } = useDisconnect()
   const [openTransactionHistoryModal, setOpenTransactionHistoryModal] =
     useState(false)
-  const { pendingTransactions, transactionHistory, latestSubgraphBlockNumber } =
+  const { pendingTransactions, transactionHistory, lastIndexedBlockNumber } =
     useTransactionContext()
 
   const { data: ens } = useQuery({
@@ -243,10 +243,10 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                   .filter(
                     (transaction) =>
                       !dismissedTxs.includes(transaction.txHash) &&
-                      latestSubgraphBlockNumber.blockNumber > 0 &&
+                      lastIndexedBlockNumber > 0 &&
                       ((transaction?.blockNumber ?? 0) +
                         TX_NOTIFICATION_BUFFER >=
-                        latestSubgraphBlockNumber.blockNumber ||
+                        lastIndexedBlockNumber ||
                         transaction.isPending),
                   )
                   // filter unique transactions by txHash

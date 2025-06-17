@@ -11,7 +11,7 @@ export default {
   },
   render: () => (
     <div className="flex flex-col w-[100vw] min-h-[100vh] bg-gray-950">
-      <Footer latestSubgraphBlockNumber={1234} />
+      <Footer lastIndexedBlockNumber={1234} />
     </div>
   ),
 } as Meta<typeof Footer>

@@ -125,10 +125,8 @@ const PanelWrapper = ({
 }
 
 const FooterWrapper = () => {
-  const { latestSubgraphBlockNumber } = useTransactionContext()
-  return (
-    <Footer latestSubgraphBlockNumber={latestSubgraphBlockNumber.blockNumber} />
-  )
+  const { lastIndexedBlockNumber } = useTransactionContext()
+  return <Footer lastIndexedBlockNumber={lastIndexedBlockNumber} />
 }
 
 function App({ Component, pageProps }: AppProps) {
