@@ -55,6 +55,7 @@ type TradeContext = {
     best: Quote | null
     all: Quote[]
   }
+  isRefreshing: boolean
   refreshQuotesAction: () => void
   priceImpact: number
   isFetchingOnChainPrice: boolean
@@ -87,6 +88,7 @@ const Context = React.createContext<TradeContext>({
   tab: 'limit',
   setTab: () => {},
   quotes: { best: null, all: [] },
+  isRefreshing: false,
   refreshQuotesAction: () => {},
   priceImpact: 0,
   isFetchingOnChainPrice: false,
@@ -146,6 +148,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [latestQuotesRefreshTime, setLatestQuotesRefreshTime] = useState(
     Date.now(),
   )
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [debouncedValue, setDebouncedValue] = useState('')
   const previousValues = useRef({
     priceInput,
@@ -196,10 +199,18 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     [selectedChain],
   )
 
-  const refreshQuotesAction = useCallback(
-    () => setLatestQuotesRefreshTime(Date.now()),
-    [],
-  )
+  const refreshQuotesAction = useCallback(() => {
+    if (isRefreshing) {
+      return
+    }
+
+    setIsRefreshing(true)
+    setLatestQuotesRefreshTime(Date.now())
+
+    setTimeout(() => {
+      setIsRefreshing(false)
+    }, 1000)
+  }, [isRefreshing])
 
   const { inputCurrencyAddress, outputCurrencyAddress } = getCurrencyAddress(
     'trade',
@@ -536,6 +547,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         tab,
         setTab,
         quotes,
+        isRefreshing,
         refreshQuotesAction,
         priceImpact,
         isFetchingOnChainPrice,

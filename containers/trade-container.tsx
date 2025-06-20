@@ -141,6 +141,7 @@ export const TradeContainer = () => {
     tab,
     setTab,
     quotes,
+    isRefreshing,
     refreshQuotesAction,
     priceImpact,
     isFetchingOnChainPrice,
@@ -428,6 +429,7 @@ export const TradeContainer = () => {
         aggregatorName: selectedQuote?.aggregator?.name ?? '',
         gasEstimateValue: selectedQuote?.gasUsd ?? 0,
         priceImpact,
+        isRefreshing,
         refreshQuotesAction,
       }) as SwapFormProps,
     [
@@ -438,6 +440,7 @@ export const TradeContainer = () => {
       outputCurrency,
       priceImpact,
       prices,
+      isRefreshing,
       refreshQuotesAction,
       selectedChain,
       selectedQuote?.aggregator?.name,

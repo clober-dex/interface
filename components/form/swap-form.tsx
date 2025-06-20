@@ -49,6 +49,7 @@ export type SwapFormProps = {
   gasEstimateValue: number
   priceImpact: number
   aggregatorName: string
+  isRefreshing: boolean
   refreshQuotesAction: () => void
   closeSwapFormAction?: () => void
   actionButtonProps?: ActionButtonProps
@@ -78,6 +79,7 @@ export const SwapForm = ({
   gasEstimateValue,
   priceImpact,
   aggregatorName,
+  isRefreshing,
   refreshQuotesAction,
   closeSwapFormAction,
   actionButtonProps,

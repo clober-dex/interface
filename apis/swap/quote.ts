@@ -131,11 +131,6 @@ export async function fetchQuotesLive(
   let bestQuote: Quote | null = null
   let fallbackQuote: Quote | undefined = undefined
 
-  onAllQuotes(() => ({
-    best: null,
-    all: [],
-  }))
-
   await Promise.all(
     aggregators.map(async (aggregator) => {
       const quote = await aggregator
