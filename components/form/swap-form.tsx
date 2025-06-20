@@ -259,9 +259,12 @@ export const SwapForm = ({
                 <div className="flex ml-auto mr-2">
                   <button
                     onClick={refreshQuotesAction}
+                    disabled={isRefreshing}
                     className="flex w-4 h-4 sm:w-6 sm:h-6"
                   >
-                    <ExchangeSvg className="w-full h-full hover:animate-spin" />
+                    <ExchangeSvg
+                      className={`w-full h-full ${!isRefreshing ? 'hover:animate-spin' : ''}`}
+                    />
                   </button>
                 </div>
               </div>
