@@ -21,7 +21,7 @@ type Story = StoryObj<typeof SwapRouteCard>
 export const Default: Story = {
   args: {
     quote: {
-      id: '1',
+      timestamp: 1,
       amountIn: 1020000000000000000n,
       amountOut: 1000000000n,
       gasLimit: 2100000n,
@@ -46,7 +46,7 @@ export const Default: Story = {
 export const Best: Story = {
   args: {
     quote: {
-      id: '2',
+      timestamp: 2,
       amountIn: 1020000000000000000n,
       amountOut: 1000000000n,
       gasLimit: 2100000n,

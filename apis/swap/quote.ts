@@ -68,7 +68,7 @@ export async function fetchAllQuotesAndSelectBest(
     const netAmountOutUsd = amountOutUsd - gasUsd
 
     const quoteWithMeta: Quote = {
-      id: new Date().getTime().toString(),
+      timestamp: new Date().getTime(),
       amountIn,
       ...quote,
       gasUsd,
@@ -91,7 +91,7 @@ export async function fetchAllQuotesAndSelectBest(
           quote.amountOut > fallbackQuote.amountOut
         ) {
           fallbackQuote = {
-            id: new Date().getTime().toString(),
+            timestamp: new Date().getTime(),
             amountIn,
             ...quote,
             gasUsd: 0,
@@ -161,7 +161,7 @@ export async function fetchQuotesLive(
       const netAmountOutUsd = amountOutUsd - gasUsd
 
       const quoteWithMeta: Quote = {
-        id: new Date().getTime().toString(),
+        timestamp: new Date().getTime(),
         amountIn,
         ...quote,
         gasUsd,
@@ -187,7 +187,7 @@ export async function fetchQuotesLive(
             quote.amountOut > fallbackQuote.amountOut
           ) {
             fallbackQuote = {
-              id: new Date().getTime().toString(),
+              timestamp: new Date().getTime(),
               amountIn,
               ...quote,
               gasUsd: 0,

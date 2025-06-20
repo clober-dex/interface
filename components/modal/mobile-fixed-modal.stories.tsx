@@ -43,7 +43,7 @@ export const Limit: Story = {
     disabled: false,
     quotes: {
       best: {
-        id: '1',
+        timestamp: 1,
         amountIn: 1020000000000000000n,
         amountOut: 1000000000n,
         gasLimit: 2100000n,
@@ -55,7 +55,7 @@ export const Limit: Story = {
       },
       all: [
         {
-          id: '1',
+          timestamp: 1,
           amountIn: 1020000000000000000n,
           amountOut: 1000000000n,
           gasLimit: 2100000n,
@@ -66,7 +66,7 @@ export const Limit: Story = {
           executionMilliseconds: 1500,
         },
         {
-          id: '2',
+          timestamp: 2,
           amountIn: 1020000000000000000n,
           amountOut: 1300000000n,
           gasLimit: 21000000000n,
@@ -133,7 +133,7 @@ export const Swap: Story = {
     disabled: false,
     quotes: {
       best: {
-        id: '1',
+        timestamp: 1,
         amountIn: 1020000000000000000n,
         amountOut: 1000000000n,
         gasLimit: 2100000n,
@@ -145,7 +145,7 @@ export const Swap: Story = {
       },
       all: [
         {
-          id: '1',
+          timestamp: 1,
           amountIn: 1020000000000000000n,
           amountOut: 1000000000n,
           gasLimit: 2100000n,
@@ -156,7 +156,7 @@ export const Swap: Story = {
           executionMilliseconds: 1500,
         },
         {
-          id: '2',
+          timestamp: 2,
           amountIn: 1020000000000000000n,
           amountOut: 1300000000n,
           gasLimit: 21000000000n,
