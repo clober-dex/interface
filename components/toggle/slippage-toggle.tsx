@@ -16,7 +16,7 @@ export const SlippageToggle = ({
 
   useEffect(() => {
     if (
-      Number(slippageInput) !== 0.1 &&
+      Number(slippageInput) !== 0.25 &&
       Number(slippageInput) !== 0.5 &&
       Number(slippageInput) !== 0.99 &&
       Number(slippageInput) !== UNLIMITED_SLIPPAGE
@@ -36,14 +36,14 @@ export const SlippageToggle = ({
     <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
       <div className="bg-gray-600 text-white rounded-[22px] h-7 py-0.5 w-full flex flex-row relative text-xs">
         <button
-          disabled={Number(slippageInput) === 0.1}
+          disabled={Number(slippageInput) === 0.25}
           onClick={() => {
-            setSlippageInput('0.1')
+            setSlippageInput('0.25')
             setCustomValue('')
           }}
           className="flex flex-1 pr-2 pl-4 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          0.1%
+          0.25%
         </button>
         <button
           disabled={Number(slippageInput) === 0.5}
@@ -81,7 +81,7 @@ export const SlippageToggle = ({
           <NumberInput
             placeholder="Custom"
             disabled={
-              Number(slippageInput) === 0.1 &&
+              Number(slippageInput) === 0.25 &&
               Number(slippageInput) === 0.5 &&
               Number(slippageInput) === 0.99 &&
               Number(slippageInput) === UNLIMITED_SLIPPAGE
@@ -125,9 +125,9 @@ export const SlippageToggle = ({
       ) : (
         <div className="hidden sm:flex h-4 sm:h-5 w-1"></div>
       )}
-      {Number(slippageInput) <= 0.05 ? (
-        <div className="flex w-full text-nowrap justify-end">
-          Slippage below 0.05% may result in a failed tx.
+      {Number(slippageInput) <= 0.24 ? (
+        <div className="flex w-full text-nowrap justify-end text-yellow-500">
+          Slippage below 0.25% may result in a failed tx.
         </div>
       ) : (
         <div className="hidden sm:flex h-4 sm:h-5 w-1"></div>
