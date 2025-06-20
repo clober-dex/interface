@@ -3,6 +3,9 @@ import React, { useEffect, useRef } from 'react'
 import NumberInput from '../input/number-input'
 
 const UNLIMITED_SLIPPAGE = 50
+const FIRST_SLIPPAGE = 0.5
+const SECOND_SLIPPAGE = 0.99
+const THIRD_SLIPPAGE = 1.99
 
 export const SlippageToggle = ({
   slippageInput,
@@ -16,9 +19,9 @@ export const SlippageToggle = ({
 
   useEffect(() => {
     if (
-      Number(slippageInput) !== 0.25 &&
-      Number(slippageInput) !== 0.5 &&
-      Number(slippageInput) !== 0.99 &&
+      Number(slippageInput) !== FIRST_SLIPPAGE &&
+      Number(slippageInput) !== SECOND_SLIPPAGE &&
+      Number(slippageInput) !== THIRD_SLIPPAGE &&
       Number(slippageInput) !== UNLIMITED_SLIPPAGE
     ) {
       setCustomValue(slippageInput)
@@ -27,7 +30,7 @@ export const SlippageToggle = ({
 
   useEffect(() => {
     if (prevCustomValueRef.current !== '' && customValue === '') {
-      setSlippageInput('0.5')
+      setSlippageInput(SECOND_SLIPPAGE.toString())
     }
     prevCustomValueRef.current = customValue
   }, [customValue, setSlippageInput])
@@ -36,34 +39,34 @@ export const SlippageToggle = ({
     <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
       <div className="bg-gray-600 text-white rounded-[22px] h-7 py-0.5 w-full flex flex-row relative text-xs">
         <button
-          disabled={Number(slippageInput) === 0.25}
+          disabled={Number(slippageInput) === FIRST_SLIPPAGE}
           onClick={() => {
-            setSlippageInput('0.25')
+            setSlippageInput(FIRST_SLIPPAGE.toString())
             setCustomValue('')
           }}
           className="flex flex-1 pr-2 pl-4 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          0.25%
+          {FIRST_SLIPPAGE}%
         </button>
         <button
-          disabled={Number(slippageInput) === 0.5}
+          disabled={Number(slippageInput) === SECOND_SLIPPAGE}
           onClick={() => {
-            setSlippageInput('0.5')
+            setSlippageInput(SECOND_SLIPPAGE.toString())
             setCustomValue('')
           }}
           className="flex flex-1 px-2 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          0.5%
+          {SECOND_SLIPPAGE}%
         </button>
         <button
-          disabled={Number(slippageInput) === 0.99}
+          disabled={Number(slippageInput) === THIRD_SLIPPAGE}
           onClick={() => {
-            setSlippageInput('0.99')
+            setSlippageInput(THIRD_SLIPPAGE.toString())
             setCustomValue('')
           }}
           className="flex flex-1 px-2 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          0.99%
+          {THIRD_SLIPPAGE}%
         </button>
         <button
           disabled={Number(slippageInput) === UNLIMITED_SLIPPAGE}
@@ -81,9 +84,9 @@ export const SlippageToggle = ({
           <NumberInput
             placeholder="Custom"
             disabled={
-              Number(slippageInput) === 0.25 &&
-              Number(slippageInput) === 0.5 &&
-              Number(slippageInput) === 0.99 &&
+              Number(slippageInput) === FIRST_SLIPPAGE &&
+              Number(slippageInput) === SECOND_SLIPPAGE &&
+              Number(slippageInput) === THIRD_SLIPPAGE &&
               Number(slippageInput) === UNLIMITED_SLIPPAGE
             }
             value={customValue}
@@ -118,16 +121,16 @@ export const SlippageToggle = ({
             </svg>
             {Number(slippageInput) >= UNLIMITED_SLIPPAGE
               ? 'Unlimited'
-              : `${slippageInput}%`}{' '}
+              : `${Number(slippageInput)}%`}{' '}
             Slippage
           </div>
         </div>
       ) : (
         <div className="hidden sm:flex h-4 sm:h-5 w-1"></div>
       )}
-      {Number(slippageInput) <= 0.24 ? (
+      {Number(slippageInput) < FIRST_SLIPPAGE ? (
         <div className="flex w-full text-nowrap justify-end text-yellow-500">
-          Slippage below 0.25% may result in a failed tx.
+          Slippage below {FIRST_SLIPPAGE}% may result in a failed tx.
         </div>
       ) : (
         <div className="hidden sm:flex h-4 sm:h-5 w-1"></div>
