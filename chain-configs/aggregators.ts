@@ -25,16 +25,19 @@ export const aggregators: Aggregator[] = [
   new AggregatorRouterGateway(
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
+    // 0x1e538356d3cfe7fa04696a92515add4a895ecb65
     new MadhouseAggregator(zeroAddress, monadTestnet),
   ),
   new AggregatorRouterGateway(
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
+    // 0x11133460f102c5de431f7749c8bc2b7c172568e1
     new MonorailAggregator(zeroAddress, monadTestnet),
   ),
   new AggregatorRouterGateway(
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
+    // 0x6352a56caadC4F1E25CD6c75970Fa768A3304e64
     new OpenOceanAggregator(zeroAddress, monadTestnet),
   ),
 ]

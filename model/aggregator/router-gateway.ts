@@ -87,7 +87,7 @@ export class AggregatorRouterGateway implements Aggregator {
         aggregator: this,
         transaction: {
           data,
-          gas: transaction.gas + 300_000n,
+          gas: transaction.gas + 500_000n,
           value: isAddressEqual(inputCurrency.address, zeroAddress)
             ? amountIn
             : 0n,
