@@ -173,11 +173,6 @@ export async function fetchQuotesLive(
         netAmountOutUsd,
       }
 
-      onAllQuotes((prevQuotes) => ({
-        best: prevQuotes.best,
-        all: [...prevQuotes.all, quoteWithMeta],
-      }))
-
       if (quote.amountOut > 0n) {
         if (outputPrice && nativePrice) {
           if (
@@ -203,17 +198,31 @@ export async function fetchQuotesLive(
       }
 
       // calculate and emit quotes
-      if (bestQuote) {
-        onAllQuotes((prevQuotes) => ({
-          best: bestQuote,
-          all: prevQuotes.all,
-        }))
-      } else if (!bestQuote && fallbackQuote) {
+      if (!bestQuote && fallbackQuote) {
         bestQuote = fallbackQuote
-        onAllQuotes((prevQuotes) => ({
-          best: bestQuote,
-          all: prevQuotes.all,
-        }))
+      }
+      if (bestQuote) {
+        onAllQuotes((prevQuotes) => {
+          const prevQuote = prevQuotes.all.find(
+            (q) => q.aggregator.name === quoteWithMeta.aggregator.name,
+          )
+          if (
+            prevQuote === undefined ||
+            (prevQuote &&
+              Number(prevQuote.timestamp) < Number(quoteWithMeta.timestamp))
+          ) {
+            return {
+              best: bestQuote,
+              all: [
+                ...prevQuotes.all.filter(
+                  (q) => q.aggregator.name !== quoteWithMeta.aggregator.name,
+                ),
+                quoteWithMeta,
+              ],
+            }
+          }
+          return prevQuotes
+        })
       }
     }),
   )
