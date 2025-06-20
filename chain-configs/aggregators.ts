@@ -6,7 +6,6 @@ import { Aggregator } from '../model/aggregator'
 import { OpenOceanAggregator } from '../model/aggregator/openocean'
 import { CloberV2Aggregator } from '../model/aggregator/clober-v2'
 import { AggregatorRouterGateway } from '../model/aggregator/router-gateway'
-import { MonorailAggregator } from '../model/aggregator/monorail'
 import { MadhouseAggregator } from '../model/aggregator/madhouse'
 
 export const aggregators: Aggregator[] = [
@@ -34,14 +33,14 @@ export const aggregators: Aggregator[] = [
       monadTestnet,
     ),
   ),
-  new AggregatorRouterGateway(
-    getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
-    monadTestnet,
-    new MonorailAggregator(
-      getAddress('0x7B5dF408da2356e9Eecda0492104E758A2B6913d'),
-      monadTestnet,
-    ),
-  ),
+  // new AggregatorRouterGateway(
+  //   getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
+  //   monadTestnet,
+  //   new MonorailAggregator(
+  //     getAddress('0x7B5dF408da2356e9Eecda0492104E758A2B6913d'),
+  //     monadTestnet,
+  //   ),
+  // ),
   new AggregatorRouterGateway(
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
