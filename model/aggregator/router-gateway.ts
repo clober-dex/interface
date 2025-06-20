@@ -77,7 +77,7 @@ export class AggregatorRouterGateway implements Aggregator {
           inputCurrency.address,
           outputCurrency.address,
           amountIn,
-          this.aggregator.contract,
+          transaction.to,
           transaction.data,
         ],
       })
