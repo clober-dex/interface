@@ -264,11 +264,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         tab === 'swap' &&
         Number(debouncedValue) === Number(inputCurrencyAmount)
       ) {
-        setQuotes({
-          best: null,
-          all: [],
-        })
-
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds =
           (balances[getAddress(inputCurrency.address)] ?? 0n) < amountIn
