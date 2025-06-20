@@ -6,14 +6,15 @@ import { OpenOceanAggregator } from '../model/aggregator/openocean'
 import { CloberV2Aggregator } from '../model/aggregator/clober-v2'
 import { AggregatorRouterGateway } from '../model/aggregator/router-gateway'
 import { MadhouseAggregator } from '../model/aggregator/madhouse'
+import { MonorailAggregator } from '../model/aggregator/monorail'
 
 export const aggregators: Aggregator[] = [
   // new CloberV2Aggregator(
   //   getContractAddresses({ chainId: CHAIN_IDS.MONAD_TESTNET }).Controller,
   //   monadTestnet,
   // ),
-  // new OpenOceanAggregator(
-  //   getAddress('0x6352a56caadC4F1E25CD6c75970Fa768A3304e64'),
+  // new MonorailAggregator(
+  //   getAddress('0x11133460f102c5de431f7749c8bc2b7c172568e1'),
   //   monadTestnet,
   // ),
   new AggregatorRouterGateway(
@@ -26,14 +27,11 @@ export const aggregators: Aggregator[] = [
     monadTestnet,
     new MadhouseAggregator(zeroAddress, monadTestnet),
   ),
-  // new AggregatorRouterGateway(
-  //   getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
-  //   monadTestnet,
-  //   new MonorailAggregator(
-  //     getAddress('0x7B5dF408da2356e9Eecda0492104E758A2B6913d'),
-  //     monadTestnet,
-  //   ),
-  // ),
+  new AggregatorRouterGateway(
+    getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
+    monadTestnet,
+    new MonorailAggregator(zeroAddress, monadTestnet),
+  ),
   new AggregatorRouterGateway(
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
