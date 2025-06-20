@@ -47,7 +47,7 @@ export const SwapRouteList = ({
             )
             .map((quote, index) => (
               <motion.div
-                key={quote.aggregator.name}
+                key={`${quote.aggregator.name}-${quote.id.toString()}`}
                 layout
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}

@@ -22,6 +22,7 @@ export const Default: Story = {
   args: {
     quotes: [
       {
+        id: '1',
         amountIn: 1020000000000000000n,
         amountOut: 1000000000n,
         gasLimit: 2100000n,
@@ -32,6 +33,7 @@ export const Default: Story = {
         executionMilliseconds: 1500,
       },
       {
+        id: '2',
         amountIn: 1020000000000000000n,
         amountOut: 1300000000n,
         gasLimit: 21000000000n,
@@ -43,6 +45,7 @@ export const Default: Story = {
       },
     ],
     bestQuote: {
+      id: '1',
       amountIn: 1020000000000000000n,
       amountOut: 1300000000n,
       gasLimit: 21000000000n,
