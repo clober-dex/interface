@@ -106,62 +106,62 @@ export const SwapContractProvider = ({
               isAllowanceChanged = true
             },
           )
-        }
+        } else {
+          const confirmation = {
+            title: 'Swap',
+            body: 'Please confirm in your wallet.',
+            chain: selectedChain,
+            fields: [
+              {
+                currency: inputCurrency,
+                label: inputCurrency.symbol,
+                direction: 'in',
+                value: formatPreciseAmountString(
+                  formatUnits(amountIn, inputCurrency.decimals),
+                  prices[getAddress(inputCurrency.address)] ?? 0,
+                ),
+              },
+              {
+                currency: outputCurrency,
+                label: outputCurrency.symbol,
+                direction: 'out',
+                value: formatPreciseAmountString(
+                  formatUnits(expectedAmountOut, outputCurrency.decimals),
+                  prices[getAddress(outputCurrency.address)] ?? 0,
+                ),
+              },
+            ] as Confirmation['fields'],
+          }
+          setConfirmation(confirmation)
 
-        const confirmation = {
-          title: 'Swap',
-          body: 'Please confirm in your wallet.',
-          chain: selectedChain,
-          fields: [
-            {
-              currency: inputCurrency,
-              label: inputCurrency.symbol,
-              direction: 'in',
-              value: formatPreciseAmountString(
-                formatUnits(amountIn, inputCurrency.decimals),
-                prices[getAddress(inputCurrency.address)] ?? 0,
-              ),
+          await sendTransaction(
+            selectedChain,
+            walletClient,
+            transaction as SdkTransaction,
+            disconnectAsync,
+            (hash) => {
+              setConfirmation(undefined)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type:
+                  aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
+                timestamp: currentTimestampInSeconds(),
+              })
             },
-            {
-              currency: outputCurrency,
-              label: outputCurrency.symbol,
-              direction: 'out',
-              value: formatPreciseAmountString(
-                formatUnits(expectedAmountOut, outputCurrency.decimals),
-                prices[getAddress(outputCurrency.address)] ?? 0,
-              ),
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type:
+                  aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
             },
-          ] as Confirmation['fields'],
+          )
         }
-        setConfirmation(confirmation)
-
-        await sendTransaction(
-          selectedChain,
-          walletClient,
-          transaction as SdkTransaction,
-          disconnectAsync,
-          (hash) => {
-            setConfirmation(undefined)
-            queuePendingTransaction({
-              ...confirmation,
-              txHash: hash,
-              type:
-                aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-              timestamp: currentTimestampInSeconds(),
-            })
-          },
-          (receipt) => {
-            updatePendingTransaction({
-              ...confirmation,
-              txHash: receipt.transactionHash,
-              type:
-                aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-              timestamp: currentTimestampInSeconds(),
-              blockNumber: Number(receipt.blockNumber),
-              success: receipt.status === 'success',
-            })
-          },
-        )
       } catch (e) {
         await queryClient.invalidateQueries({ queryKey: ['quotes'] })
         console.error(e)
@@ -170,6 +170,9 @@ export const SwapContractProvider = ({
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           isAllowanceChanged
             ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
+            : undefined,
+          isAllowanceChanged
+            ? queryClient.invalidateQueries({ queryKey: ['quotes'] })
             : undefined,
         ])
         setConfirmation(undefined)
