@@ -102,14 +102,13 @@ export class EisenFinanceAggregator implements Aggregator {
 
     return {
       amountOut: BigInt(toAmount),
-      // gasLimit: BigInt(gasLimit),
-      gasLimit: 2_000_000n,
+      gasLimit: BigInt(gasLimit),
       aggregator: this,
       transaction: {
         data: data as `0x${string}`,
-        gas: BigInt(2_000_000n),
+        gas: BigInt(gasLimit),
         value: BigInt(value),
-        to: getAddress(this.contract),
+        to: getAddress(to),
         gasPrice: gasPrice,
         from: userAddress,
       },
