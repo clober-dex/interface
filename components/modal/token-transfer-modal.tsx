@@ -177,7 +177,7 @@ export const TokenTransferModal = ({
                   recipient.trim() === '' ||
                   !isAddress(recipient.trim()) ||
                   Number(amount) <= 0 ||
-                  balances[selectedCurrency.address] <
+                  (balances[selectedCurrency.address] ?? 0n) <
                     parseUnits(amount, selectedCurrency.decimals)
                 }
                 text={
@@ -189,7 +189,7 @@ export const TokenTransferModal = ({
                         ? 'Invalid Address'
                         : Number(amount) <= 0
                           ? 'Enter Amount'
-                          : balances[selectedCurrency.address] <
+                          : (balances[selectedCurrency.address] ?? 0n) <
                               parseUnits(amount, selectedCurrency.decimals)
                             ? 'Insufficient Balance'
                             : 'Confirm'

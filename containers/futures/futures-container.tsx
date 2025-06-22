@@ -167,7 +167,7 @@ export const FuturesContainer = () => {
                   .filter(
                     (asset) =>
                       asset.expiration < now &&
-                      balances[asset.currency.address] > 0n &&
+                      (balances[asset.currency.address] ?? 0n) > 0n &&
                       WHITELISTED_FUTURES_ASSETS.map((item) =>
                         getAddress(item.address),
                       ).includes(getAddress(asset.currency.address)),

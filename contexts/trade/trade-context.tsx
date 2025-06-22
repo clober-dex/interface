@@ -269,7 +269,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       ) {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds =
-          (balances[getAddress(inputCurrency.address)] ?? 0n) < amountIn
+          (balances[inputCurrency.address] ?? 0n) < amountIn
         const insufficientAllowance = !isAddressEqual(
           inputCurrency.address,
           zeroAddress,
