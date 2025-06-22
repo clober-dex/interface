@@ -64,7 +64,6 @@ export const LimitContractProvider = ({
       if (!walletClient || !selectedChain) {
         return
       }
-      let isAllowanceChanged = false
 
       try {
         const isBid = isAddressEqual(
@@ -164,7 +163,7 @@ export const LimitContractProvider = ({
                 timestamp: currentTimestampInSeconds(),
               })
             },
-            (receipt) => {
+            async (receipt) => {
               updatePendingTransaction({
                 ...confirmation,
                 txHash: receipt.transactionHash,
@@ -173,7 +172,7 @@ export const LimitContractProvider = ({
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
               })
-              isAllowanceChanged = true
+              await queryClient.invalidateQueries({ queryKey: ['allowances'] })
             },
           )
         }
@@ -325,9 +324,6 @@ export const LimitContractProvider = ({
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['open-orders'] }),
           queryClient.invalidateQueries({ queryKey: ['market'] }),
-          isAllowanceChanged
-            ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
-            : undefined,
         ])
         setConfirmation(undefined)
       }
@@ -347,7 +343,6 @@ export const LimitContractProvider = ({
 
   const cancels = useCallback(
     async (openOrders: OpenOrder[]) => {
-      let isAllowanceChanged = false
       if (!walletClient || !selectedChain) {
         return
       }
@@ -369,7 +364,7 @@ export const LimitContractProvider = ({
           })
           if (hash) {
             await waitTransaction(walletClient.chain, hash)
-            isAllowanceChanged = true
+            await queryClient.invalidateQueries({ queryKey: ['allowances'] })
           }
         }
 
@@ -429,9 +424,6 @@ export const LimitContractProvider = ({
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['open-orders'] }),
           queryClient.invalidateQueries({ queryKey: ['market'] }),
-          isAllowanceChanged
-            ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
-            : undefined,
         ])
         setConfirmation(undefined)
       }
@@ -451,7 +443,6 @@ export const LimitContractProvider = ({
 
   const claims = useCallback(
     async (openOrders: OpenOrder[]) => {
-      let isAllowanceChanged = false
       if (!walletClient || !selectedChain) {
         return
       }
@@ -473,7 +464,7 @@ export const LimitContractProvider = ({
           })
           if (hash) {
             await waitTransaction(walletClient.chain, hash)
-            isAllowanceChanged = true
+            await queryClient.invalidateQueries({ queryKey: ['allowances'] })
           }
         }
 
@@ -533,9 +524,6 @@ export const LimitContractProvider = ({
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['open-orders'] }),
           queryClient.invalidateQueries({ queryKey: ['market'] }),
-          isAllowanceChanged
-            ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
-            : undefined,
         ])
         setConfirmation(undefined)
       }

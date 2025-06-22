@@ -55,7 +55,6 @@ export const SwapContractProvider = ({
       if (!walletClient) {
         return
       }
-      let isAllowanceChanged = false
 
       try {
         setConfirmation({
@@ -94,7 +93,7 @@ export const SwapContractProvider = ({
                 timestamp: currentTimestampInSeconds(),
               })
             },
-            (receipt) => {
+            async (receipt) => {
               updatePendingTransaction({
                 ...confirmation,
                 txHash: receipt.transactionHash,
@@ -103,7 +102,10 @@ export const SwapContractProvider = ({
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
               })
-              isAllowanceChanged = true
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['allowances'] }),
+                queryClient.invalidateQueries({ queryKey: ['quotes'] }),
+              ])
             },
           )
         } else {
@@ -168,12 +170,6 @@ export const SwapContractProvider = ({
       } finally {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
-          isAllowanceChanged
-            ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
-            : undefined,
-          isAllowanceChanged
-            ? queryClient.invalidateQueries({ queryKey: ['quotes'] })
-            : undefined,
         ])
         setConfirmation(undefined)
       }

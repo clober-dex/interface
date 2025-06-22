@@ -159,7 +159,6 @@ export const FuturesContractProvider = ({
       if (!walletClient) {
         return
       }
-      let isAllowanceChanged = false
 
       try {
         setConfirmation({
@@ -199,7 +198,7 @@ export const FuturesContractProvider = ({
                 timestamp: currentTimestampInSeconds(),
               })
             },
-            (receipt) => {
+            async (receipt) => {
               updatePendingTransaction({
                 ...confirmation,
                 txHash: receipt.transactionHash,
@@ -208,7 +207,9 @@ export const FuturesContractProvider = ({
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
               })
-              isAllowanceChanged = true
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['allowances'] }),
+              ])
             },
           )
         }
@@ -340,9 +341,6 @@ export const FuturesContractProvider = ({
         await Promise.all([
           // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
-          isAllowanceChanged
-            ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
-            : undefined,
         ])
         setConfirmation(undefined)
       }
