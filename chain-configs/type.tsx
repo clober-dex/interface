@@ -5,6 +5,7 @@ type EXTERNAL_CONTRACT =
   | 'FuturesMarket'
   | 'PythOracle'
   | 'TradingCompetitionRegistration'
+  | 'AggregatorRouterGateway'
 
 type EXTERNAL_SUBGRAPH =
   | 'FUTURES_MARKET'

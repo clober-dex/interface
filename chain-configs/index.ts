@@ -10,6 +10,7 @@ import {
 } from '@rainbow-me/rainbowkit/wallets'
 
 import { socialAccountWallet } from '../utils/web3auth'
+import { AggregatorRouterGateway } from '../model/aggregator/router-gateway'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
@@ -51,6 +52,9 @@ export const CHAIN_CONFIG: ChainConfig = {
     PythOracle: getAddress('0xad2B52D2af1a9bD5c561894Cdd84f7505e1CD0B5'),
     TradingCompetitionRegistration: getAddress(
       '0xfE5771C5b651dfa9f8db95140efcC75d59CE0c88',
+    ),
+    AggregatorRouterGateway: getAddress(
+      '0xfD845859628946B317A78A9250DA251114FbD846',
     ),
   },
   BLACKLISTED_USERS: [
