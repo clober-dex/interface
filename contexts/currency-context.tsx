@@ -38,7 +38,7 @@ type CurrencyContext = {
   setCurrencies: (currencies: Currency[]) => void
   prices: Prices
   balances: Balances
-  allowances: Allowances
+  getAllowance: (spender: `0x${string}`, currency: Currency) => bigint
   isOpenOrderApproved: boolean
   transfer: (
     currency: Currency,
@@ -53,7 +53,7 @@ const Context = React.createContext<CurrencyContext>({
   setCurrencies: () => {},
   prices: {},
   balances: {},
-  allowances: {},
+  getAllowance: () => 0n,
   isOpenOrderApproved: false,
   transfer: () => Promise.resolve(),
 })
@@ -395,13 +395,26 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     ],
   )
 
+  const getAllowance = useCallback(
+    (spender: `0x${string}`, currency: Currency) => {
+      if (isAddressEqual(currency.address, zeroAddress)) {
+        return 2n ** 256n - 1n // native currency has unlimited allowance
+      }
+      const spenderAddress = getAddress(spender)
+      const currencyAddress = getAddress(currency.address)
+      return (data?.allowances?.[spenderAddress]?.[currencyAddress] ??
+        0n) as bigint
+    },
+    [data],
+  )
+
   return (
     <Context.Provider
       value={{
         whitelistCurrencies,
         prices: prices ?? {},
         balances: balances ?? {},
-        allowances: data?.allowances ?? {},
+        getAllowance,
         isOpenOrderApproved: data?.isOpenOrderApproved ?? false,
         currencies,
         setCurrencies,

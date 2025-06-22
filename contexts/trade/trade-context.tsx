@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import { getAddress, isAddressEqual, parseUnits } from 'viem'
 import { getQuoteToken } from '@clober/v2-sdk'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -107,7 +107,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     chain: selectedChain,
   })
   const { chainId } = useAccount()
-  const { whitelistCurrencies, setCurrencies, prices, balances, allowances } =
+  const { whitelistCurrencies, setCurrencies, prices, balances, getAllowance } =
     useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
@@ -270,14 +270,11 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds =
           (balances[inputCurrency.address] ?? 0n) < amountIn
-        const insufficientAllowance = !isAddressEqual(
-          inputCurrency.address,
-          zeroAddress,
-        )
-          ? (allowances?.[
-              CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway
-            ]?.[getAddress(inputCurrency.address)] ?? 0n) < amountIn
-          : false
+        const insufficientAllowance =
+          getAllowance(
+            CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
+            inputCurrency,
+          ) < amountIn
         await fetchQuotesLive(
           aggregators,
           inputCurrency,

@@ -5,7 +5,6 @@ import {
   createPublicClient,
   encodeAbiParameters,
   encodeFunctionData,
-  getAddress,
   Hash,
   http,
   isAddressEqual,
@@ -92,7 +91,7 @@ export const FuturesContractProvider = ({
     useTransactionContext()
   const { selectedChain } = useChainContext()
   const { address: userAddress } = useAccount()
-  const { allowances, prices } = useCurrencyContext()
+  const { getAllowance, prices } = useCurrencyContext()
   const publicClient = useMemo(() => {
     return createPublicClient({
       chain: selectedChain,
@@ -172,9 +171,7 @@ export const FuturesContractProvider = ({
         if (
           !isAddressEqual(spender, CHAIN_CONFIG.REFERENCE_CURRENCY.address) &&
           !isAddressEqual(asset.collateral.address, zeroAddress) &&
-          allowances[getAddress(spender)][
-            getAddress(asset.collateral.address)
-          ] < collateralAmount
+          getAllowance(spender, asset.collateral) < collateralAmount
         ) {
           const confirmation = {
             title: `Max Approve ${asset.collateral.symbol}`,
@@ -346,7 +343,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      allowances,
+      getAllowance,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
