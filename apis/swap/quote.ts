@@ -204,7 +204,9 @@ export async function fetchQuotesLive(
       if (bestQuote) {
         onAllQuotes((prevQuotes) => {
           const prevQuote = prevQuotes.all.find(
-            (q) => q.aggregator.name === quoteWithMeta.aggregator.name,
+            (q) =>
+              q.aggregator.name === quoteWithMeta.aggregator.name &&
+              q.amountIn === quoteWithMeta.amountIn,
           )
           if (
             prevQuote === undefined ||
