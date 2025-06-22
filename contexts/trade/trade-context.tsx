@@ -252,16 +252,15 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       'quotes',
       inputCurrency?.address,
       outputCurrency?.address,
-      Number(inputCurrencyAmount),
+      Number(debouncedValue),
       slippageInput,
       userAddress,
       selectedChain.id,
       tab,
       latestQuotesRefreshTime,
-      debouncedValue,
     ],
     queryFn: async () => {
-      if (inputCurrencyAmount === '') {
+      if (debouncedValue === '') {
         setQuotes({
           best: null,
           all: [],
@@ -271,9 +270,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         gasPrice &&
         inputCurrency &&
         outputCurrency &&
-        Number(inputCurrencyAmount) > 0 &&
-        tab === 'swap' &&
-        Number(debouncedValue) === Number(inputCurrencyAmount)
+        Number(debouncedValue) > 0 &&
+        tab === 'swap'
       ) {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds =
