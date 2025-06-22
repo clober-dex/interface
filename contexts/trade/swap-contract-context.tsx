@@ -119,7 +119,7 @@ export const SwapContractProvider = ({
                 direction: 'in',
                 value: formatPreciseAmountString(
                   formatUnits(amountIn, inputCurrency.decimals),
-                  prices[getAddress(inputCurrency.address)] ?? 0,
+                  prices[inputCurrency.address] ?? 0,
                 ),
               },
               {
@@ -128,7 +128,7 @@ export const SwapContractProvider = ({
                 direction: 'out',
                 value: formatPreciseAmountString(
                   formatUnits(expectedAmountOut, outputCurrency.decimals),
-                  prices[getAddress(outputCurrency.address)] ?? 0,
+                  prices[outputCurrency.address] ?? 0,
                 ),
               },
             ] as Confirmation['fields'],

@@ -224,8 +224,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       selectedQuote.amountOut > 0n &&
       inputCurrency &&
       outputCurrency &&
-      prices[getAddress(inputCurrency.address)] &&
-      prices[getAddress(outputCurrency.address)]
+      prices[inputCurrency.address] &&
+      prices[outputCurrency.address]
     ) {
       const amountIn = Number(
         formatUnits(selectedQuote.amountIn, inputCurrency.decimals),
@@ -233,8 +233,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       const amountOut = Number(
         formatUnits(selectedQuote.amountOut, outputCurrency.decimals),
       )
-      const inputValue = amountIn * prices[getAddress(inputCurrency.address)]
-      const outputValue = amountOut * prices[getAddress(outputCurrency.address)]
+      const inputValue = amountIn * (prices[inputCurrency.address] ?? 0)
+      const outputValue = amountOut * (prices[outputCurrency.address] ?? 0)
       return inputValue > outputValue
         ? ((outputValue - inputValue) / inputValue) * 100
         : 0

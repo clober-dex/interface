@@ -315,7 +315,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
               direction: 'in',
               value: formatPreciseAmountString(
                 formatUnits(amount, currency.decimals),
-                prices[getAddress(currency.address)] ?? 0,
+                prices[currency.address] ?? 0,
               ),
             },
           ] as Confirmation['fields'],

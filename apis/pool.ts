@@ -88,9 +88,9 @@ export async function fetchPool(
   })
   const tvl =
     Number(pool.liquidityA.total.value) *
-      prices[pool.liquidityA.total.currency.address] +
+      (prices[pool.liquidityA.total.currency.address] ?? 0) +
     Number(pool.liquidityB.total.value) *
-      prices[pool.liquidityB.total.currency.address]
+      (prices[pool.liquidityB.total.currency.address] ?? 0)
   const now = currentTimestampInSeconds()
   const blacklistedTimestamps = getBlacklistedTimestampsForPair(
     poolSnapshot.currencyA,
