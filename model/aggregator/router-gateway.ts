@@ -1,9 +1,18 @@
-import { encodeFunctionData, isAddressEqual, zeroAddress } from 'viem'
+import {
+  PublicClient,
+  encodeFunctionData,
+  isAddressEqual,
+  zeroAddress,
+  createPublicClient,
+  http,
+  getAddress,
+} from 'viem'
 import { Transaction } from '@clober/v2-sdk'
 
 import { Chain } from '../chain'
 import { Currency } from '../currency'
 import { Prices } from '../prices'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 import { Aggregator } from './index'
 
@@ -16,6 +25,7 @@ export class AggregatorRouterGateway implements Aggregator {
   public readonly supportsPriceCalculation: boolean
   public readonly chain: Chain
   private readonly aggregator: Aggregator
+  private publicClient: PublicClient
 
   constructor(contract: `0x${string}`, chain: Chain, aggregator: Aggregator) {
     this.contract = contract
@@ -23,6 +33,10 @@ export class AggregatorRouterGateway implements Aggregator {
     this.aggregator = aggregator
     this.name = aggregator.name
     this.supportsPriceCalculation = aggregator.supportsPriceCalculation
+    this.publicClient = createPublicClient({
+      chain,
+      transport: http(CHAIN_CONFIG.RPC_URL),
+    })
   }
 
   public async currencies(): Promise<Currency[]> {
@@ -81,19 +95,39 @@ export class AggregatorRouterGateway implements Aggregator {
           transaction.data,
         ],
       })
+
+      const tx: Transaction = {
+        data,
+        gas: transaction.gas + 500_000n,
+        value: isAddressEqual(inputCurrency.address, zeroAddress)
+          ? amountIn
+          : 0n,
+        to: this.contract,
+        from: transaction.from,
+        gasPrice: transaction.gasPrice,
+      }
+      let gasEstimate = 2_000_000n // Default gas estimate if no transaction is provided
+      if (transaction.from) {
+        try {
+          gasEstimate = await this.publicClient.estimateGas({
+            to: getAddress(tx.to),
+            data: tx.data as `0x${string}`,
+            value: BigInt(tx.value),
+            account: getAddress(transaction.from as `0x${string}`),
+          })
+        } catch (error) {
+          throw new Error(
+            `[${this.aggregator.name}] Failed to estimate gas for transaction: ${error}`,
+          )
+        }
+      }
       return {
         amountOut,
         gasLimit: transaction?.gas ?? 0n,
         aggregator: this,
         transaction: {
-          data,
-          gas: transaction.gas + 500_000n,
-          value: isAddressEqual(inputCurrency.address, zeroAddress)
-            ? amountIn
-            : 0n,
-          to: this.contract,
-          from: transaction.from,
-          gasPrice: transaction.gasPrice,
+          ...tx,
+          gas: gasEstimate,
         },
         executionMilliseconds: performance.now() - start,
       }
