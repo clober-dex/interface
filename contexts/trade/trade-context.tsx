@@ -260,12 +260,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       latestQuotesRefreshTime,
     ],
     queryFn: async () => {
-      if (debouncedValue === '') {
-        setQuotes({
-          best: null,
-          all: [],
-        })
-      }
       if (
         gasPrice &&
         inputCurrency &&
@@ -307,6 +301,11 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     const timer = setTimeout(() => {
       setDebouncedValue(inputCurrencyAmount)
     }, 500)
+
+    setQuotes({
+      best: null,
+      all: [],
+    })
 
     return () => clearTimeout(timer)
   }, [inputCurrencyAmount])
