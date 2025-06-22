@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getAddress, isAddressEqual, parseUnits } from 'viem'
+import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { getQuoteToken } from '@clober/v2-sdk'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -107,7 +107,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     chain: selectedChain,
   })
   const { chainId } = useAccount()
-  const { whitelistCurrencies, setCurrencies, prices, balances } =
+  const { whitelistCurrencies, setCurrencies, prices, balances, allowances } =
     useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
@@ -270,6 +270,14 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds =
           (balances[getAddress(inputCurrency.address)] ?? 0n) < amountIn
+        const insufficientAllowance = !isAddressEqual(
+          inputCurrency.address,
+          zeroAddress,
+        )
+          ? (allowances?.[
+              CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway
+            ]?.[getAddress(inputCurrency.address)] ?? 0n) < amountIn
+          : false
         await fetchQuotesLive(
           aggregators,
           inputCurrency,
@@ -278,7 +286,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
           parseFloat(slippageInput),
           gasPrice,
           prices,
-          insufficientFunds ? undefined : userAddress,
+          insufficientFunds || insufficientAllowance ? undefined : userAddress,
           setQuotes,
         )
       }

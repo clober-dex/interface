@@ -55,7 +55,6 @@ export const SwapContractProvider = ({
       if (!walletClient) {
         return
       }
-      let isAllowanceChanged = false
 
       try {
         setConfirmation({
@@ -94,7 +93,7 @@ export const SwapContractProvider = ({
                 timestamp: currentTimestampInSeconds(),
               })
             },
-            (receipt) => {
+            async (receipt) => {
               updatePendingTransaction({
                 ...confirmation,
                 txHash: receipt.transactionHash,
@@ -103,74 +102,73 @@ export const SwapContractProvider = ({
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
               })
-              isAllowanceChanged = true
+              await queryClient.invalidateQueries({ queryKey: ['allowances'] })
+              await new Promise((resolve) => setTimeout(resolve, 100))
+              await queryClient.invalidateQueries({ queryKey: ['quotes'] })
+            },
+          )
+        } else {
+          const confirmation = {
+            title: 'Swap',
+            body: 'Please confirm in your wallet.',
+            chain: selectedChain,
+            fields: [
+              {
+                currency: inputCurrency,
+                label: inputCurrency.symbol,
+                direction: 'in',
+                value: formatPreciseAmountString(
+                  formatUnits(amountIn, inputCurrency.decimals),
+                  prices[getAddress(inputCurrency.address)] ?? 0,
+                ),
+              },
+              {
+                currency: outputCurrency,
+                label: outputCurrency.symbol,
+                direction: 'out',
+                value: formatPreciseAmountString(
+                  formatUnits(expectedAmountOut, outputCurrency.decimals),
+                  prices[getAddress(outputCurrency.address)] ?? 0,
+                ),
+              },
+            ] as Confirmation['fields'],
+          }
+          setConfirmation(confirmation)
+
+          await sendTransaction(
+            selectedChain,
+            walletClient,
+            transaction as SdkTransaction,
+            disconnectAsync,
+            (hash) => {
+              setConfirmation(undefined)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type:
+                  aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type:
+                  aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
             },
           )
         }
-
-        const confirmation = {
-          title: 'Swap',
-          body: 'Please confirm in your wallet.',
-          chain: selectedChain,
-          fields: [
-            {
-              currency: inputCurrency,
-              label: inputCurrency.symbol,
-              direction: 'in',
-              value: formatPreciseAmountString(
-                formatUnits(amountIn, inputCurrency.decimals),
-                prices[getAddress(inputCurrency.address)] ?? 0,
-              ),
-            },
-            {
-              currency: outputCurrency,
-              label: outputCurrency.symbol,
-              direction: 'out',
-              value: formatPreciseAmountString(
-                formatUnits(expectedAmountOut, outputCurrency.decimals),
-                prices[getAddress(outputCurrency.address)] ?? 0,
-              ),
-            },
-          ] as Confirmation['fields'],
-        }
-        setConfirmation(confirmation)
-
-        await sendTransaction(
-          selectedChain,
-          walletClient,
-          transaction as SdkTransaction,
-          disconnectAsync,
-          (hash) => {
-            setConfirmation(undefined)
-            queuePendingTransaction({
-              ...confirmation,
-              txHash: hash,
-              type:
-                aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-              timestamp: currentTimestampInSeconds(),
-            })
-          },
-          (receipt) => {
-            updatePendingTransaction({
-              ...confirmation,
-              txHash: receipt.transactionHash,
-              type:
-                aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-              timestamp: currentTimestampInSeconds(),
-              blockNumber: Number(receipt.blockNumber),
-              success: receipt.status === 'success',
-            })
-          },
-        )
       } catch (e) {
         await queryClient.invalidateQueries({ queryKey: ['quotes'] })
         console.error(e)
       } finally {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
-          isAllowanceChanged
-            ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
-            : undefined,
         ])
         setConfirmation(undefined)
       }

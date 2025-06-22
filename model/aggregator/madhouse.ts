@@ -1,18 +1,10 @@
-import {
-  PublicClient,
-  getAddress,
-  isAddressEqual,
-  zeroAddress,
-  createPublicClient,
-  http,
-} from 'viem'
+import { getAddress, isAddressEqual, zeroAddress } from 'viem'
 import { Transaction } from '@clober/v2-sdk'
 
 import { Chain } from '../chain'
 import { Currency } from '../currency'
 import { fetchApi } from '../../apis/utils'
 import { Prices } from '../prices'
-import { CHAIN_CONFIG } from '../../chain-configs'
 
 import { Aggregator } from './index'
 
@@ -26,15 +18,10 @@ export class MadhouseAggregator implements Aggregator {
   public readonly chain: Chain
   private readonly TIMEOUT = 6000
   private readonly nativeTokenAddress = zeroAddress
-  private publicClient: PublicClient
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
     this.chain = chain
-    this.publicClient = createPublicClient({
-      chain,
-      transport: http(CHAIN_CONFIG.RPC_URL),
-    })
   }
 
   public async currencies(): Promise<Currency[]> {
@@ -99,15 +86,7 @@ export class MadhouseAggregator implements Aggregator {
       params,
     })
 
-    let gasEstimate = 1_000_000n
-    if (userAddress) {
-      gasEstimate = await this.publicClient.estimateGas({
-        to: getAddress(tx.to),
-        data: tx.data as `0x${string}`,
-        value: BigInt(tx.value),
-        account: userAddress,
-      })
-    }
+    const gasEstimate = 2_000_000n
 
     return {
       amountOut: BigInt(amountOut),

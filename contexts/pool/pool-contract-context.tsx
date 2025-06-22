@@ -66,7 +66,6 @@ export const PoolContractProvider = ({
       disableSwap: boolean,
       slippage: number,
     ) => {
-      let isAllowanceChanged = false
       if (!walletClient || !selectedChain) {
         return
       }
@@ -119,7 +118,7 @@ export const PoolContractProvider = ({
                 timestamp: currentTimestampInSeconds(),
               })
             },
-            (receipt) => {
+            async (receipt) => {
               updatePendingTransaction({
                 ...confirmation,
                 txHash: receipt.transactionHash,
@@ -128,7 +127,9 @@ export const PoolContractProvider = ({
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
               })
-              isAllowanceChanged = true
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['allowances'] }),
+              ])
             },
           )
         }
@@ -161,7 +162,7 @@ export const PoolContractProvider = ({
                 timestamp: currentTimestampInSeconds(),
               })
             },
-            (receipt) => {
+            async (receipt) => {
               updatePendingTransaction({
                 ...confirmation,
                 txHash: receipt.transactionHash,
@@ -170,7 +171,9 @@ export const PoolContractProvider = ({
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
               })
-              isAllowanceChanged = true
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['allowances'] }),
+              ])
             },
           )
         }
@@ -281,9 +284,6 @@ export const PoolContractProvider = ({
       } finally {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
-          isAllowanceChanged
-            ? queryClient.invalidateQueries({ queryKey: ['allowances'] })
-            : undefined,
           queryClient.invalidateQueries({ queryKey: ['pool'] }),
           queryClient.invalidateQueries({ queryKey: ['lp-balances'] }),
         ])

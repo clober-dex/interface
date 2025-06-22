@@ -148,7 +148,8 @@ export const TradeContainer = () => {
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
-  const { balances, prices, currencies, setCurrencies } = useCurrencyContext()
+  const { balances, allowances, prices, currencies, setCurrencies } =
+    useCurrencyContext()
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
 
@@ -369,23 +370,31 @@ export const TradeContainer = () => {
                   ? 'Enter amount'
                   : amountIn > balances[inputCurrency.address]
                     ? 'Insufficient balance'
-                    : isAddressEqual(inputCurrency.address, zeroAddress) &&
-                        isAddressEqual(
-                          outputCurrency.address,
-                          CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-                        )
-                      ? 'Wrap'
-                      : isAddressEqual(
-                            inputCurrency.address,
+                    : !isAddressEqual(inputCurrency.address, zeroAddress) &&
+                        amountIn >
+                          (allowances?.[
+                            CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
+                              .AggregatorRouterGateway
+                          ]?.[inputCurrency.address] ?? 0n)
+                      ? `Max Approve ${inputCurrency.symbol}`
+                      : isAddressEqual(inputCurrency.address, zeroAddress) &&
+                          isAddressEqual(
+                            outputCurrency.address,
                             CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-                          ) &&
-                          isAddressEqual(outputCurrency.address, zeroAddress)
-                        ? 'Unwrap'
-                        : `Swap`,
+                          )
+                        ? 'Wrap'
+                        : isAddressEqual(
+                              inputCurrency.address,
+                              CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+                            ) &&
+                            isAddressEqual(outputCurrency.address, zeroAddress)
+                          ? 'Unwrap'
+                          : `Swap`,
     }),
     [
       amountIn,
       balances,
+      allowances,
       gasPrice,
       inputCurrency,
       inputCurrencyAmount,
