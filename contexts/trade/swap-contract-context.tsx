@@ -102,10 +102,9 @@ export const SwapContractProvider = ({
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
               })
-              await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ['allowances'] }),
-                queryClient.invalidateQueries({ queryKey: ['quotes'] }),
-              ])
+              await queryClient.invalidateQueries({ queryKey: ['allowances'] })
+              await new Promise((resolve) => setTimeout(resolve, 100))
+              await queryClient.invalidateQueries({ queryKey: ['quotes'] })
             },
           )
         } else {
