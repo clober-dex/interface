@@ -72,6 +72,11 @@ export class EisenFinanceAggregator implements Aggregator {
         ...params,
         fromAddress: userAddress as `0x${string}`,
       }
+    } else {
+      params = {
+        ...params,
+        fromAddress: zeroAddress,
+      }
     }
 
     const {
