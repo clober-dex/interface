@@ -41,7 +41,7 @@ export const SwapContractProvider = ({
   const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
     useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { allowances, prices } = useCurrencyContext()
+  const { getAllowance, prices } = useCurrencyContext()
 
   const swap = useCallback(
     async (
@@ -68,8 +68,7 @@ export const SwapContractProvider = ({
         if (
           !isAddressEqual(spender, CHAIN_CONFIG.REFERENCE_CURRENCY.address) &&
           !isAddressEqual(inputCurrency.address, zeroAddress) &&
-          allowances[getAddress(spender)][getAddress(inputCurrency.address)] <
-            amountIn
+          getAllowance(spender, inputCurrency) < amountIn
         ) {
           const confirmation = {
             title: `Max Approve ${inputCurrency.symbol}`,
@@ -119,7 +118,7 @@ export const SwapContractProvider = ({
                 direction: 'in',
                 value: formatPreciseAmountString(
                   formatUnits(amountIn, inputCurrency.decimals),
-                  prices[getAddress(inputCurrency.address)] ?? 0,
+                  prices[inputCurrency.address] ?? 0,
                 ),
               },
               {
@@ -128,7 +127,7 @@ export const SwapContractProvider = ({
                 direction: 'out',
                 value: formatPreciseAmountString(
                   formatUnits(expectedAmountOut, outputCurrency.decimals),
-                  prices[getAddress(outputCurrency.address)] ?? 0,
+                  prices[outputCurrency.address] ?? 0,
                 ),
               },
             ] as Confirmation['fields'],
@@ -174,7 +173,7 @@ export const SwapContractProvider = ({
       }
     },
     [
-      allowances,
+      getAllowance,
       disconnectAsync,
       prices,
       queryClient,

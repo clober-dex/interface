@@ -148,7 +148,7 @@ export const TradeContainer = () => {
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
-  const { balances, allowances, prices, currencies, setCurrencies } =
+  const { balances, getAllowance, prices, currencies, setCurrencies } =
     useCurrencyContext()
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
@@ -212,7 +212,7 @@ export const TradeContainer = () => {
             ? 'Select output currency'
             : amountIn === 0n
               ? 'Enter amount'
-              : amountIn > balances[inputCurrency.address]
+              : amountIn > (balances[inputCurrency.address] ?? 0n)
                 ? 'Insufficient balance'
                 : `Place Order`,
     }),
@@ -327,7 +327,7 @@ export const TradeContainer = () => {
         !inputCurrency ||
         !outputCurrency ||
         amountIn === 0n ||
-        amountIn > balances[inputCurrency.address],
+        amountIn > (balances[inputCurrency.address] ?? 0n),
       onClick: async () => {
         if (!userAddress && openConnectModal) {
           openConnectModal()
@@ -368,14 +368,14 @@ export const TradeContainer = () => {
                 ? 'Select output currency'
                 : amountIn === 0n
                   ? 'Enter amount'
-                  : amountIn > balances[inputCurrency.address]
+                  : amountIn > (balances[inputCurrency.address] ?? 0n)
                     ? 'Insufficient balance'
-                    : !isAddressEqual(inputCurrency.address, zeroAddress) &&
-                        amountIn >
-                          (allowances?.[
-                            CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
-                              .AggregatorRouterGateway
-                          ]?.[inputCurrency.address] ?? 0n)
+                    : amountIn >
+                        getAllowance(
+                          CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
+                            .AggregatorRouterGateway,
+                          inputCurrency,
+                        )
                       ? `Max Approve ${inputCurrency.symbol}`
                       : isAddressEqual(inputCurrency.address, zeroAddress) &&
                           isAddressEqual(
@@ -394,7 +394,7 @@ export const TradeContainer = () => {
     [
       amountIn,
       balances,
-      allowances,
+      getAllowance,
       gasPrice,
       inputCurrency,
       inputCurrencyAmount,

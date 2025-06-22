@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
-import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import {
   cancelOrders,
   claimOrders,
@@ -51,7 +51,7 @@ export const LimitContractProvider = ({
   const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
     useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { isOpenOrderApproved, allowances, prices } = useCurrencyContext()
+  const { isOpenOrderApproved, getAllowance, prices } = useCurrencyContext()
 
   const limit = useCallback(
     async (
@@ -138,7 +138,7 @@ export const LimitContractProvider = ({
         }).Controller
         if (
           !isAddressEqual(inputCurrency.address, zeroAddress) &&
-          allowances[getAddress(spender)][getAddress(inputCurrency.address)] <
+          getAllowance(spender, inputCurrency) <
             parseUnits(amount, inputCurrency.decimals)
         ) {
           const confirmation = {
@@ -329,7 +329,7 @@ export const LimitContractProvider = ({
       }
     },
     [
-      allowances,
+      getAllowance,
       disconnectAsync,
       prices,
       queryClient,

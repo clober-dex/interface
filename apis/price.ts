@@ -31,8 +31,8 @@ export const fetchPrice = async (
     : [currency1, currency0]
   const TARGET_USD_AMOUNT = 100 // USD
   const amountIn = new BigNumber(TARGET_USD_AMOUNT).div(
-    prices[getAddress(baseCurrency.address)]
-      ? prices[getAddress(baseCurrency.address)]
+    (prices[baseCurrency.address] ?? 0)
+      ? (prices[baseCurrency.address] ?? 0)
       : 1,
   )
   try {

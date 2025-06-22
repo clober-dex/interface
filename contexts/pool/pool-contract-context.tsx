@@ -7,7 +7,7 @@ import {
   getQuoteToken,
   removeLiquidity,
 } from '@clober/v2-sdk'
-import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
 
 import { Currency } from '../../model/currency'
@@ -54,7 +54,7 @@ export const PoolContractProvider = ({
   const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
     useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { allowances, prices } = useCurrencyContext()
+  const { getAllowance, prices } = useCurrencyContext()
 
   const mint = useCallback(
     async (
@@ -93,7 +93,7 @@ export const PoolContractProvider = ({
         // Max approve for currency0
         if (
           !isAddressEqual(currency0.address, zeroAddress) &&
-          allowances[getAddress(spender)][getAddress(currency0.address)] <
+          getAllowance(spender, currency0) <
             parseUnits(amount0, currency0.decimals)
         ) {
           const confirmation = {
@@ -137,7 +137,7 @@ export const PoolContractProvider = ({
         // Max approve for currency1
         if (
           !isAddressEqual(currency1.address, zeroAddress) &&
-          allowances[getAddress(spender)][getAddress(currency1.address)] <
+          getAllowance(spender, currency1) <
             parseUnits(amount1, currency1.decimals)
         ) {
           const confirmation = {
@@ -291,7 +291,7 @@ export const PoolContractProvider = ({
       }
     },
     [
-      allowances,
+      getAllowance,
       disconnectAsync,
       prices,
       queryClient,

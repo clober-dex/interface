@@ -126,7 +126,8 @@ export const FuturesPositionAdjustModalContainer = ({
           (newLTV > 0 && Math.abs(ltv - newLTV) < 0.5) ||
           (newLTV > ltv && expectedDebtAmount > maxLoanableAmount) ||
           (debtAmountDelta < 0n &&
-            balances[userPosition.asset.currency.address] < -debtAmountDelta) ||
+            (balances[userPosition.asset.currency.address] ?? 0n) <
+              -debtAmountDelta) ||
           (userPosition.asset.minDebt > expectedDebtAmount &&
             expectedDebtAmount > 0n),
         text:
@@ -140,7 +141,7 @@ export const FuturesPositionAdjustModalContainer = ({
                   prices[userPosition.asset.currency.address] ?? 0,
                 )} ${userPosition.asset.currency.symbol.split('-')[0]}`
               : debtAmountDelta < 0n &&
-                  balances[userPosition.asset.currency.address] <
+                  (balances[userPosition.asset.currency.address] ?? 0n) <
                     -debtAmountDelta
                 ? 'Not enough futures balance'
                 : newLTV === 0

@@ -6,7 +6,6 @@ import { Aggregator } from '../../model/aggregator'
 import { Quote } from '../../model/aggregator/quote'
 import { Prices } from '../../model/prices'
 import { formatUnits } from '../../utils/bigint'
-import { Chain } from '../../model/chain'
 
 export async function fetchAllQuotesAndSelectBest(
   aggregators: Aggregator[],
@@ -58,8 +57,8 @@ export async function fetchAllQuotesAndSelectBest(
   let fallbackQuote: Quote | undefined = undefined
   const allQuotes: Quote[] = []
   for (const quote of quotes) {
-    const outputPrice = prices[getAddress(outputCurrency.address)]
-    const nativePrice = prices[zeroAddress]
+    const outputPrice = prices[outputCurrency.address] ?? 0
+    const nativePrice = prices[zeroAddress] ?? 0
 
     const gasUsd =
       Number(formatUnits(quote.gasLimit * gasPrice, 18)) * (nativePrice ?? 0)
@@ -180,8 +179,8 @@ export async function fetchQuotesLive(
         return
       }
 
-      const outputPrice = prices[getAddress(outputCurrency.address)]
-      const nativePrice = prices[zeroAddress]
+      const outputPrice = prices[outputCurrency.address] ?? 0
+      const nativePrice = prices[zeroAddress] ?? 0
 
       const gasUsd =
         Number(formatUnits(quote.gasLimit * gasPrice, 18)) * (nativePrice ?? 0)

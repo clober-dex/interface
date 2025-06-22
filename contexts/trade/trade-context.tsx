@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import { getAddress, isAddressEqual, parseUnits } from 'viem'
 import { getQuoteToken } from '@clober/v2-sdk'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -107,7 +107,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     chain: selectedChain,
   })
   const { chainId } = useAccount()
-  const { whitelistCurrencies, setCurrencies, prices, balances, allowances } =
+  const { whitelistCurrencies, setCurrencies, prices, balances, getAllowance } =
     useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
@@ -224,8 +224,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       selectedQuote.amountOut > 0n &&
       inputCurrency &&
       outputCurrency &&
-      prices[getAddress(inputCurrency.address)] &&
-      prices[getAddress(outputCurrency.address)]
+      prices[inputCurrency.address] &&
+      prices[outputCurrency.address]
     ) {
       const amountIn = Number(
         formatUnits(selectedQuote.amountIn, inputCurrency.decimals),
@@ -233,8 +233,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       const amountOut = Number(
         formatUnits(selectedQuote.amountOut, outputCurrency.decimals),
       )
-      const inputValue = amountIn * prices[getAddress(inputCurrency.address)]
-      const outputValue = amountOut * prices[getAddress(outputCurrency.address)]
+      const inputValue = amountIn * (prices[inputCurrency.address] ?? 0)
+      const outputValue = amountOut * (prices[outputCurrency.address] ?? 0)
       return inputValue > outputValue
         ? ((outputValue - inputValue) / inputValue) * 100
         : 0
@@ -269,15 +269,12 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       ) {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds =
-          (balances[getAddress(inputCurrency.address)] ?? 0n) < amountIn
-        const insufficientAllowance = !isAddressEqual(
-          inputCurrency.address,
-          zeroAddress,
-        )
-          ? (allowances?.[
-              CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway
-            ]?.[getAddress(inputCurrency.address)] ?? 0n) < amountIn
-          : false
+          (balances[inputCurrency.address] ?? 0n) < amountIn
+        const insufficientAllowance =
+          getAllowance(
+            CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
+            inputCurrency,
+          ) < amountIn
         await fetchQuotesLive(
           aggregators,
           inputCurrency,
