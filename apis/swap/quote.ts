@@ -6,6 +6,7 @@ import { Aggregator } from '../../model/aggregator'
 import { Quote } from '../../model/aggregator/quote'
 import { Prices } from '../../model/prices'
 import { formatUnits } from '../../utils/bigint'
+import { Chain } from '../../model/chain'
 
 export async function fetchAllQuotesAndSelectBest(
   aggregators: Aggregator[],
@@ -112,6 +113,18 @@ export async function fetchAllQuotesAndSelectBest(
   }
 }
 
+const LOCAL_STORAGE_QUOTES_CACHE_KEY = 'quotes-cache'
+const LOCAL_STORAGE_QUOTES_CACHE_VALUE = (
+  inputCurrency: Currency,
+  amountIn: bigint,
+  outputCurrency: Currency,
+  slippageLimitPercent: number,
+  gasPrice: bigint,
+  userAddress?: `0x${string}`,
+) => {
+  return `${getAddress(inputCurrency.address)}-${amountIn.toString()}-${getAddress(outputCurrency.address)}-${slippageLimitPercent}-${gasPrice.toString()}-${userAddress || ''}`
+}
+
 export async function fetchQuotesLive(
   aggregators: Aggregator[],
   inputCurrency: Currency,
@@ -130,6 +143,18 @@ export async function fetchQuotesLive(
 ): Promise<void> {
   let bestQuote: Quote | null = null
   let fallbackQuote: Quote | undefined = undefined
+  // update quotes in local storage
+  localStorage.setItem(
+    LOCAL_STORAGE_QUOTES_CACHE_KEY,
+    LOCAL_STORAGE_QUOTES_CACHE_VALUE(
+      inputCurrency,
+      amountIn,
+      outputCurrency,
+      slippageLimitPercent,
+      gasPrice,
+      userAddress,
+    ),
+  )
 
   onAllQuotes(() => ({
     best: null,
@@ -201,12 +226,24 @@ export async function fetchQuotesLive(
       if (!bestQuote && fallbackQuote) {
         bestQuote = fallbackQuote
       }
-      if (bestQuote) {
+      const latestLocalStorageValue = localStorage.getItem(
+        LOCAL_STORAGE_QUOTES_CACHE_KEY,
+      )
+      if (
+        bestQuote &&
+        latestLocalStorageValue ===
+          LOCAL_STORAGE_QUOTES_CACHE_VALUE(
+            inputCurrency,
+            amountIn,
+            outputCurrency,
+            slippageLimitPercent,
+            gasPrice,
+            userAddress,
+          )
+      ) {
         onAllQuotes((prevQuotes) => {
           const prevQuote = prevQuotes.all.find(
-            (q) =>
-              q.aggregator.name === quoteWithMeta.aggregator.name &&
-              q.amountIn === quoteWithMeta.amountIn,
+            (q) => q.aggregator.name === quoteWithMeta.aggregator.name,
           )
           if (
             prevQuote === undefined ||
@@ -217,9 +254,7 @@ export async function fetchQuotesLive(
               best: bestQuote,
               all: [
                 ...prevQuotes.all.filter(
-                  (q) =>
-                    q.aggregator.name !== quoteWithMeta.aggregator.name &&
-                    q.amountIn === quoteWithMeta.amountIn,
+                  (q) => q.aggregator.name !== quoteWithMeta.aggregator.name,
                 ),
                 quoteWithMeta,
               ],
