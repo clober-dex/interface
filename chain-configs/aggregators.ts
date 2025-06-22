@@ -40,6 +40,7 @@ export const aggregators: Aggregator[] = [
   new AggregatorRouterGateway(
     getAddress('0xfD845859628946B317A78A9250DA251114FbD846'),
     monadTestnet,
+    // 0xfC985A550f7c29EC5266E6591b029FE2509E1D0d
     new EisenFinanceAggregator(zeroAddress, monadTestnet),
   ),
 ]
