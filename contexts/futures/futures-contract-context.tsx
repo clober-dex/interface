@@ -210,128 +210,130 @@ export const FuturesContractProvider = ({
             },
           )
         }
-
-        const confirmation = {
-          title: `Mint ${asset.currency.symbol}`,
-          body: 'Please confirm in your wallet.',
-          chain: selectedChain,
-          fields: [
-            {
-              currency: asset.collateral,
-              label: asset.collateral.symbol,
-              direction: 'in',
-              value: formatPreciseAmountString(
-                formatUnits(collateralAmount, asset.collateral.decimals),
-                prices[asset.collateral.address] ?? 0,
-              ),
-            },
-            {
-              currency: asset.currency,
-              label: asset.currency.symbol,
-              direction: 'out',
-              value: formatPreciseAmountString(
-                formatUnits(debtAmount, asset.currency.decimals),
-                prices[asset.currency.address] ?? 0,
-              ),
-            },
-          ].filter((field) => field.value !== '0') as any[],
-        }
-        setConfirmation(confirmation)
-
-        const evmPriceServiceConnection = new EvmPriceServiceConnection(
-          CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
-        )
-        const priceFeedUpdateData =
-          await evmPriceServiceConnection.getPriceFeedsUpdateData([
-            asset.collateral.priceFeedId,
-          ])
-
-        if (priceFeedUpdateData.length === 0) {
-          console.error('Price feed not found')
-          return
-        }
-
-        const fee = await publicClient.readContract({
-          address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
-          abi: PYTH_ORACLE_ABI,
-          functionName: 'getUpdateFee',
-          args: [priceFeedUpdateData as any],
-        })
-
-        const transaction = await buildTransaction(
-          publicClient,
-          {
+        // If the collateral is the native currency, we don't need to approve
+        else {
+          const confirmation = {
+            title: `Mint ${asset.currency.symbol}`,
+            body: 'Please confirm in your wallet.',
             chain: selectedChain,
-            address: spender,
-            functionName: 'multicall',
-            abi: FUTURES_MARKET_ABI,
-            value: fee,
-            args: [
-              [
-                encodeFunctionData({
-                  abi: FUTURES_MARKET_ABI,
-                  functionName: 'updateOracle',
-                  args: [
-                    encodeAbiParameters(parseAbiParameters('bytes[]'), [
-                      priceFeedUpdateData as any,
-                    ]),
-                  ],
-                }),
-                encodeFunctionData({
-                  abi: FUTURES_MARKET_ABI,
-                  functionName: 'deposit',
-                  args: [
-                    asset.currency.address,
-                    walletClient.account.address,
-                    collateralAmount,
-                  ],
-                }),
-                encodeFunctionData({
-                  abi: FUTURES_MARKET_ABI,
-                  functionName: 'mint',
-                  args: [
-                    asset.currency.address,
-                    walletClient.account.address,
-                    debtAmount,
-                  ],
-                }),
+            fields: [
+              {
+                currency: asset.collateral,
+                label: asset.collateral.symbol,
+                direction: 'in',
+                value: formatPreciseAmountString(
+                  formatUnits(collateralAmount, asset.collateral.decimals),
+                  prices[asset.collateral.address] ?? 0,
+                ),
+              },
+              {
+                currency: asset.currency,
+                label: asset.currency.symbol,
+                direction: 'out',
+                value: formatPreciseAmountString(
+                  formatUnits(debtAmount, asset.currency.decimals),
+                  prices[asset.currency.address] ?? 0,
+                ),
+              },
+            ].filter((field) => field.value !== '0') as any[],
+          }
+          setConfirmation(confirmation)
+
+          const evmPriceServiceConnection = new EvmPriceServiceConnection(
+            CHAIN_CONFIG.PYTH_HERMES_ENDPOINT,
+          )
+          const priceFeedUpdateData =
+            await evmPriceServiceConnection.getPriceFeedsUpdateData([
+              asset.collateral.priceFeedId,
+            ])
+
+          if (priceFeedUpdateData.length === 0) {
+            console.error('Price feed not found')
+            return
+          }
+
+          const fee = await publicClient.readContract({
+            address: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.PythOracle,
+            abi: PYTH_ORACLE_ABI,
+            functionName: 'getUpdateFee',
+            args: [priceFeedUpdateData as any],
+          })
+
+          const transaction = await buildTransaction(
+            publicClient,
+            {
+              chain: selectedChain,
+              address: spender,
+              functionName: 'multicall',
+              abi: FUTURES_MARKET_ABI,
+              value: fee,
+              args: [
+                [
+                  encodeFunctionData({
+                    abi: FUTURES_MARKET_ABI,
+                    functionName: 'updateOracle',
+                    args: [
+                      encodeAbiParameters(parseAbiParameters('bytes[]'), [
+                        priceFeedUpdateData as any,
+                      ]),
+                    ],
+                  }),
+                  encodeFunctionData({
+                    abi: FUTURES_MARKET_ABI,
+                    functionName: 'deposit',
+                    args: [
+                      asset.currency.address,
+                      walletClient.account.address,
+                      collateralAmount,
+                    ],
+                  }),
+                  encodeFunctionData({
+                    abi: FUTURES_MARKET_ABI,
+                    functionName: 'mint',
+                    args: [
+                      asset.currency.address,
+                      walletClient.account.address,
+                      debtAmount,
+                    ],
+                  }),
+                ],
               ],
-            ],
-          },
-          5_000_000n,
-        )
-        const transactionReceipt = await sendTransaction(
-          selectedChain,
-          walletClient,
-          transaction,
-          disconnectAsync,
-          (hash) => {
-            setConfirmation(undefined)
-            onClose()
-            queuePendingPositionCurrency(asset.currency)
-            queuePendingTransaction({
-              ...confirmation,
-              txHash: hash,
-              type: 'borrow',
-              timestamp: currentTimestampInSeconds(),
-            })
-          },
-          async (receipt) => {
-            await queryClient.invalidateQueries({
-              queryKey: ['futures-positions'],
-            })
-            dequeuePendingPositionCurrency(asset.currency)
-            updatePendingTransaction({
-              ...confirmation,
-              txHash: receipt.transactionHash,
-              type: 'borrow',
-              timestamp: currentTimestampInSeconds(),
-              blockNumber: Number(receipt.blockNumber),
-              success: receipt.status === 'success',
-            })
-          },
-        )
-        return transactionReceipt?.transactionHash
+            },
+            5_000_000n,
+          )
+          const transactionReceipt = await sendTransaction(
+            selectedChain,
+            walletClient,
+            transaction,
+            disconnectAsync,
+            (hash) => {
+              setConfirmation(undefined)
+              onClose()
+              queuePendingPositionCurrency(asset.currency)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'borrow',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            async (receipt) => {
+              await queryClient.invalidateQueries({
+                queryKey: ['futures-positions'],
+              })
+              dequeuePendingPositionCurrency(asset.currency)
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'borrow',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+            },
+          )
+          return transactionReceipt?.transactionHash
+        }
       } catch (e) {
         console.error(e)
       } finally {

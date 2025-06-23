@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { parseUnits } from 'viem'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { getContractAddresses } from '@clober/v2-sdk'
 
 import { Asset } from '../../model/futures/asset'
 import { MintFuturesAssetForm } from '../../components/form/futures/mint-futures-asset-form'
@@ -15,13 +16,14 @@ import { formatUnits } from '../../utils/bigint'
 import { useFuturesContractContext } from '../../contexts/futures/futures-contract-context'
 import Modal from '../../components/modal/modal'
 import { useChainContext } from '../../contexts/chain-context'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
   const router = useRouter()
   const { selectedChain } = useChainContext()
   const [displayMarketClosedModal, setDisplayMarketClosedModal] =
     useState(false)
-  const { balances, prices } = useCurrencyContext()
+  const { balances, prices, getAllowance } = useCurrencyContext()
   const { borrow } = useFuturesContractContext()
   const [collateralValue, setCollateralValue] = useState('')
   const [borrowValue, setBorrowValue] = useState('')
@@ -149,7 +151,14 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
                         asset.currency.decimals,
                         prices[asset.currency.address] ?? 0,
                       )} ${asset.currency.symbol.split('-')[0]}`
-                    : 'Mint',
+                    : collateralAmount >
+                        getAllowance(
+                          CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
+                            .FuturesMarket,
+                          asset.collateral,
+                        )
+                      ? `Max Approve ${asset.collateral.symbol}`
+                      : 'Mint',
       }}
     />
   )

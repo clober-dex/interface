@@ -176,146 +176,150 @@ export const LimitContractProvider = ({
             },
           )
         }
-        const args = {
-          chainId: selectedChain.id,
-          userAddress: walletClient.account.address,
-          inputToken: inputCurrency.address,
-          outputToken: outputCurrency.address,
-          amount: amount,
-          price: price,
-          options: {
-            rpcUrl: CHAIN_CONFIG.RPC_URL,
-            roundingUpMakeBid: true,
-            roundingDownMakeAsk: true,
-            roundingDownTakenBid: false,
-            roundingUpTakenAsk: false,
-          },
-        }
-        const { transaction, result } = await limitOrder(args)
-        console.log('limitOrder request: ', args)
-        console.log('limitOrder result: ', result)
-
-        // only make order
-        if (Number(result.spent.amount) === 0) {
-          const confirmation = {
-            title: `Limit ${isBid ? 'Bid' : 'Ask'} @ ${price}`,
-            body: 'Please confirm in your wallet.',
-            chain: selectedChain,
-            fields: [
-              {
-                direction: result.make.direction,
-                currency: result.make.currency,
-                label: result.make.currency.symbol,
-                value: formatPreciseAmountString(
-                  result.make.amount,
-                  prices[inputCurrency.address] ?? 0,
-                ),
-              },
-            ] as Confirmation['fields'],
-          }
-          setConfirmation(confirmation)
-
-          await sendTransaction(
-            selectedChain,
-            walletClient,
-            transaction,
-            disconnectAsync,
-            (hash) => {
-              setConfirmation(undefined)
-              queuePendingTransaction({
-                ...confirmation,
-                txHash: hash,
-                type: 'make',
-                timestamp: currentTimestampInSeconds(),
-              })
-            },
-            (receipt) => {
-              updatePendingTransaction({
-                ...confirmation,
-                txHash: receipt.transactionHash,
-                type: 'make',
-                timestamp: currentTimestampInSeconds(),
-                blockNumber: Number(receipt.blockNumber),
-                success: receipt.status === 'success',
-              })
-            },
-          )
-        }
-        // limit order or take order
+        // if input currency is native token, we don't need to approve
         else {
-          const confirmation = {
-            title: `Limit ${isBid ? 'Bid' : 'Ask'} @ ${price}`,
-            body: 'Please confirm in your wallet.',
-            chain: selectedChain,
-            fields: [
-              {
-                direction: result.make.direction,
-                currency: result.make.currency,
-                label: result.make.currency.symbol,
-                value: formatPreciseAmountString(
-                  Number(result.make.amount) + Number(result.spent.amount),
-                  prices[inputCurrency.address] ?? 0,
-                ),
-              },
-              {
-                direction: result.taken.direction,
-                currency: result.taken.currency,
-                label: result.taken.currency.symbol,
-                value: formatPreciseAmountString(
-                  result.taken.amount,
-                  prices[outputCurrency.address] ?? 0,
-                ),
-              },
-            ] as Confirmation['fields'],
+          const args = {
+            chainId: selectedChain.id,
+            userAddress: walletClient.account.address,
+            inputToken: inputCurrency.address,
+            outputToken: outputCurrency.address,
+            amount: amount,
+            price: price,
+            options: {
+              rpcUrl: CHAIN_CONFIG.RPC_URL,
+              roundingUpMakeBid: true,
+              roundingDownMakeAsk: true,
+              roundingDownTakenBid: false,
+              roundingUpTakenAsk: false,
+            },
           }
-          setConfirmation(confirmation)
+          const { transaction, result } = await limitOrder(args)
+          console.log('limitOrder request: ', args)
+          console.log('limitOrder result: ', result)
 
-          const makeRatio = (Number(result.make.amount) * 100) / Number(amount)
-          await sendTransaction(
-            selectedChain,
-            walletClient,
-            transaction,
-            disconnectAsync,
-            (hash) => {
-              setConfirmation(undefined)
-              if (makeRatio < 0.01) {
+          // only make order
+          if (Number(result.spent.amount) === 0) {
+            const confirmation = {
+              title: `Limit ${isBid ? 'Bid' : 'Ask'} @ ${price}`,
+              body: 'Please confirm in your wallet.',
+              chain: selectedChain,
+              fields: [
+                {
+                  direction: result.make.direction,
+                  currency: result.make.currency,
+                  label: result.make.currency.symbol,
+                  value: formatPreciseAmountString(
+                    result.make.amount,
+                    prices[inputCurrency.address] ?? 0,
+                  ),
+                },
+              ] as Confirmation['fields'],
+            }
+            setConfirmation(confirmation)
+
+            await sendTransaction(
+              selectedChain,
+              walletClient,
+              transaction,
+              disconnectAsync,
+              (hash) => {
+                setConfirmation(undefined)
                 queuePendingTransaction({
                   ...confirmation,
                   txHash: hash,
-                  type: 'take',
+                  type: 'make',
                   timestamp: currentTimestampInSeconds(),
                 })
-              } else {
-                queuePendingTransaction({
-                  ...confirmation,
-                  txHash: hash,
-                  type: 'limit',
-                  timestamp: currentTimestampInSeconds(),
-                })
-              }
-            },
-            (receipt) => {
-              if (makeRatio < 0.01) {
+              },
+              (receipt) => {
                 updatePendingTransaction({
                   ...confirmation,
                   txHash: receipt.transactionHash,
-                  type: 'take',
+                  type: 'make',
                   timestamp: currentTimestampInSeconds(),
                   blockNumber: Number(receipt.blockNumber),
                   success: receipt.status === 'success',
                 })
-              } else {
-                updatePendingTransaction({
-                  ...confirmation,
-                  txHash: receipt.transactionHash,
-                  type: 'limit',
-                  timestamp: currentTimestampInSeconds(),
-                  blockNumber: Number(receipt.blockNumber),
-                  success: receipt.status === 'success',
-                })
-              }
-            },
-          )
+              },
+            )
+          }
+          // limit order or take order
+          else {
+            const confirmation = {
+              title: `Limit ${isBid ? 'Bid' : 'Ask'} @ ${price}`,
+              body: 'Please confirm in your wallet.',
+              chain: selectedChain,
+              fields: [
+                {
+                  direction: result.make.direction,
+                  currency: result.make.currency,
+                  label: result.make.currency.symbol,
+                  value: formatPreciseAmountString(
+                    Number(result.make.amount) + Number(result.spent.amount),
+                    prices[inputCurrency.address] ?? 0,
+                  ),
+                },
+                {
+                  direction: result.taken.direction,
+                  currency: result.taken.currency,
+                  label: result.taken.currency.symbol,
+                  value: formatPreciseAmountString(
+                    result.taken.amount,
+                    prices[outputCurrency.address] ?? 0,
+                  ),
+                },
+              ] as Confirmation['fields'],
+            }
+            setConfirmation(confirmation)
+
+            const makeRatio =
+              (Number(result.make.amount) * 100) / Number(amount)
+            await sendTransaction(
+              selectedChain,
+              walletClient,
+              transaction,
+              disconnectAsync,
+              (hash) => {
+                setConfirmation(undefined)
+                if (makeRatio < 0.01) {
+                  queuePendingTransaction({
+                    ...confirmation,
+                    txHash: hash,
+                    type: 'take',
+                    timestamp: currentTimestampInSeconds(),
+                  })
+                } else {
+                  queuePendingTransaction({
+                    ...confirmation,
+                    txHash: hash,
+                    type: 'limit',
+                    timestamp: currentTimestampInSeconds(),
+                  })
+                }
+              },
+              (receipt) => {
+                if (makeRatio < 0.01) {
+                  updatePendingTransaction({
+                    ...confirmation,
+                    txHash: receipt.transactionHash,
+                    type: 'take',
+                    timestamp: currentTimestampInSeconds(),
+                    blockNumber: Number(receipt.blockNumber),
+                    success: receipt.status === 'success',
+                  })
+                } else {
+                  updatePendingTransaction({
+                    ...confirmation,
+                    txHash: receipt.transactionHash,
+                    type: 'limit',
+                    timestamp: currentTimestampInSeconds(),
+                    blockNumber: Number(receipt.blockNumber),
+                    success: receipt.status === 'success',
+                  })
+                }
+              },
+            )
+          }
         }
       } catch (e) {
         console.error(e)

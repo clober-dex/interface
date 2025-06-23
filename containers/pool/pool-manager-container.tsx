@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useWalletClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
 import { parseUnits, zeroAddress } from 'viem'
-import { removeLiquidity } from '@clober/v2-sdk'
+import { getContractAddresses, removeLiquidity } from '@clober/v2-sdk'
 import BigNumber from 'bignumber.js'
 import { Tooltip } from 'react-tooltip'
 
@@ -48,7 +48,7 @@ export const PoolManagerContainer = ({
   const router = useRouter()
   const { data: walletClient } = useWalletClient()
   const { selectedChain } = useChainContext()
-  const { balances, prices } = useCurrencyContext()
+  const { balances, prices, getAllowance } = useCurrencyContext()
   const {
     currency0Amount,
     setCurrency0Amount,
@@ -588,15 +588,37 @@ export const PoolManagerContainer = ({
                             (balances[pool.currencyA.address] ?? 0n)
                           ? `Insufficient ${pool.currencyA.symbol} balance`
                           : parseUnits(
-                                currency1Amount,
-                                pool.currencyB.decimals,
-                              ) > (balances[pool.currencyB.address] ?? 0n)
-                            ? `Insufficient ${pool.currencyB.symbol} balance`
-                            : disableSwap &&
-                                (Number(currency0Amount) === 0 ||
-                                  Number(currency1Amount) === 0)
-                              ? `Enter amount`
-                              : `Add Liquidity`,
+                                currency0Amount,
+                                pool.currencyA.decimals,
+                              ) >
+                              getAllowance(
+                                getContractAddresses({
+                                  chainId: selectedChain.id,
+                                }).Minter,
+                                pool.currencyA,
+                              )
+                            ? `Max Approve ${pool.currencyA.symbol}`
+                            : parseUnits(
+                                  currency1Amount,
+                                  pool.currencyB.decimals,
+                                ) > (balances[pool.currencyB.address] ?? 0n)
+                              ? `Insufficient ${pool.currencyB.symbol} balance`
+                              : parseUnits(
+                                    currency1Amount,
+                                    pool.currencyB.decimals,
+                                  ) >
+                                  getAllowance(
+                                    getContractAddresses({
+                                      chainId: selectedChain.id,
+                                    }).Minter,
+                                    pool.currencyB,
+                                  )
+                                ? `Max Approve ${pool.currencyB.symbol}`
+                                : disableSwap &&
+                                    (Number(currency0Amount) === 0 ||
+                                      Number(currency1Amount) === 0)
+                                  ? `Enter amount`
+                                  : `Add Liquidity`,
                   }}
                 />
               ) : (

@@ -4,6 +4,7 @@ import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
+import { getContractAddresses } from '@clober/v2-sdk'
 
 import { LimitForm, LimitFormProps } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
@@ -214,9 +215,18 @@ export const TradeContainer = () => {
               ? 'Enter amount'
               : amountIn > (balances[inputCurrency.address] ?? 0n)
                 ? 'Insufficient balance'
-                : `Place Order`,
+                : amountIn >
+                    getAllowance(
+                      getContractAddresses({ chainId: selectedChain.id })
+                        .Controller,
+                      inputCurrency,
+                    )
+                  ? `Max Approve ${inputCurrency.symbol}`
+                  : `Place Order`,
     }),
     [
+      getAllowance,
+      selectedChain.id,
       amountIn,
       balances,
       inputCurrency,

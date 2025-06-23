@@ -7,6 +7,7 @@ import { calculateLtv, calculateMaxLoanableAmount } from '../../utils/ltv'
 import { useCurrencyContext } from '../../contexts/currency-context'
 import { applyPercent, formatUnits } from '../../utils/bigint'
 import { useFuturesContractContext } from '../../contexts/futures/futures-contract-context'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 export const FuturesPositionAdjustModalContainer = ({
   userPosition,
@@ -17,7 +18,7 @@ export const FuturesPositionAdjustModalContainer = ({
   onClose: () => void
   startLTV: number | undefined
 }) => {
-  const { prices, balances } = useCurrencyContext()
+  const { prices, balances, getAllowance } = useCurrencyContext()
   const { borrow, repay, repayAll } = useFuturesContractContext()
 
   const ltv = calculateLtv(
