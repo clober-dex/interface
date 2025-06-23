@@ -152,8 +152,9 @@ export const PoolManagerContainer = ({
           .sort((a, b) => a.timestamp - b.timestamp)
           .map(({ timestamp, priceAUSD, priceBUSD, lpPriceUSD }) => {
             const onHoldUSDValuePerLp =
-              (Number(poolSnapshot.initialLPInfo.tokenA.value) * priceAUSD +
-                Number(poolSnapshot.initialLPInfo.tokenB.value) * priceBUSD) /
+              (Number(poolSnapshot.initialLPInfo.currencyA.value) * priceAUSD +
+                Number(poolSnapshot.initialLPInfo.currencyB.value) *
+                  priceBUSD) /
               Number(poolSnapshot.initialLPInfo.lpToken.value)
 
             if (onHoldUSDValuePerLp === 0) {
@@ -171,8 +172,8 @@ export const PoolManagerContainer = ({
   }, [
     poolSnapshot.initialLPInfo.lpPriceUSD,
     poolSnapshot.initialLPInfo.lpToken.value,
-    poolSnapshot.initialLPInfo.tokenA.value,
-    poolSnapshot.initialLPInfo.tokenB.value,
+    poolSnapshot.initialLPInfo.currencyA.value,
+    poolSnapshot.initialLPInfo.currencyB.value,
     poolSnapshot.performanceHistories,
     selectedChain.testnet,
   ])
