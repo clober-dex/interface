@@ -11,17 +11,14 @@ export function Legend({ data }: { data: LegendInfo[] }) {
     >
       {data.map(({ value: display, label, color }) => {
         return (
-          !!display &&
-          !BigNumber(display).isZero() && (
-            <div
-              className="flex text-xs lg:text-sm px-2 items-center gap-2 text-nowrap"
-              key={`${label}-${color}`}
-            >
-              <div>{label}</div>
-              <div className="w-2 h-2" style={{ backgroundColor: color }} />
-              <div>{display}</div>
-            </div>
-          )
+          <div
+            className="flex text-xs lg:text-sm px-2 items-center gap-2 text-nowrap"
+            key={`${label}-${color}`}
+          >
+            <div>{label}</div>
+            <div className="w-2 h-2" style={{ backgroundColor: color }} />
+            <div>{display}</div>
+          </div>
         )
       })}
     </div>

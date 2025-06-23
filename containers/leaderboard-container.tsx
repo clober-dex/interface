@@ -252,6 +252,12 @@ function Heatmap({ userDailyVolumes, monthLabels }: HeatmapProps) {
                 //   color: '#3977db',
                 //   value: `$${toCommaSeparated(hoverInfo.volumes.reduce((acc, { value }) => acc + value, 0).toFixed(2))}`,
                 // },
+                {
+                  label: new Date(hoverInfo.date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  }),
+                } as any,
                 ...hoverInfo.volumes.map(({ label, value, address }) => ({
                   label,
                   color: tokenColorMap[getAddress(address)] ?? '#ffffff',
