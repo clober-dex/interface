@@ -223,7 +223,7 @@ export const FuturesContractProvider = ({
                 direction: 'in',
                 value: formatPreciseAmountString(
                   formatUnits(collateralAmount, asset.collateral.decimals),
-                  prices[asset.collateral.address] ?? 0,
+                  prices[asset.collateral.address],
                 ),
               },
               {
@@ -232,7 +232,7 @@ export const FuturesContractProvider = ({
                 direction: 'out',
                 value: formatPreciseAmountString(
                   formatUnits(debtAmount, asset.currency.decimals),
-                  prices[asset.currency.address] ?? 0,
+                  prices[asset.currency.address],
                 ),
               },
             ].filter((field) => field.value !== '0') as any[],
@@ -389,7 +389,7 @@ export const FuturesContractProvider = ({
               direction: 'in',
               value: formatPreciseAmountString(
                 formatUnits(debtAmount, asset.currency.decimals),
-                prices[asset.currency.address] ?? 0,
+                prices[asset.currency.address],
               ),
             },
           ] as Confirmation['fields'],
@@ -507,7 +507,7 @@ export const FuturesContractProvider = ({
                   userPosition?.debtAmount ?? 0n,
                   userPosition.asset.currency.decimals,
                 ),
-                prices[userPosition.asset.currency.address] ?? 0,
+                prices[userPosition.asset.currency.address],
               ),
             },
             {
@@ -519,7 +519,7 @@ export const FuturesContractProvider = ({
                   userPosition?.collateralAmount ?? 0n,
                   userPosition.asset.collateral.decimals,
                 ),
-                prices[userPosition.asset.collateral.address] ?? 0,
+                prices[userPosition.asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],
@@ -777,7 +777,7 @@ export const FuturesContractProvider = ({
               direction: 'out',
               value: formatPreciseAmountString(
                 formatUnits(collateralReceived, asset.collateral.decimals),
-                prices[asset.collateral.address] ?? 0,
+                prices[asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],
@@ -866,7 +866,7 @@ export const FuturesContractProvider = ({
               direction: 'in',
               value: formatPreciseAmountString(
                 formatUnits(amount, asset.currency.decimals),
-                prices[asset.currency.address] ?? 0,
+                prices[asset.currency.address],
               ),
             },
             {
@@ -875,7 +875,7 @@ export const FuturesContractProvider = ({
               direction: 'out',
               value: formatPreciseAmountString(
                 formatUnits(collateralReceived, asset.collateral.decimals),
-                prices[asset.collateral.address] ?? 0,
+                prices[asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],
@@ -968,7 +968,7 @@ export const FuturesContractProvider = ({
               direction: 'in',
               value: formatPreciseAmountString(
                 formatUnits(amount, asset.collateral.decimals),
-                prices[asset.collateral.address] ?? 0,
+                prices[asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],
@@ -1069,7 +1069,7 @@ export const FuturesContractProvider = ({
               direction: 'out',
               value: formatPreciseAmountString(
                 formatUnits(amount, asset.collateral.decimals),
-                prices[asset.collateral.address] ?? 0,
+                prices[asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],

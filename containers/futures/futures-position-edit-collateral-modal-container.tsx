@@ -28,13 +28,10 @@ export const FuturesPositionEditCollateralModalContainer = ({
       parseUnits(value, userPosition.asset.collateral.decimals),
       calculateMinCollateralAmount(
         userPosition.asset.currency,
-        parseUnits(
-          (prices[userPosition.asset.currency.address] ?? 0).toFixed(18),
-          18,
-        ),
+        parseUnits(prices[userPosition.asset.currency.address].toFixed(18), 18),
         userPosition.asset.collateral,
         parseUnits(
-          (prices[userPosition.asset.collateral.address] ?? 0).toFixed(18),
+          prices[userPosition.asset.collateral.address].toFixed(18),
           18,
         ),
         userPosition?.debtAmount ?? 0n,
@@ -57,7 +54,7 @@ export const FuturesPositionEditCollateralModalContainer = ({
     () =>
       isWithdrawCollateral
         ? max((userPosition?.collateralAmount ?? 0n) - minCollateralAmount, 0n)
-        : (balances[userPosition.asset.collateral.address] ?? 0n),
+        : balances[userPosition.asset.collateral.address],
     [
       balances,
       isWithdrawCollateral,
@@ -79,22 +76,22 @@ export const FuturesPositionEditCollateralModalContainer = ({
       availableCollateralAmount={
         isWithdrawCollateral
           ? max((userPosition.collateralAmount ?? 0n) - minCollateralAmount, 0n)
-          : (balances[userPosition.asset.collateral.address] ?? 0n)
+          : balances[userPosition.asset.collateral.address]
       }
       ltv={calculateLtv(
         userPosition.asset.currency,
-        prices[userPosition.asset.currency.address] ?? 0,
+        prices[userPosition.asset.currency.address],
         userPosition?.debtAmount ?? 0n,
         userPosition.asset.collateral,
-        prices[userPosition.asset.collateral.address] ?? 0,
+        prices[userPosition.asset.collateral.address],
         userPosition?.collateralAmount ?? 0n,
       )}
       newLTV={calculateLtv(
         userPosition.asset.currency,
-        prices[userPosition.asset.currency.address] ?? 0,
+        prices[userPosition.asset.currency.address],
         userPosition?.debtAmount ?? 0n,
         userPosition.asset.collateral,
-        prices[userPosition.asset.collateral.address] ?? 0,
+        prices[userPosition.asset.collateral.address],
         (userPosition?.collateralAmount ?? 0n) +
           (isWithdrawCollateral ? -amount : amount),
       )}
@@ -118,7 +115,7 @@ export const FuturesPositionEditCollateralModalContainer = ({
                 ? 'Not enough collateral'
                 : 'Edit Collateral',
       }}
-      collateralPrice={prices[userPosition.asset.collateral.address] ?? 0}
+      collateralPrice={prices[userPosition.asset.collateral.address]}
     />
   )
 }

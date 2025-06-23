@@ -83,9 +83,9 @@ export const UserWalletModal = ({
   const portfolioUSD = useMemo(() => {
     return currencies.reduce((total, currency) => {
       const balance = Number(
-        formatUnits(balances[currency.address] ?? 0n, currency.decimals),
+        formatUnits(balances[currency.address], currency.decimals),
       )
-      const price = prices[currency.address] ?? 0
+      const price = prices[currency.address]
       return total + balance * price
     }, 0)
   }, [balances, currencies, prices])
@@ -310,24 +310,20 @@ export const UserWalletModal = ({
                       (currency) =>
                         Number(
                           formatUnits(
-                            balances[currency.address] ?? 0n,
+                            balances[currency.address],
                             currency.decimals,
                           ),
                         ) *
-                          (prices[currency.address] ?? 0) >
+                          prices[currency.address] >
                         0.01,
                     )
                     .sort((a, b) => {
-                      const priceA = prices[a.address] ?? 0
-                      const priceB = prices[b.address] ?? 0
+                      const priceA = prices[a.address]
+                      const priceB = prices[b.address]
                       return (
-                        Number(
-                          formatUnits(balances[b.address] ?? 0n, b.decimals),
-                        ) *
+                        Number(formatUnits(balances[b.address], b.decimals)) *
                           priceB -
-                        Number(
-                          formatUnits(balances[a.address] ?? 0n, a.decimals),
-                        ) *
+                        Number(formatUnits(balances[a.address], a.decimals)) *
                           priceA
                       )
                     })
@@ -343,10 +339,7 @@ export const UserWalletModal = ({
                               {currency.symbol}
                             </div>
                             <div className="text-center justify-start text-[#a8afbc] text-xs font-semibold">
-                              $
-                              {formatTinyNumber(
-                                prices[currency.address] ?? 0,
-                              )}{' '}
+                              ${formatTinyNumber(prices[currency.address])}{' '}
                             </div>
                           </div>
                         </div>
@@ -354,9 +347,9 @@ export const UserWalletModal = ({
                           <div className="text-center justify-start text-white text-sm font-semibold">
                             {formatWithCommas(
                               formatUnits(
-                                balances[currency.address] ?? 0n,
+                                balances[currency.address],
                                 currency.decimals,
-                                prices[currency.address] ?? 0,
+                                prices[currency.address],
                               ),
                             )}
                           </div>
@@ -364,9 +357,9 @@ export const UserWalletModal = ({
                             {prices[currency.address] ? (
                               <div className="text-gray-500 text-xs">
                                 {formatDollarValue(
-                                  balances[currency.address] ?? 0n,
+                                  balances[currency.address],
                                   currency.decimals,
-                                  prices[currency.address] ?? 0,
+                                  prices[currency.address],
                                 )}
                               </div>
                             ) : (

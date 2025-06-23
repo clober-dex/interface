@@ -78,7 +78,7 @@ export const FuturesRedeemCard = ({
                   formatUnits(
                     balance,
                     asset.currency.decimals,
-                    prices[asset.currency.address] ?? 0,
+                    prices[asset.currency.address],
                   ),
                 )}{' '}
                 {symbol}
@@ -91,7 +91,7 @@ export const FuturesRedeemCard = ({
               Mark Price
             </div>
             <div className="text-sm sm:text-base">
-              {formatTinyNumber(prices[asset.currency.address] ?? 0)}
+              {formatTinyNumber(prices[asset.currency.address])}
             </div>
           </div>
 
@@ -104,7 +104,7 @@ export const FuturesRedeemCard = ({
                 formatUnits(
                   redeemableCollateral,
                   asset.collateral.decimals,
-                  prices[asset.collateral.address] ?? 0,
+                  prices[asset.collateral.address],
                 ),
               )}{' '}
               {asset.collateral.symbol}

@@ -210,7 +210,7 @@ export const LimitContractProvider = ({
                   label: result.make.currency.symbol,
                   value: formatPreciseAmountString(
                     result.make.amount,
-                    prices[inputCurrency.address] ?? 0,
+                    prices[inputCurrency.address],
                   ),
                 },
               ] as Confirmation['fields'],
@@ -256,7 +256,7 @@ export const LimitContractProvider = ({
                   label: result.make.currency.symbol,
                   value: formatPreciseAmountString(
                     Number(result.make.amount) + Number(result.spent.amount),
-                    prices[inputCurrency.address] ?? 0,
+                    prices[inputCurrency.address],
                   ),
                 },
                 {
@@ -265,7 +265,7 @@ export const LimitContractProvider = ({
                   label: result.taken.currency.symbol,
                   value: formatPreciseAmountString(
                     result.taken.amount,
-                    prices[outputCurrency.address] ?? 0,
+                    prices[outputCurrency.address],
                   ),
                 },
               ] as Confirmation['fields'],
@@ -388,10 +388,7 @@ export const LimitContractProvider = ({
           fields: result.map(({ currency, amount, direction }) => ({
             currency,
             label: currency.symbol,
-            value: formatPreciseAmountString(
-              amount,
-              prices[currency.address] ?? 0,
-            ),
+            value: formatPreciseAmountString(amount, prices[currency.address]),
             direction,
           })),
         }
@@ -488,10 +485,7 @@ export const LimitContractProvider = ({
           fields: result.map(({ currency, amount, direction }) => ({
             currency,
             label: currency.symbol,
-            value: formatPreciseAmountString(
-              amount,
-              prices[currency.address] ?? 0,
-            ),
+            value: formatPreciseAmountString(amount, prices[currency.address]),
             direction,
           })),
         }

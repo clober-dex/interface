@@ -118,9 +118,7 @@ export const TokenTransferModal = ({
                   value={amount}
                   onValueChange={setAmount}
                   availableAmount={
-                    selectedCurrency
-                      ? (balances[selectedCurrency.address] ?? 0n)
-                      : 0n
+                    selectedCurrency ? balances[selectedCurrency.address] : 0n
                   }
                   onCurrencyClick={
                     setShowCurrencySelect
@@ -129,7 +127,7 @@ export const TokenTransferModal = ({
                   }
                   price={
                     selectedCurrency
-                      ? (prices[selectedCurrency.address] ?? 0)
+                      ? prices[selectedCurrency.address]
                       : undefined
                   }
                 />
@@ -164,7 +162,7 @@ export const TokenTransferModal = ({
                       $
                       {(
                         Number(formatUnits(100_000n * (gasPrice ?? 0n), 18)) *
-                        (prices[zeroAddress] ?? 0)
+                        prices[zeroAddress]
                       ).toFixed(4)}
                     </div>
                   </div>
@@ -177,7 +175,7 @@ export const TokenTransferModal = ({
                   recipient.trim() === '' ||
                   !isAddress(recipient.trim()) ||
                   Number(amount) <= 0 ||
-                  (balances[selectedCurrency.address] ?? 0n) <
+                  balances[selectedCurrency.address] <
                     parseUnits(amount, selectedCurrency.decimals)
                 }
                 text={
@@ -189,7 +187,7 @@ export const TokenTransferModal = ({
                         ? 'Invalid Address'
                         : Number(amount) <= 0
                           ? 'Enter Amount'
-                          : (balances[selectedCurrency.address] ?? 0n) <
+                          : balances[selectedCurrency.address] <
                               parseUnits(amount, selectedCurrency.decimals)
                             ? 'Insufficient Balance'
                             : 'Confirm'

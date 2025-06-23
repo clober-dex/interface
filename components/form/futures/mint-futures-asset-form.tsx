@@ -49,8 +49,8 @@ export const MintFuturesAssetForm = ({
             currency={asset.collateral}
             value={collateralValue}
             onValueChange={setCollateralValue}
-            availableAmount={balances[asset.collateral.address] ?? 0n}
-            price={prices[asset.collateral.address] ?? 0}
+            availableAmount={balances[asset.collateral.address]}
+            price={prices[asset.collateral.address]}
           />
           <div className="flex ml-auto">{children}</div>
         </div>
@@ -64,7 +64,7 @@ export const MintFuturesAssetForm = ({
             currency={asset.currency}
             value={borrowValue}
             onValueChange={setBorrowValue}
-            price={prices[asset.currency.address] ?? 0}
+            price={prices[asset.currency.address]}
             availableAmount={maxBorrowAmount}
           />
         </div>
@@ -80,7 +80,7 @@ export const MintFuturesAssetForm = ({
                 Mark Price
               </div>
               <div className="ml-auto text-sm sm:text-base">
-                {formatTinyNumber(prices[asset.currency.address] ?? 0)}
+                {formatTinyNumber(prices[asset.currency.address])}
               </div>
             </div>
             <div className="flex w-full">

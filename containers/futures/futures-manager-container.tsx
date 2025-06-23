@@ -32,7 +32,7 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
     return [
       parseUnits(borrowValue || '0', asset.currency.decimals),
       parseUnits(collateralValue || '0', asset.collateral.decimals),
-      balances[asset.collateral.address] ?? 0n,
+      balances[asset.collateral.address],
     ]
   }, [
     asset.collateral.address,
@@ -47,9 +47,9 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
     () =>
       calculateMaxLoanableAmount(
         asset.currency,
-        parseUnits((prices[asset.currency.address] ?? 0).toFixed(18), 18),
+        parseUnits(prices[asset.currency.address].toFixed(18), 18),
         asset.collateral,
-        parseUnits((prices[asset.collateral.address] ?? 0).toFixed(18), 18),
+        parseUnits(prices[asset.collateral.address].toFixed(18), 18),
         collateralAmount,
         asset.maxLTV,
         asset.ltvPrecision,
@@ -96,10 +96,10 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
       maxBorrowAmount={maxBorrowAmount}
       borrowLTV={calculateLtv(
         asset.currency,
-        prices[asset.currency.address] ?? 0,
+        prices[asset.currency.address],
         debtAmount,
         asset.collateral,
-        prices[asset.collateral.address] ?? 0,
+        prices[asset.collateral.address],
         collateralAmount,
       )}
       collateralValue={collateralValue}
@@ -110,9 +110,9 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
       prices={prices}
       liquidationPrice={calculateLiquidationPrice(
         asset.currency,
-        prices[asset.currency.address] ?? 0,
+        prices[asset.currency.address],
         asset.collateral,
-        prices[asset.collateral.address] ?? 0,
+        prices[asset.collateral.address],
         debtAmount,
         collateralAmount,
         asset.liquidationThreshold,
@@ -149,7 +149,7 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
                     ? `Remaining debt must be ≥ ${formatUnits(
                         asset.minDebt,
                         asset.currency.decimals,
-                        prices[asset.currency.address] ?? 0,
+                        prices[asset.currency.address],
                       )} ${asset.currency.symbol.split('-')[0]}`
                     : collateralAmount >
                         getAllowance(

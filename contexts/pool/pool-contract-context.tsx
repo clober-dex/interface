@@ -204,9 +204,9 @@ export const PoolContractProvider = ({
               rpcUrl: CHAIN_CONFIG.RPC_URL,
               disableSwap,
               slippage,
-              testnetPrice: prices[baseCurrency.address] ?? 0,
-              token0Price: prices[currency0.address] ?? 0,
-              token1Price: prices[currency1.address] ?? 0,
+              testnetPrice: prices[baseCurrency.address],
+              token0Price: prices[currency0.address],
+              token1Price: prices[currency1.address],
             },
           })
 
@@ -223,7 +223,7 @@ export const PoolContractProvider = ({
                     label: result.currencyA.currency.symbol,
                     value: formatPreciseAmountString(
                       result.currencyA.amount,
-                      prices[result.currencyA.currency.address] ?? 0,
+                      prices[result.currencyA.currency.address],
                     ),
                   },
               new BigNumber(result.currencyB.amount).isZero()
@@ -234,7 +234,7 @@ export const PoolContractProvider = ({
                     label: result.currencyB.currency.symbol,
                     value: formatPreciseAmountString(
                       result.currencyB.amount,
-                      prices[result.currencyB.currency.address] ?? 0,
+                      prices[result.currencyB.currency.address],
                     ),
                   },
               new BigNumber(result.lpCurrency.amount).isZero()
@@ -248,7 +248,7 @@ export const PoolContractProvider = ({
                     label: result.lpCurrency.currency.symbol,
                     value: formatPreciseAmountString(
                       result.lpCurrency.amount,
-                      prices[baseCurrency.address] ?? 0,
+                      prices[baseCurrency.address],
                     ),
                   },
             ].filter((field) => field !== undefined) as Confirmation['fields'],
@@ -372,7 +372,7 @@ export const PoolContractProvider = ({
                   label: result.currencyA.currency.symbol,
                   value: formatPreciseAmountString(
                     result.currencyA.amount,
-                    prices[result.currencyA.currency.address] ?? 0,
+                    prices[result.currencyA.currency.address],
                   ),
                 },
             new BigNumber(result.currencyB.amount).isZero()
@@ -383,7 +383,7 @@ export const PoolContractProvider = ({
                   label: result.currencyB.currency.symbol,
                   value: formatPreciseAmountString(
                     result.currencyB.amount,
-                    prices[result.currencyB.currency.address] ?? 0,
+                    prices[result.currencyB.currency.address],
                   ),
                 },
             new BigNumber(result.lpCurrency.amount).isZero()
@@ -397,7 +397,7 @@ export const PoolContractProvider = ({
                   label: result.lpCurrency.currency.symbol,
                   value: formatPreciseAmountString(
                     result.lpCurrency.amount,
-                    prices[baseCurrency.address] ?? 0,
+                    prices[baseCurrency.address],
                   ),
                 },
           ].filter((field) => field !== undefined) as Confirmation['fields'],

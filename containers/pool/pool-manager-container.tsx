@@ -90,11 +90,11 @@ export const PoolManagerContainer = ({
       const totalInputUsdValue = new BigNumber(
         isInvalidAmount(currency0Amount) ? 0 : currency0Amount,
       )
-        .times(prices[pool.currencyA.address] ?? 0)
+        .times(prices[pool.currencyA.address])
         .plus(
           new BigNumber(
             isInvalidAmount(currency1Amount) ? 0 : currency1Amount,
-          ).times(prices[pool.currencyB.address] ?? 0),
+          ).times(prices[pool.currencyB.address]),
         )
       return parseUnits(
         totalInputUsdValue
@@ -237,7 +237,7 @@ export const PoolManagerContainer = ({
     () =>
       Math.floor(
         new BigNumber(pool.liquidityA.total.value)
-          .times(prices[pool.currencyA.address] ?? 0)
+          .times(prices[pool.currencyA.address])
           .div(pool.totalSupply.value)
           .div(pool.lpPriceUSD)
           .times(100)
@@ -334,14 +334,14 @@ export const PoolManagerContainer = ({
                       {formatWithCommas(
                         formatPreciseAmountString(
                           pool.liquidityA.total.value.toString(),
-                          prices[pool.currencyA.address] ?? 0,
+                          prices[pool.currencyA.address],
                         ),
                       )}
                       <span className="text-gray-400 font-medium text-sm">
                         ($
                         {formatWithCommas(
                           new BigNumber(pool.liquidityA.total.value)
-                            .times(prices[pool.currencyA.address] ?? 0)
+                            .times(prices[pool.currencyA.address])
                             .toFixed(2),
                         )}
                         )
@@ -360,14 +360,14 @@ export const PoolManagerContainer = ({
                       {formatWithCommas(
                         formatPreciseAmountString(
                           pool.liquidityB.total.value.toString(),
-                          prices[pool.currencyB.address] ?? 0,
+                          prices[pool.currencyB.address],
                         ),
                       )}
                       <span className="text-gray-400 font-medium text-sm">
                         ($
                         {formatWithCommas(
                           new BigNumber(pool.liquidityB.total.value)
-                            .times(prices[pool.currencyB.address] ?? 0)
+                            .times(prices[pool.currencyB.address])
                             .toFixed(2),
                         )}
                         )
@@ -531,14 +531,10 @@ export const PoolManagerContainer = ({
                   prices={prices}
                   currency0Amount={currency0Amount}
                   setCurrency0Amount={setCurrency0Amount}
-                  availableCurrency0Balance={
-                    balances[pool.currencyA.address] ?? 0n
-                  }
+                  availableCurrency0Balance={balances[pool.currencyA.address]}
                   currency1Amount={currency1Amount}
                   setCurrency1Amount={setCurrency1Amount}
-                  availableCurrency1Balance={
-                    balances[pool.currencyB.address] ?? 0n
-                  }
+                  availableCurrency1Balance={balances[pool.currencyB.address]}
                   disableSwap={disableSwap}
                   setDisableSwap={setDisableSwap}
                   disableDisableSwap={
@@ -562,9 +558,9 @@ export const PoolManagerContainer = ({
                       (Number(currency0Amount) === 0 &&
                         Number(currency1Amount) === 0) ||
                       parseUnits(currency0Amount, pool.currencyA.decimals) >
-                        (balances[pool.currencyA.address] ?? 0n) ||
+                        balances[pool.currencyA.address] ||
                       parseUnits(currency1Amount, pool.currencyB.decimals) >
-                        (balances[pool.currencyB.address] ?? 0n) ||
+                        balances[pool.currencyB.address] ||
                       (disableSwap &&
                         (Number(currency0Amount) === 0 ||
                           Number(currency1Amount) === 0)),
@@ -585,7 +581,7 @@ export const PoolManagerContainer = ({
                           Number(currency1Amount) === 0
                         ? 'Enter amount'
                         : parseUnits(currency0Amount, pool.currencyA.decimals) >
-                            (balances[pool.currencyA.address] ?? 0n)
+                            balances[pool.currencyA.address]
                           ? `Insufficient ${pool.currencyA.symbol} balance`
                           : parseUnits(
                                 currency0Amount,
@@ -601,7 +597,7 @@ export const PoolManagerContainer = ({
                             : parseUnits(
                                   currency1Amount,
                                   pool.currencyB.decimals,
-                                ) > (balances[pool.currencyB.address] ?? 0n)
+                                ) > balances[pool.currencyB.address]
                               ? `Insufficient ${pool.currencyB.symbol} balance`
                               : parseUnits(
                                     currency1Amount,
@@ -631,7 +627,7 @@ export const PoolManagerContainer = ({
                   }}
                   lpCurrencyAmount={lpCurrencyAmount}
                   setLpCurrencyAmount={setLpCurrencyAmount}
-                  availableLpCurrencyBalance={lpBalances[pool.key] ?? 0n}
+                  availableLpCurrencyBalance={lpBalances[pool.key]}
                   receiveCurrencies={
                     receiveCurrencies.length === 2
                       ? [
@@ -671,8 +667,7 @@ export const PoolManagerContainer = ({
                     disabled:
                       !walletClient ||
                       Number(lpCurrencyAmount) === 0 ||
-                      parseUnits(lpCurrencyAmount, 18) >
-                        (lpBalances[pool.key] ?? 0n),
+                      parseUnits(lpCurrencyAmount, 18) > lpBalances[pool.key],
                     onClick: async () => {
                       await burn(
                         pool.currencyA,
@@ -687,7 +682,7 @@ export const PoolManagerContainer = ({
                       : Number(lpCurrencyAmount) === 0
                         ? 'Enter amount'
                         : parseUnits(lpCurrencyAmount, 18) >
-                            (lpBalances[pool.key] ?? 0n)
+                            lpBalances[pool.key]
                           ? `Insufficient ${pool.currencyLp.symbol} balance`
                           : `Remove Liquidity`,
                   }}

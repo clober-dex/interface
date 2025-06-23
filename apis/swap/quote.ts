@@ -57,14 +57,14 @@ export async function fetchAllQuotesAndSelectBest(
   let fallbackQuote: Quote | undefined = undefined
   const allQuotes: Quote[] = []
   for (const quote of quotes) {
-    const outputPrice = prices[outputCurrency.address] ?? 0
-    const nativePrice = prices[zeroAddress] ?? 0
+    const outputPrice = prices[outputCurrency.address]
+    const nativePrice = prices[zeroAddress]
 
     const gasUsd =
-      Number(formatUnits(quote.gasLimit * gasPrice, 18)) * (nativePrice ?? 0)
+      Number(formatUnits(quote.gasLimit * gasPrice, 18)) * nativePrice
     const amountOutUsd =
       Number(formatUnits(quote.amountOut, outputCurrency.decimals)) *
-      (outputPrice ?? 0)
+      outputPrice
     const netAmountOutUsd = amountOutUsd - gasUsd
 
     const quoteWithMeta: Quote = {
@@ -179,14 +179,14 @@ export async function fetchQuotesLive(
         return
       }
 
-      const outputPrice = prices[outputCurrency.address] ?? 0
-      const nativePrice = prices[zeroAddress] ?? 0
+      const outputPrice = prices[outputCurrency.address]
+      const nativePrice = prices[zeroAddress]
 
       const gasUsd =
-        Number(formatUnits(quote.gasLimit * gasPrice, 18)) * (nativePrice ?? 0)
+        Number(formatUnits(quote.gasLimit * gasPrice, 18)) * nativePrice
       const amountOutUsd =
         Number(formatUnits(quote.amountOut, outputCurrency.decimals)) *
-        (outputPrice ?? 0)
+        outputPrice
       const netAmountOutUsd = amountOutUsd - gasUsd
 
       const quoteWithMeta: Quote = {
