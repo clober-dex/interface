@@ -233,8 +233,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       const amountOut = Number(
         formatUnits(selectedQuote.amountOut, outputCurrency.decimals),
       )
-      const inputValue = amountIn * (prices[inputCurrency.address] ?? 0)
-      const outputValue = amountOut * (prices[outputCurrency.address] ?? 0)
+      const inputValue = amountIn * prices[inputCurrency.address]
+      const outputValue = amountOut * prices[outputCurrency.address]
       return inputValue > outputValue
         ? ((outputValue - inputValue) / inputValue) * 100
         : 0
@@ -268,8 +268,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         tab === 'swap'
       ) {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
-        const insufficientFunds =
-          (balances[inputCurrency.address] ?? 0n) < amountIn
+        const insufficientFunds = balances[inputCurrency.address] < amountIn
         const insufficientAllowance =
           getAllowance(
             CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,

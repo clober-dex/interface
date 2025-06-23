@@ -132,9 +132,9 @@ export const fetchFuturesPositions = async (
         debtAmount,
         liquidationPrice: calculateLiquidationPrice(
           asset.currency,
-          prices[asset.currency.address] ?? 0,
+          prices[asset.currency.address],
           asset.collateral,
-          prices[asset.collateral.address] ?? 0,
+          prices[asset.collateral.address],
           BigInt(debtAmount),
           BigInt(collateralAmount),
           BigInt(asset.liquidationThreshold),
@@ -142,10 +142,10 @@ export const fetchFuturesPositions = async (
         ),
         ltv: calculateLtv(
           asset.currency,
-          prices[asset.currency.address] ?? 0,
+          prices[asset.currency.address],
           debtAmount,
           asset.collateral,
-          prices[asset.collateral.address] ?? 0,
+          prices[asset.collateral.address],
           collateralAmount,
         ),
         averagePrice: Number(offChainPosition.averagePrice),
@@ -155,6 +155,6 @@ export const fetchFuturesPositions = async (
       (position) =>
         position &&
         position.debtAmount > 0n &&
-        (prices[position.asset.currency.address] ?? 0) > 0,
+        prices[position.asset.currency.address] > 0,
     ) as FuturesPosition[]
 }

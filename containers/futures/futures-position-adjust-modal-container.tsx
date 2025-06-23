@@ -7,6 +7,7 @@ import { calculateLtv, calculateMaxLoanableAmount } from '../../utils/ltv'
 import { useCurrencyContext } from '../../contexts/currency-context'
 import { applyPercent, formatUnits } from '../../utils/bigint'
 import { useFuturesContractContext } from '../../contexts/futures/futures-contract-context'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 export const FuturesPositionAdjustModalContainer = ({
   userPosition,
@@ -22,10 +23,10 @@ export const FuturesPositionAdjustModalContainer = ({
 
   const ltv = calculateLtv(
     userPosition.asset.currency,
-    prices[userPosition.asset.currency.address] ?? 0,
+    prices[userPosition.asset.currency.address],
     userPosition?.debtAmount ?? 0n,
     userPosition.asset.collateral,
-    prices[userPosition.asset.collateral.address] ?? 0,
+    prices[userPosition.asset.collateral.address],
     userPosition?.collateralAmount ?? 0n,
   )
   const [newLTV, setNewLTV] = useState(startLTV === undefined ? ltv : startLTV)
@@ -41,13 +42,10 @@ export const FuturesPositionAdjustModalContainer = ({
         Number(userPosition.asset.ltvPrecision)
       const maxLoanableAmount = calculateMaxLoanableAmount(
         userPosition.asset.currency,
-        parseUnits(
-          (prices[userPosition.asset.currency.address] ?? 0).toFixed(18),
-          18,
-        ),
+        parseUnits(prices[userPosition.asset.currency.address].toFixed(18), 18),
         userPosition.asset.collateral,
         parseUnits(
-          (prices[userPosition.asset.collateral.address] ?? 0).toFixed(18),
+          prices[userPosition.asset.collateral.address].toFixed(18),
           18,
         ),
         userPosition?.collateralAmount ?? 0n,
@@ -109,8 +107,8 @@ export const FuturesPositionAdjustModalContainer = ({
       expectedCollateralAmount={expectedCollateralAmount}
       currentDebtAmount={userPosition?.debtAmount ?? 0n}
       expectedDebtAmount={expectedDebtAmount}
-      loanAssetPrice={prices[userPosition.asset.currency.address] ?? 0}
-      collateralPrice={prices[userPosition.asset.collateral.address] ?? 0}
+      loanAssetPrice={prices[userPosition.asset.currency.address]}
+      collateralPrice={prices[userPosition.asset.collateral.address]}
       disableSlider={startLTV !== undefined}
       actionButtonProps={{
         onClick: async () => {
@@ -126,8 +124,7 @@ export const FuturesPositionAdjustModalContainer = ({
           (newLTV > 0 && Math.abs(ltv - newLTV) < 0.5) ||
           (newLTV > ltv && expectedDebtAmount > maxLoanableAmount) ||
           (debtAmountDelta < 0n &&
-            (balances[userPosition.asset.currency.address] ?? 0n) <
-              -debtAmountDelta) ||
+            balances[userPosition.asset.currency.address] < -debtAmountDelta) ||
           (userPosition.asset.minDebt > expectedDebtAmount &&
             expectedDebtAmount > 0n),
         text:
@@ -138,10 +135,10 @@ export const FuturesPositionAdjustModalContainer = ({
               ? `Remaining debt must be ≥ ${formatUnits(
                   userPosition.asset.minDebt,
                   userPosition.asset.currency.decimals,
-                  prices[userPosition.asset.currency.address] ?? 0,
+                  prices[userPosition.asset.currency.address],
                 )} ${userPosition.asset.currency.symbol.split('-')[0]}`
               : debtAmountDelta < 0n &&
-                  (balances[userPosition.asset.currency.address] ?? 0n) <
+                  balances[userPosition.asset.currency.address] <
                     -debtAmountDelta
                 ? 'Not enough futures balance'
                 : newLTV === 0

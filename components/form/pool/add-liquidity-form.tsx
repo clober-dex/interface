@@ -65,7 +65,7 @@ export const AddLiquidityForm = ({
             value={currency0Amount}
             onValueChange={setCurrency0Amount}
             availableAmount={availableCurrency0Balance}
-            price={prices[pool.currencyA.address] ?? 0}
+            price={prices[pool.currencyA.address]}
           />
           <CurrencyAmountInput
             chain={chain}
@@ -73,7 +73,7 @@ export const AddLiquidityForm = ({
             value={currency1Amount}
             onValueChange={setCurrency1Amount}
             availableAmount={availableCurrency1Balance}
-            price={prices[pool.currencyB.address] ?? 0}
+            price={prices[pool.currencyB.address]}
           />
         </div>
         <div className="flex items-center gap-3 ml-auto">

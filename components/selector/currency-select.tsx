@@ -201,10 +201,10 @@ const CurrencySelect = ({
 
               // Fallback to balance * price value for same-priority currencies
               const aValue =
-                Number(formatUnits(balances[a.address] ?? 0n, a.decimals)) *
+                Number(formatUnits(balances[a.address], a.decimals)) *
                 (prices[a.address] ?? 1e-15)
               const bValue =
-                Number(formatUnits(balances[b.address] ?? 0n, b.decimals)) *
+                Number(formatUnits(balances[b.address], b.decimals)) *
                 (prices[b.address] ?? 1e-15)
 
               return bValue - aValue
@@ -270,17 +270,17 @@ const CurrencySelect = ({
                 <div className="flex-1 text-sm text-end text-white">
                   <div>
                     {formatUnits(
-                      balances[currency.address] ?? 0n,
+                      balances[currency.address],
                       currency.decimals,
-                      prices[currency.address] ?? 0,
+                      prices[currency.address],
                     )}
                   </div>
                   {prices[currency.address] ? (
                     <div className="text-gray-500 text-xs">
                       {formatDollarValue(
-                        balances[currency.address] ?? 0n,
+                        balances[currency.address],
                         currency.decimals,
-                        prices[currency.address] ?? 0,
+                        prices[currency.address],
                       )}
                     </div>
                   ) : (

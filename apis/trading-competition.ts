@@ -102,7 +102,7 @@ export class TradingCompetition {
               Number(trade.token.decimals),
             )
             const pnl =
-              Number(trade.realizedPnL) + Number(amount) * (prices[token] ?? 0)
+              Number(trade.realizedPnL) + Number(amount) * prices[token]
             return {
               currency: {
                 address: token,
@@ -165,8 +165,7 @@ export class TradingCompetition {
         BigInt(trade.estimatedHolding),
         Number(trade.token.decimals),
       )
-      const pnl =
-        Number(trade.realizedPnL) + Number(amount) * (prices[token] ?? 0)
+      const pnl = Number(trade.realizedPnL) + Number(amount) * prices[token]
       return {
         currency: {
           address: token,

@@ -167,7 +167,7 @@ export const FuturesContainer = () => {
                   .filter(
                     (asset) =>
                       asset.expiration < now &&
-                      (balances[asset.currency.address] ?? 0n) > 0n &&
+                      balances[asset.currency.address] > 0n &&
                       WHITELISTED_FUTURES_ASSETS.map((item) =>
                         getAddress(item.address),
                       ).includes(getAddress(asset.currency.address)),
@@ -177,10 +177,10 @@ export const FuturesContainer = () => {
                       chain={selectedChain}
                       key={`redeem-${asset.id}-${index}`}
                       asset={asset}
-                      balance={balances[asset.currency.address] ?? 0n}
+                      balance={balances[asset.currency.address]}
                       prices={prices}
                       redeemableCollateral={calculateSettledCollateral(
-                        balances[asset.currency.address] ?? 0n,
+                        balances[asset.currency.address],
                         asset.settlePrice,
                         asset.currency.decimals,
                         asset.collateral.decimals,
@@ -192,9 +192,9 @@ export const FuturesContainer = () => {
                           if (asset.settlePrice > 0) {
                             await redeem(
                               asset,
-                              balances[asset.currency.address] ?? 0n,
+                              balances[asset.currency.address],
                               calculateSettledCollateral(
-                                balances[asset.currency.address] ?? 0n,
+                                balances[asset.currency.address],
                                 asset.settlePrice,
                                 asset.currency.decimals,
                                 asset.collateral.decimals,
@@ -223,9 +223,7 @@ export const FuturesContainer = () => {
                     chain={selectedChain}
                     key={`${position.asset.id}-${index}`}
                     position={position}
-                    loanAssetPrice={
-                      prices[position.asset.currency.address] ?? 0
-                    }
+                    loanAssetPrice={prices[position.asset.currency.address]}
                     isPending={pendingPositionCurrencies
                       .map((currency) => getAddress(currency.address))
                       .includes(getAddress(position.asset.currency.address))}
@@ -237,7 +235,7 @@ export const FuturesContainer = () => {
                           const collateralReceived =
                             (position?.collateralAmount ?? 0n) -
                             calculateSettledCollateral(
-                              balances[position.asset.currency.address] ?? 0n,
+                              balances[position.asset.currency.address],
                               position.asset.settlePrice,
                               position.asset.currency.decimals,
                               position.asset.collateral.decimals,

@@ -280,9 +280,7 @@ export const SwapForm = ({
                     : undefined
                 }
                 price={
-                  inputCurrency
-                    ? (prices[inputCurrency.address] ?? 0)
-                    : undefined
+                  inputCurrency ? prices[inputCurrency.address] : undefined
                 }
               />
             </div>
@@ -303,9 +301,7 @@ export const SwapForm = ({
                     : undefined
                 }
                 price={
-                  outputCurrency
-                    ? (prices[outputCurrency.address] ?? 0)
-                    : undefined
+                  outputCurrency ? prices[outputCurrency.address] : undefined
                 }
                 disabled={true}
               >

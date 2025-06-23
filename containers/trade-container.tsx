@@ -4,6 +4,7 @@ import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
+import { getContractAddresses } from '@clober/v2-sdk'
 
 import { LimitForm, LimitFormProps } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
@@ -184,7 +185,7 @@ export const TradeContainer = () => {
               [selectedMarket.base.address, selectedMarket.quote.address],
             )) ||
           amountIn === 0n ||
-          amountIn > (balances[inputCurrency.address] ?? 0n)),
+          amountIn > balances[inputCurrency.address]),
       onClick: async () => {
         if (!walletClient && openConnectModal) {
           openConnectModal()
@@ -212,11 +213,20 @@ export const TradeContainer = () => {
             ? 'Select output currency'
             : amountIn === 0n
               ? 'Enter amount'
-              : amountIn > (balances[inputCurrency.address] ?? 0n)
+              : amountIn > balances[inputCurrency.address]
                 ? 'Insufficient balance'
-                : `Place Order`,
+                : amountIn >
+                    getAllowance(
+                      getContractAddresses({ chainId: selectedChain.id })
+                        .Controller,
+                      inputCurrency,
+                    )
+                  ? `Max Approve ${inputCurrency.symbol}`
+                  : `Place Order`,
     }),
     [
+      getAllowance,
+      selectedChain.id,
       amountIn,
       balances,
       inputCurrency,
@@ -252,7 +262,7 @@ export const TradeContainer = () => {
         inputCurrencyAmount,
         setInputCurrencyAmount,
         availableInputCurrencyBalance: inputCurrency
-          ? (balances[inputCurrency.address] ?? 0n)
+          ? balances[inputCurrency.address]
           : 0n,
         showOutputCurrencySelect,
         setShowOutputCurrencySelect,
@@ -261,7 +271,7 @@ export const TradeContainer = () => {
         outputCurrencyAmount,
         setOutputCurrencyAmount,
         availableOutputCurrencyBalance: outputCurrency
-          ? (balances[outputCurrency.address] ?? 0n)
+          ? balances[outputCurrency.address]
           : 0n,
         swapInputCurrencyAndOutputCurrency: () => {
           setIsBid((prevState) => !prevState)
@@ -327,7 +337,7 @@ export const TradeContainer = () => {
         !inputCurrency ||
         !outputCurrency ||
         amountIn === 0n ||
-        amountIn > (balances[inputCurrency.address] ?? 0n),
+        amountIn > balances[inputCurrency.address],
       onClick: async () => {
         if (!userAddress && openConnectModal) {
           openConnectModal()
@@ -368,7 +378,7 @@ export const TradeContainer = () => {
                 ? 'Select output currency'
                 : amountIn === 0n
                   ? 'Enter amount'
-                  : amountIn > (balances[inputCurrency.address] ?? 0n)
+                  : amountIn > balances[inputCurrency.address]
                     ? 'Insufficient balance'
                     : amountIn >
                         getAllowance(
@@ -423,7 +433,7 @@ export const TradeContainer = () => {
         inputCurrencyAmount,
         setInputCurrencyAmount,
         availableInputCurrencyBalance: inputCurrency
-          ? (balances[inputCurrency.address] ?? 0n)
+          ? balances[inputCurrency.address]
           : 0n,
         showOutputCurrencySelect,
         setShowOutputCurrencySelect,
