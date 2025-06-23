@@ -412,8 +412,14 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     <Context.Provider
       value={{
         whitelistCurrencies,
-        prices: prices ?? {},
-        balances: balances ?? {},
+        prices: new Proxy(prices ?? {}, {
+          get: (target, prop: `0x${string}`) =>
+            target[prop as keyof typeof target] ?? 0,
+        }),
+        balances: new Proxy(balances ?? {}, {
+          get: (target, prop: `0x${string}`) =>
+            target[prop as keyof typeof target] ?? 0n,
+        }),
         getAllowance,
         isOpenOrderApproved: data?.isOpenOrderApproved ?? false,
         currencies,
