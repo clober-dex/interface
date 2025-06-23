@@ -1,5 +1,4 @@
 import React from 'react'
-import BigNumber from 'bignumber.js'
 
 export type LegendInfo = { label: string; color: string; value: string }
 
