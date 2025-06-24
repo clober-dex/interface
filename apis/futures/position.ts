@@ -120,9 +120,6 @@ export const fetchFuturesPositions = async (
           `${userAddress.toLowerCase()}-${asset.id.toLowerCase()}` ===
           position.id,
       )
-      if (!offChainPosition) {
-        return null
-      }
       const collateralAmount = BigInt(result.result[0])
       const debtAmount = BigInt(result.result[1])
       return {
@@ -148,7 +145,7 @@ export const fetchFuturesPositions = async (
           prices[asset.collateral.address],
           collateralAmount,
         ),
-        averagePrice: Number(offChainPosition.averagePrice),
+        averagePrice: Number(offChainPosition?.averagePrice ?? 0),
       } as FuturesPosition
     })
     .filter(
