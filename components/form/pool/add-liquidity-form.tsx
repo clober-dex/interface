@@ -106,7 +106,7 @@ export const AddLiquidityForm = ({
                   {formatWithCommas(
                     formatUnits(
                       receiveLpCurrencyAmount,
-                      pool.currencyLp.decimals,
+                      pool.lpCurrency.decimals,
                       pool.lpPriceUSD,
                     ),
                   )}
@@ -116,7 +116,7 @@ export const AddLiquidityForm = ({
                   (
                   {formatDollarValue(
                     receiveLpCurrencyAmount,
-                    pool.currencyLp.decimals,
+                    pool.lpCurrency.decimals,
                     pool.lpPriceUSD,
                   )}
                   )

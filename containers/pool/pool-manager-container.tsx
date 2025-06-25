@@ -99,8 +99,8 @@ export const PoolManagerContainer = ({
       return parseUnits(
         totalInputUsdValue
           .div(pool.lpPriceUSD)
-          .toFixed(pool.currencyLp.decimals),
-        pool.currencyLp.decimals,
+          .toFixed(pool.lpCurrency.decimals),
+        pool.lpCurrency.decimals,
       )
     },
     initialData: 0n,
@@ -624,7 +624,7 @@ export const PoolManagerContainer = ({
                   pool={pool}
                   prices={{
                     ...prices,
-                    [pool.currencyLp.address]: pool.lpPriceUSD,
+                    [pool.lpCurrency.address]: pool.lpPriceUSD,
                   }}
                   lpCurrencyAmount={lpCurrencyAmount}
                   setLpCurrencyAmount={setLpCurrencyAmount}
@@ -684,7 +684,7 @@ export const PoolManagerContainer = ({
                         ? 'Enter amount'
                         : parseUnits(lpCurrencyAmount, 18) >
                             lpBalances[pool.key]
-                          ? `Insufficient ${pool.currencyLp.symbol} balance`
+                          ? `Insufficient ${pool.lpCurrency.symbol} balance`
                           : `Remove Liquidity`,
                   }}
                 />

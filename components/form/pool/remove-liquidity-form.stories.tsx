@@ -103,7 +103,7 @@ export const Default: Story = {
         },
       },
       lpPriceUSD: 12344.3241,
-      currencyLp: {
+      lpCurrency: {
         id: '0x',
         address: '0x0000000000000000000000000000000000000001',
         name: 'ETH-USDC-LP',

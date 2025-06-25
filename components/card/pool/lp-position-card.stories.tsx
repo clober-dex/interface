@@ -36,7 +36,7 @@ export const Default: Story = {
       symbol: 'USDC',
       decimals: 6,
     },
-    currencyLp: {
+    lpCurrency: {
       address: '0x0000000000000000000000000000000000000003',
       name: 'ETH-USDC-LP',
       symbol: 'ETH-USDC-LP',

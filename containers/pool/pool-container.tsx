@@ -182,7 +182,7 @@ export const PoolContainer = () => {
                   }
                   const value =
                     Number(
-                      formatUnits(amount, poolSnapshot.currencyLp.decimals),
+                      formatUnits(amount, poolSnapshot.lpCurrency.decimals),
                     ) * Number(poolSnapshot.lpPriceUSD)
                   if (value < 0.01) {
                     return <></>
@@ -195,7 +195,7 @@ export const PoolContainer = () => {
                       poolKey={poolKey as `0x${string}`}
                       currencyA={poolSnapshot.currencyA}
                       currencyB={poolSnapshot.currencyB}
-                      currencyLp={poolSnapshot.currencyLp}
+                      lpCurrency={poolSnapshot.lpCurrency}
                       lpPriceUSD={Number(poolSnapshot.lpPriceUSD)}
                       router={router}
                     />

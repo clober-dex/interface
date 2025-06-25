@@ -43,13 +43,13 @@ export const RemoveLiquidityForm = ({
         </div>
         <LpCurrencyAmountInput
           chain={chain}
-          currency={pool.currencyLp}
+          currency={pool.lpCurrency}
           currency0={pool.currencyA}
           currency1={pool.currencyB}
           value={lpCurrencyAmount}
           onValueChange={setLpCurrencyAmount}
           availableAmount={availableLpCurrencyBalance}
-          price={prices[pool.currencyLp.address]}
+          price={prices[pool.lpCurrency.address]}
         />
       </div>
       <div className="flex flex-col items-start gap-3 md:gap-4 self-stretch">
