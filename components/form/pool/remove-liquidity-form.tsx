@@ -54,7 +54,7 @@ export const RemoveLiquidityForm = ({
         </div>
         <LpCurrencyAmountInput
           chain={chain}
-          currency={pool.lpCurrency}
+          currency={{ ...pool.lpCurrency, symbol: 'LP Token' }}
           currency0={pool.currencyA}
           currency1={pool.currencyB}
           value={lpCurrencyAmount}

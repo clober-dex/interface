@@ -58,7 +58,10 @@ export const LpWrapUnwrapModal = ({
             <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
               <LpCurrencyAmountInput
                 chain={chain}
-                currency={pool.lpCurrency}
+                currency={{
+                  ...pool.lpCurrency,
+                  symbol: mode === 'wrap' ? 'LP Token' : 'wLP Token',
+                }}
                 currency0={pool.currencyA}
                 currency1={pool.currencyB}
                 value={amount}
@@ -72,7 +75,10 @@ export const LpWrapUnwrapModal = ({
             <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
               <LpCurrencyAmountInput
                 chain={chain}
-                currency={pool.lpCurrency}
+                currency={{
+                  ...pool.lpCurrency,
+                  symbol: mode === 'wrap' ? 'wLP Token' : 'LP Token',
+                }}
                 currency0={pool.currencyA}
                 currency1={pool.currencyB}
                 value={amount}

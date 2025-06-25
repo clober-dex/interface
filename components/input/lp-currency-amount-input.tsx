@@ -96,7 +96,9 @@ const LpCurrencyAmountInput = ({
               currencyB={currency1}
               className="w-5 h-5 shrink-0 relative"
             />
-            <div className="text-sm sm:text-base text-white">LP Token</div>
+            <div className="text-sm sm:text-base text-white">
+              {currency.symbol}
+            </div>
           </div>
         ) : (
           <></>

@@ -6,6 +6,7 @@ import {
   getContractAddresses,
   getQuoteToken,
   removeLiquidity,
+  unwrapFromERC20,
   wrapToERC20,
 } from '@clober/v2-sdk'
 import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
@@ -628,12 +629,126 @@ export const PoolContractProvider = ({
     ],
   )
 
+  const unwrap = useCallback(
+    async (pool: Pool, amount: string) => {
+      if (!walletClient || !selectedChain) {
+        return
+      }
+
+      try {
+        setConfirmation({
+          title: `Unwrap LP`,
+          body: 'Please confirm in your wallet.',
+          chain: selectedChain,
+          fields: [],
+        })
+
+        const { transaction } = await unwrapFromERC20({
+          chainId: selectedChain.id,
+          userAddress: walletClient.account.address,
+          token0: pool.currencyA.address,
+          token1: pool.currencyB.address,
+          salt: pool.key,
+          amount,
+          options: {
+            useSubgraph: false,
+            rpcUrl: CHAIN_CONFIG.RPC_URL,
+            pool,
+          },
+        })
+
+        const confirmation = {
+          title: `Unwrap LP`,
+          body: 'Please confirm in your wallet.',
+          chain: selectedChain,
+          fields: [
+            {
+              direction: 'out',
+              currency: {
+                currencyA: pool.currencyA,
+                currencyB: pool.currencyB,
+              },
+              label: pool.lpCurrency.symbol,
+              value: formatPreciseAmountString(
+                amount,
+                prices[pool.currencyA.address] ||
+                  prices[pool.currencyB.address] ||
+                  0,
+              ),
+            },
+            {
+              direction: 'in',
+              currency: {
+                currencyA: pool.currencyA,
+                currencyB: pool.currencyB,
+              },
+              label: pool.wrappedLpCurrency.symbol,
+              value: formatPreciseAmountString(
+                amount,
+                prices[pool.currencyA.address] ||
+                  prices[pool.currencyB.address] ||
+                  0,
+              ),
+            },
+          ] as Confirmation['fields'],
+        }
+        setConfirmation(confirmation)
+        if (transaction) {
+          await sendTransaction(
+            selectedChain,
+            walletClient,
+            transaction,
+            disconnectAsync,
+            (hash) => {
+              setConfirmation(undefined)
+              queuePendingTransaction({
+                ...confirmation,
+                txHash: hash,
+                type: 'unwrap',
+                timestamp: currentTimestampInSeconds(),
+              })
+            },
+            (receipt) => {
+              updatePendingTransaction({
+                ...confirmation,
+                txHash: receipt.transactionHash,
+                type: 'unwrap',
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: Number(receipt.blockNumber),
+                success: receipt.status === 'success',
+              })
+            },
+          )
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['balances'] }),
+          queryClient.invalidateQueries({ queryKey: ['lp-balances'] }),
+        ])
+        setConfirmation(undefined)
+      }
+    },
+    [
+      disconnectAsync,
+      prices,
+      queryClient,
+      queuePendingTransaction,
+      selectedChain,
+      setConfirmation,
+      updatePendingTransaction,
+      walletClient,
+    ],
+  )
+
   return (
     <Context.Provider
       value={{
         mint,
         burn,
         wrap,
+        unwrap,
       }}
     >
       {children}
