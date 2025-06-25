@@ -151,6 +151,7 @@ export const Default: Story = {
     setSlippageInput: () => {},
     receiveLpCurrencyAmount: 1000999999999999900n,
     isCalculatingReceiveLpAmount: true,
+    setShowLpWrapUnwrapModal: () => {},
     actionButtonProps: {
       disabled: false,
       onClick: () => {},

@@ -26,6 +26,7 @@ export const AddLiquidityForm = ({
   setSlippageInput,
   receiveLpCurrencyAmount,
   isCalculatingReceiveLpAmount,
+  setShowLpWrapUnwrapModal,
   actionButtonProps,
 }: {
   chain: Chain
@@ -44,6 +45,7 @@ export const AddLiquidityForm = ({
   setSlippageInput: (slippageInput: string) => void
   receiveLpCurrencyAmount: bigint
   isCalculatingReceiveLpAmount: boolean
+  setShowLpWrapUnwrapModal: (show: boolean) => void
   actionButtonProps: ActionButtonProps
 }) => {
   const isNoLiquidity = useMemo(
@@ -55,8 +57,19 @@ export const AddLiquidityForm = ({
   return (
     <>
       <div className="flex flex-col relative gap-4 self-stretch">
-        <div className="w-full text-white text-sm md:text-base font-bold">
-          Enter amount you’d like to add.
+        <div className="flex flex-row w-full text-white text-sm md:text-base font-bold">
+          <div>Enter amount you’d like to add.</div>
+
+          <button
+            onClick={() => {
+              setShowLpWrapUnwrapModal(true)
+            }}
+            className="ml-auto w-fit sm:w-[140px] h-fit sm:h-8 px-2 sm:px-6 py-1 sm:py-4 bg-blue-500/25 rounded-xl shadow-[7.660800457000732px_7.660800457000732px_61.28640365600586px_0px_rgba(191,57,0,0.32)] inline-flex justify-center items-center"
+          >
+            <div className="text-nowrap opacity-90 text-center justify-center text-blue-400 text-[11px] sm:text-sm font-bold">
+              Wrap / Unwrap
+            </div>
+          </button>
         </div>
         <div className="flex flex-col relative gap-4 self-stretch">
           <CurrencyAmountInput

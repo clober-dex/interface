@@ -291,9 +291,11 @@ export const UserWalletModal = ({
           </div>
         </div>
 
-        <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-semibold mb-4 mt-2 py-2">
-          ${formatTinyNumber(portfolioUSD)}
-        </div>
+        {tab === 'my-tokens' && (
+          <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-semibold mb-4 mt-2 py-2">
+            ${formatTinyNumber(portfolioUSD)}
+          </div>
+        )}
 
         <div className="flex flex-col w-full overflow-y-scroll">
           <AnimatePresence mode="wait">

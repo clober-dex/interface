@@ -21,6 +21,7 @@ import { AddLiquidityForm } from '../../components/form/pool/add-liquidity-form'
 import { RemoveLiquidityForm } from '../../components/form/pool/remove-liquidity-form'
 import { Pool, PoolSnapshot } from '../../model/pool'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { LpWrapUnwrapModal } from '../../components/modal/lp-wrap-unwrap-modal'
 
 import { PoolChartContainer } from './pool-chart-container'
 
@@ -42,6 +43,8 @@ export const PoolManagerContainer = ({
   pool: Pool
   poolSnapshot: PoolSnapshot
 }) => {
+  const [showLpWrapUnwrapModal, setShowLpWrapUnwrapModal] = useState(false)
+
   const [tab, setTab] = React.useState<'add-liquidity' | 'remove-liquidity'>(
     'add-liquidity',
   )
@@ -249,6 +252,18 @@ export const PoolManagerContainer = ({
 
   return (
     <div className="flex w-full h-full justify-center mt-8 mb-[30px] md:mb-20">
+      {showLpWrapUnwrapModal && (
+        <LpWrapUnwrapModal
+          chain={selectedChain}
+          pool={pool}
+          lpBalance={0n}
+          lpAllowance={0n}
+          lpPrice={pool.lpPriceUSD}
+          wrappedBalance={0n}
+          onClose={() => setShowLpWrapUnwrapModal(false)}
+        />
+      )}
+
       <div className="w-full lg:w-[992px] h-full flex flex-col items-start gap-8 md:gap-12 px-2 sm:px-4 lg:px-0">
         <div className="flex w-full h-full items-center">
           <button
@@ -553,6 +568,7 @@ export const PoolManagerContainer = ({
                       Number(currency0Amount) + Number(currency1Amount) > 0 &&
                       receiveLpAmount === 0n)
                   }
+                  setShowLpWrapUnwrapModal={setShowLpWrapUnwrapModal}
                   actionButtonProps={{
                     disabled:
                       !walletClient ||
@@ -664,6 +680,7 @@ export const PoolManagerContainer = ({
                     Number(lpCurrencyAmount) > 0 &&
                     receiveCurrencies.length === 0
                   }
+                  setShowLpWrapUnwrapModal={setShowLpWrapUnwrapModal}
                   actionButtonProps={{
                     disabled:
                       !walletClient ||
