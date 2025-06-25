@@ -3,8 +3,6 @@ import '../../styles/globals.css'
 import { Meta, StoryObj } from '@storybook/react'
 import { mainnet } from 'viem/chains'
 
-import { Currency, LpCurrency } from '../../model/currency'
-
 import { LpWrapUnwrapModal } from './lp-wrap-unwrap-modal'
 
 export default {
@@ -132,7 +130,6 @@ export const Default: Story = {
       market: {},
     },
     lpBalance: 1100000000000000000n,
-    lpAllowance: 2000000000000000000n,
     lpPrice: 2000,
     wrappedBalance: 2000000000000000000n,
     onClose: () => {},

@@ -2,6 +2,8 @@ export type TransactionType =
   | 'approve' // approve erc20 token
   | 'mint' // add liquidity into the pool
   | 'burn' // remove liquidity from the pool
+  | 'wrap' // wrap liquidity pool token to erc20
+  | 'unwrap' // unwrap erc20 to liquidity pool token
   | 'register' // register for trading competition
   | 'borrow' // borrow a futures asset
   | 'repay' // repay a futures asset

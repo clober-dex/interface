@@ -14,18 +14,20 @@ export const LpWrapUnwrapModal = ({
   chain,
   pool,
   lpBalance,
-  lpAllowance,
   lpPrice,
   wrappedBalance,
   onClose,
+  onWrap,
+  onUnwrap,
 }: {
   chain: Chain
   pool: Pool
   lpBalance: bigint
-  lpAllowance: bigint
   lpPrice: number
   wrappedBalance: bigint
   onClose: () => void
+  onWrap: (pool: Pool, amount: string) => Promise<void>
+  onUnwrap: (pool: Pool, amount: string) => Promise<void>
 }) => {
   const [inputCurrency, setInputCurrency] = useState<Currency | Currency6909>(
     pool.lpCurrency,
@@ -122,19 +124,23 @@ export const LpWrapUnwrapModal = ({
                   : mode === 'wrap' &&
                       lpBalance < parseUnits(amount, pool.lpCurrency.decimals)
                     ? 'Insufficient LP Balance'
-                    : mode === 'wrap' &&
-                        lpAllowance <
-                          parseUnits(amount, pool.lpCurrency.decimals)
-                      ? 'Insufficient LP Allowance'
-                      : mode === 'unwrap' &&
-                          wrappedBalance <
-                            parseUnits(amount, pool.wrappedLpCurrency.decimals)
-                        ? `Insufficient ${pool.wrappedLpCurrency.symbol} Balance`
-                        : mode === 'wrap'
-                          ? `Wrap ${pool.lpCurrency.symbol}`
-                          : `Unwrap ${pool.wrappedLpCurrency.symbol}`
+                    : mode === 'unwrap' &&
+                        wrappedBalance <
+                          parseUnits(amount, pool.wrappedLpCurrency.decimals)
+                      ? `Insufficient ${pool.wrappedLpCurrency.symbol} Balance`
+                      : mode === 'wrap'
+                        ? `Wrap ${pool.lpCurrency.symbol}`
+                        : `Unwrap ${pool.wrappedLpCurrency.symbol}`
               }
-              onClick={async () => {}}
+              onClick={async () => {
+                if (mode === 'wrap') {
+                  await onWrap(pool, amount)
+                } else if (mode === 'unwrap') {
+                  await onUnwrap(pool, amount)
+                } else {
+                  throw new Error('Invalid mode')
+                }
+              }}
             />
           </div>
         </div>
