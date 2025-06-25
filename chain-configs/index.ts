@@ -14,7 +14,10 @@ import { AggregatorRouterGateway } from '../model/aggregator/router-gateway'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
-import { WHITELISTED_POOL_KEYS } from './pool'
+import {
+  WHITELISTED_POOL_KEYS,
+  WHITELISTED_WRAPPED_LP_CURRENCIES,
+} from './pool'
 
 const CHAIN = {
   ...monadTestnet,
@@ -81,7 +84,10 @@ export const CHAIN_CONFIG: ChainConfig = {
     decimals: 6,
     icon: '/asset-icon/USDC.webp',
   },
-  WHITELISTED_CURRENCIES: WHITELISTED_CURRENCIES,
+  WHITELISTED_CURRENCIES: [
+    ...WHITELISTED_CURRENCIES,
+    ...WHITELISTED_WRAPPED_LP_CURRENCIES,
+  ],
 }
 
 let config: any | null = null
