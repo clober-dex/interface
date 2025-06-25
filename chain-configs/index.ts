@@ -10,7 +10,6 @@ import {
 } from '@rainbow-me/rainbowkit/wallets'
 
 import { socialAccountWallet } from '../utils/web3auth'
-import { AggregatorRouterGateway } from '../model/aggregator/router-gateway'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'

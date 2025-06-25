@@ -2,11 +2,11 @@ import React, { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAddress, isAddressEqual } from 'viem'
 import { UTCTimestamp } from 'lightweight-charts'
-import { getProtocolAnalytics } from '@clober/v2-sdk'
 import {
+  getProtocolAnalytics,
   AnalyticsSnapshot,
   AnalyticsSummary,
-} from '@clober/v2-sdk/dist/types/entities/analytics/types'
+} from '@clober/v2-sdk'
 
 import { useChainContext } from '../contexts/chain-context'
 import { HistogramChart } from '../components/chart/histogram-chart'
