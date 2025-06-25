@@ -65,7 +65,7 @@ export const PoolManagerContainer = ({
     setLpCurrencyAmount,
     lpBalances,
   } = usePoolContext()
-  const { mint, burn, wrap } = usePoolContractContext()
+  const { mint, burn, wrap, unwrap } = usePoolContractContext()
   const [showRPI, setShowRPI] = useState(true)
   const previousValues = useRef({
     currency0Amount,
@@ -258,9 +258,10 @@ export const PoolManagerContainer = ({
           pool={pool}
           lpBalance={lpBalances[pool.key]}
           lpPrice={pool.lpPriceUSD}
-          wrappedBalance={balances[pool.lpCurrency.address]}
+          wrappedBalance={balances[pool.wrappedLpCurrency.address]}
           onClose={() => setShowLpWrapUnwrapModal(false)}
           onWrap={wrap}
+          onUnwrap={unwrap}
         />
       )}
 
