@@ -54,6 +54,31 @@ export const LpWrapUnwrapModal = ({
               : `Unwrap ${pool.wrappedLpCurrency.symbol}`}
           </h1>
 
+          <div className="w-full max-w-[482px] items-center justify-center mb-5 hidden sm:flex bg-gray-800 rounded-[22px] py-1 h-12 flex-row relative text-gray-400 text-base font-bold">
+            <button
+              disabled={mode === 'wrap'}
+              onClick={() =>
+                setInputCurrency(
+                  mode === 'wrap' ? pool.wrappedLpCurrency : pool.lpCurrency,
+                )
+              }
+              className="flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
+            >
+              Wrap
+            </button>
+            <button
+              disabled={mode === 'unwrap'}
+              onClick={() =>
+                setInputCurrency(
+                  mode === 'wrap' ? pool.wrappedLpCurrency : pool.lpCurrency,
+                )
+              }
+              className="flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
+            >
+              Unwrap
+            </button>
+          </div>
+
           <div className="flex flex-col justify-start items-end gap-5">
             <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
               <LpCurrencyAmountInput
@@ -90,7 +115,7 @@ export const LpWrapUnwrapModal = ({
               />
             </div>
 
-            <div className="absolute flex items-center justify-center top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 p-1 sm:p-1.5">
+            <div className="absolute flex items-center justify-center top-[53.5%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 p-1 sm:p-1.5">
               <button
                 className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
                 onClick={swapCurrencies}
