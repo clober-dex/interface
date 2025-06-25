@@ -1,104 +1,85 @@
 import React, { useCallback, useMemo, useState } from 'react'
+import { Currency6909 } from '@clober/v2-sdk'
 import { parseUnits } from 'viem'
 
-import { Currency, LpCurrency } from '../../model/currency'
-import CurrencyAmountInput from '../input/currency-amount-input'
+import { Currency } from '../../model/currency'
 import { Chain } from '../../model/chain'
 import LpCurrencyAmountInput from '../input/lp-currency-amount-input'
+import { Pool } from '../../model/pool'
 import { ActionButton } from '../button/action-button'
 
 import Modal from './modal'
 
 export const LpWrapUnwrapModal = ({
   chain,
-  lpCurrency,
+  pool,
   lpBalance,
+  lpAllowance,
   lpPrice,
-  wrappedCurrency,
   wrappedBalance,
   onClose,
 }: {
   chain: Chain
-  lpCurrency: LpCurrency
+  pool: Pool
   lpBalance: bigint
+  lpAllowance: bigint
   lpPrice: number
-  wrappedCurrency: Currency
   wrappedBalance: bigint
   onClose: () => void
 }) => {
-  const [currency, setCurrency] = useState<Currency | LpCurrency>(lpCurrency)
+  const [inputCurrency, setInputCurrency] = useState<Currency | Currency6909>(
+    pool.lpCurrency,
+  )
   const [amount, setAmount] = useState<string>('')
   const mode = useMemo(() => {
-    return (currency as LpCurrency).currencyA &&
-      (currency as LpCurrency).currencyB
+    return inputCurrency && (inputCurrency as Currency6909)?.id
       ? 'wrap'
       : 'unwrap'
-  }, [currency])
+  }, [inputCurrency])
 
   const swapCurrencies = useCallback(() => {
-    setCurrency(mode === 'wrap' ? wrappedCurrency : lpCurrency)
+    setInputCurrency(mode === 'wrap' ? pool.wrappedLpCurrency : pool.lpCurrency)
     setAmount('')
-  }, [lpCurrency, mode, wrappedCurrency])
+  }, [mode, pool.lpCurrency, pool.wrappedLpCurrency])
 
   return (
     <Modal show onClose={onClose}>
       <div className="flex flex-col w-full h-full">
         <div className="flex flex-col h-full max-h-[460px] sm:max-h-[576px]">
           <h1 className="flex font-bold mb-6 sm:text-xl items-center justify-center w-full">
-            {mode === 'wrap' ? 'Wrap LP Tokens' : 'Unwrap LP Tokens'}
+            {mode === 'wrap'
+              ? `Wrap ${pool.lpCurrency.symbol}`
+              : `Unwrap ${pool.wrappedLpCurrency.symbol}`}
           </h1>
 
           <div className="flex flex-col justify-start items-end gap-5">
             <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-              {mode === 'wrap' ? (
-                <LpCurrencyAmountInput
-                  chain={chain}
-                  currency={lpCurrency}
-                  currency0={lpCurrency.currencyA!}
-                  currency1={lpCurrency.currencyB!}
-                  value={amount}
-                  onValueChange={setAmount}
-                  availableAmount={lpBalance}
-                  onCurrencyClick={undefined}
-                  price={lpPrice}
-                />
-              ) : (
-                <CurrencyAmountInput
-                  chain={chain}
-                  currency={wrappedCurrency}
-                  value={amount}
-                  onValueChange={setAmount}
-                  availableAmount={wrappedBalance}
-                  onCurrencyClick={undefined}
-                  price={lpPrice}
-                />
-              )}
+              <LpCurrencyAmountInput
+                chain={chain}
+                currency={pool.lpCurrency}
+                currency0={pool.currencyA}
+                currency1={pool.currencyB}
+                value={amount}
+                onValueChange={setAmount}
+                availableAmount={mode === 'wrap' ? lpBalance : wrappedBalance}
+                onCurrencyClick={undefined}
+                price={lpPrice}
+              />
             </div>
 
             <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-              {mode === 'wrap' ? (
-                <CurrencyAmountInput
-                  chain={chain}
-                  currency={wrappedCurrency}
-                  value={amount}
-                  onValueChange={setAmount}
-                  availableAmount={wrappedBalance}
-                  onCurrencyClick={undefined}
-                  price={lpPrice}
-                />
-              ) : (
-                <LpCurrencyAmountInput
-                  chain={chain}
-                  currency={lpCurrency}
-                  currency0={lpCurrency.currencyA!}
-                  currency1={lpCurrency.currencyB!}
-                  value={amount}
-                  onValueChange={setAmount}
-                  availableAmount={lpBalance}
-                  onCurrencyClick={undefined}
-                  price={lpPrice}
-                />
-              )}
+              <LpCurrencyAmountInput
+                chain={chain}
+                currency={pool.lpCurrency}
+                currency0={pool.currencyA}
+                currency1={pool.currencyB}
+                value={amount}
+                onValueChange={setAmount}
+                availableAmount={0n}
+                onCurrencyClick={undefined}
+                price={lpPrice}
+                disabled={true}
+              />
             </div>
 
             <div className="absolute flex items-center justify-center top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 p-1 sm:p-1.5">
@@ -129,22 +110,29 @@ export const LpWrapUnwrapModal = ({
             <ActionButton
               disabled={
                 Number(amount) <= 0 ||
-                (mode === 'wrap' && lpBalance < parseUnits(amount, 18)) ||
+                (mode === 'wrap' &&
+                  lpBalance < parseUnits(amount, pool.lpCurrency.decimals)) ||
                 (mode === 'unwrap' &&
-                  wrappedBalance < parseUnits(amount, wrappedCurrency.decimals))
+                  wrappedBalance <
+                    parseUnits(amount, pool.wrappedLpCurrency.decimals))
               }
               text={
                 Number(amount) <= 0
                   ? 'Enter Amount'
-                  : mode === 'wrap' && lpBalance < parseUnits(amount, 18)
+                  : mode === 'wrap' &&
+                      lpBalance < parseUnits(amount, pool.lpCurrency.decimals)
                     ? 'Insufficient LP Balance'
-                    : mode === 'unwrap' &&
-                        wrappedBalance <
-                          parseUnits(amount, wrappedCurrency.decimals)
-                      ? `Insufficient ${wrappedCurrency.symbol} Balance`
-                      : mode === 'wrap'
-                        ? `Wrap ${lpCurrency.currencyB?.symbol}-${lpCurrency.currencyA?.symbol} LP`
-                        : `Unwrap ${wrappedCurrency.symbol}`
+                    : mode === 'wrap' &&
+                        lpAllowance <
+                          parseUnits(amount, pool.lpCurrency.decimals)
+                      ? 'Insufficient LP Allowance'
+                      : mode === 'unwrap' &&
+                          wrappedBalance <
+                            parseUnits(amount, pool.wrappedLpCurrency.decimals)
+                        ? `Insufficient ${pool.wrappedLpCurrency.symbol} Balance`
+                        : mode === 'wrap'
+                          ? `Wrap ${pool.lpCurrency.symbol}`
+                          : `Unwrap ${pool.wrappedLpCurrency.symbol}`
               }
               onClick={async () => {}}
             />

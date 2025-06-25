@@ -110,6 +110,12 @@ export const Default: Story = {
         symbol: 'ETH-USDC-LP',
         decimals: 18,
       },
+      wrappedLpCurrency: {
+        address: '0x0000000000000000000000000000000000000003',
+        name: 'USDC',
+        symbol: 'USDC',
+        decimals: 6,
+      },
       currencyA: {
         address: '0x0000000000000000000000000000000000000002',
         name: 'ETH',
