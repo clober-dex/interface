@@ -16,7 +16,7 @@ export class MadhouseAggregator implements Aggregator {
   public readonly maximumSlippage = 50 // 50% slippage
   public readonly supportsPriceCalculation = false
   public readonly chain: Chain
-  private readonly TIMEOUT = 6000
+  private readonly TIMEOUT = 15 * 1000
   private readonly nativeTokenAddress = zeroAddress
 
   constructor(contract: `0x${string}`, chain: Chain) {
