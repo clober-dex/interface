@@ -125,7 +125,10 @@ export const PoolProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setDisableSwap,
         slippageInput,
         setSlippageInput,
-        lpBalances: lpBalances ?? {},
+        lpBalances: new Proxy(lpBalances ?? {}, {
+          get: (target, prop: `0x${string}`) =>
+            target[prop as keyof typeof target] ?? 0n,
+        }),
       }}
     >
       {children}
