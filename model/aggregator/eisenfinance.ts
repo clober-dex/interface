@@ -5,6 +5,7 @@ import { Chain } from '../chain'
 import { Currency } from '../currency'
 import { fetchApi } from '../../apis/utils'
 import { Prices } from '../prices'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 import { Aggregator } from './index'
 
@@ -70,7 +71,8 @@ export class EisenFinanceAggregator implements Aggregator {
     if (userAddress) {
       params = {
         ...params,
-        fromAddress: userAddress as `0x${string}`,
+        fromAddress: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
+          .AggregatorRouterGateway as `0x${string}`,
       }
     } else {
       params = {
