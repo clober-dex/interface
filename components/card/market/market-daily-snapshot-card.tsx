@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Currency } from '@clober/v2-sdk'
 import BigNumber from 'bignumber.js'
 import { Tooltip } from 'react-tooltip'
 import { useRouter } from 'next/router'
@@ -13,6 +12,7 @@ import {
   formatAbbreviatedNumberString,
   formatTinyNumber,
 } from '../../../utils/bignumber'
+import { Currency } from '../../../model/currency'
 
 export const MarketDailySnapshotCard = ({
   chain,

@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react'
 import { parseUnits } from 'viem'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { getContractAddresses } from '@clober/v2-sdk'
 
 import { Asset } from '../../model/futures/asset'
 import { MintFuturesAssetForm } from '../../components/form/futures/mint-futures-asset-form'
