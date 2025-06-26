@@ -591,7 +591,7 @@ export const PoolContractProvider = ({
               queuePendingTransaction({
                 ...confirmation,
                 txHash: hash,
-                type: 'wrap',
+                type: 'lp-wrap',
                 timestamp: currentTimestampInSeconds(),
               })
             },
@@ -599,7 +599,7 @@ export const PoolContractProvider = ({
               updatePendingTransaction({
                 ...confirmation,
                 txHash: receipt.transactionHash,
-                type: 'wrap',
+                type: 'lp-wrap',
                 timestamp: currentTimestampInSeconds(),
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
@@ -704,7 +704,7 @@ export const PoolContractProvider = ({
               queuePendingTransaction({
                 ...confirmation,
                 txHash: hash,
-                type: 'unwrap',
+                type: 'lp-unwrap',
                 timestamp: currentTimestampInSeconds(),
               })
             },
@@ -712,7 +712,7 @@ export const PoolContractProvider = ({
               updatePendingTransaction({
                 ...confirmation,
                 txHash: receipt.transactionHash,
-                type: 'unwrap',
+                type: 'lp-unwrap',
                 timestamp: currentTimestampInSeconds(),
                 blockNumber: Number(receipt.blockNumber),
                 success: receipt.status === 'success',
