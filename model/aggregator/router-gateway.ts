@@ -133,9 +133,10 @@ export class AggregatorRouterGateway implements Aggregator {
           )
         }
       }
+      gasEstimate = gasEstimate + 500_000n // Add buffer for gas limit
       return {
         amountOut,
-        gasLimit: (transaction?.gas ?? 0n) + 500_000n,
+        gasLimit: gasEstimate,
         aggregator: this,
         transaction: {
           ...tx,
