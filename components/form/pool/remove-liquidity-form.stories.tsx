@@ -163,7 +163,6 @@ export const Default: Story = {
     ],
     slippageInput: '0.5',
     setSlippageInput: () => {},
-    setShowLpWrapUnwrapModal: () => {},
     actionButtonProps: {
       disabled: false,
       onClick: () => {},

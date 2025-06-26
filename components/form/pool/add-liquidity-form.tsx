@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react'
-import { isAddressEqual } from 'viem'
 
 import { Prices } from '../../../model/prices'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
@@ -9,7 +8,6 @@ import { formatDollarValue, formatUnits } from '../../../utils/bigint'
 import { SlippageToggle } from '../../toggle/slippage-toggle'
 import { Chain } from '../../../model/chain'
 import { Pool } from '../../../model/pool'
-import { WHITELISTED_WRAPPED_LP_CURRENCIES } from '../../../chain-configs/pool'
 
 export const AddLiquidityForm = ({
   chain,
@@ -28,7 +26,6 @@ export const AddLiquidityForm = ({
   setSlippageInput,
   receiveLpCurrencyAmount,
   isCalculatingReceiveLpAmount,
-  setShowLpWrapUnwrapModal,
   actionButtonProps,
 }: {
   chain: Chain
@@ -47,7 +44,6 @@ export const AddLiquidityForm = ({
   setSlippageInput: (slippageInput: string) => void
   receiveLpCurrencyAmount: bigint
   isCalculatingReceiveLpAmount: boolean
-  setShowLpWrapUnwrapModal: (show: boolean) => void
   actionButtonProps: ActionButtonProps
 }) => {
   const isNoLiquidity = useMemo(
