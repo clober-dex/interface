@@ -195,14 +195,11 @@ export const PoolContainer = () => {
                   WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.find(
                     ({ poolKey: key }) => key === poolKey,
                   )?.wrappedLpCurrency
-                if (!wrappedLpCurrency) {
-                  return <></>
-                }
                 const value =
                   Number(
                     formatUnits(amount, poolSnapshot.lpCurrency.decimals),
                   ) * Number(poolSnapshot.lpPriceUSD)
-                if (value < 0.01) {
+                if (value < 0.001) {
                   return <></>
                 }
                 return [
@@ -218,18 +215,19 @@ export const PoolContainer = () => {
                       onUnwrap={unwrap}
                     />
                   ),
-                  balances[wrappedLpCurrency.address] > 0n && (
-                    <LpPositionCard
-                      amount={balances[wrappedLpCurrency.address]}
-                      chain={selectedChain}
-                      key={`wlp-position-${poolKey}`}
-                      poolSnapshot={poolSnapshot}
-                      isERC20={true}
-                      router={router}
-                      onWrap={wrap}
-                      onUnwrap={unwrap}
-                    />
-                  ),
+                  wrappedLpCurrency &&
+                    balances[wrappedLpCurrency.address] > 0n && (
+                      <LpPositionCard
+                        amount={balances[wrappedLpCurrency.address]}
+                        chain={selectedChain}
+                        key={`wlp-position-${poolKey}`}
+                        poolSnapshot={poolSnapshot}
+                        isERC20={true}
+                        router={router}
+                        onWrap={wrap}
+                        onUnwrap={unwrap}
+                      />
+                    ),
                 ]
               })}
             </div>

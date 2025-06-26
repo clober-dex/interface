@@ -51,7 +51,7 @@ export const LpPositionCard = ({
           />
         ))}
 
-      <div className="hidden lg:flex w-full h-[204px] p-4 bg-gray-800 rounded-2xl flex-col justify-center items-center gap-6">
+      <div className="hidden lg:flex w-full h-[204px] p-3 bg-gray-800 rounded-2xl flex-col justify-center items-center gap-6">
         <div className="flex flex-col items-center gap-4 self-stretch">
           <div className="flex justify-center items-center gap-2 self-stretch">
             <div className="w-14 h-8 relative">
@@ -66,8 +66,10 @@ export const LpPositionCard = ({
                 className="w-8 h-8 absolute left-6 top-0 rounded-full"
               />
             </div>
-            <div className="flex gap-1 items-center text-white text-base font-bold">
-              {isERC20 ? 'LP Token (ERC20)' : 'LP Token'}
+            <div className="flex gap-1 items-center text-white text-sm sm:text-base font-bold text-nowrap">
+              {isERC20
+                ? `${poolSnapshot.lpCurrency.symbol} (ERC20)`
+                : `${poolSnapshot.lpCurrency.symbol}`}
             </div>
           </div>
           <div className="flex flex-col justify-center items-center gap-2">
@@ -95,14 +97,16 @@ export const LpPositionCard = ({
           </div>
         </div>
         <div className="flex w-full flex-row gap-2 justify-center items-center">
-          <div className="flex flex-1 self-stretch h-8 px-3 py-2 rounded-lg border-2 border-blue-500 border-solid justify-center items-center gap-1">
-            <button
-              onClick={() => router.push(`/earn/${poolSnapshot.key}`)}
-              className="grow shrink basis-0 opacity-90 text-center text-blue-500 text-sm font-bold"
-            >
-              Manage Position
-            </button>
-          </div>
+          {!isERC20 && (
+            <div className="flex flex-1 self-stretch h-8 px-3 py-2 rounded-lg border-2 border-blue-500 border-solid justify-center items-center gap-1">
+              <button
+                onClick={() => router.push(`/earn/${poolSnapshot.key}`)}
+                className="grow shrink basis-0 opacity-90 text-center text-blue-500 text-sm font-bold"
+              >
+                Remove Liquidity
+              </button>
+            </div>
+          )}
 
           <div className="flex flex-1 self-stretch h-8 px-3 py-2 rounded-lg border-2 border-blue-500 border-solid justify-center items-center gap-1">
             <button
@@ -128,8 +132,10 @@ export const LpPositionCard = ({
               className="w-6 h-6 absolute left-[16px] top-0"
             />
           </div>
-          <div className="flex gap-1 items-center text-white text-base font-bold">
-            {isERC20 ? 'LP Token (ERC20)' : 'LP Token'}
+          <div className="flex gap-1 items-center text-white text-sm sm:text-base font-bold text-nowrap">
+            {isERC20
+              ? `${poolSnapshot.lpCurrency.symbol} (ERC20)`
+              : `${poolSnapshot.lpCurrency.symbol}`}
           </div>
         </div>
         <div className="flex flex-col justify-center items-start gap-2 h-11">
@@ -159,14 +165,16 @@ export const LpPositionCard = ({
         </div>
 
         <div className="flex w-full flex-row gap-2 justify-center items-center">
-          <div className="flex flex-1 self-stretch h-7 px-2 py-1 rounded-lg border border-solid border-blue-500 justify-center items-center gap-1">
-            <button
-              onClick={() => router.push(`/earn/${poolSnapshot.key}`)}
-              className="grow shrink basis-0 opacity-90 text-center text-blue-500 text-xs font-bold"
-            >
-              Manage Position
-            </button>
-          </div>
+          {!isERC20 && (
+            <div className="flex flex-1 self-stretch h-7 px-2 py-1 rounded-lg border border-solid border-blue-500 justify-center items-center gap-1">
+              <button
+                onClick={() => router.push(`/earn/${poolSnapshot.key}`)}
+                className="grow shrink basis-0 opacity-90 text-center text-blue-500 text-xs font-bold"
+              >
+                Remove Liquidity
+              </button>
+            </div>
+          )}
 
           <div className="flex flex-1 self-stretch h-7 px-3 py-2 rounded-lg border border-solid border-blue-500 justify-center items-center gap-1">
             <button
