@@ -181,13 +181,13 @@ export const WHITELISTED_CURRENCIES: Currency[] = [
     decimals: 18,
     icon: '/asset-icon/hive-usd.png',
   },
-  {
-    address: '0x43D614B1bA4bA469fAEAa4557AEAFdec039b8795',
-    name: 'MockB',
-    symbol: 'MOCKB',
-    decimals: 6,
-    icon: '/asset-icon/mockb.png',
-  },
+  // {
+  //   address: '0x43D614B1bA4bA469fAEAa4557AEAFdec039b8795',
+  //   name: 'MockB',
+  //   symbol: 'MOCKB',
+  //   decimals: 6,
+  //   icon: '/asset-icon/mockb.png',
+  // },
   {
     address: '0xb38bb873cca844b20A9eE448a87Af3626a6e1EF5',
     name: 'MistToken',

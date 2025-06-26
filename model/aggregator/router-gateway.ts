@@ -13,6 +13,7 @@ import { Chain } from '../chain'
 import { Currency } from '../currency'
 import { Prices } from '../prices'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { applyPercent } from '../../utils/bigint'
 
 import { Aggregator } from './index'
 
@@ -70,11 +71,17 @@ export class AggregatorRouterGateway implements Aggregator {
     if (transaction) {
       const data = encodeFunctionData({
         abi: [
+          // function swap(address inToken, address outToken, uint256 amountIn, uint256 minAmountOut, address router, bytes calldata data)
           {
             inputs: [
               { internalType: 'address', name: 'inToken', type: 'address' },
               { internalType: 'address', name: 'outToken', type: 'address' },
               { internalType: 'uint256', name: 'amountIn', type: 'uint256' },
+              {
+                internalType: 'uint256',
+                name: 'minAmountOut',
+                type: 'uint256',
+              },
               { internalType: 'address', name: 'router', type: 'address' },
               { internalType: 'bytes', name: 'data', type: 'bytes' },
             ],
@@ -91,6 +98,7 @@ export class AggregatorRouterGateway implements Aggregator {
           inputCurrency.address,
           outputCurrency.address,
           amountIn,
+          applyPercent(amountOut, 95),
           transaction.to,
           transaction.data,
         ],
