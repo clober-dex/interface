@@ -15,13 +15,16 @@ import { PoolSnapshotCard } from '../../components/card/pool/pool-snapshot-card'
 import { fetchPoolSnapshots } from '../../apis/pool'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { formatWithCommas } from '../../utils/bignumber'
+import { WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES } from '../../chain-configs/pool'
+import { usePoolContractContext } from '../../contexts/pool/pool-contract-context'
 
 export const PoolContainer = () => {
   const router = useRouter()
   const { address: userAddress } = useAccount()
   const { lpBalances } = usePoolContext()
   const { selectedChain } = useChainContext()
-  const { prices } = useCurrencyContext()
+  const { prices, balances } = useCurrencyContext()
+  const { wrap, unwrap } = usePoolContractContext()
 
   const [tab, setTab] = React.useState<'my-liquidity' | 'pool'>('pool')
 
@@ -100,8 +103,18 @@ export const PoolContainer = () => {
               <button
                 onClick={() =>
                   userAddress &&
-                  Object.entries(lpBalances).filter(([, amount]) => amount > 0n)
-                    .length > 0 &&
+                  Object.entries(lpBalances).reduce(
+                    (acc, [, amount]) => acc + amount,
+                    0n,
+                  ) +
+                    WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.reduce(
+                      (acc, { wrappedLpCurrency }) =>
+                        wrappedLpCurrency && balances[wrappedLpCurrency.address]
+                          ? acc + BigInt(balances[wrappedLpCurrency.address])
+                          : acc,
+                      0n,
+                    ) >
+                    0n &&
                   setTab('my-liquidity')
                 }
                 disabled={tab === 'my-liquidity'}
@@ -173,11 +186,18 @@ export const PoolContainer = () => {
             <div className="w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-[18px]">
               {Object.entries(lpBalances)
                 .filter(([, amount]) => amount > 0n)
-                .map(([poolKey, amount]) => {
+                .flatMap(([poolKey, amount]) => {
                   const poolSnapshot = poolSnapshots.find(
                     ({ key }) => key === poolKey,
                   )
                   if (!poolSnapshot) {
+                    return <></>
+                  }
+                  const wrappedLpCurrency =
+                    WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.find(
+                      ({ poolKey: key }) => key === poolKey,
+                    )?.wrappedLpCurrency
+                  if (!wrappedLpCurrency) {
                     return <></>
                   }
                   const value =
@@ -187,19 +207,28 @@ export const PoolContainer = () => {
                   if (value < 0.01) {
                     return <></>
                   }
-                  return (
+                  return [
                     <LpPositionCard
                       amount={amount}
                       chain={selectedChain}
                       key={`lp-position-${poolKey}`}
-                      poolKey={poolKey as `0x${string}`}
-                      currencyA={poolSnapshot.currencyA}
-                      currencyB={poolSnapshot.currencyB}
-                      lpCurrency={poolSnapshot.lpCurrency}
-                      lpPriceUSD={Number(poolSnapshot.lpPriceUSD)}
+                      poolSnapshot={poolSnapshot}
+                      isERC20={false}
                       router={router}
-                    />
-                  )
+                      onWrap={wrap}
+                      onUnwrap={unwrap}
+                    />,
+                    <LpPositionCard
+                      amount={balances[wrappedLpCurrency.address]}
+                      chain={selectedChain}
+                      key={`wlp-position-${poolKey}`}
+                      poolSnapshot={poolSnapshot}
+                      isERC20={true}
+                      router={router}
+                      onWrap={wrap}
+                      onUnwrap={unwrap}
+                    />,
+                  ]
                 })}
             </div>
           ) : (

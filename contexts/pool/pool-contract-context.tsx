@@ -4,6 +4,7 @@ import { useDisconnect, useWalletClient } from 'wagmi'
 import {
   addLiquidity,
   getContractAddresses,
+  getPool,
   getQuoteToken,
   removeLiquidity,
   unwrapFromERC20,
@@ -25,9 +26,8 @@ import { formatPreciseAmountString } from '../../utils/bignumber'
 import { sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
-import { Pool } from '../../model/pool'
 
-type PoolContractContext = {
+export type PoolContractContext = {
   mint: (
     currency0: Currency,
     currency1: Currency,
@@ -44,8 +44,20 @@ type PoolContractContext = {
     lpCurrencyAmount: string,
     slippageInput: string,
   ) => Promise<void>
-  wrap: (pool: Pool, amount: string) => Promise<void>
-  unwrap: (pool: Pool, amount: string) => Promise<void>
+  wrap: (
+    currency0: Currency,
+    currency1: Currency,
+    salt: `0x${string}`,
+    amount: string,
+    lpPrice: number,
+  ) => Promise<void>
+  unwrap: (
+    currency0: Currency,
+    currency1: Currency,
+    salt: `0x${string}`,
+    amount: string,
+    lpPrice: number,
+  ) => Promise<void>
 }
 
 const Context = React.createContext<PoolContractContext>({
@@ -466,7 +478,13 @@ export const PoolContractProvider = ({
   )
 
   const wrap = useCallback(
-    async (pool: Pool, amount: string) => {
+    async (
+      currency0: Currency,
+      currency1: Currency,
+      salt: `0x${string}`,
+      amount: string,
+      lpPrice: number,
+    ) => {
       if (!walletClient || !selectedChain) {
         return
       }
@@ -479,6 +497,16 @@ export const PoolContractProvider = ({
           fields: [],
         })
 
+        const pool = await getPool({
+          chainId: selectedChain.id,
+          token0: currency0.address,
+          token1: currency1.address,
+          salt,
+          options: {
+            useSubgraph: true,
+            rpcUrl: CHAIN_CONFIG.RPC_URL,
+          },
+        })
         const spender = getContractAddresses({
           chainId: selectedChain.id,
         }).Wrapped6909Factory
@@ -533,13 +561,11 @@ export const PoolContractProvider = ({
         const { transaction } = await wrapToERC20({
           chainId: selectedChain.id,
           userAddress: walletClient.account.address,
-          token0: pool.currencyA.address,
-          token1: pool.currencyB.address,
-          salt: pool.key,
+          token0: currency0.address,
+          token1: currency1.address,
+          salt,
           amount,
           options: {
-            useSubgraph: false,
-            rpcUrl: CHAIN_CONFIG.RPC_URL,
             pool,
           },
         })
@@ -552,30 +578,20 @@ export const PoolContractProvider = ({
             {
               direction: 'in',
               currency: {
-                currencyA: pool.currencyA,
-                currencyB: pool.currencyB,
+                currencyA: currency0,
+                currencyB: currency1,
               },
-              label: pool.lpCurrency.symbol,
-              value: formatPreciseAmountString(
-                amount,
-                prices[pool.currencyA.address] ||
-                  prices[pool.currencyB.address] ||
-                  0,
-              ),
+              label: 'LP Token',
+              value: formatPreciseAmountString(amount, lpPrice),
             },
             {
               direction: 'out',
               currency: {
-                currencyA: pool.currencyA,
-                currencyB: pool.currencyB,
+                currencyA: currency0,
+                currencyB: currency1,
               },
-              label: pool.wrappedLpCurrency.symbol,
-              value: formatPreciseAmountString(
-                amount,
-                prices[pool.currencyA.address] ||
-                  prices[pool.currencyB.address] ||
-                  0,
-              ),
+              label: 'LP Token (ERC20)',
+              value: formatPreciseAmountString(amount, lpPrice),
             },
           ] as Confirmation['fields'],
         }
@@ -625,12 +641,17 @@ export const PoolContractProvider = ({
       queuePendingTransaction,
       updatePendingTransaction,
       queryClient,
-      prices,
     ],
   )
 
   const unwrap = useCallback(
-    async (pool: Pool, amount: string) => {
+    async (
+      currency0: Currency,
+      currency1: Currency,
+      salt: `0x${string}`,
+      amount: string,
+      lpPrice: number,
+    ) => {
       if (!walletClient || !selectedChain) {
         return
       }
@@ -643,6 +664,16 @@ export const PoolContractProvider = ({
           fields: [],
         })
 
+        const pool = await getPool({
+          chainId: selectedChain.id,
+          token0: currency0.address,
+          token1: currency1.address,
+          salt,
+          options: {
+            useSubgraph: true,
+            rpcUrl: CHAIN_CONFIG.RPC_URL,
+          },
+        })
         const { transaction } = await unwrapFromERC20({
           chainId: selectedChain.id,
           userAddress: walletClient.account.address,
@@ -651,8 +682,6 @@ export const PoolContractProvider = ({
           salt: pool.key,
           amount,
           options: {
-            useSubgraph: false,
-            rpcUrl: CHAIN_CONFIG.RPC_URL,
             pool,
           },
         })
@@ -668,13 +697,8 @@ export const PoolContractProvider = ({
                 currencyA: pool.currencyA,
                 currencyB: pool.currencyB,
               },
-              label: pool.lpCurrency.symbol,
-              value: formatPreciseAmountString(
-                amount,
-                prices[pool.currencyA.address] ||
-                  prices[pool.currencyB.address] ||
-                  0,
-              ),
+              label: 'LP Token (ERC20)',
+              value: formatPreciseAmountString(amount, lpPrice),
             },
             {
               direction: 'in',
@@ -682,13 +706,8 @@ export const PoolContractProvider = ({
                 currencyA: pool.currencyA,
                 currencyB: pool.currencyB,
               },
-              label: pool.wrappedLpCurrency.symbol,
-              value: formatPreciseAmountString(
-                amount,
-                prices[pool.currencyA.address] ||
-                  prices[pool.currencyB.address] ||
-                  0,
-              ),
+              label: 'LP Token',
+              value: formatPreciseAmountString(amount, lpPrice),
             },
           ] as Confirmation['fields'],
         }
@@ -732,7 +751,6 @@ export const PoolContractProvider = ({
     },
     [
       disconnectAsync,
-      prices,
       queryClient,
       queuePendingTransaction,
       selectedChain,
