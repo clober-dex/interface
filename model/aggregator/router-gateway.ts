@@ -131,7 +131,7 @@ export class AggregatorRouterGateway implements Aggregator {
       }
       return {
         amountOut,
-        gasLimit: transaction?.gas ?? 0n,
+        gasLimit: (transaction?.gas ?? 0n) + 500_000n,
         aggregator: this,
         transaction: {
           ...tx,
