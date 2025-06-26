@@ -102,7 +102,7 @@ export class AggregatorRouterGateway implements Aggregator {
           inputCurrency.address,
           outputCurrency.address,
           amountIn,
-          applyPercent(amountOut, 95),
+          applyPercent(amountOut, 100 - slippageLimitPercent),
           transaction.to,
           transaction.data,
         ],
