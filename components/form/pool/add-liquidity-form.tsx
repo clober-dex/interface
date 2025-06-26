@@ -55,8 +55,8 @@ export const AddLiquidityForm = ({
   return (
     <>
       <div className="flex flex-col relative gap-4 self-stretch">
-        <div className="w-full text-white text-sm md:text-base font-bold">
-          Enter amount you’d like to add.
+        <div className="flex flex-row w-full text-white text-sm md:text-base font-bold">
+          <div>Enter amount you’d like to add.</div>
         </div>
         <div className="flex flex-col relative gap-4 self-stretch">
           <CurrencyAmountInput
@@ -106,7 +106,7 @@ export const AddLiquidityForm = ({
                   {formatWithCommas(
                     formatUnits(
                       receiveLpCurrencyAmount,
-                      pool.currencyLp.decimals,
+                      pool.lpCurrency.decimals,
                       pool.lpPriceUSD,
                     ),
                   )}
@@ -116,7 +116,7 @@ export const AddLiquidityForm = ({
                   (
                   {formatDollarValue(
                     receiveLpCurrencyAmount,
-                    pool.currencyLp.decimals,
+                    pool.lpCurrency.decimals,
                     pool.lpPriceUSD,
                   )}
                   )

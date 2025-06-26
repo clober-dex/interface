@@ -103,12 +103,18 @@ export const Default: Story = {
         },
       },
       lpPriceUSD: 12344.3241,
-      currencyLp: {
+      lpCurrency: {
         id: '0x',
         address: '0x0000000000000000000000000000000000000001',
         name: 'ETH-USDC-LP',
         symbol: 'ETH-USDC-LP',
         decimals: 18,
+      },
+      wrappedLpCurrency: {
+        address: '0x0000000000000000000000000000000000000003',
+        name: 'USDC',
+        symbol: 'USDC',
+        decimals: 6,
       },
       currencyA: {
         address: '0x0000000000000000000000000000000000000002',

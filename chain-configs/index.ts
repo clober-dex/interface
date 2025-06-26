@@ -13,7 +13,7 @@ import { socialAccountWallet } from '../utils/web3auth'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
-import { WHITELISTED_POOL_KEYS } from './pool'
+import { WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES } from './pool'
 
 const CHAIN = {
   ...monadTestnet,
@@ -70,7 +70,9 @@ export const CHAIN_CONFIG: ChainConfig = {
     LIQUIDITY_VAULT_POINT:
       'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/liquidity-vault-point-monad-testnet/latest/gn',
   },
-  WHITELISTED_POOL_KEYS,
+  WHITELISTED_POOL_KEYS: WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.map(
+    ({ poolKey }) => poolKey,
+  ),
   REFERENCE_CURRENCY: getReferenceCurrency({ chainId: CHAIN.id }),
   DEFAULT_INPUT_CURRENCY: getNativeCurrency({ chainId: CHAIN.id }),
   DEFAULT_OUTPUT_CURRENCY: {
@@ -80,7 +82,12 @@ export const CHAIN_CONFIG: ChainConfig = {
     decimals: 6,
     icon: '/asset-icon/USDC.webp',
   },
-  WHITELISTED_CURRENCIES: WHITELISTED_CURRENCIES,
+  WHITELISTED_CURRENCIES: [
+    ...WHITELISTED_CURRENCIES,
+    ...WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.filter(
+      ({ wrappedLpCurrency }) => wrappedLpCurrency,
+    ).map(({ wrappedLpCurrency }) => wrappedLpCurrency!),
+  ],
 }
 
 let config: any | null = null

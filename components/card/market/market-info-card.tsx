@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Currency } from '@clober/v2-sdk'
 import Link from 'next/link'
 import BigNumber from 'bignumber.js'
 import { isAddressEqual } from 'viem'
@@ -17,6 +16,7 @@ import {
   formatAbbreviatedNumberString,
   formatTinyNumber,
 } from '../../../utils/bignumber'
+import { Currency } from '../../../model/currency'
 
 export const MarketInfoCard = ({
   chain,

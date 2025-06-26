@@ -38,18 +38,18 @@ export const RemoveLiquidityForm = ({
   return (
     <>
       <div className="flex flex-col relative gap-4 self-stretch">
-        <div className="text-white text-sm md:text-base font-bold">
-          Enter amount you’d like to withdraw.
+        <div className=" flex flex-row w-full text-white text-sm md:text-base font-bold">
+          <div>Enter amount you’d like to withdraw.</div>
         </div>
         <LpCurrencyAmountInput
           chain={chain}
-          currency={pool.currencyLp}
+          currency={{ ...pool.lpCurrency, symbol: 'LP Token' }}
           currency0={pool.currencyA}
           currency1={pool.currencyB}
           value={lpCurrencyAmount}
           onValueChange={setLpCurrencyAmount}
           availableAmount={availableLpCurrencyBalance}
-          price={prices[pool.currencyLp.address]}
+          price={prices[pool.lpCurrency.address]}
         />
       </div>
       <div className="flex flex-col items-start gap-3 md:gap-4 self-stretch">

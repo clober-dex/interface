@@ -2,11 +2,11 @@ import React, { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAddress, isAddressEqual } from 'viem'
 import { UTCTimestamp } from 'lightweight-charts'
-import { Currency, getProtocolAnalytics } from '@clober/v2-sdk'
 import {
+  getProtocolAnalytics,
   AnalyticsSnapshot,
   AnalyticsSummary,
-} from '@clober/v2-sdk/dist/types/entities/analytics/types'
+} from '@clober/v2-sdk'
 
 import { useChainContext } from '../contexts/chain-context'
 import { HistogramChart } from '../components/chart/histogram-chart'
@@ -14,6 +14,7 @@ import { Loading } from '../components/loading'
 import { CHAIN_CONFIG } from '../chain-configs'
 import RestrictedPageGuard from '../containers/restricted-page-guard'
 import { getStartOfTodayTimestampInSeconds } from '../utils/date'
+import { Currency } from '../model/currency'
 
 const buildCurrencyLabel = (currency: Currency): string =>
   `${currency.symbol}(${currency.address.slice(2, 6)})`

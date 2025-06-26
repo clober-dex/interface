@@ -290,6 +290,13 @@ export const UserWalletModal = ({
             </div>
           </div>
         </div>
+
+        {tab === 'my-tokens' && (
+          <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-semibold mb-4 mt-2 py-2">
+            ${formatTinyNumber(portfolioUSD)}
+          </div>
+        )}
+
         <div className="flex flex-col w-full overflow-y-scroll">
           <AnimatePresence mode="wait">
             {tab === 'my-tokens' ? (
@@ -301,9 +308,6 @@ export const UserWalletModal = ({
                 transition={{ duration: 0.2 }}
                 className="flex flex-col w-full"
               >
-                <div className="text-center justify-start text-white text-[28px] font-semibold mb-6 mt-2">
-                  ${formatTinyNumber(portfolioUSD)}
-                </div>
                 <div className="w-full flex flex-col justify-start items-start gap-2">
                   {currencies
                     .filter(
