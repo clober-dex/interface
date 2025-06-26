@@ -18,7 +18,7 @@ describe('erc20 currency > native currency', async () => {
         ...CHAIN_CONFIG.CHAIN.nativeCurrency,
         address: zeroAddress,
       }
-      const amountIn = parseUnits('100', inputCurrency.decimals)
+      const amountIn = parseUnits('10', inputCurrency.decimals)
 
       for (let i = 0; i < aggregators.length; i++) {
         try {

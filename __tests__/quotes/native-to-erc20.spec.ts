@@ -18,7 +18,7 @@ describe('native currency > erc20 currency', async () => {
       const outputCurrency = CHAIN_CONFIG.WHITELISTED_CURRENCIES.find(
         (currency) => currency.symbol === 'USDC',
       )!
-      const amountIn = parseUnits('100', inputCurrency.decimals)
+      const amountIn = parseUnits('10', inputCurrency.decimals)
 
       for (let i = 0; i < aggregators.length; i++) {
         try {
