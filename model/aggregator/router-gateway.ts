@@ -52,7 +52,9 @@ export class AggregatorRouterGateway implements Aggregator {
     inputCurrency: Currency,
     amountIn: bigint,
     outputCurrency: Currency,
-    ...args: any[]
+    slippageLimitPercent: number,
+    gasPrice: bigint,
+    userAddress?: `0x${string}`,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
@@ -65,7 +67,9 @@ export class AggregatorRouterGateway implements Aggregator {
       inputCurrency,
       amountIn,
       outputCurrency,
-      ...args,
+      slippageLimitPercent,
+      gasPrice,
+      userAddress,
     )
 
     if (transaction) {
@@ -111,17 +115,17 @@ export class AggregatorRouterGateway implements Aggregator {
           ? amountIn
           : 0n,
         to: this.contract,
-        from: transaction.from,
+        from: userAddress,
         gasPrice: transaction.gasPrice,
       }
       let gasEstimate = 2_000_000n // Default gas estimate if no transaction is provided
-      if (transaction.from) {
+      if (userAddress) {
         try {
           gasEstimate = await this.publicClient.estimateGas({
             to: getAddress(tx.to),
             data: tx.data as `0x${string}`,
             value: BigInt(tx.value),
-            account: getAddress(transaction.from as `0x${string}`),
+            account: getAddress(userAddress as `0x${string}`),
           })
         } catch (error) {
           throw new Error(

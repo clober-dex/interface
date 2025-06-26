@@ -19,7 +19,9 @@ export interface Aggregator {
     inputCurrency: Currency,
     amountIn: bigint,
     outputCurrency: Currency,
-    ...args: any[]
+    slippageLimitPercent: number,
+    gasPrice: bigint,
+    userAddress?: `0x${string}`,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
