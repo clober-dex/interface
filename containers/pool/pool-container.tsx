@@ -184,30 +184,29 @@ export const PoolContainer = () => {
             </>
           ) : tab === 'my-liquidity' ? (
             <div className="w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-[18px]">
-              {Object.entries(lpBalances)
-                .filter(([, amount]) => amount > 0n)
-                .flatMap(([poolKey, amount]) => {
-                  const poolSnapshot = poolSnapshots.find(
-                    ({ key }) => key === poolKey,
-                  )
-                  if (!poolSnapshot) {
-                    return <></>
-                  }
-                  const wrappedLpCurrency =
-                    WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.find(
-                      ({ poolKey: key }) => key === poolKey,
-                    )?.wrappedLpCurrency
-                  if (!wrappedLpCurrency) {
-                    return <></>
-                  }
-                  const value =
-                    Number(
-                      formatUnits(amount, poolSnapshot.lpCurrency.decimals),
-                    ) * Number(poolSnapshot.lpPriceUSD)
-                  if (value < 0.01) {
-                    return <></>
-                  }
-                  return [
+              {Object.entries(lpBalances).flatMap(([poolKey, amount]) => {
+                const poolSnapshot = poolSnapshots.find(
+                  ({ key }) => key === poolKey,
+                )
+                if (!poolSnapshot) {
+                  return <></>
+                }
+                const wrappedLpCurrency =
+                  WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.find(
+                    ({ poolKey: key }) => key === poolKey,
+                  )?.wrappedLpCurrency
+                if (!wrappedLpCurrency) {
+                  return <></>
+                }
+                const value =
+                  Number(
+                    formatUnits(amount, poolSnapshot.lpCurrency.decimals),
+                  ) * Number(poolSnapshot.lpPriceUSD)
+                if (value < 0.01) {
+                  return <></>
+                }
+                return [
+                  amount > 0n && (
                     <LpPositionCard
                       amount={amount}
                       chain={selectedChain}
@@ -217,7 +216,9 @@ export const PoolContainer = () => {
                       router={router}
                       onWrap={wrap}
                       onUnwrap={unwrap}
-                    />,
+                    />
+                  ),
+                  balances[wrappedLpCurrency.address] > 0n && (
                     <LpPositionCard
                       amount={balances[wrappedLpCurrency.address]}
                       chain={selectedChain}
@@ -227,9 +228,10 @@ export const PoolContainer = () => {
                       router={router}
                       onWrap={wrap}
                       onUnwrap={unwrap}
-                    />,
-                  ]
-                })}
+                    />
+                  ),
+                ]
+              })}
             </div>
           ) : (
             <></>
