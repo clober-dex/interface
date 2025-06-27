@@ -155,7 +155,7 @@ export const TradingCompetitionContainer = () => {
     subgraphEndpoint:
       CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
     seasonEndTimestamp: SEASON_2_END_TIMESTAMP,
-    blacklistedUserAddresses: [],
+    blacklistedUserAddresses: ['0x5F79EE8f8fA862E98201120d83c4eC39D9468D49'],
   })
 
   const countUpFormatter = useCallback((value: number): string => {
