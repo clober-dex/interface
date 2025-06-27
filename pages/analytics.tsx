@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query'
 import { getAddress, isAddressEqual } from 'viem'
 import { UTCTimestamp } from 'lightweight-charts'
 import {
-  getProtocolAnalytics,
   AnalyticsSnapshot,
   AnalyticsSummary,
+  getProtocolAnalytics,
 } from '@clober/v2-sdk'
 
 import { useChainContext } from '../contexts/chain-context'
@@ -260,63 +260,6 @@ export default function Analytics() {
                       color,
                     }))}
                   defaultValue={analytics?.accumulatedUniqueTransactions ?? 0}
-                  height={312}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex flex-col">
-              <div className="text-white text-sm md:text-base font-bold">
-                Daily Protocol Fees
-              </div>
-
-              <div className="flex w-[350px] sm:w-[1016px]">
-                <HistogramChart
-                  prefix={'$'}
-                  data={(analytics?.analyticsSnapshots ?? [])
-                    .map((item) => {
-                      return {
-                        time: item.timestamp as UTCTimestamp,
-                        values: {
-                          ...Object.fromEntries(
-                            Object.entries(item.protocolFees24hUSDMap).map(
-                              ([, { currency, usd }]) =>
-                                [buildCurrencyLabel(currency), usd] as [
-                                  string,
-                                  number,
-                                ],
-                            ),
-                          ),
-                        },
-                      }
-                    })
-                    .sort((a, b) => a.time - b.time)}
-                  colors={
-                    Object.entries(tokenColorMap)
-                      .map(([address, color]) => {
-                        const currency = uniqueCurrencies.find((currency) =>
-                          isAddressEqual(
-                            getAddress(currency.address),
-                            getAddress(address),
-                          ),
-                        )
-                        if (!currency) {
-                          return null
-                        }
-                        return {
-                          label: buildCurrencyLabel(currency),
-                          color,
-                        }
-                      })
-                      .filter(
-                        (item): item is { label: string; color: string } =>
-                          !!item,
-                      )
-                      .sort() as { label: string; color: string }[]
-                  }
-                  defaultValue={analytics?.accumulatedProtocolFeesUSD ?? 0}
                   height={312}
                 />
               </div>
