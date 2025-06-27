@@ -186,6 +186,7 @@ export class CloberV2Aggregator implements Aggregator {
     return {
       transaction: {
         ...transaction,
+        gasPrice,
         gas: this.marketOrderGasLimit * BigInt(events.length),
       },
       amountOut: parseUnits(amount, decimals),

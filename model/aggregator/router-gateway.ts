@@ -69,7 +69,7 @@ export class AggregatorRouterGateway implements Aggregator {
       outputCurrency,
       slippageLimitPercent,
       gasPrice,
-      userAddress,
+      userAddress ? this.contract : undefined,
     )
 
     if (transaction) {
