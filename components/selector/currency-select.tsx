@@ -22,6 +22,7 @@ import {
 import InspectCurrencyModal from '../modal/inspect-currency-modal'
 import { Chain } from '../../model/chain'
 import { useWindowWidth } from '../../hooks/useWindowWidth'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 const CurrencySelect = ({
   chain,
@@ -146,9 +147,22 @@ const CurrencySelect = ({
               />
             </div>
           </div>
-          <span className="self-stretch justify-start text-gray-400 text-[13px] font-medium">
+          <span className="relative self-stretch justify-start text-gray-400 text-[13px] font-medium">
             Trade any ERC-20 token permissionlessly. Just paste the token
             address to get started.
+            {CHAIN_CONFIG.ASSETS_GITHUB_REPO !== null && (
+              <button
+                onClick={() => {
+                  window.open(
+                    `https://github.com/${CHAIN_CONFIG.ASSETS_GITHUB_REPO}`,
+                    '_blank',
+                  )
+                }}
+                className="absolute right-0 text-blue-500 text-[13px] font-semibold"
+              >
+                Verify your token ➔
+              </button>
+            )}
           </span>
         </div>
         <div className="flex flex-col h-full overflow-y-auto custom-scrollbar bg-gray-[#171b24] rounded-b-xl sm:rounded-b-3xl">
