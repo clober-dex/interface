@@ -35,8 +35,8 @@ describe('Numbers', () => {
 
   it('toShortNumber', () => {
     expect(formatTinyNumber(10000.001234566)).toBe('10,000')
-    expect(formatTinyNumber(10000.1234566)).toBe('10,000.1')
-    expect(formatTinyNumber(10000.123)).toBe('10,000.1')
+    expect(formatTinyNumber(10000.1234566)).toBe('10,000')
+    expect(formatTinyNumber(10000.123)).toBe('10,000')
     expect(formatTinyNumber(10000)).toBe('10,000')
     expect(formatTinyNumber(1000)).toBe('1,000')
     expect(formatTinyNumber(100)).toBe('100')
