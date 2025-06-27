@@ -158,9 +158,9 @@ const CurrencySelect = ({
                     '_blank',
                   )
                 }}
-                className="absolute right-0 text-blue-500 text-[13px] font-semibold"
+                className="flex ml-auto sm:bottom-0 sm:absolute sm:right-4 text-blue-500 text-[13px] font-semibold"
               >
-                Verify your token ➔
+                Add your token to the list ➔
               </button>
             )}
           </span>
