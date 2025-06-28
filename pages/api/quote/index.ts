@@ -215,6 +215,7 @@ export default async function handler(
       }))
       .sort((a, b) => Number(b.amountOut - a.amountOut))
 
+    res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate=1')
     res.status(200).json({
       bestQuote: results.length > 0 ? results[0] : null,
       allQuotes: results,
