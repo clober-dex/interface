@@ -46,7 +46,7 @@ export class EisenFinanceAggregator implements Aggregator {
     slippageLimitPercent: number,
     gasPrice: bigint,
     userAddress?: `0x${string}`,
-    timeout: number = this.TIMEOUT,
+    timeout?: number,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
@@ -102,7 +102,7 @@ export class EisenFinanceAggregator implements Aggregator {
           'ZWlzZW5fZTVjOTY4NGEtNTUzYi00MWRjLWE3ZTEtN2Y1Y2EzNTU2MzFm',
         accept: '*/*',
       },
-      timeout,
+      timeout: timeout ?? this.TIMEOUT,
       params,
     })
 

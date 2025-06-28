@@ -61,7 +61,7 @@ export class CloberV2Aggregator implements Aggregator {
     gasPrice: bigint,
     userAddress?: `0x${string}`,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    timeout: number = 0,
+    timeout?: number,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint

@@ -45,7 +45,7 @@ export class MadhouseAggregator implements Aggregator {
     slippageLimitPercent: number,
     gasPrice: bigint,
     userAddress?: `0x${string}`,
-    timeout: number = this.TIMEOUT,
+    timeout?: number,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
@@ -83,7 +83,7 @@ export class MadhouseAggregator implements Aggregator {
       headers: {
         accept: 'application/json',
       },
-      timeout,
+      timeout: timeout ?? this.TIMEOUT,
       params,
     })
 
