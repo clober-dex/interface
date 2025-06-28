@@ -60,6 +60,8 @@ export class CloberV2Aggregator implements Aggregator {
     slippageLimitPercent: number,
     gasPrice: bigint,
     userAddress?: `0x${string}`,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    timeout: number = 0,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint

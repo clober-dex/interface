@@ -22,6 +22,7 @@ export interface Aggregator {
     slippageLimitPercent: number,
     gasPrice: bigint,
     userAddress?: `0x${string}`,
+    timeout?: number,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
