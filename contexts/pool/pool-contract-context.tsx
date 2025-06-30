@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useDisconnect, useWalletClient } from 'wagmi'
+import { useDisconnect, useGasPrice, useWalletClient } from 'wagmi'
 import {
   addLiquidity,
   getContractAddresses,
@@ -26,6 +26,7 @@ import { formatPreciseAmountString } from '../../utils/bignumber'
 import { sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { aggregators } from '../../chain-configs/aggregators'
 
 export type PoolContractContext = {
   mint: (
@@ -70,6 +71,7 @@ const Context = React.createContext<PoolContractContext>({
 export const PoolContractProvider = ({
   children,
 }: React.PropsWithChildren<{}>) => {
+  const { data: gasPrice } = useGasPrice()
   const queryClient = useQueryClient()
   const { disconnectAsync } = useDisconnect()
 
@@ -203,6 +205,9 @@ export const PoolContractProvider = ({
 
         // If both currencies have sufficient allowance, proceed to add liquidity
         else {
+          if (!gasPrice) {
+            return
+          }
           const baseCurrency = isAddressEqual(
             getQuoteToken({
               chainId: selectedChain.id,
@@ -222,14 +227,13 @@ export const PoolContractProvider = ({
             salt,
             amount0,
             amount1,
+            quotes: aggregators.map((aggregator) => aggregator.quote),
             options: {
               useSubgraph: false,
               rpcUrl: CHAIN_CONFIG.RPC_URL,
               disableSwap,
               slippage,
-              testnetPrice: prices[baseCurrency.address],
-              token0Price: prices[currency0.address],
-              token1Price: prices[currency1.address],
+              timeoutForQuotes: 2000,
             },
           })
 

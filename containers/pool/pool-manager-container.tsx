@@ -183,12 +183,6 @@ export const PoolManagerContainer = ({
   }, [isNoLiquidity, setDisableSwap])
 
   useEffect(() => {
-    if (selectedChain.testnet) {
-      setDisableSwap(true)
-    }
-  }, [selectedChain.testnet, setDisableSwap])
-
-  useEffect(() => {
     setCurrency0Amount('')
     setCurrency1Amount('')
   }, [setCurrency0Amount, setCurrency1Amount, disableSwap])
@@ -538,9 +532,7 @@ export const PoolManagerContainer = ({
                   availableCurrency1Balance={balances[pool.currencyB.address]}
                   disableSwap={disableSwap}
                   setDisableSwap={setDisableSwap}
-                  disableDisableSwap={
-                    isNoLiquidity || selectedChain.testnet === true
-                  }
+                  disableDisableSwap={isNoLiquidity}
                   slippageInput={slippageInput}
                   setSlippageInput={setSlippageInput}
                   receiveLpCurrencyAmount={receiveLpAmount}
