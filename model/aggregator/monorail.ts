@@ -46,6 +46,7 @@ export class MonorailAggregator implements Aggregator {
     slippageLimitPercent: number,
     gasPrice: bigint,
     userAddress?: `0x${string}`,
+    timeout?: number,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
@@ -85,7 +86,7 @@ export class MonorailAggregator implements Aggregator {
       headers: {
         accept: 'application/json',
       },
-      timeout: this.TIMEOUT,
+      timeout: timeout ?? this.TIMEOUT,
       params,
     })
 

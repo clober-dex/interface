@@ -55,6 +55,7 @@ export class AggregatorRouterGateway implements Aggregator {
     slippageLimitPercent: number,
     gasPrice: bigint,
     userAddress?: `0x${string}`,
+    timeout?: number,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
@@ -70,6 +71,7 @@ export class AggregatorRouterGateway implements Aggregator {
       slippageLimitPercent,
       gasPrice,
       userAddress ? this.contract : undefined,
+      timeout,
     )
 
     if (transaction) {

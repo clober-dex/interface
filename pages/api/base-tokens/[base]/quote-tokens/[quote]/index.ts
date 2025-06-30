@@ -3,7 +3,8 @@ import { getAddress, isAddress, isAddressEqual, zeroAddress } from 'viem'
 import axios from 'axios'
 import { getReferenceCurrency } from '@clober/v2-sdk'
 
-import { TokenInfo } from '../../../../../../../../model/token-info'
+import { TokenInfo } from '../../../../../../model/token-info'
+import { CHAIN_CONFIG } from '../../../../../../chain-configs'
 
 type PairDto = {
   pairAddress: string
@@ -76,19 +77,16 @@ export default async function handler(
   try {
     const query = req.query
     // eslint-disable-next-line prefer-const
-    let { chainId, base, quote } = query
+    let { base, quote } = query
     if (
-      !chainId ||
       !base ||
       !quote ||
-      typeof chainId !== 'string' ||
       typeof base !== 'string' ||
       typeof quote !== 'string'
     ) {
       res.json({
         status: 'error',
-        message:
-          'URL should be /api/chains/[chainId]/base-tokens/[base]/quote-tokens/[quote]',
+        message: 'URL should be /api/base-tokens/[base]/quote-tokens/[quote]',
       })
       return
     }
@@ -100,8 +98,9 @@ export default async function handler(
       return
     }
 
-    const id = Number(chainId)
-    const referenceCurrency = getReferenceCurrency({ chainId: id })
+    const referenceCurrency = getReferenceCurrency({
+      chainId: CHAIN_CONFIG.CHAIN.id,
+    })
     const baseAddress = getAddress(
       isAddressEqual(getAddress(base), zeroAddress)
         ? referenceCurrency.address
