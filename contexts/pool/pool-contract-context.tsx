@@ -345,9 +345,7 @@ export const PoolContractProvider = ({
       } catch (e: any) {
         if (
           !disableSwap &&
-          (e as any)
-            .toString()
-            .includes('Execution reverted for an unknown reason')
+          !(e as any).toString().includes('User rejected the request')
         ) {
           setShowRevertModal(true)
         }
