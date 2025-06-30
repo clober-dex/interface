@@ -62,7 +62,7 @@ export const PoolManagerContainer = ({
     setLpCurrencyAmount,
     lpBalances,
   } = usePoolContext()
-  const { mint, burn, wrap, unwrap } = usePoolContractContext()
+  const { mint, burn } = usePoolContractContext()
   const [showRPI, setShowRPI] = useState(true)
   const previousValues = useRef({
     currency0Amount,

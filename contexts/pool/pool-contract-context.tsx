@@ -19,14 +19,19 @@ import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
 import { maxApprove as maxApproveERC20 } from '../../utils/approve20'
 import {
-  maxApprove as maxApproveERC6909,
   getAllowance as getERC6909Allowance,
+  maxApprove as maxApproveERC6909,
 } from '../../utils/approve6909'
-import { formatPreciseAmountString } from '../../utils/bignumber'
+import {
+  formatPreciseAmountString,
+  formatSignificantString,
+  formatWithCommas,
+} from '../../utils/bignumber'
 import { sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { aggregators } from '../../chain-configs/aggregators'
+import Modal from '../../components/modal/modal'
 
 export type PoolContractContext = {
   mint: (
@@ -71,6 +76,7 @@ const Context = React.createContext<PoolContractContext>({
 export const PoolContractProvider = ({
   children,
 }: React.PropsWithChildren<{}>) => {
+  const [showRevertModal, setShowRevertModal] = React.useState(false)
   const { data: gasPrice } = useGasPrice()
   const queryClient = useQueryClient()
   const { disconnectAsync } = useDisconnect()
@@ -208,7 +214,7 @@ export const PoolContractProvider = ({
           if (!gasPrice) {
             return
           }
-          const baseCurrency = isAddressEqual(
+          const [baseCurrency, quoteCurrency] = isAddressEqual(
             getQuoteToken({
               chainId: selectedChain.id,
               token0: currency0.address,
@@ -216,8 +222,8 @@ export const PoolContractProvider = ({
             }),
             currency0.address,
           )
-            ? currency1
-            : currency0
+            ? [currency1, currency0]
+            : [currency0, currency1]
 
           const { transaction, result } = await addLiquidity({
             chainId: selectedChain.id,
@@ -278,6 +284,33 @@ export const PoolContractProvider = ({
                       prices[baseCurrency.address],
                     ),
                   },
+              result.quoteResponse &&
+              result.quoteRequest &&
+              result.quoteResponse.amountOut > 0n
+                ? {
+                    label: 'Swap Rate',
+                    value: `${formatWithCommas(
+                      formatSignificantString(
+                        result.quoteResponse.exchangeRate,
+                      ),
+                    )}`,
+                  }
+                : undefined,
+              result.quoteResponse &&
+              result.quoteRequest &&
+              result.quoteResponse.amountOut > 0n &&
+              prices[baseCurrency.address] &&
+              prices[quoteCurrency.address]
+                ? {
+                    label: 'Market Rate',
+                    value: `${formatWithCommas(
+                      formatSignificantString(
+                        prices[baseCurrency.address] /
+                          prices[quoteCurrency.address],
+                      ),
+                    )}`,
+                  }
+                : undefined,
             ].filter((field) => field !== undefined) as Confirmation['fields'],
           }
           setConfirmation(confirmation)
@@ -309,7 +342,15 @@ export const PoolContractProvider = ({
             )
           }
         }
-      } catch (e) {
+      } catch (e: any) {
+        if (
+          !disableSwap &&
+          (e as any)
+            .toString()
+            .includes('Execution reverted for an unknown reason')
+        ) {
+          setShowRevertModal(true)
+        }
         console.error(e)
       } finally {
         await Promise.all([
@@ -321,6 +362,7 @@ export const PoolContractProvider = ({
       }
     },
     [
+      gasPrice,
       getAllowance,
       disconnectAsync,
       prices,
@@ -773,6 +815,27 @@ export const PoolContractProvider = ({
         unwrap,
       }}
     >
+      {showRevertModal && (
+        <Modal
+          show
+          onClose={() => {
+            setShowRevertModal(false)
+          }}
+          onButtonClick={() => {
+            setShowRevertModal(false)
+          }}
+        >
+          <h1 className="flex font-bold text-xl mb-2">Transaction Reverted</h1>
+          <h6 className="text-sm">
+            The transaction has been reverted. Please try again with the
+            <span className="font-bold text-blue-500">
+              {' '}
+              Auto-Balance Liquidity
+            </span>{' '}
+            feature turned off.
+          </h6>
+        </Modal>
+      )}
       {children}
     </Context.Provider>
   )
