@@ -1,5 +1,6 @@
 import { Chain } from '../model/chain'
 import { Currency } from '../model/currency'
+import { NamedUrl } from '../model/named-url'
 
 type EXTERNAL_CONTRACT =
   | 'FuturesMarket'
@@ -30,6 +31,8 @@ export type ChainConfig = {
   GOOGLE_ANALYTICS_TRACKING_ID: string
   IS_SWAP_DEFAULT: boolean
   RPC_URL: string
+  EXPLORER_LIST: NamedUrl[]
+  RPC_URL_LIST: NamedUrl[]
   PYTH_HERMES_ENDPOINT: string
   ANALYTICS_VOLUME_BLACKLIST: {
     timestamp: number

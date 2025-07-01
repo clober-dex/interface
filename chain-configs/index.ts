@@ -38,6 +38,26 @@ export const CHAIN_CONFIG: ChainConfig = {
   IS_SWAP_DEFAULT: true,
   RPC_URL:
     'https://proud-tiniest-flower.monad-testnet.quiknode.pro/a4ebe00fca2e7bf01201f3b0f7fe2f0077c52a36',
+  EXPLORER_LIST: [
+    {
+      name: 'MonVision',
+      url: 'https://testnet.monadexplorer.com',
+    },
+    {
+      name: 'SocialScan',
+      url: 'https://monad-testnet.socialscan.io',
+    },
+  ],
+  RPC_URL_LIST: [
+    {
+      name: 'QuickNode',
+      url: 'https://proud-tiniest-flower.monad-testnet.quiknode.pro/a4ebe00fca2e7bf01201f3b0f7fe2f0077c52a36',
+    },
+    {
+      name: 'Public',
+      url: 'https://testnet-rpc.monad.xyz',
+    },
+  ],
   PYTH_HERMES_ENDPOINT: 'https://hermes-beta.pyth.network',
   ANALYTICS_VOLUME_BLACKLIST: [
     { timestamp: 1743638400, address: zeroAddress },

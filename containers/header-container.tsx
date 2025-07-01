@@ -3,7 +3,7 @@ import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useRouter } from 'next/router'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 
 import { useChainContext } from '../contexts/chain-context'
@@ -23,6 +23,7 @@ import { PageSelector } from '../components/selector/page-selector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
 import { useCurrencyContext } from '../contexts/currency-context'
+import { ChainSettingModal } from '../components/modal/chain-setting-modal'
 
 const TX_NOTIFICATION_BUFFER = 5
 
@@ -93,6 +94,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { data: gasPrice } = useGasPrice()
   const { currencies, setCurrencies, balances, prices, transfer } =
     useCurrencyContext()
+  const [showChainSelector, setShowChainSelector] = useState(false)
   const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
   const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
@@ -101,8 +103,16 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { disconnectAsync } = useDisconnect()
   const [openTransactionHistoryModal, setOpenTransactionHistoryModal] =
     useState(false)
-  const { pendingTransactions, transactionHistory, lastIndexedBlockNumber } =
-    useTransactionContext()
+  const {
+    pendingTransactions,
+    transactionHistory,
+    lastIndexedBlockNumber,
+    selectedExplorer,
+    setSelectedExplorer,
+    selectedRpcEndpoint,
+    setSelectedRpcEndpoint,
+    rpcEndpointList,
+  } = useTransactionContext()
 
   const { data: ens } = useQuery({
     queryKey: ['ens', selectedChain.id, address],
@@ -128,6 +138,18 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
 
   return (
     <>
+      {showChainSelector && selectedExplorer && selectedRpcEndpoint && (
+        <ChainSettingModal
+          selectedExplorer={selectedExplorer}
+          setSelectedExplorer={setSelectedExplorer}
+          explorerList={CHAIN_CONFIG.EXPLORER_LIST}
+          selectedRpcEndpoint={selectedRpcEndpoint}
+          setSelectedRpcEndpoint={setSelectedRpcEndpoint}
+          rpcList={rpcEndpointList}
+          onClose={() => setShowChainSelector(false)}
+        />
+      )}
+
       {openTransactionHistoryModal && address && connector && (
         <UserWalletModal
           chain={selectedChain}
@@ -191,14 +213,34 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             <PageButtons />
           </div>
         </div>
-        <div className="flex gap-2 w-auto md:gap-4 ml-auto">
-          <div className="flex relative justify-center items-center">
+
+        <div className="flex gap-2 w-auto md:gap-3 ml-auto">
+          <div className="flex relative justify-center items-center gap-2">
             <div className="flex items-center justify-center lg:justify-start h-8 w-8 lg:w-auto p-0 lg:px-4 lg:gap-2 rounded bg-gray-800 text-white">
               <ChainIcon className="w-4 h-4" chain={selectedChain} />
               <p className={`hidden lg:block ${textStyles.body3Bold}`}>
                 {selectedChain.name}
               </p>
             </div>
+
+            <button
+              onClick={() => setShowChainSelector(true)}
+              className="w-8 h-8 p-2 bg-gray-800 rounded sm:rounded-lg flex items-center justify-center hover:bg-gray-700 cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                className="w-full h-full"
+              >
+                <path
+                  d="M8.3253 2.31736C8.75129 0.561368 11.2489 0.561368 11.6749 2.31736C11.7388 2.58102 11.8647 2.82608 12.0411 3.0322C12.2175 3.23825 12.4399 3.40005 12.6905 3.50388C12.9412 3.60773 13.213 3.65078 13.4835 3.62986C13.7541 3.60888 14.0164 3.52409 14.2481 3.38279C15.7911 2.44304 17.558 4.209 16.6183 5.75291C16.4772 5.98453 16.3921 6.24618 16.3712 6.51658C16.3503 6.78701 16.3934 7.05894 16.4972 7.30955C16.6009 7.56013 16.7629 7.78251 16.9689 7.95896C17.1748 8.13536 17.4193 8.26107 17.6827 8.32517C19.4387 8.75117 19.4387 11.2488 17.6827 11.6748C17.419 11.7387 17.174 11.8646 16.9679 12.041C16.7618 12.2174 16.6 12.4398 16.4962 12.6904C16.3923 12.9411 16.3493 13.2129 16.3702 13.4834C16.3912 13.754 16.476 14.0163 16.6173 14.248C17.557 15.7909 15.791 17.5578 14.2472 16.6181C14.0156 16.4771 13.7539 16.392 13.4835 16.3711C13.2131 16.3501 12.9411 16.3933 12.6905 16.497C12.4399 16.6008 12.2176 16.7627 12.0411 16.9687C11.8647 17.1747 11.739 17.4191 11.6749 17.6826C11.2489 19.4386 8.75129 19.4386 8.3253 17.6826C8.26136 17.4189 8.13552 17.1739 7.95908 16.9678C7.78267 16.7617 7.56027 16.5999 7.30967 16.4961C7.05904 16.3922 6.78718 16.3492 6.5167 16.3701C6.24608 16.3911 5.9838 16.4759 5.75205 16.6172C4.20914 17.557 2.44219 15.791 3.38194 14.247C3.523 14.0155 3.60805 13.7537 3.62901 13.4834C3.64994 13.213 3.60678 12.941 3.50303 12.6904C3.39927 12.4398 3.2373 12.2175 3.03135 12.041C2.82546 11.8646 2.58091 11.7389 2.31748 11.6748C0.56149 11.2488 0.56149 8.75117 2.31748 8.32517C2.58116 8.26123 2.82619 8.13538 3.03233 7.95896C3.23837 7.78255 3.40016 7.56013 3.50401 7.30955C3.60784 7.05892 3.65089 6.78706 3.62998 6.51658C3.609 6.24596 3.52421 5.98368 3.38291 5.75193C2.44304 4.20898 4.20908 2.44195 5.75303 3.38181C6.75293 3.98975 8.04913 3.45213 8.3253 2.31736ZM10.0001 6.99998C8.34325 6.99998 7.0001 8.34313 7.0001 9.99998C7.00013 11.6568 8.34327 13 10.0001 13C11.6569 12.9999 13.0001 11.6568 13.0001 9.99998C13.0001 8.34315 11.6569 7.00001 10.0001 6.99998Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
           </div>
 
           <div className="relative flex items-center flex-row gap-1 sm:gap-3">
@@ -290,7 +332,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </div>
           </div>
           <button
-            className="w-8 h-8 hover:bg-gray-700 rounded sm:rounded-lg flex items-center justify-center"
+            className="w-8 h-10 hover:bg-gray-700 rounded sm:rounded-lg flex items-center justify-center"
             onClick={onMenuClick}
           >
             <MenuSvg />

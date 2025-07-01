@@ -7,6 +7,8 @@ import ConfirmationModal from '../components/modal/confirmation-modal'
 import { Currency, LpCurrency } from '../model/currency'
 import { Chain } from '../model/chain'
 import { TransactionType } from '../model/transaction-type'
+import { CHAIN_CONFIG } from '../chain-configs'
+import { NamedUrl } from '../model/named-url'
 
 import { useChainContext } from './chain-context'
 
@@ -38,6 +40,13 @@ type TransactionContext = {
   queuePendingTransaction: (transaction: Transaction) => void
   updatePendingTransaction: (transaction: Transaction) => void
   lastIndexedBlockNumber: number
+  selectedExplorer: string | null
+  setSelectedExplorer: (explorer: string) => void
+  selectedRpcEndpoint: string | null
+  setSelectedRpcEndpoint: (rpcEndpoint: string) => void
+  rpcEndpointList: (NamedUrl & {
+    connectionDurationInMs: number
+  })[]
 }
 
 const Context = React.createContext<TransactionContext>({
@@ -47,7 +56,17 @@ const Context = React.createContext<TransactionContext>({
   queuePendingTransaction: () => {},
   updatePendingTransaction: () => {},
   lastIndexedBlockNumber: 0,
+  selectedExplorer: null,
+  setSelectedExplorer: () => {},
+  selectedRpcEndpoint: null,
+  setSelectedRpcEndpoint: () => {},
+  rpcEndpointList: [],
 })
+
+export const LOCAL_STORAGE_EXPLORER_KEY = (chainId: number) =>
+  `selected-explorer-${chainId}`
+export const LOCAL_STORAGE_RPC_ENDPOINT_KEY = (chainId: number) =>
+  `selected-rpc-endpoint-${chainId}`
 
 export const LOCAL_STORAGE_TRANSACTIONS_KEY = (
   address: `0x${string}`,
@@ -66,6 +85,49 @@ export const TransactionProvider = ({
   const [transactionHistory, setTransactionHistory] = React.useState<
     Transaction[]
   >([])
+  const [selectedExplorer, _setSelectedExplorer] = React.useState(
+    CHAIN_CONFIG.EXPLORER_LIST[0].url ?? null,
+  )
+  const setSelectedExplorer = useCallback(
+    (explorer: string) => {
+      _setSelectedExplorer(explorer)
+      localStorage.setItem(
+        LOCAL_STORAGE_EXPLORER_KEY(selectedChain.id),
+        JSON.stringify(explorer),
+      )
+    },
+    [selectedChain.id],
+  )
+
+  const [selectedRpcEndpoint, _setSelectedRpcEndpoint] = React.useState(
+    CHAIN_CONFIG.RPC_URL_LIST[0].url ?? null,
+  )
+  const setSelectedRpcEndpoint = useCallback(
+    (rpcEndpoint: string) => {
+      _setSelectedRpcEndpoint(rpcEndpoint)
+      localStorage.setItem(
+        LOCAL_STORAGE_RPC_ENDPOINT_KEY(selectedChain.id),
+        JSON.stringify(rpcEndpoint),
+      )
+    },
+    [selectedChain.id],
+  )
+
+  useEffect(() => {
+    const storedExplorer = localStorage.getItem(
+      LOCAL_STORAGE_EXPLORER_KEY(selectedChain.id),
+    )
+    if (storedExplorer) {
+      _setSelectedExplorer(JSON.parse(storedExplorer))
+    }
+
+    const storedRpcEndpoint = localStorage.getItem(
+      LOCAL_STORAGE_RPC_ENDPOINT_KEY(selectedChain.id),
+    )
+    if (storedRpcEndpoint) {
+      _setSelectedRpcEndpoint(JSON.parse(storedRpcEndpoint))
+    }
+  }, [selectedChain.id])
 
   useEffect(() => {
     setPendingTransactions(
@@ -214,6 +276,60 @@ export const TransactionProvider = ({
     selectedChain.id,
   ])
 
+  const { data: rpcDurations } = useQuery({
+    queryKey: ['rpc-connection-durations', selectedChain.id],
+    queryFn: async () => {
+      const results = await Promise.allSettled(
+        CHAIN_CONFIG.RPC_URL_LIST.map(async ({ name, url }) => {
+          const start = performance.now()
+          try {
+            await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'eth_blockNumber',
+                params: [],
+              }),
+            })
+            const end = performance.now()
+            return {
+              name,
+              url,
+              connectionDurationInMs: end - start,
+            }
+          } catch (e) {
+            return {
+              name,
+              url,
+              connectionDurationInMs: 5000,
+            }
+          }
+        }),
+      )
+
+      return results
+        .filter(
+          (
+            r,
+          ): r is PromiseFulfilledResult<{
+            name: string
+            url: string
+            connectionDurationInMs: number
+          }> => r.status === 'fulfilled',
+        )
+        .map((r) => r.value)
+    },
+    initialData: CHAIN_CONFIG.RPC_URL_LIST.map(({ name, url }) => ({
+      name,
+      url,
+      connectionDurationInMs: 0,
+    })),
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: true,
+  })
+
   return (
     <Context.Provider
       value={{
@@ -228,6 +344,11 @@ export const TransactionProvider = ({
         queuePendingTransaction,
         updatePendingTransaction,
         lastIndexedBlockNumber,
+        selectedExplorer,
+        setSelectedExplorer,
+        selectedRpcEndpoint,
+        setSelectedRpcEndpoint,
+        rpcEndpointList: rpcDurations ?? [],
       }}
     >
       {children}
