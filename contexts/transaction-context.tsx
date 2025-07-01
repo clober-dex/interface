@@ -42,7 +42,7 @@ type TransactionContext = {
   lastIndexedBlockNumber: number
   selectedExplorer: string | null
   setSelectedExplorer: (explorer: string) => void
-  selectedRpcEndpoint: string | null
+  selectedRpcEndpoint: string
   setSelectedRpcEndpoint: (rpcEndpoint: string) => void
   customRpcEndpoint: string
   setCustomRpcEndpoint: (rpcEndpoint: string) => void
@@ -106,7 +106,7 @@ export const TransactionProvider = ({
   )
 
   const [selectedRpcEndpoint, _setSelectedRpcEndpoint] = React.useState(
-    CHAIN_CONFIG.RPC_URL_LIST[0].url ?? null,
+    CHAIN_CONFIG.RPC_URL_LIST[0].url ?? CHAIN_CONFIG.RPC_URL,
   )
   const setSelectedRpcEndpoint = useCallback(
     (rpcEndpoint: string) => {
