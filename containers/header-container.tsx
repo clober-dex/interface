@@ -111,6 +111,8 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
     setSelectedExplorer,
     selectedRpcEndpoint,
     setSelectedRpcEndpoint,
+    customRpcEndpoint,
+    setCustomRpcEndpoint,
     rpcEndpointList,
   } = useTransactionContext()
 
@@ -145,6 +147,8 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           explorerList={CHAIN_CONFIG.EXPLORER_LIST}
           selectedRpcEndpoint={selectedRpcEndpoint}
           setSelectedRpcEndpoint={setSelectedRpcEndpoint}
+          customRpcEndpoint={customRpcEndpoint}
+          setCustomRpcEndpoint={setCustomRpcEndpoint}
           rpcList={rpcEndpointList}
           onClose={() => setShowChainSelector(false)}
         />

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import Modal from '../../components/modal/modal'
 import { DownBracketAngleSvg } from '../svg/down-bracket-angle-svg'
@@ -63,31 +63,34 @@ const RpcEndPointRow = ({
           {name}
         </div>
 
-        <div className="flex justify-start items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-          >
-            <circle
-              cx="5"
-              cy="5"
-              r="5"
-              fill={
-                connectionDurationInMs < 100
-                  ? '#10B981'
-                  : connectionDurationInMs < 500
-                    ? '#F59E0B'
-                    : '#EF4444'
-              }
-            />
-          </svg>
-          <div className="justify-start text-gray-400 text-[13px] font-semibold">
-            {connectionDurationInMs.toFixed(0)} ms
+        {connectionDurationInMs > 0 && (
+          <div className="flex justify-start items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="none"
+            >
+              <circle
+                cx="5"
+                cy="5"
+                r="5"
+                fill={
+                  connectionDurationInMs < 100
+                    ? '#10B981'
+                    : connectionDurationInMs < 500
+                      ? '#F59E0B'
+                      : '#EF4444'
+                }
+              />
+            </svg>
+
+            <div className="justify-start text-gray-400 text-[13px] font-semibold">
+              {connectionDurationInMs.toFixed(0)} ms
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )
@@ -99,6 +102,8 @@ export const ChainSettingModal = ({
   explorerList,
   selectedRpcEndpoint,
   setSelectedRpcEndpoint,
+  customRpcEndpoint,
+  setCustomRpcEndpoint,
   rpcList,
   onClose,
 }: {
@@ -107,6 +112,8 @@ export const ChainSettingModal = ({
   explorerList: NamedUrl[]
   selectedRpcEndpoint: string
   setSelectedRpcEndpoint: (rpcEndpoint: string) => void
+  customRpcEndpoint: string
+  setCustomRpcEndpoint: (rpcEndpoint: string) => void
   rpcList: (NamedUrl & {
     connectionDurationInMs: number
   })[]
@@ -114,8 +121,24 @@ export const ChainSettingModal = ({
 }) => {
   const { showDropdown, setShowDropdown } = useDropdown()
 
+  useEffect(() => {
+    if (
+      customRpcEndpoint.trim() === '' &&
+      !rpcList.find((rpc) => rpc.url === selectedRpcEndpoint)
+    ) {
+      setSelectedRpcEndpoint(rpcList[0]?.url || '')
+    }
+  }, [customRpcEndpoint, rpcList, selectedRpcEndpoint, setSelectedRpcEndpoint])
+
   return (
-    <Modal show onClose={() => {}} onButtonClick={onClose}>
+    <Modal
+      show
+      onClose={() => {
+        setShowDropdown(false)
+        onClose()
+      }}
+      onButtonClick={onClose}
+    >
       <h1 className="flex font-bold text-xl mb-2 w-full justify-center">
         Setting
       </h1>
@@ -175,10 +198,23 @@ export const ChainSettingModal = ({
           </div>
 
           <div className="flex flex-col justify-start items-start gap-2.5 w-full">
-            {rpcList
-              .sort(
-                (a, b) => a.connectionDurationInMs - b.connectionDurationInMs,
-              )
+            {[
+              ...rpcList,
+              {
+                name: 'Custom',
+                url: customRpcEndpoint,
+                connectionDurationInMs: 0,
+              },
+            ]
+              .sort((a, b) => {
+                if (a.url === customRpcEndpoint) {
+                  return 1
+                }
+                if (b.url === customRpcEndpoint) {
+                  return -1
+                }
+                return a.connectionDurationInMs - b.connectionDurationInMs
+              })
               .map(({ url, name, connectionDurationInMs }) => (
                 <RpcEndPointRow
                   key={url}
@@ -186,11 +222,47 @@ export const ChainSettingModal = ({
                   connectionDurationInMs={connectionDurationInMs}
                   selected={selectedRpcEndpoint === url}
                   setSelectedRpcEndpoint={() => {
-                    setSelectedRpcEndpoint(url)
+                    if (url.startsWith('http')) {
+                      setSelectedRpcEndpoint(url)
+                    }
                   }}
                 />
               ))}
           </div>
+        </div>
+
+        <div className="self-stretch flex flex-col gap-2">
+          <div className="text-[#7b8394] text-sm font-semibold">Custom</div>
+          <div className="self-stretch px-4 py-3 bg-gray-800 rounded-2xl outline outline-1 outline-offset-[-1px] outline-gray-700 flex flex-row gap-2">
+            <input
+              type="text"
+              value={customRpcEndpoint}
+              onChange={(e) => setCustomRpcEndpoint(e.target.value)}
+              placeholder=""
+              className="w-full bg-gray-800 text-white placeholder-gray-500 text-sm sm:text-base focus:outline-none"
+            />
+            <button
+              disabled={
+                !customRpcEndpoint || !customRpcEndpoint.startsWith('http')
+              }
+              className="w-14 h-8 px-3.5 py-1.5 bg-blue-500/25 rounded-lg flex justify-center items-center gap-2 hover:bg-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                if (customRpcEndpoint && customRpcEndpoint.startsWith('http')) {
+                  setCustomRpcEndpoint(customRpcEndpoint.trim())
+                }
+              }}
+            >
+              <div className="text-center text-blue-400 text-sm font-bold">
+                Save
+              </div>
+            </button>
+          </div>
+
+          {customRpcEndpoint && !customRpcEndpoint.startsWith('http') && (
+            <div className="text-red-500 text-sm font-semibold">
+              URL is invalid!
+            </div>
+          )}
         </div>
       </div>
     </Modal>

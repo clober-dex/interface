@@ -44,6 +44,8 @@ type TransactionContext = {
   setSelectedExplorer: (explorer: string) => void
   selectedRpcEndpoint: string | null
   setSelectedRpcEndpoint: (rpcEndpoint: string) => void
+  customRpcEndpoint: string
+  setCustomRpcEndpoint: (rpcEndpoint: string) => void
   rpcEndpointList: (NamedUrl & {
     connectionDurationInMs: number
   })[]
@@ -60,6 +62,8 @@ const Context = React.createContext<TransactionContext>({
   setSelectedExplorer: () => {},
   selectedRpcEndpoint: null,
   setSelectedRpcEndpoint: () => {},
+  customRpcEndpoint: '',
+  setCustomRpcEndpoint: () => {},
   rpcEndpointList: [],
 })
 
@@ -67,6 +71,8 @@ export const LOCAL_STORAGE_EXPLORER_KEY = (chainId: number) =>
   `selected-explorer-${chainId}`
 export const LOCAL_STORAGE_RPC_ENDPOINT_KEY = (chainId: number) =>
   `selected-rpc-endpoint-${chainId}`
+export const LOCAL_STORAGE_CUSTOM_RPC_ENDPOINT_KEY = (chainId: number) =>
+  `custom-rpc-endpoint-${chainId}`
 
 export const LOCAL_STORAGE_TRANSACTIONS_KEY = (
   address: `0x${string}`,
@@ -113,6 +119,18 @@ export const TransactionProvider = ({
     [selectedChain.id],
   )
 
+  const [customRpcEndpoint, _setCustomRpcEndpoint] = React.useState('')
+  const setCustomRpcEndpoint = useCallback(
+    (rpcEndpoint: string) => {
+      _setCustomRpcEndpoint(rpcEndpoint)
+      localStorage.setItem(
+        LOCAL_STORAGE_CUSTOM_RPC_ENDPOINT_KEY(selectedChain.id),
+        JSON.stringify(rpcEndpoint),
+      )
+    },
+    [selectedChain.id],
+  )
+
   useEffect(() => {
     const storedExplorer = localStorage.getItem(
       LOCAL_STORAGE_EXPLORER_KEY(selectedChain.id),
@@ -126,6 +144,13 @@ export const TransactionProvider = ({
     )
     if (storedRpcEndpoint) {
       _setSelectedRpcEndpoint(JSON.parse(storedRpcEndpoint))
+    }
+
+    const storedCustomRpcEndpoint = localStorage.getItem(
+      LOCAL_STORAGE_CUSTOM_RPC_ENDPOINT_KEY(selectedChain.id),
+    )
+    if (storedCustomRpcEndpoint) {
+      _setCustomRpcEndpoint(JSON.parse(storedCustomRpcEndpoint))
     }
   }, [selectedChain.id])
 
@@ -348,6 +373,8 @@ export const TransactionProvider = ({
         setSelectedExplorer,
         selectedRpcEndpoint,
         setSelectedRpcEndpoint,
+        customRpcEndpoint,
+        setCustomRpcEndpoint,
         rpcEndpointList: rpcDurations ?? [],
       }}
     >
