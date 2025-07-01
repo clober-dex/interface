@@ -40,7 +40,7 @@ export class OpenOceanAggregator implements Aggregator {
     return slippageLimitPercent
   }
 
-  public async quote(
+  public quote = async (
     inputCurrency: Currency,
     amountIn: bigint,
     outputCurrency: Currency,
@@ -54,7 +54,7 @@ export class OpenOceanAggregator implements Aggregator {
     aggregator: Aggregator
     transaction: Transaction | undefined
     executionMilliseconds: number
-  }> {
+  }> => {
     const start = performance.now()
     slippageLimitPercent = this.calculateSlippage(slippageLimitPercent)
     let params = {

@@ -62,7 +62,7 @@ export const PoolManagerContainer = ({
     setLpCurrencyAmount,
     lpBalances,
   } = usePoolContext()
-  const { mint, burn, wrap, unwrap } = usePoolContractContext()
+  const { mint, burn } = usePoolContractContext()
   const [showRPI, setShowRPI] = useState(true)
   const previousValues = useRef({
     currency0Amount,
@@ -181,12 +181,6 @@ export const PoolManagerContainer = ({
   useEffect(() => {
     setDisableSwap(isNoLiquidity)
   }, [isNoLiquidity, setDisableSwap])
-
-  useEffect(() => {
-    if (selectedChain.testnet) {
-      setDisableSwap(true)
-    }
-  }, [selectedChain.testnet, setDisableSwap])
 
   useEffect(() => {
     setCurrency0Amount('')
@@ -538,9 +532,7 @@ export const PoolManagerContainer = ({
                   availableCurrency1Balance={balances[pool.currencyB.address]}
                   disableSwap={disableSwap}
                   setDisableSwap={setDisableSwap}
-                  disableDisableSwap={
-                    isNoLiquidity || selectedChain.testnet === true
-                  }
+                  disableDisableSwap={isNoLiquidity}
                   slippageInput={slippageInput}
                   setSlippageInput={setSlippageInput}
                   receiveLpCurrencyAmount={receiveLpAmount}

@@ -48,7 +48,7 @@ export class AggregatorRouterGateway implements Aggregator {
     return this.aggregator.prices()
   }
 
-  async quote(
+  public quote = async (
     inputCurrency: Currency,
     amountIn: bigint,
     outputCurrency: Currency,
@@ -62,7 +62,7 @@ export class AggregatorRouterGateway implements Aggregator {
     aggregator: Aggregator
     transaction: Transaction | undefined
     executionMilliseconds: number
-  }> {
+  }> => {
     const start = performance.now()
     const { amountOut, transaction } = await this.aggregator.quote(
       inputCurrency,

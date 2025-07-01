@@ -53,7 +53,7 @@ export class CloberV2Aggregator implements Aggregator {
     } as Prices
   }
 
-  public async quote(
+  public quote = async (
     inputCurrency: Currency,
     amountIn: bigint,
     outputCurrency: Currency,
@@ -68,7 +68,7 @@ export class CloberV2Aggregator implements Aggregator {
     aggregator: Aggregator
     transaction: Transaction | undefined
     executionMilliseconds: number
-  }> {
+  }> => {
     const start = performance.now()
     // if (
     //   (isAddressEqual(inputCurrency.address, this.nativeTokenAddress) &&
