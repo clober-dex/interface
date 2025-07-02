@@ -38,6 +38,8 @@ type TransactionContext = {
   queuePendingTransaction: (transaction: Transaction) => void
   updatePendingTransaction: (transaction: Transaction) => void
   lastIndexedBlockNumber: number
+  selectedExecutor: string | null
+  setSelectedExecutor: (executor: string | null) => void
 }
 
 const Context = React.createContext<TransactionContext>({
@@ -47,9 +49,13 @@ const Context = React.createContext<TransactionContext>({
   queuePendingTransaction: () => {},
   updatePendingTransaction: () => {},
   lastIndexedBlockNumber: 0,
+  selectedExecutor: null,
+  setSelectedExecutor: () => {},
 })
 
-export const LOCAL_STORAGE_TRANSACTIONS_KEY = (
+const LOCAL_STORAGE_SELECTED_EXECUTOR_KEY = (chain: Chain) =>
+  `selected-executor-${chain.id}`
+const LOCAL_STORAGE_TRANSACTIONS_KEY = (
   address: `0x${string}`,
   status: 'pending' | 'confirmed',
 ) => `transactions-${address}-${status}`
@@ -66,6 +72,32 @@ export const TransactionProvider = ({
   const [transactionHistory, setTransactionHistory] = React.useState<
     Transaction[]
   >([])
+  const [selectedExecutor, _setSelectedExecutor] = React.useState<
+    string | null
+  >(null)
+  const setSelectedExecutor = useCallback(
+    (executor: string | null) => {
+      _setSelectedExecutor(executor)
+      if (userAddress && executor) {
+        localStorage.setItem(
+          LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain),
+          executor,
+        )
+      }
+    },
+    [selectedChain, userAddress],
+  )
+
+  useEffect(() => {
+    const storedExecutor = localStorage.getItem(
+      LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain),
+    )
+    if (storedExecutor) {
+      setSelectedExecutor(storedExecutor)
+    } else {
+      setSelectedExecutor(null)
+    }
+  }, [selectedChain, setSelectedExecutor])
 
   useEffect(() => {
     setPendingTransactions(
@@ -228,6 +260,8 @@ export const TransactionProvider = ({
         queuePendingTransaction,
         updatePendingTransaction,
         lastIndexedBlockNumber,
+        selectedExecutor,
+        setSelectedExecutor,
       }}
     >
       {children}

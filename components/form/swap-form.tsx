@@ -15,11 +15,11 @@ import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
 import { ExchangeSvg } from '../svg/exchange-svg'
 import CloseSvg from '../svg/close-svg'
-import { SlippageToggle } from '../toggle/slippage-toggle'
 import { Chain } from '../../model/chain'
 import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
+import { SettingSvg } from '../svg/setting-svg'
 
 export type SwapFormProps = {
   chain: Chain
@@ -45,7 +45,6 @@ export type SwapFormProps = {
   setOutputCurrency: (outputCurrency: Currency | undefined) => void
   outputCurrencyAmount: string
   slippageInput: string
-  setSlippageInput: (slippageInput: string) => void
   gasEstimateValue: number
   priceImpact: number
   aggregatorName: string
@@ -75,7 +74,6 @@ export const SwapForm = ({
   setOutputCurrency,
   outputCurrencyAmount,
   slippageInput,
-  setSlippageInput,
   gasEstimateValue,
   priceImpact,
   aggregatorName,
@@ -412,13 +410,15 @@ export const SwapForm = ({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 self-stretch">
+            <div className="flex flex-row gap-3 sm:gap-2 self-stretch">
               <div className="text-gray-400">Max Slippage</div>
-              <div className="flex ml-auto">
-                <SlippageToggle
-                  slippageInput={slippageInput}
-                  setSlippageInput={setSlippageInput}
-                />
+              <div className="flex gap-1 sm:gap-1.5 ml-auto justify-center items-center">
+                <div className="text-white font-semibold">
+                  {Number(slippageInput).toFixed(2)}%
+                </div>
+                <button>
+                  <SettingSvg className="w-6 h-6" />
+                </button>
               </div>
             </div>
           </div>

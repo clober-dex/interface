@@ -82,8 +82,12 @@ export const PoolContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    selectedExecutor,
+  } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { getAllowance, prices } = useCurrencyContext()
 
@@ -339,6 +343,7 @@ export const PoolContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
+              selectedExecutor,
             )
           }
         }
@@ -360,6 +365,7 @@ export const PoolContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       gasPrice,
       getAllowance,
       disconnectAsync,
@@ -496,6 +502,7 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            selectedExecutor,
           )
         }
       } catch (e) {
@@ -510,6 +517,7 @@ export const PoolContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       disconnectAsync,
       prices,
       queryClient,
@@ -665,6 +673,7 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            selectedExecutor,
           )
         }
       } catch (e) {
@@ -678,6 +687,7 @@ export const PoolContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       walletClient,
       selectedChain,
       setConfirmation,
@@ -781,6 +791,7 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            selectedExecutor,
           )
         }
       } catch (e) {
@@ -794,6 +805,7 @@ export const PoolContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       disconnectAsync,
       queryClient,
       queuePendingTransaction,

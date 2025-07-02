@@ -87,8 +87,12 @@ export const FuturesContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    selectedExecutor,
+  } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { address: userAddress } = useAccount()
   const { getAllowance, prices } = useCurrencyContext()
@@ -331,6 +335,7 @@ export const FuturesContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            selectedExecutor,
           )
           return transactionReceipt?.transactionHash
         }
@@ -345,6 +350,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       getAllowance,
       dequeuePendingPositionCurrency,
       disconnectAsync,
@@ -449,6 +455,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          selectedExecutor,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -462,6 +469,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -618,6 +626,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          selectedExecutor,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -631,6 +640,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -733,6 +743,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          selectedExecutor,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -745,6 +756,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       disconnectAsync,
       publicClient,
       queryClient,
@@ -819,6 +831,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          selectedExecutor,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -832,6 +845,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       disconnectAsync,
       prices,
       publicClient,
@@ -921,6 +935,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          selectedExecutor,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -934,6 +949,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       disconnectAsync,
       prices,
       publicClient,
@@ -1020,6 +1036,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          selectedExecutor,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -1033,6 +1050,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -1159,6 +1177,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          selectedExecutor,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -1172,6 +1191,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,

@@ -38,8 +38,12 @@ export const SwapContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    selectedExecutor,
+  } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { getAllowance, prices } = useCurrencyContext()
 
@@ -160,6 +164,7 @@ export const SwapContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            selectedExecutor,
           )
         }
       } catch (e) {
@@ -173,6 +178,7 @@ export const SwapContractProvider = ({
       }
     },
     [
+      selectedExecutor,
       getAllowance,
       disconnectAsync,
       prices,
