@@ -109,6 +109,7 @@ export const SwapContractProvider = ({
               await new Promise((resolve) => setTimeout(resolve, 100))
               await queryClient.invalidateQueries({ queryKey: ['quotes'] })
             },
+            selectedExecutorName,
           )
         } else {
           const confirmation = {

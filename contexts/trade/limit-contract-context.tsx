@@ -179,6 +179,7 @@ export const LimitContractProvider = ({
               })
               await queryClient.invalidateQueries({ queryKey: ['allowances'] })
             },
+            selectedExecutorName,
           )
         }
         // if input currency is native token, we don't need to approve

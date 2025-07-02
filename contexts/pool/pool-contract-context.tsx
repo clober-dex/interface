@@ -166,6 +166,7 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
+            selectedExecutorName,
           )
         }
 
@@ -210,6 +211,7 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
+            selectedExecutorName,
           )
         }
 
@@ -607,6 +609,7 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
+            selectedExecutorName,
           )
         }
         // If currency has sufficient allowance, proceed to wrap

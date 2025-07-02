@@ -212,6 +212,7 @@ export const FuturesContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
+            selectedExecutorName,
           )
         }
         // If the collateral is the native currency, we don't need to approve

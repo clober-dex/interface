@@ -20,6 +20,7 @@ export const maxApprove = async (
   disconnectAsync: () => Promise<void>,
   onUserSigned: (hash: `0x${string}`) => void,
   onTxConfirmation: (receipt: TransactionReceipt) => void,
+  executorName: string | null,
 ): Promise<TransactionReceipt | undefined> => {
   if (!walletClient) {
     return
@@ -43,5 +44,6 @@ export const maxApprove = async (
     disconnectAsync,
     onUserSigned,
     onTxConfirmation,
+    executorName,
   )
 }
