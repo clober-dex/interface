@@ -42,7 +42,7 @@ export const SwapContractProvider = ({
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutor,
+    selectedExecutorName,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { getAllowance, prices } = useCurrencyContext()
@@ -164,7 +164,7 @@ export const SwapContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
-            selectedExecutor,
+            selectedExecutorName,
           )
         }
       } catch (e) {
@@ -178,7 +178,7 @@ export const SwapContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       getAllowance,
       disconnectAsync,
       prices,

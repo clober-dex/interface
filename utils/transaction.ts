@@ -30,7 +30,7 @@ export async function sendTransaction(
   disconnectAsync: () => Promise<void>,
   onUserSigned: (hash: `0x${string}`) => void,
   onTxConfirmation: (receipt: TransactionReceipt) => void,
-  executor: string | null,
+  executorName: string | null,
 ): Promise<TransactionReceipt | undefined> {
   if (!walletClient) {
     return

@@ -91,7 +91,7 @@ export const FuturesContractProvider = ({
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutor,
+    selectedExecutorName,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { address: userAddress } = useAccount()
@@ -335,7 +335,7 @@ export const FuturesContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
-            selectedExecutor,
+            selectedExecutorName,
           )
           return transactionReceipt?.transactionHash
         }
@@ -350,7 +350,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       getAllowance,
       dequeuePendingPositionCurrency,
       disconnectAsync,
@@ -455,7 +455,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -469,7 +469,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -626,7 +626,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -640,7 +640,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -743,7 +743,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -756,7 +756,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       disconnectAsync,
       publicClient,
       queryClient,
@@ -831,7 +831,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -845,7 +845,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       disconnectAsync,
       prices,
       publicClient,
@@ -935,7 +935,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -949,7 +949,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       disconnectAsync,
       prices,
       publicClient,
@@ -1036,7 +1036,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -1050,7 +1050,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -1177,7 +1177,7 @@ export const FuturesContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -1191,7 +1191,7 @@ export const FuturesContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,

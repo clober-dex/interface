@@ -86,7 +86,7 @@ export const PoolContractProvider = ({
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutor,
+    selectedExecutorName,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { getAllowance, prices } = useCurrencyContext()
@@ -343,7 +343,7 @@ export const PoolContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
-              selectedExecutor,
+              selectedExecutorName,
             )
           }
         }
@@ -365,7 +365,7 @@ export const PoolContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       gasPrice,
       getAllowance,
       disconnectAsync,
@@ -502,7 +502,7 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
-            selectedExecutor,
+            selectedExecutorName,
           )
         }
       } catch (e) {
@@ -517,7 +517,7 @@ export const PoolContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       disconnectAsync,
       prices,
       queryClient,
@@ -673,7 +673,7 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
-            selectedExecutor,
+            selectedExecutorName,
           )
         }
       } catch (e) {
@@ -687,7 +687,7 @@ export const PoolContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       walletClient,
       selectedChain,
       setConfirmation,
@@ -791,7 +791,7 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
-            selectedExecutor,
+            selectedExecutorName,
           )
         }
       } catch (e) {
@@ -805,7 +805,7 @@ export const PoolContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       disconnectAsync,
       queryClient,
       queuePendingTransaction,

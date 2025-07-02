@@ -140,7 +140,7 @@ export const TradingCompetitionContainer = () => {
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutor,
+    selectedExecutorName,
   } = useTransactionContext()
   const { disconnectAsync } = useDisconnect()
   const { data: walletClient } = useWalletClient()
@@ -293,7 +293,7 @@ export const TradingCompetitionContainer = () => {
             timestamp: currentTimestampInSeconds(),
           })
         },
-        selectedExecutor,
+        selectedExecutorName,
       )
     } catch (error) {
       console.error('Error registering for trading competition:', error)
@@ -304,7 +304,7 @@ export const TradingCompetitionContainer = () => {
       })
     }
   }, [
-    selectedExecutor,
+    selectedExecutorName,
     disconnectAsync,
     publicClient,
     queryClient,

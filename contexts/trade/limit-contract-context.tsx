@@ -52,7 +52,7 @@ export const LimitContractProvider = ({
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutor,
+    selectedExecutorName,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { isOpenOrderApproved, getAllowance, prices } = useCurrencyContext()
@@ -126,7 +126,7 @@ export const LimitContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
-              selectedExecutor,
+              selectedExecutorName,
             )
           }
         }
@@ -246,7 +246,7 @@ export const LimitContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
-              selectedExecutor,
+              selectedExecutorName,
             )
           }
           // limit order or take order
@@ -324,7 +324,7 @@ export const LimitContractProvider = ({
                   })
                 }
               },
-              selectedExecutor,
+              selectedExecutorName,
             )
           }
         }
@@ -340,7 +340,7 @@ export const LimitContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       getAllowance,
       disconnectAsync,
       prices,
@@ -425,7 +425,7 @@ export const LimitContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
       } catch (e) {
         console.error(e)
@@ -439,7 +439,7 @@ export const LimitContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       disconnectAsync,
       isOpenOrderApproved,
       prices,
@@ -524,7 +524,7 @@ export const LimitContractProvider = ({
               success: receipt.status === 'success',
             })
           },
-          selectedExecutor,
+          selectedExecutorName,
         )
       } catch (e) {
         console.error(e)
@@ -538,7 +538,7 @@ export const LimitContractProvider = ({
       }
     },
     [
-      selectedExecutor,
+      selectedExecutorName,
       disconnectAsync,
       isOpenOrderApproved,
       prices,
