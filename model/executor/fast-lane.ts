@@ -1,9 +1,18 @@
 import { Transaction } from '@clober/v2-sdk'
-import { createPublicClient, http, PublicClient } from 'viem'
+import { createPublicClient, Hex, http, PublicClient, WalletClient } from 'viem'
 import axios from 'axios'
 
 import { Chain } from '../chain'
 import { CHAIN_CONFIG } from '../../chain-configs'
+
+interface AtlasResponse {
+  from: Hex
+  to: Hex
+  value: Hex
+  data: Hex
+  gas: Hex
+  maxFeePerGas: Hex
+}
 
 export class FastLaneExecutor {
   public readonly name = 'FastLane'
@@ -21,8 +30,9 @@ export class FastLaneExecutor {
 
   public async sendTransaction(
     transaction: Transaction,
+    walletClient: WalletClient,
     timeout?: number,
-  ): Promise<void> {
+  ): Promise<`0x${string}`> {
     const payload = {
       jsonrpc: '2.0',
       method: 'atlas_sendUnsignedTransaction',
@@ -32,7 +42,7 @@ export class FastLaneExecutor {
             chainId: this.chain.id,
             from: transaction.from,
             to: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
-              .AggregatorRouterGateway, //NOT ATLAS - use same tx details as a normal protocol swap
+              .AggregatorRouterGateway,
             value: transaction.value,
             data: transaction.data,
           },
@@ -45,7 +55,7 @@ export class FastLaneExecutor {
     }
 
     try {
-      const response = await axios.post(
+      const { data: result } = (await axios.post(
         'https://auctioneer-fra.fastlane-labs.xyz',
         {
           payload,
@@ -56,10 +66,23 @@ export class FastLaneExecutor {
           },
           timeout: timeout || this.TIMEOUT,
         },
-      )
-      console.log('Transaction sent successfully:', response.data)
+      )) as {
+        data: AtlasResponse
+      }
+      console.log('FastLane response:', result)
+      return walletClient.sendTransaction({
+        to: result.to,
+        value: BigInt(result.value),
+        gas: BigInt(result.gas),
+        maxFeePerGas: BigInt(result.maxFeePerGas),
+        data: result.data,
+        account: walletClient.account!,
+        chain: this.chain,
+      })
     } catch (e) {
-      console.error('Failed to send transaction:', e)
+      throw new Error(
+        `Failed to send transaction via FastLane: ${e instanceof Error ? e.message : String(e)}`,
+      )
     }
   }
 }
