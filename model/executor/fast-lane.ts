@@ -69,7 +69,6 @@ export class FastLaneExecutor {
       )) as {
         data: AtlasResponse
       }
-      console.log('FastLane response:', result)
       return walletClient.sendTransaction({
         to: result.to,
         value: BigInt(result.value),
