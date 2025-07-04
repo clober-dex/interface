@@ -8,6 +8,7 @@ import { Currency } from '../../model/currency'
 import CurrencySelect from '../selector/currency-select'
 import {
   formatSignificantString,
+  formatTinyNumber,
   formatWithCommas,
 } from '../../utils/bignumber'
 import { ActionButton, ActionButtonProps } from '../button/action-button'
@@ -20,6 +21,8 @@ import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
 import { SettingSvg } from '../svg/setting-svg'
+import { SwapSettingModal } from '../modal/swap-setting-modal'
+import { formatUnits } from '../../utils/bigint'
 
 export type SwapFormProps = {
   chain: Chain
@@ -138,7 +141,17 @@ export const SwapForm = ({
         : rate
   }, [inputCurrency, inputCurrencyAmount, outputCurrencyAmount, quoteCurrency])
 
-  return showInputCurrencySelect ? (
+  return showSwapSettingModal && gasPrice ? (
+    <SwapSettingModal
+      selectedExecutorName={selectedExecutorName}
+      gasPriceMultiplier={gasPriceMultiplier}
+      setGasPriceMultiplier={setGasPriceMultiplier}
+      slippageInput={slippageInput}
+      setSlippageInput={setSlippageInput}
+      currentGasPrice={gasPrice}
+      onClose={() => setShowSwapSettingModal(false)}
+    />
+  ) : showInputCurrencySelect ? (
     <CurrencySelect
       chain={chain}
       explorerUrl={explorerUrl}
@@ -363,7 +376,16 @@ export const SwapForm = ({
         <div className="flex flex-col gap-4 text-[13px] sm:text-sm font-medium">
           <div className="flex flex-col items-start gap-2 md:gap-3 self-stretch justify-end text-white text-[13px] sm:text-sm">
             <div className="flex items-center gap-2 self-stretch">
-              <div className="text-gray-400">Gas Fee</div>
+              <div className="text-gray-400">
+                Gas Fee (
+                {new BigNumber(
+                  formatTinyNumber(
+                    Number(gasPriceMultiplier) *
+                      Number(formatUnits(gasPrice ?? 0n, 9)),
+                  ),
+                ).toFixed(2)}{' '}
+                Gwei)
+              </div>
               <div className="flex ml-auto">
                 {!Number.isNaN(gasEstimateValue) ? (
                   <div className="flex relative h-full sm:h-[20px] items-center text-xs sm:text-sm text-white ml-auto">

@@ -152,7 +152,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   const [priceInput, setPriceInput] = useState('')
   const [slippageInput, _setSlippageInput] = useState('0.5')
-  const [gasPriceMultiplier, _setGasPriceMultiplier] = useState('1')
+  const [gasPriceMultiplier, _setGasPriceMultiplier] = useState('1.05')
   const [latestQuotesRefreshTime, setLatestQuotesRefreshTime] = useState(
     Date.now(),
   )
