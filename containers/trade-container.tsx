@@ -24,6 +24,7 @@ import { useSwapContractContext } from '../contexts/trade/swap-contract-context'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { SwapRouteList } from '../components/swap-router-list'
 import { MobileFixedModal } from '../components/modal/mobile-fixed-modal'
+import { useTransactionContext } from '../contexts/transaction-context'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
@@ -135,6 +136,8 @@ export const TradeContainer = () => {
     setPriceInput,
     slippageInput,
     setSlippageInput,
+    gasPriceMultiplier,
+    setGasPriceMultiplier,
     showOrderBook,
     setShowOrderBook,
     selectedQuote,
@@ -147,6 +150,7 @@ export const TradeContainer = () => {
     priceImpact,
     isFetchingOnChainPrice,
   } = useTradeContext()
+  const { selectedExecutorName } = useTransactionContext()
 
   const { openConnectModal } = useConnectModal()
   const { balances, getAllowance, prices, currencies, setCurrencies } =
@@ -445,6 +449,10 @@ export const TradeContainer = () => {
         ),
         slippageInput,
         setSlippageInput,
+        gasPriceMultiplier,
+        setGasPriceMultiplier,
+        gasPrice,
+        selectedExecutorName,
         aggregatorName: selectedQuote?.aggregator?.name ?? '',
         gasEstimateValue: selectedQuote?.gasUsd ?? 0,
         priceImpact,
@@ -471,10 +479,14 @@ export const TradeContainer = () => {
       setOutputCurrency,
       setShowInputCurrencySelect,
       setShowOutputCurrencySelect,
+      slippageInput,
       setSlippageInput,
       showInputCurrencySelect,
       showOutputCurrencySelect,
-      slippageInput,
+      gasPriceMultiplier,
+      setGasPriceMultiplier,
+      selectedExecutorName,
+      gasPrice,
     ],
   )
 

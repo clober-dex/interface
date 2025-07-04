@@ -45,6 +45,11 @@ export type SwapFormProps = {
   setOutputCurrency: (outputCurrency: Currency | undefined) => void
   outputCurrencyAmount: string
   slippageInput: string
+  setSlippageInput: (slippageInput: string) => void
+  gasPriceMultiplier: string
+  setGasPriceMultiplier: (value: string) => void
+  gasPrice: bigint | undefined
+  selectedExecutorName: string | null
   gasEstimateValue: number
   priceImpact: number
   aggregatorName: string
@@ -74,6 +79,11 @@ export const SwapForm = ({
   setOutputCurrency,
   outputCurrencyAmount,
   slippageInput,
+  setSlippageInput,
+  gasPriceMultiplier,
+  setGasPriceMultiplier,
+  gasPrice,
+  selectedExecutorName,
   gasEstimateValue,
   priceImpact,
   aggregatorName,
@@ -103,6 +113,7 @@ export const SwapForm = ({
     setInputCurrencyAmount,
     setOutputCurrency,
   ])
+  const [showSwapSettingModal, setShowSwapSettingModal] = useState(false)
   const [isCopyToast, setIsCopyToast] = useState(false)
   const [quoteCurrency, baseCurrency] = useMemo(() => {
     if (!inputCurrency || !outputCurrency) {
@@ -416,7 +427,7 @@ export const SwapForm = ({
                 <div className="text-white font-semibold">
                   {Number(slippageInput).toFixed(2)}%
                 </div>
-                <button>
+                <button onClick={() => setShowSwapSettingModal(true)}>
                   <SettingSvg className="w-6 h-6" />
                 </button>
               </div>
