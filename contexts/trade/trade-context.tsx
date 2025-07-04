@@ -45,8 +45,6 @@ type TradeContext = {
   setPriceInput: (priceInput: string) => void
   slippageInput: string
   setSlippageInput: (slippage: string) => void
-  gasPriceMultiplier: string
-  setGasPriceMultiplier: (multiplier: string) => void
   showOrderBook: boolean
   setShowOrderBook: (showOrderBook: boolean) => void
   selectedQuote: Quote | null
@@ -83,8 +81,6 @@ const Context = React.createContext<TradeContext>({
   setPriceInput: () => {},
   slippageInput: '1',
   setSlippageInput: () => {},
-  gasPriceMultiplier: '1',
-  setGasPriceMultiplier: () => {},
   showOrderBook: true,
   setShowOrderBook: () => {},
   selectedQuote: null,
@@ -99,10 +95,7 @@ const Context = React.createContext<TradeContext>({
   setIsFetchingOnChainPrice: () => {},
 })
 
-export const TRADE_SLIPPAGE_KEY = (chainId: number) =>
-  `trade-slippage-${chainId}`
-export const TRADE_GAS_PRICE_MULTIPLIER_KEY = (chainId: number) =>
-  `trade-gas-price-multiplier-${chainId}`
+const TRADE_SLIPPAGE_KEY = (chainId: number) => `trade-slippage-${chainId}`
 export const TRADE_TAB_KEY = 'trade-tab'
 
 export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
@@ -152,7 +145,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   const [priceInput, setPriceInput] = useState('')
   const [slippageInput, _setSlippageInput] = useState('0.5')
-  const [gasPriceMultiplier, _setGasPriceMultiplier] = useState('1.05')
   const [latestQuotesRefreshTime, setLatestQuotesRefreshTime] = useState(
     Date.now(),
   )
@@ -258,17 +250,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     [selectedChain.id],
   )
 
-  const setGasPriceMultiplier = useCallback(
-    (multiplier: string) => {
-      localStorage.setItem(
-        TRADE_GAS_PRICE_MULTIPLIER_KEY(selectedChain.id),
-        multiplier,
-      )
-      _setGasPriceMultiplier(multiplier)
-    },
-    [selectedChain.id],
-  )
-
   useQuery({
     queryKey: [
       'quotes',
@@ -341,16 +322,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     const slippage = localStorage.getItem(TRADE_SLIPPAGE_KEY(selectedChain.id))
     if (slippage) {
       _setSlippageInput(slippage)
-    }
-  }, [selectedChain.id])
-
-  // load gas price multiplier setting from localStorage on mount
-  useEffect(() => {
-    const multiplier = localStorage.getItem(
-      TRADE_GAS_PRICE_MULTIPLIER_KEY(selectedChain.id),
-    )
-    if (multiplier) {
-      _setGasPriceMultiplier(multiplier)
     }
   }, [selectedChain.id])
 
@@ -573,8 +544,6 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setPriceInput,
         slippageInput,
         setSlippageInput,
-        gasPriceMultiplier,
-        setGasPriceMultiplier,
         showOrderBook,
         setShowOrderBook,
         selectedQuote,
