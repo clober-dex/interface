@@ -92,8 +92,13 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { address: userAddress } = useAccount()
   const { data: walletClient } = useWalletClient()
   const { selectedChain } = useChainContext()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    selectedExecutorName,
+    gasPrice,
+  } = useTransactionContext()
 
   const publicClient = useMemo(() => {
     return createPublicClient({
@@ -371,6 +376,8 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
               success: receipt.status === 'success',
             })
           },
+          gasPrice,
+          selectedExecutorName,
         )
       } catch (e) {
         console.error(e)
@@ -382,6 +389,8 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
     },
     [
+      gasPrice,
+      selectedExecutorName,
       disconnectAsync,
       prices,
       publicClient,

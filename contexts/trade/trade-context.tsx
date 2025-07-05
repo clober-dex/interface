@@ -95,8 +95,8 @@ const Context = React.createContext<TradeContext>({
   setIsFetchingOnChainPrice: () => {},
 })
 
-export const TRADE_SLIPPAGE_KEY = 'trade-slippage'
-export const TRADE_TAB_KEY = 'trade-tab'
+const TRADE_SLIPPAGE_KEY = (chainId: number) => `trade-slippage-${chainId}`
+const TRADE_TAB_KEY = 'trade-tab'
 
 export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { disconnectAsync } = useDisconnect()
@@ -242,10 +242,13 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     return Number.NaN
   }, [inputCurrency, outputCurrency, prices, selectedQuote])
 
-  const setSlippageInput = useCallback((slippage: string) => {
-    localStorage.setItem(TRADE_SLIPPAGE_KEY, slippage)
-    _setSlippageInput(slippage)
-  }, [])
+  const setSlippageInput = useCallback(
+    (slippage: string) => {
+      localStorage.setItem(TRADE_SLIPPAGE_KEY(selectedChain.id), slippage)
+      _setSlippageInput(slippage)
+    },
+    [selectedChain.id],
+  )
 
   useQuery({
     queryKey: [
@@ -316,11 +319,11 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
   // load slippage setting from localStorage on mount
   useEffect(() => {
-    const slippage = localStorage.getItem(TRADE_SLIPPAGE_KEY)
+    const slippage = localStorage.getItem(TRADE_SLIPPAGE_KEY(selectedChain.id))
     if (slippage) {
       _setSlippageInput(slippage)
     }
-  }, [])
+  }, [selectedChain.id])
 
   // initialize input/output currencies and bid direction based on URL query or localStorage
   // if the chain in the query is different from the connected one, disconnect and reload

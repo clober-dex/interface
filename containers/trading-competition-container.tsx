@@ -136,8 +136,13 @@ const Profit = ({
 export const TradingCompetitionContainer = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    selectedExecutorName,
+    gasPrice,
+  } = useTransactionContext()
   const { disconnectAsync } = useDisconnect()
   const { data: walletClient } = useWalletClient()
   const { address: userAddress } = useAccount()
@@ -289,6 +294,8 @@ export const TradingCompetitionContainer = () => {
             timestamp: currentTimestampInSeconds(),
           })
         },
+        gasPrice,
+        selectedExecutorName,
       )
     } catch (error) {
       console.error('Error registering for trading competition:', error)
@@ -299,6 +306,8 @@ export const TradingCompetitionContainer = () => {
       })
     }
   }, [
+    gasPrice,
+    selectedExecutorName,
     disconnectAsync,
     publicClient,
     queryClient,

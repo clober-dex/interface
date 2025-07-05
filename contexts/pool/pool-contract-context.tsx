@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useDisconnect, useGasPrice, useWalletClient } from 'wagmi'
+import { useDisconnect, useWalletClient } from 'wagmi'
 import {
   addLiquidity,
   getContractAddresses,
@@ -77,13 +77,17 @@ export const PoolContractProvider = ({
   children,
 }: React.PropsWithChildren<{}>) => {
   const [showRevertModal, setShowRevertModal] = React.useState(false)
-  const { data: gasPrice } = useGasPrice()
   const queryClient = useQueryClient()
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    selectedExecutorName,
+    gasPrice,
+  } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { getAllowance, prices } = useCurrencyContext()
 
@@ -162,6 +166,7 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
+            selectedExecutorName,
           )
         }
 
@@ -206,14 +211,12 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
+            selectedExecutorName,
           )
         }
 
         // If both currencies have sufficient allowance, proceed to add liquidity
         else {
-          if (!gasPrice) {
-            return
-          }
           const [baseCurrency, quoteCurrency] = isAddressEqual(
             getQuoteToken({
               chainId: selectedChain.id,
@@ -339,6 +342,8 @@ export const PoolContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
+              gasPrice,
+              selectedExecutorName,
             )
           }
         }
@@ -360,6 +365,7 @@ export const PoolContractProvider = ({
       }
     },
     [
+      selectedExecutorName,
       gasPrice,
       getAllowance,
       disconnectAsync,
@@ -496,6 +502,8 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            gasPrice,
+            selectedExecutorName,
           )
         }
       } catch (e) {
@@ -510,8 +518,10 @@ export const PoolContractProvider = ({
       }
     },
     [
+      selectedExecutorName,
       disconnectAsync,
       prices,
+      gasPrice,
       queryClient,
       queuePendingTransaction,
       selectedChain,
@@ -599,6 +609,7 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
+            selectedExecutorName,
           )
         }
         // If currency has sufficient allowance, proceed to wrap
@@ -665,6 +676,8 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            gasPrice,
+            selectedExecutorName,
           )
         }
       } catch (e) {
@@ -678,6 +691,8 @@ export const PoolContractProvider = ({
       }
     },
     [
+      selectedExecutorName,
+      gasPrice,
       walletClient,
       selectedChain,
       setConfirmation,
@@ -781,6 +796,8 @@ export const PoolContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            gasPrice,
+            selectedExecutorName,
           )
         }
       } catch (e) {
@@ -794,6 +811,8 @@ export const PoolContractProvider = ({
       }
     },
     [
+      gasPrice,
+      selectedExecutorName,
       disconnectAsync,
       queryClient,
       queuePendingTransaction,

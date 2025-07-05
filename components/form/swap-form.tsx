@@ -8,6 +8,7 @@ import { Currency } from '../../model/currency'
 import CurrencySelect from '../selector/currency-select'
 import {
   formatSignificantString,
+  formatTinyNumber,
   formatWithCommas,
 } from '../../utils/bignumber'
 import { ActionButton, ActionButtonProps } from '../button/action-button'
@@ -15,11 +16,13 @@ import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
 import { ExchangeSvg } from '../svg/exchange-svg'
 import CloseSvg from '../svg/close-svg'
-import { SlippageToggle } from '../toggle/slippage-toggle'
 import { Chain } from '../../model/chain'
 import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
+import { SettingSvg } from '../svg/setting-svg'
+import { SwapSettingModal } from '../modal/swap-setting-modal'
+import { formatUnits } from '../../utils/bigint'
 
 export type SwapFormProps = {
   chain: Chain
@@ -46,6 +49,10 @@ export type SwapFormProps = {
   outputCurrencyAmount: string
   slippageInput: string
   setSlippageInput: (slippageInput: string) => void
+  gasPriceMultiplier: string
+  setGasPriceMultiplier: (value: string) => void
+  gasPrice: bigint | undefined
+  selectedExecutorName: string | null
   gasEstimateValue: number
   priceImpact: number
   aggregatorName: string
@@ -76,6 +83,10 @@ export const SwapForm = ({
   outputCurrencyAmount,
   slippageInput,
   setSlippageInput,
+  gasPriceMultiplier,
+  setGasPriceMultiplier,
+  gasPrice,
+  selectedExecutorName,
   gasEstimateValue,
   priceImpact,
   aggregatorName,
@@ -105,6 +116,7 @@ export const SwapForm = ({
     setInputCurrencyAmount,
     setOutputCurrency,
   ])
+  const [showSwapSettingModal, setShowSwapSettingModal] = useState(false)
   const [isCopyToast, setIsCopyToast] = useState(false)
   const [quoteCurrency, baseCurrency] = useMemo(() => {
     if (!inputCurrency || !outputCurrency) {
@@ -129,7 +141,17 @@ export const SwapForm = ({
         : rate
   }, [inputCurrency, inputCurrencyAmount, outputCurrencyAmount, quoteCurrency])
 
-  return showInputCurrencySelect ? (
+  return showSwapSettingModal && gasPrice ? (
+    <SwapSettingModal
+      selectedExecutorName={selectedExecutorName}
+      gasPriceMultiplier={gasPriceMultiplier}
+      setGasPriceMultiplier={setGasPriceMultiplier}
+      slippageInput={slippageInput}
+      setSlippageInput={setSlippageInput}
+      currentGasPrice={gasPrice}
+      onClose={() => setShowSwapSettingModal(false)}
+    />
+  ) : showInputCurrencySelect ? (
     <CurrencySelect
       chain={chain}
       explorerUrl={explorerUrl}
@@ -354,7 +376,16 @@ export const SwapForm = ({
         <div className="flex flex-col gap-4 text-[13px] sm:text-sm font-medium">
           <div className="flex flex-col items-start gap-2 md:gap-3 self-stretch justify-end text-white text-[13px] sm:text-sm">
             <div className="flex items-center gap-2 self-stretch">
-              <div className="text-gray-400">Gas Fee</div>
+              <div className="text-gray-400">
+                Gas Fee (
+                {new BigNumber(
+                  formatTinyNumber(
+                    Number(gasPriceMultiplier) *
+                      Number(formatUnits(gasPrice ?? 0n, 9)),
+                  ),
+                ).toFixed(2)}{' '}
+                Gwei)
+              </div>
               <div className="flex ml-auto">
                 {!Number.isNaN(gasEstimateValue) ? (
                   <div className="flex relative h-full sm:h-[20px] items-center text-xs sm:text-sm text-white ml-auto">
@@ -412,13 +443,15 @@ export const SwapForm = ({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 self-stretch">
+            <div className="flex flex-row gap-3 sm:gap-2 self-stretch">
               <div className="text-gray-400">Max Slippage</div>
-              <div className="flex ml-auto">
-                <SlippageToggle
-                  slippageInput={slippageInput}
-                  setSlippageInput={setSlippageInput}
-                />
+              <div className="flex gap-1 sm:gap-1.5 ml-auto justify-center items-center">
+                <div className="text-white font-semibold">
+                  {Number(slippageInput).toFixed(2)}%
+                </div>
+                <button onClick={() => setShowSwapSettingModal(true)}>
+                  <SettingSvg className="w-6 h-6" />
+                </button>
               </div>
             </div>
           </div>

@@ -48,8 +48,13 @@ export const LimitContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    selectedExecutorName,
+    gasPrice,
+  } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { isOpenOrderApproved, getAllowance, prices } = useCurrencyContext()
 
@@ -122,6 +127,8 @@ export const LimitContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
+              gasPrice,
+              selectedExecutorName,
             )
           }
         }
@@ -174,6 +181,7 @@ export const LimitContractProvider = ({
               })
               await queryClient.invalidateQueries({ queryKey: ['allowances'] })
             },
+            selectedExecutorName,
           )
         }
         // if input currency is native token, we don't need to approve
@@ -241,6 +249,8 @@ export const LimitContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
+              gasPrice,
+              selectedExecutorName,
             )
           }
           // limit order or take order
@@ -318,6 +328,8 @@ export const LimitContractProvider = ({
                   })
                 }
               },
+              gasPrice,
+              selectedExecutorName,
             )
           }
         }
@@ -333,6 +345,8 @@ export const LimitContractProvider = ({
       }
     },
     [
+      gasPrice,
+      selectedExecutorName,
       getAllowance,
       disconnectAsync,
       prices,
@@ -417,6 +431,8 @@ export const LimitContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          gasPrice,
+          selectedExecutorName,
         )
       } catch (e) {
         console.error(e)
@@ -430,6 +446,8 @@ export const LimitContractProvider = ({
       }
     },
     [
+      gasPrice,
+      selectedExecutorName,
       disconnectAsync,
       isOpenOrderApproved,
       prices,
@@ -514,6 +532,8 @@ export const LimitContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          gasPrice,
+          selectedExecutorName,
         )
       } catch (e) {
         console.error(e)
@@ -527,6 +547,8 @@ export const LimitContractProvider = ({
       }
     },
     [
+      gasPrice,
+      selectedExecutorName,
       disconnectAsync,
       isOpenOrderApproved,
       prices,

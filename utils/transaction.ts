@@ -14,6 +14,7 @@ import { Transaction } from '@clober/v2-sdk'
 
 import { Chain } from '../model/chain'
 import { CHAIN_CONFIG } from '../chain-configs'
+import { executors } from '../chain-configs/executors'
 
 export async function waitTransaction(chain: Chain, hash: Hash): Promise<void> {
   const publicClient = createPublicClient({
@@ -30,6 +31,8 @@ export async function sendTransaction(
   disconnectAsync: () => Promise<void>,
   onUserSigned: (hash: `0x${string}`) => void,
   onTxConfirmation: (receipt: TransactionReceipt) => void,
+  gasPrice: bigint,
+  executorName: string | null,
 ): Promise<TransactionReceipt | undefined> {
   if (!walletClient) {
     return
@@ -37,21 +40,33 @@ export async function sendTransaction(
   if (disconnectAsync && chain.id !== walletClient.chain!.id) {
     await disconnectAsync()
   }
+  const executor = executors.find((executor) => executor.name === executorName)
   try {
     const publicClient = createPublicClient({
       chain,
       transport: http(CHAIN_CONFIG.RPC_URL),
     })
-    const hash = await walletClient.sendTransaction({
-      data: transaction.data,
-      to: transaction.to,
-      value: transaction.value,
-      gas: transaction.gas,
-      account: walletClient.account!,
-      chain,
+    let hash: `0x${string}` | undefined = undefined
+    if (executor) {
+      hash = await executor.sendTransaction(transaction, walletClient)
+    } else {
+      hash = await walletClient.sendTransaction({
+        type: 'eip1559',
+        data: transaction.data,
+        to: transaction.to,
+        value: transaction.value,
+        gas: transaction.gas,
+        account: walletClient.account!,
+        maxFeePerGas: gasPrice,
+        maxPriorityFeePerGas: gasPrice,
+        chain,
+      })
+    }
+
+    onUserSigned(hash!)
+    const receipt = await publicClient.waitForTransactionReceipt({
+      hash: hash!,
     })
-    onUserSigned(hash)
-    const receipt = await publicClient.waitForTransactionReceipt({ hash })
     onTxConfirmation(receipt)
     return receipt
   } catch (e) {
