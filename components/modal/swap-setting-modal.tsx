@@ -30,7 +30,6 @@ export const SwapSettingModal = ({
   currentGasPrice: bigint
   onClose: () => void
 }) => {
-  const [customGasPrice, setCustomGasPrice] = React.useState<string>('')
   const [useMevProtection, setUseMevProtection] = React.useState(
     selectedExecutorName !== null,
   )
@@ -40,6 +39,9 @@ export const SwapSettingModal = ({
         formatUnits(applyPercent(currentGasPrice, 100 * gasPriceMultiplier), 9),
       ),
     [currentGasPrice],
+  )
+  const [customGasPrice, setCustomGasPrice] = React.useState<string>(
+    new BigNumber(calculateGasPrice(Number(gasPriceMultiplier))).toFixed(1),
   )
 
   return (
@@ -142,7 +144,7 @@ export const SwapSettingModal = ({
                 </button>
 
                 <div
-                  className={`w-[72px] flex flex-col flex-1 px-6 py-1 rounded-[20px] text-center items-center ${customGasPrice.length > 0 && (Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) >= 2 || Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) < 1) ? 'text-yellow-500' : 'text-white'} ${customGasPrice.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
+                  className={`w-[78px] flex flex-col flex-1 px-6 py-1 rounded-[20px] text-center items-center ${customGasPrice.length > 0 && (Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) >= 2 || Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) < 1) ? 'text-yellow-500' : 'text-white'} ${customGasPrice.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
                 >
                   <span>Custom</span>
                   <NumberInput
