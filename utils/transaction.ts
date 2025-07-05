@@ -31,6 +31,7 @@ export async function sendTransaction(
   disconnectAsync: () => Promise<void>,
   onUserSigned: (hash: `0x${string}`) => void,
   onTxConfirmation: (receipt: TransactionReceipt) => void,
+  gasPrice: bigint,
   executorName: string | null,
 ): Promise<TransactionReceipt | undefined> {
   if (!walletClient) {
@@ -50,11 +51,14 @@ export async function sendTransaction(
       hash = await executor.sendTransaction(transaction, walletClient)
     } else {
       hash = await walletClient.sendTransaction({
+        type: 'eip1559',
         data: transaction.data,
         to: transaction.to,
         value: transaction.value,
         gas: transaction.gas,
         account: walletClient.account!,
+        maxFeePerGas: gasPrice,
+        maxPriorityFeePerGas: gasPrice,
         chain,
       })
     }
