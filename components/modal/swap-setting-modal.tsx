@@ -41,7 +41,11 @@ export const SwapSettingModal = ({
     [currentGasPrice],
   )
   const [customGasPrice, setCustomGasPrice] = React.useState<string>(
-    new BigNumber(calculateGasPrice(Number(gasPriceMultiplier))).toFixed(1),
+    Number(gasPriceMultiplier) !== NORMAL_MULTIPLIER &&
+      Number(gasPriceMultiplier) !== FAST_MULTIPLIER &&
+      Number(gasPriceMultiplier) !== INSTANT_MULTIPLIER
+      ? new BigNumber(calculateGasPrice(Number(gasPriceMultiplier))).toFixed(1)
+      : '',
   )
 
   return (
