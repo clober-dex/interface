@@ -1,11 +1,13 @@
 import React, { useCallback } from 'react'
 import BigNumber from 'bignumber.js'
+import { Tooltip } from 'react-tooltip'
 
 import Modal from '../../components/modal/modal'
 import { SlippageToggle } from '../toggle/slippage-toggle'
 import NumberInput from '../input/number-input'
 import { applyPercent, formatUnits } from '../../utils/bigint'
 import { formatTinyNumber } from '../../utils/bignumber'
+import { QuestionMarkSvg } from '../svg/question-mark-svg'
 
 const NORMAL_MULTIPLIER = 1.05
 const FAST_MULTIPLIER = 1.3
@@ -43,7 +45,7 @@ export const SwapSettingModal = ({
   return (
     <Modal show onClose={onClose} onButtonClick={onClose}>
       <h1 className="flex font-bold text-xl mb-2 justify-center items-center">
-        Swap setting
+        Swap Setting
       </h1>
       <div className="flex flex-col gap-4 sm:gap-7 mt-4 mb-4">
         <div className="flex flex-col gap-3">
@@ -70,8 +72,23 @@ export const SwapSettingModal = ({
         </div>
 
         <div className="flex flex-col sm:flex-row w-full gap-3">
-          <div className="self-stretch justify-start text-[#7b8394] text-sm font-semibold text-nowrap">
+          <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-semibold text-nowrap">
             Gas Price (Gwei)
+            <div className="flex mr-auto mt-[5.3px]">
+              <QuestionMarkSvg
+                data-tooltip-id="custom-gas-price"
+                data-tooltip-place="bottom-end"
+                data-tooltip-html={
+                  'Only supported on limited wallets (e.g. MetaMask).'
+                }
+                className="w-3 h-3"
+              />
+              <Tooltip
+                id="custom-gas-price"
+                className="max-w-[400px] bg-gray-950 !opacity-100 z-[100]"
+                clickable
+              />
+            </div>
           </div>
           <div className="flex ml-auto">
             <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
