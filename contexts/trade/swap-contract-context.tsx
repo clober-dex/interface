@@ -43,6 +43,7 @@ export const SwapContractProvider = ({
     queuePendingTransaction,
     updatePendingTransaction,
     selectedExecutorName,
+    gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { getAllowance, prices } = useCurrencyContext()
@@ -165,6 +166,7 @@ export const SwapContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            gasPrice,
             selectedExecutorName,
           )
         }
@@ -179,6 +181,7 @@ export const SwapContractProvider = ({
       }
     },
     [
+      gasPrice,
       selectedExecutorName,
       getAllowance,
       disconnectAsync,

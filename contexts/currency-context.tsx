@@ -97,6 +97,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     queuePendingTransaction,
     updatePendingTransaction,
     selectedExecutorName,
+    gasPrice,
   } = useTransactionContext()
 
   const publicClient = useMemo(() => {
@@ -375,6 +376,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
               success: receipt.status === 'success',
             })
           },
+          gasPrice,
           selectedExecutorName,
         )
       } catch (e) {
@@ -387,6 +389,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
     },
     [
+      gasPrice,
       selectedExecutorName,
       disconnectAsync,
       prices,

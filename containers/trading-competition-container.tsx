@@ -141,6 +141,7 @@ export const TradingCompetitionContainer = () => {
     queuePendingTransaction,
     updatePendingTransaction,
     selectedExecutorName,
+    gasPrice,
   } = useTransactionContext()
   const { disconnectAsync } = useDisconnect()
   const { data: walletClient } = useWalletClient()
@@ -293,6 +294,7 @@ export const TradingCompetitionContainer = () => {
             timestamp: currentTimestampInSeconds(),
           })
         },
+        gasPrice,
         selectedExecutorName,
       )
     } catch (error) {
@@ -304,6 +306,7 @@ export const TradingCompetitionContainer = () => {
       })
     }
   }, [
+    gasPrice,
     selectedExecutorName,
     disconnectAsync,
     publicClient,

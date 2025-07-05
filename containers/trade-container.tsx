@@ -136,8 +136,6 @@ export const TradeContainer = () => {
     setPriceInput,
     slippageInput,
     setSlippageInput,
-    gasPriceMultiplier,
-    setGasPriceMultiplier,
     showOrderBook,
     setShowOrderBook,
     selectedQuote,
@@ -150,7 +148,8 @@ export const TradeContainer = () => {
     priceImpact,
     isFetchingOnChainPrice,
   } = useTradeContext()
-  const { selectedExecutorName } = useTransactionContext()
+  const { selectedExecutorName, gasPriceMultiplier, setGasPriceMultiplier } =
+    useTransactionContext()
 
   const { openConnectModal } = useConnectModal()
   const { balances, getAllowance, prices, currencies, setCurrencies } =

@@ -44,6 +44,7 @@ export const maxApprove = async (
     disconnectAsync,
     onUserSigned,
     onTxConfirmation,
+    transaction.gasPrice,
     executorName,
   )
 }

@@ -53,6 +53,7 @@ export const LimitContractProvider = ({
     queuePendingTransaction,
     updatePendingTransaction,
     selectedExecutorName,
+    gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { isOpenOrderApproved, getAllowance, prices } = useCurrencyContext()
@@ -126,6 +127,7 @@ export const LimitContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
+              gasPrice,
               selectedExecutorName,
             )
           }
@@ -247,6 +249,7 @@ export const LimitContractProvider = ({
                   success: receipt.status === 'success',
                 })
               },
+              gasPrice,
               selectedExecutorName,
             )
           }
@@ -325,6 +328,7 @@ export const LimitContractProvider = ({
                   })
                 }
               },
+              gasPrice,
               selectedExecutorName,
             )
           }
@@ -341,6 +345,7 @@ export const LimitContractProvider = ({
       }
     },
     [
+      gasPrice,
       selectedExecutorName,
       getAllowance,
       disconnectAsync,
@@ -426,6 +431,7 @@ export const LimitContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          gasPrice,
           selectedExecutorName,
         )
       } catch (e) {
@@ -440,6 +446,7 @@ export const LimitContractProvider = ({
       }
     },
     [
+      gasPrice,
       selectedExecutorName,
       disconnectAsync,
       isOpenOrderApproved,
@@ -525,6 +532,7 @@ export const LimitContractProvider = ({
               success: receipt.status === 'success',
             })
           },
+          gasPrice,
           selectedExecutorName,
         )
       } catch (e) {
@@ -539,6 +547,7 @@ export const LimitContractProvider = ({
       }
     },
     [
+      gasPrice,
       selectedExecutorName,
       disconnectAsync,
       isOpenOrderApproved,

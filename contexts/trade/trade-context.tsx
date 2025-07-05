@@ -96,7 +96,7 @@ const Context = React.createContext<TradeContext>({
 })
 
 const TRADE_SLIPPAGE_KEY = (chainId: number) => `trade-slippage-${chainId}`
-export const TRADE_TAB_KEY = 'trade-tab'
+const TRADE_TAB_KEY = 'trade-tab'
 
 export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { disconnectAsync } = useDisconnect()
