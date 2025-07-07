@@ -4,8 +4,7 @@ import NumberInput from '../input/number-input'
 
 const UNLIMITED_SLIPPAGE = 50
 const FIRST_SLIPPAGE = 0.5
-const SECOND_SLIPPAGE = 0.99
-const THIRD_SLIPPAGE = 1.99
+const SECOND_SLIPPAGE = 1.0
 
 export const SlippageToggle = ({
   slippageInput,
@@ -21,7 +20,6 @@ export const SlippageToggle = ({
     if (
       Number(slippageInput) !== FIRST_SLIPPAGE &&
       Number(slippageInput) !== SECOND_SLIPPAGE &&
-      Number(slippageInput) !== THIRD_SLIPPAGE &&
       Number(slippageInput) !== UNLIMITED_SLIPPAGE
     ) {
       setCustomValue(slippageInput)
@@ -46,7 +44,7 @@ export const SlippageToggle = ({
           }}
           className="flex flex-1 pr-2 pl-4 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          {FIRST_SLIPPAGE}%
+          {FIRST_SLIPPAGE.toFixed(2)}%
         </button>
         <button
           disabled={Number(slippageInput) === SECOND_SLIPPAGE}
@@ -56,17 +54,7 @@ export const SlippageToggle = ({
           }}
           className="flex flex-1 px-2 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          {SECOND_SLIPPAGE}%
-        </button>
-        <button
-          disabled={Number(slippageInput) === THIRD_SLIPPAGE}
-          onClick={() => {
-            setSlippageInput(THIRD_SLIPPAGE.toString())
-            setCustomValue('')
-          }}
-          className="flex flex-1 px-2 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
-        >
-          {THIRD_SLIPPAGE}%
+          {SECOND_SLIPPAGE.toFixed(2)}%
         </button>
         <button
           disabled={Number(slippageInput) === UNLIMITED_SLIPPAGE}
@@ -86,7 +74,6 @@ export const SlippageToggle = ({
             disabled={
               Number(slippageInput) === FIRST_SLIPPAGE &&
               Number(slippageInput) === SECOND_SLIPPAGE &&
-              Number(slippageInput) === THIRD_SLIPPAGE &&
               Number(slippageInput) === UNLIMITED_SLIPPAGE
             }
             value={customValue}
