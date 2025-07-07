@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useRouter } from 'next/router'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
@@ -90,6 +90,7 @@ const PageButtons = () => {
 
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const router = useRouter()
+  const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
   const { currencies, setCurrencies, balances, prices, transfer } =
     useCurrencyContext()
@@ -110,7 +111,6 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
     gasPriceMultiplier,
     setGasPriceMultiplier,
     selectedExecutorName,
-    gasPrice,
   } = useTransactionContext()
 
   const { data: ens } = useQuery({
