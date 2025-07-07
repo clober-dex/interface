@@ -471,10 +471,10 @@ export const TradeContainer = () => {
       setOutputCurrency,
       setShowInputCurrencySelect,
       setShowOutputCurrencySelect,
+      slippageInput,
       setSlippageInput,
       showInputCurrencySelect,
       showOutputCurrencySelect,
-      slippageInput,
     ],
   )
 

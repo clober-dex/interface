@@ -38,8 +38,13 @@ export const SwapContractProvider = ({
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    selectedExecutorName,
+    gasPrice,
+  } = useTransactionContext()
   const { selectedChain } = useChainContext()
   const { getAllowance, prices } = useCurrencyContext()
 
@@ -105,6 +110,7 @@ export const SwapContractProvider = ({
               await new Promise((resolve) => setTimeout(resolve, 100))
               await queryClient.invalidateQueries({ queryKey: ['quotes'] })
             },
+            selectedExecutorName,
           )
         } else {
           const confirmation = {
@@ -160,6 +166,8 @@ export const SwapContractProvider = ({
                 success: receipt.status === 'success',
               })
             },
+            gasPrice,
+            selectedExecutorName,
           )
         }
       } catch (e) {
@@ -173,6 +181,8 @@ export const SwapContractProvider = ({
       }
     },
     [
+      gasPrice,
+      selectedExecutorName,
       getAllowance,
       disconnectAsync,
       prices,

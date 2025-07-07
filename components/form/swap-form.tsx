@@ -15,11 +15,11 @@ import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
 import { ExchangeSvg } from '../svg/exchange-svg'
 import CloseSvg from '../svg/close-svg'
-import { SlippageToggle } from '../toggle/slippage-toggle'
 import { Chain } from '../../model/chain'
 import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
+import { SlippageToggle } from '../toggle/slippage-toggle'
 
 export type SwapFormProps = {
   chain: Chain

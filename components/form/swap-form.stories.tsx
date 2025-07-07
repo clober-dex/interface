@@ -75,7 +75,6 @@ export const Selected: Story = {
     setOutputCurrency: () => {},
     outputCurrencyAmount: '2000',
     slippageInput: '1.00',
-    setSlippageInput: () => {},
     gasEstimateValue: 1.12,
     aggregatorName: 'Uniswap',
     isRefreshing: false,
