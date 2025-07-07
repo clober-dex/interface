@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
+import { useAccount, useDisconnect } from 'wagmi'
 import { useRouter } from 'next/router'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 
 import { useChainContext } from '../contexts/chain-context'
@@ -23,6 +23,7 @@ import { PageSelector } from '../components/selector/page-selector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
 import { useCurrencyContext } from '../contexts/currency-context'
+import { TransactionSettingModal } from '../components/modal/transaction-setting-modal'
 
 const TX_NOTIFICATION_BUFFER = 5
 
@@ -90,7 +91,6 @@ const PageButtons = () => {
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const router = useRouter()
   const { selectedChain } = useChainContext()
-  const { data: gasPrice } = useGasPrice()
   const { currencies, setCurrencies, balances, prices, transfer } =
     useCurrencyContext()
   const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
@@ -103,8 +103,15 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
     useState(false)
   const [openTransactionSettingModal, setOpenTransactionSettingModal] =
     useState(false)
-  const { pendingTransactions, transactionHistory, lastIndexedBlockNumber } =
-    useTransactionContext()
+  const {
+    pendingTransactions,
+    transactionHistory,
+    lastIndexedBlockNumber,
+    gasPriceMultiplier,
+    setGasPriceMultiplier,
+    selectedExecutorName,
+    gasPrice,
+  } = useTransactionContext()
 
   const { data: ens } = useQuery({
     queryKey: ['ens', selectedChain.id, address],
@@ -130,6 +137,16 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
 
   return (
     <>
+      {openTransactionSettingModal && gasPrice && (
+        <TransactionSettingModal
+          selectedExecutorName={selectedExecutorName}
+          gasPriceMultiplier={gasPriceMultiplier}
+          setGasPriceMultiplier={setGasPriceMultiplier}
+          currentGasPrice={gasPrice}
+          onClose={() => setOpenTransactionSettingModal(false)}
+        />
+      )}
+
       {openTransactionHistoryModal && address && connector && (
         <UserWalletModal
           chain={selectedChain}
