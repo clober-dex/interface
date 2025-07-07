@@ -1,25 +1,23 @@
 import '../../styles/globals.css'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { SwapSettingModal } from './swap-setting-modal'
+import { TransactionSettingModal } from './transaction-setting-modal'
 
 export default {
-  title: 'Modal/SwapSettingModal',
-  component: SwapSettingModal,
+  title: 'Modal/TransactionSettingModal',
+  component: TransactionSettingModal,
   parameters: {
     layout: 'centered',
   },
-} as Meta<typeof SwapSettingModal>
+} as Meta<typeof TransactionSettingModal>
 
-type Story = StoryObj<typeof SwapSettingModal>
+type Story = StoryObj<typeof TransactionSettingModal>
 
 export const Default: Story = {
   args: {
     selectedExecutorName: null,
     gasPriceMultiplier: '1.05',
     setGasPriceMultiplier: () => {},
-    slippageInput: '0.5',
-    setSlippageInput: () => {},
     currentGasPrice: BigInt(1000000000), // 1 Gwei
     onClose: () => {},
   },

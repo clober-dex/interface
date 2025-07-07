@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js'
 import { Tooltip } from 'react-tooltip'
 
 import Modal from '../../components/modal/modal'
-import { SlippageToggle } from '../toggle/slippage-toggle'
 import NumberInput from '../input/number-input'
 import { applyPercent, formatUnits } from '../../utils/bigint'
 import { formatTinyNumber } from '../../utils/bignumber'
@@ -13,20 +12,16 @@ const NORMAL_MULTIPLIER = 1.05
 const FAST_MULTIPLIER = 1.3
 const INSTANT_MULTIPLIER = 1.5
 
-export const SwapSettingModal = ({
+export const TransactionSettingModal = ({
   selectedExecutorName,
   gasPriceMultiplier,
   setGasPriceMultiplier,
-  slippageInput,
-  setSlippageInput,
   currentGasPrice,
   onClose,
 }: {
   selectedExecutorName: string | null
   gasPriceMultiplier: string
   setGasPriceMultiplier: (value: string) => void
-  slippageInput: string
-  setSlippageInput: (value: string) => void
   currentGasPrice: bigint
   onClose: () => void
 }) => {
@@ -184,17 +179,17 @@ export const SwapSettingModal = ({
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row w-full gap-3">
-          <div className="self-stretch justify-start text-[#7b8394] text-sm font-semibold">
-            Max Slippage
-          </div>
-          <div className="flex ml-auto">
-            <SlippageToggle
-              slippageInput={slippageInput}
-              setSlippageInput={setSlippageInput}
-            />
-          </div>
-        </div>
+        {/*<div className="flex flex-col sm:flex-row w-full gap-3">*/}
+        {/*  <div className="self-stretch justify-start text-[#7b8394] text-sm font-semibold">*/}
+        {/*    Max Slippage*/}
+        {/*  </div>*/}
+        {/*  <div className="flex ml-auto">*/}
+        {/*    <SlippageToggle*/}
+        {/*      slippageInput={slippageInput}*/}
+        {/*      setSlippageInput={setSlippageInput}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*</div>*/}
       </div>
     </Modal>
   )
