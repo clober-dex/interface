@@ -143,11 +143,13 @@ export const TransactionSettingModal = ({
                 </button>
 
                 <div
-                  className={`w-[78px] flex flex-col flex-1 px-6 py-1 rounded-[20px] text-center items-center ${customGasPrice.length > 0 && (Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) >= 2 || Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) < 1) ? 'text-yellow-500' : 'text-white'} ${customGasPrice.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
+                  className={`w-[78px] flex flex-col gap-1 flex-1 px-6 py-1 rounded-[20px] text-center items-center ${customGasPrice.length > 0 && (Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) >= 2 || Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) < 1) ? 'text-yellow-500' : 'text-white'} ${customGasPrice.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
                 >
                   <span>Custom</span>
                   <NumberInput
-                    placeholder=""
+                    placeholder={new BigNumber(
+                      formatTinyNumber(calculateGasPrice(NORMAL_MULTIPLIER)),
+                    ).toFixed(1)}
                     disabled={
                       Number(gasPriceMultiplier) === NORMAL_MULTIPLIER &&
                       Number(gasPriceMultiplier) === FAST_MULTIPLIER &&
