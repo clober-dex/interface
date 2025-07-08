@@ -46,7 +46,7 @@ export const TransactionSettingModal = ({
   return (
     <Modal show onClose={onClose} onButtonClick={onClose}>
       <h1 className="flex font-bold text-xl mb-2 justify-center items-center">
-        Swap Setting
+        Settings
       </h1>
       <div className="flex flex-col gap-4 sm:gap-7 mt-4 mb-4">
         <div className="flex flex-col gap-3">
