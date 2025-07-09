@@ -453,14 +453,10 @@ export const TradeContainer = () => {
         aggregatorName: selectedQuote?.aggregator?.name ?? '',
         gasEstimateValue: selectedQuote?.gasUsd ?? 0,
         priceImpact,
-        fee: Number(
-          formatUnits(quotes.best?.fee ?? 0n, outputCurrency?.decimals ?? 18),
-        ),
         isRefreshing,
         refreshQuotesAction,
       }) as SwapFormProps,
     [
-      quotes.best?.fee,
       balances,
       currencies,
       inputCurrency,

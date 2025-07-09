@@ -50,7 +50,6 @@ export type SwapFormProps = {
   setSlippageInput: (slippageInput: string) => void
   gasEstimateValue: number
   priceImpact: number
-  fee: number
   aggregatorName: string
   isRefreshing: boolean
   refreshQuotesAction: () => void
@@ -81,7 +80,6 @@ export const SwapForm = ({
   setSlippageInput,
   gasEstimateValue,
   priceImpact,
-  fee,
   aggregatorName,
   isRefreshing,
   refreshQuotesAction,
