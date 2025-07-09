@@ -37,7 +37,10 @@ export const SwapRouteCard = ({
           {quote && outputCurrency ? (
             <div className="justify-start text-white text-sm sm:text-base font-semibold">
               {formatWithCommas(
-                formatUnits(quote?.amountOut ?? 0n, outputCurrency.decimals),
+                formatUnits(
+                  (quote?.amountOut ?? 0n) - (quote?.fee ?? 0n),
+                  outputCurrency.decimals,
+                ),
               )}
             </div>
           ) : (
