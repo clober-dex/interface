@@ -31,6 +31,7 @@ export const Default: Story = {
         netAmountOutUsd: 10000,
         gasUsd: 0.2,
         executionMilliseconds: 1500,
+        fee: 0n,
       },
       {
         timestamp: 2,

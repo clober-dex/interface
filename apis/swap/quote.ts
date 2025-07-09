@@ -10,8 +10,9 @@ import { Currency } from '../../model/currency'
 import { Aggregator } from '../../model/aggregator'
 import { Quote } from '../../model/aggregator/quote'
 import { Prices } from '../../model/prices'
-import { formatUnits, max } from '../../utils/bigint'
+import { applyPercent, formatUnits, max } from '../../utils/bigint'
 import { ROUTER_GATEWAY_ABI } from '../../constants/router-gateway-abi'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 const applyFeeAdjustment = (
   bestQuote: Quote,
@@ -114,6 +115,7 @@ export async function fetchAllQuotesAndSelectBest(
       ...quote,
       gasUsd,
       netAmountOutUsd,
+      fee: applyPercent(quote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
     }
 
     allQuotes.push(quoteWithMeta)
@@ -137,6 +139,7 @@ export async function fetchAllQuotesAndSelectBest(
             ...quote,
             gasUsd: 0,
             netAmountOutUsd: 0,
+            fee: applyPercent(quote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
           }
         }
       }
@@ -247,6 +250,7 @@ export async function fetchQuotesLive(
         ...quote,
         gasUsd,
         netAmountOutUsd,
+        fee: applyPercent(quote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
       }
 
       if (quote.amountOut > 0n) {
@@ -268,6 +272,7 @@ export async function fetchQuotesLive(
               ...quote,
               gasUsd: 0,
               netAmountOutUsd: 0,
+              fee: applyPercent(quote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
             }
           }
         }
