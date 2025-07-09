@@ -31,7 +31,12 @@ import { OpenOrderContainer } from './open-order-container'
 
 const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
   const shuffledCurrencies = useMemo(() => {
-    return currencies.sort(() => Math.random() - 0.5)
+    return currencies
+      .filter(
+        (currency) =>
+          currency.icon && !isAddressEqual(currency.address, zeroAddress),
+      )
+      .sort(() => Math.random() - 0.5)
   }, [currencies])
 
   return (
