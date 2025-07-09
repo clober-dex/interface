@@ -1,4 +1,9 @@
-import { parseUnits, zeroAddress } from 'viem'
+import {
+  encodeFunctionData,
+  isAddressEqual,
+  parseUnits,
+  zeroAddress,
+} from 'viem'
 import {
   getCurrencies,
   getLatestPriceMap,
@@ -12,6 +17,7 @@ import { formatUnits } from '../../utils/bigint'
 import { Chain } from '../chain'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { fetchLeverageIndexPrices } from '../../apis/futures/leverage-index-price'
+import { WETH_ABI } from '../../abis/weth-abi'
 
 import { Aggregator } from './index'
 
@@ -70,29 +76,6 @@ export class CloberV2Aggregator implements Aggregator {
     executionMilliseconds: number
   }> => {
     const start = performance.now()
-    // if (
-    //   (isAddressEqual(inputCurrency.address, this.nativeTokenAddress) &&
-    //     isAddressEqual(outputCurrency.address, this.weth)) ||
-    //   (isAddressEqual(inputCurrency.address, this.weth) &&
-    //     isAddressEqual(outputCurrency.address, this.nativeTokenAddress))
-    // ) {
-    //   const { transaction, amountOut } = await this.buildCallData(
-    //     inputCurrency,
-    //     amountIn,
-    //     outputCurrency,
-    //     slippageLimitPercent,
-    //     gasPrice,
-    //     userAddress,
-    //   )
-    //   return {
-    //     amountOut,
-    //     gasLimit: this.wrapOrUnWrapGasLimit,
-    //     aggregator: this,
-    //     transaction,
-    //     executionMilliseconds: performance.now() - start,
-    //   }
-    // }
-
     const { transaction, amountOut } = await this.buildCallData(
       inputCurrency,
       amountIn,
@@ -121,45 +104,44 @@ export class CloberV2Aggregator implements Aggregator {
     transaction: Transaction
     amountOut: bigint
   }> {
-    // if (
-    //   isAddressEqual(inputCurrency.address, this.nativeTokenAddress) &&
-    //   isAddressEqual(outputCurrency.address, this.weth)
-    // ) {
-    //   return {
-    //     transaction: {
-    //       data: encodeFunctionData({
-    //         abi: WETH_ABI,
-    //         functionName: 'deposit',
-    //       }),
-    //       gas: this.wrapOrUnWrapGasLimit,
-    //       value: amountIn,
-    //       to: CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-    //       gasPrice,
-    //       from: userAddress,
-    //     },
-    //     amountOut: amountIn,
-    //   }
-    // }
-    // else if (
-    //   isAddressEqual(inputCurrency.address, this.weth) &&
-    //   isAddressEqual(outputCurrency.address, this.nativeTokenAddress)
-    // ) {
-    //   return {
-    //     transaction: {
-    //       data: encodeFunctionData({
-    //         abi: WETH_ABI,
-    //         functionName: 'withdraw',
-    //         args: [amountIn],
-    //       }),
-    //       gas: this.wrapOrUnWrapGasLimit,
-    //       value: 0n,
-    //       to: CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-    //       gasPrice,
-    //       from: userAddress,
-    //     },
-    //     amountOut: amountIn,
-    //   }
-    // }
+    if (
+      isAddressEqual(inputCurrency.address, this.nativeTokenAddress) &&
+      isAddressEqual(outputCurrency.address, this.weth)
+    ) {
+      return {
+        transaction: {
+          data: encodeFunctionData({
+            abi: WETH_ABI,
+            functionName: 'deposit',
+          }),
+          gas: this.wrapOrUnWrapGasLimit,
+          value: amountIn,
+          to: CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+          gasPrice,
+          from: userAddress,
+        },
+        amountOut: amountIn,
+      }
+    } else if (
+      isAddressEqual(inputCurrency.address, this.weth) &&
+      isAddressEqual(outputCurrency.address, this.nativeTokenAddress)
+    ) {
+      return {
+        transaction: {
+          data: encodeFunctionData({
+            abi: WETH_ABI,
+            functionName: 'withdraw',
+            args: [amountIn],
+          }),
+          gas: this.wrapOrUnWrapGasLimit,
+          value: 0n,
+          to: CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+          gasPrice,
+          from: userAddress,
+        },
+        amountOut: amountIn,
+      }
+    }
     slippageLimitPercent = Math.max(slippageLimitPercent, this.minimumSlippage)
     slippageLimitPercent = Math.min(slippageLimitPercent, this.maximumSlippage)
 
