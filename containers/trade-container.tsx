@@ -457,6 +457,7 @@ export const TradeContainer = () => {
         refreshQuotesAction,
       }) as SwapFormProps,
     [
+      quotes.best?.fee,
       balances,
       currencies,
       inputCurrency,
