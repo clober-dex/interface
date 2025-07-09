@@ -52,6 +52,7 @@ export const Limit: Story = {
         netAmountOutUsd: 10000,
         gasUsd: 0.2,
         executionMilliseconds: 1500,
+        fee: 0n,
       },
       all: [
         {
@@ -64,6 +65,7 @@ export const Limit: Story = {
           netAmountOutUsd: 10000,
           gasUsd: 0.2,
           executionMilliseconds: 1500,
+          fee: 0n,
         },
         {
           timestamp: 2,
@@ -75,6 +77,7 @@ export const Limit: Story = {
           netAmountOutUsd: 12000,
           gasUsd: 0.2,
           executionMilliseconds: 1500,
+          fee: 0n,
         },
       ],
     },
@@ -142,6 +145,7 @@ export const Swap: Story = {
         netAmountOutUsd: 10000,
         gasUsd: 0.2,
         executionMilliseconds: 1500,
+        fee: 0n,
       },
       all: [
         {
@@ -154,6 +158,7 @@ export const Swap: Story = {
           netAmountOutUsd: 10000,
           gasUsd: 0.2,
           executionMilliseconds: 1500,
+          fee: 0n,
         },
         {
           timestamp: 2,
@@ -165,6 +170,7 @@ export const Swap: Story = {
           netAmountOutUsd: 12000,
           gasUsd: 0.2,
           executionMilliseconds: 2000,
+          fee: 0n,
         },
       ],
     },

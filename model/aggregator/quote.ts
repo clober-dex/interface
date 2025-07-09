@@ -6,6 +6,7 @@ export type Quote = {
   timestamp: number
   amountIn: bigint
   amountOut: bigint
+  fee: bigint
   gasLimit: bigint
   aggregator: Aggregator
   transaction: Transaction | undefined

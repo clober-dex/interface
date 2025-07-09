@@ -14,7 +14,7 @@ import { useLimitContractContext } from '../contexts/trade/limit-contract-contex
 import { useCurrencyContext } from '../contexts/currency-context'
 import { isAddressesEqual } from '../utils/address'
 import { aggregators } from '../chain-configs/aggregators'
-import { formatUnits } from '../utils/bigint'
+import { formatUnits, max } from '../utils/bigint'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
@@ -440,7 +440,7 @@ export const TradeContainer = () => {
         outputCurrency,
         setOutputCurrency,
         outputCurrencyAmount: formatUnits(
-          selectedQuote?.amountOut ?? 0n,
+          max((selectedQuote?.amountOut ?? 0n) - (quotes.best?.fee ?? 0n), 0n),
           outputCurrency?.decimals ?? 18,
         ),
         slippageInput,
@@ -448,10 +448,14 @@ export const TradeContainer = () => {
         aggregatorName: selectedQuote?.aggregator?.name ?? '',
         gasEstimateValue: selectedQuote?.gasUsd ?? 0,
         priceImpact,
+        fee: Number(
+          formatUnits(quotes.best?.fee ?? 0n, outputCurrency?.decimals ?? 18),
+        ),
         isRefreshing,
         refreshQuotesAction,
       }) as SwapFormProps,
     [
+      quotes.best?.fee,
       balances,
       currencies,
       inputCurrency,
@@ -685,7 +689,7 @@ export const TradeContainer = () => {
           </div>
 
           <div className="flex flex-col items-start gap-3">
-            <div className="hidden sm:flex flex-col rounded-2xl bg-[#171b24] p-6 w-fit sm:w-[480px] h-[626px]">
+            <div className="hidden sm:flex flex-col rounded-2xl bg-[#171b24] p-6 w-fit sm:w-[480px] h-[646px]">
               {tab === 'limit' ? (
                 <LimitForm {...limitFormProps} />
               ) : (

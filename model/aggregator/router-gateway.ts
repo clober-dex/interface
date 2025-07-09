@@ -14,6 +14,7 @@ import { Currency } from '../currency'
 import { Prices } from '../prices'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { applyPercent } from '../../utils/bigint'
+import { ROUTER_GATEWAY_ABI } from '../../constants/router-gateway-abi'
 
 import { Aggregator } from './index'
 
@@ -76,29 +77,7 @@ export class AggregatorRouterGateway implements Aggregator {
 
     if (transaction) {
       const data = encodeFunctionData({
-        abi: [
-          // function swap(address inToken, address outToken, uint256 amountIn, uint256 minAmountOut, address router, bytes calldata data)
-          {
-            inputs: [
-              { internalType: 'address', name: 'inToken', type: 'address' },
-              { internalType: 'address', name: 'outToken', type: 'address' },
-              { internalType: 'uint256', name: 'amountIn', type: 'uint256' },
-              {
-                internalType: 'uint256',
-                name: 'minAmountOut',
-                type: 'uint256',
-              },
-              { internalType: 'address', name: 'router', type: 'address' },
-              { internalType: 'bytes', name: 'data', type: 'bytes' },
-            ],
-            name: 'swap',
-            outputs: [
-              { internalType: 'uint256', name: 'amountOut', type: 'uint256' },
-            ],
-            stateMutability: 'payable',
-            type: 'function',
-          },
-        ] as const,
+        abi: ROUTER_GATEWAY_ABI,
         functionName: 'swap',
         args: [
           inputCurrency.address,
@@ -107,6 +86,7 @@ export class AggregatorRouterGateway implements Aggregator {
           applyPercent(amountOut, 100 - slippageLimitPercent),
           transaction.to,
           transaction.data,
+          0n,
         ],
       })
 
