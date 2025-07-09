@@ -170,6 +170,7 @@ export const Swap: Story = {
           netAmountOutUsd: 12000,
           gasUsd: 0.2,
           executionMilliseconds: 2000,
+          fee: 0n,
         },
       ],
     },
