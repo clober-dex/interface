@@ -1,11 +1,52 @@
 import { Transaction } from '@clober/v2-sdk'
-import { getAddress, zeroAddress } from 'viem'
+import {
+  decodeFunctionData,
+  encodeFunctionData,
+  getAddress,
+  zeroAddress,
+} from 'viem'
 
 import { Currency } from '../../model/currency'
 import { Aggregator } from '../../model/aggregator'
 import { Quote } from '../../model/aggregator/quote'
 import { Prices } from '../../model/prices'
-import { formatUnits } from '../../utils/bigint'
+import { formatUnits, max } from '../../utils/bigint'
+import { ROUTER_GATEWAY_ABI } from '../../constants/router-gateway-abi'
+
+const applyFeeAdjustment = (
+  bestQuote: Quote,
+  secondBestQuote: Quote,
+): Quote => {
+  if (!bestQuote.transaction || !secondBestQuote.transaction) {
+    return bestQuote
+  }
+
+  const { args } = decodeFunctionData({
+    abi: ROUTER_GATEWAY_ABI,
+    data: bestQuote.transaction.data as `0x${string}`,
+  })
+  const fee = max(bestQuote.amountOut - secondBestQuote.amountOut, 0n)
+
+  return {
+    ...bestQuote,
+    transaction: {
+      ...bestQuote.transaction,
+      data: encodeFunctionData({
+        abi: ROUTER_GATEWAY_ABI,
+        functionName: 'swap',
+        args: [
+          args[0], // inputCurrency.address
+          args[1], // outputCurrency.address
+          args[2], // amountIn
+          args[3], // minAmountOut
+          args[4], // router
+          args[5], // swapData
+          fee,
+        ],
+      }),
+    },
+  }
+}
 
 export async function fetchAllQuotesAndSelectBest(
   aggregators: Aggregator[],
@@ -106,9 +147,20 @@ export async function fetchAllQuotesAndSelectBest(
     bestQuote = fallbackQuote
   }
 
+  const sortedQuotes = allQuotes
+    .filter((quote) => quote.amountOut > 0n)
+    .sort(
+      (a, b) =>
+        (b.netAmountOutUsd ?? 0) - (a.netAmountOutUsd ?? 0) ||
+        Number(b.amountOut) - Number(a.amountOut),
+    )
+
   return {
-    best: bestQuote,
-    all: allQuotes,
+    best:
+      bestQuote && sortedQuotes.length >= 2
+        ? applyFeeAdjustment(bestQuote, sortedQuotes[1])
+        : bestQuote,
+    all: sortedQuotes,
   }
 }
 
