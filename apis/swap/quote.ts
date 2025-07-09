@@ -27,7 +27,10 @@ const applyFeeAdjustment = (
     data: bestQuote.transaction.data as `0x${string}`,
   })
   const fee = max(
-    applyPercent(bestQuote.amountOut - secondBestQuote.amountOut, 30),
+    applyPercent(
+      bestQuote.amountOut - secondBestQuote.amountOut,
+      CHAIN_CONFIG.SWAP_FEE_PERCENT,
+    ),
     0n,
   )
 

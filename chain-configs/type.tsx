@@ -36,6 +36,7 @@ export type ChainConfig = {
     address: `0x${string}`
   }[]
   MAX_SWAP_FEE: number
+  SWAP_FEE_PERCENT: number
   BLACKLISTED_USERS: `0x${string}`[]
   EXTERNAL_CONTRACT_ADDRESSES: Record<EXTERNAL_CONTRACT, `0x${string}`>
   EXTERNAL_SUBGRAPH_ENDPOINTS: Record<EXTERNAL_SUBGRAPH, `https://${string}`>
