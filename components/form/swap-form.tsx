@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { isAddressEqual, parseUnits } from 'viem'
 import BigNumber from 'bignumber.js'
 import { getQuoteToken } from '@clober/v2-sdk'
+import { Tooltip } from 'react-tooltip'
 
 import CurrencyAmountInput from '../input/currency-amount-input'
 import { Currency } from '../../model/currency'
@@ -20,6 +21,7 @@ import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
 import { SlippageToggle } from '../toggle/slippage-toggle'
+import { QuestionMarkSvg } from '../svg/question-mark-svg'
 
 export type SwapFormProps = {
   chain: Chain
@@ -387,7 +389,24 @@ export const SwapForm = ({
             </div>
 
             <div className="flex items-center gap-2 self-stretch">
-              <div className="text-gray-400">Exchange Ratio</div>
+              <div className="flex flex-row gap-1 text-gray-400">
+                Exchange Ratio
+                <div className="flex mr-auto justify-center items-center">
+                  <QuestionMarkSvg
+                    data-tooltip-id="exchange-ratio"
+                    data-tooltip-place="bottom-end"
+                    data-tooltip-html={
+                      'Exchange Ratio is calculated using your selected quote minus the platform fee. The fee is 30% of the savings compared to the second-best quote (e.g., if your quote is 0.02% better, the fee is 0.006%). This ensures you still benefit from improved pricing compared to using aggregators directly, while sustainably supporting the platform. A maximum fee cap of 0.1% prevents excessive charges.'
+                    }
+                    className="w-3 h-3"
+                  />
+                  <Tooltip
+                    id="exchange-ratio"
+                    className="max-w-[300px] bg-gray-950 !opacity-100 z-[100]"
+                    clickable
+                  />
+                </div>
+              </div>
               <div className="flex ml-auto">
                 {baseCurrency && quoteCurrency ? (
                   <div className="flex relative h-full sm:h-[20px] items-center text-xs sm:text-sm text-white ml-auto">
