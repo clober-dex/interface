@@ -26,7 +26,10 @@ const applyFeeAdjustment = (
     abi: ROUTER_GATEWAY_ABI,
     data: bestQuote.transaction.data as `0x${string}`,
   })
-  const fee = max(bestQuote.amountOut - secondBestQuote.amountOut, 0n)
+  const fee = max(
+    applyPercent(bestQuote.amountOut - secondBestQuote.amountOut, 30),
+    0n,
+  )
 
   return {
     ...bestQuote,
@@ -40,7 +43,7 @@ const applyFeeAdjustment = (
           args[0], // inputCurrency.address
           args[1], // outputCurrency.address
           args[2], // amountIn
-          args[3], // minAmountOut
+          args[3] - fee, // minAmountOut
           args[4], // router
           args[5], // swapData
           fee,
