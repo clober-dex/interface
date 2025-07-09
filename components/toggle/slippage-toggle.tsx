@@ -34,7 +34,7 @@ export const SlippageToggle = ({
   }, [customValue, setSlippageInput])
 
   return (
-    <div className="flex h-full w-full flex-col gap-1 text-xs sm:text-sm text-white">
+    <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
       <div className="bg-gray-600 text-white rounded-[22px] h-7 py-0.5 w-full flex flex-row relative text-xs">
         <button
           disabled={Number(slippageInput) === FIRST_SLIPPAGE}

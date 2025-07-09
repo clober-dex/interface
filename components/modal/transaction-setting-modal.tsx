@@ -92,7 +92,7 @@ export const TransactionSettingModal = ({
             </div>
           </div>
           <div className="flex ml-auto">
-            <div className="flex h-full w-full flex-col gap-1 text-xs sm:text-sm text-white">
+            <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
               <div className="h-12 bg-gray-600 text-white rounded-[22px] py-0.5 w-full flex flex-row relative text-xs">
                 <button
                   disabled={Number(gasPriceMultiplier) === NORMAL_MULTIPLIER}

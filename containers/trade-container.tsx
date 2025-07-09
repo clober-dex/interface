@@ -689,7 +689,7 @@ export const TradeContainer = () => {
           </div>
 
           <div className="flex flex-col items-start gap-3">
-            <div className="hidden sm:flex flex-col rounded-2xl bg-[#171b24] p-6 w-fit sm:w-[480px] h-[646px]">
+            <div className="hidden sm:flex flex-col rounded-2xl bg-[#171b24] p-6 w-fit sm:w-[480px] h-[626px]">
               {tab === 'limit' ? (
                 <LimitForm {...limitFormProps} />
               ) : (
