@@ -10,7 +10,6 @@ import { QuestionMarkSvg } from '../../components/svg/question-mark-svg'
 import { useCurrencyContext } from '../../contexts/currency-context'
 import { Loading } from '../../components/loading'
 import { LpPositionCard } from '../../components/card/pool/lp-position-card'
-import { formatUnits } from '../../utils/bigint'
 import { PoolSnapshotCard } from '../../components/card/pool/pool-snapshot-card'
 import { fetchPoolSnapshots } from '../../apis/pool'
 import { CHAIN_CONFIG } from '../../chain-configs'
@@ -195,13 +194,6 @@ export const PoolContainer = () => {
                   WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.find(
                     ({ poolKey: key }) => key === poolKey,
                   )?.wrappedLpCurrency
-                const value =
-                  Number(
-                    formatUnits(amount, poolSnapshot.lpCurrency.decimals),
-                  ) * Number(poolSnapshot.lpPriceUSD)
-                if (value < 0.001) {
-                  return <></>
-                }
                 return [
                   amount > 0n && (
                     <LpPositionCard
