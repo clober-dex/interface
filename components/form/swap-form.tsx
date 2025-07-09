@@ -48,6 +48,7 @@ export type SwapFormProps = {
   setSlippageInput: (slippageInput: string) => void
   gasEstimateValue: number
   priceImpact: number
+  fee: number
   aggregatorName: string
   isRefreshing: boolean
   refreshQuotesAction: () => void
@@ -78,6 +79,7 @@ export const SwapForm = ({
   setSlippageInput,
   gasEstimateValue,
   priceImpact,
+  fee,
   aggregatorName,
   isRefreshing,
   refreshQuotesAction,
@@ -402,6 +404,28 @@ export const SwapForm = ({
                             formatSignificantString(exchangeRate),
                           )}{' '}
                           {quoteCurrency.symbol}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-stretch">
+              <div className="text-gray-400">Platform Fee</div>
+              <div className="flex ml-auto">
+                {!Number.isNaN(fee) ? (
+                  <div className="flex relative h-full sm:h-[20px] items-center text-xs sm:text-sm text-white ml-auto">
+                    {isLoadingResults ? (
+                      <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
+                    ) : (
+                      <div className="text-xs sm:text-sm text-gray-400 flex flex-row gap-1 items-center">
+                        <span className="text-white">
+                          {formatSignificantString(fee)}{' '}
+                          {outputCurrency?.symbol ?? ''}
                         </span>
                       </div>
                     )}

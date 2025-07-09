@@ -30,6 +30,7 @@ const applyFeeAdjustment = (
 
   return {
     ...bestQuote,
+    fee,
     transaction: {
       ...bestQuote.transaction,
       data: encodeFunctionData({
