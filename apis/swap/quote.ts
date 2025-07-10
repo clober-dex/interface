@@ -3,6 +3,7 @@ import {
   decodeFunctionData,
   encodeFunctionData,
   getAddress,
+  isAddressEqual,
   zeroAddress,
 } from 'viem'
 
@@ -17,6 +18,8 @@ import { CHAIN_CONFIG } from '../../chain-configs'
 const applyFeeAdjustment = (
   bestQuote: Quote,
   secondBestQuote: Quote,
+  inputCurrency: Currency,
+  outputCurrency: Currency,
 ): Quote => {
   if (!bestQuote.transaction || !secondBestQuote.transaction) {
     return bestQuote
@@ -33,10 +36,21 @@ const applyFeeAdjustment = (
     ),
     0n,
   )
+  const wrapOrUnwrap =
+    (isAddressEqual(inputCurrency.address, zeroAddress) &&
+      isAddressEqual(
+        outputCurrency.address,
+        CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+      )) ||
+    (isAddressEqual(
+      inputCurrency.address,
+      CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+    ) &&
+      isAddressEqual(outputCurrency.address, zeroAddress))
 
   return {
     ...bestQuote,
-    fee,
+    fee: wrapOrUnwrap ? 0n : fee,
     transaction: {
       ...bestQuote.transaction,
       data: encodeFunctionData({
@@ -166,10 +180,7 @@ export async function fetchAllQuotesAndSelectBest(
     )
 
   return {
-    best:
-      bestQuote && sortedQuotes.length >= 2
-        ? applyFeeAdjustment(bestQuote, sortedQuotes[1])
-        : bestQuote,
+    best: bestQuote,
     all: sortedQuotes,
   }
 }
@@ -313,8 +324,28 @@ export async function fetchQuotesLive(
             (prevQuote &&
               Number(prevQuote.timestamp) < Number(quoteWithMeta.timestamp))
           ) {
+            const sortedQuotes = [
+              ...prevQuotes.all.filter(
+                (q) => q.aggregator.name !== quoteWithMeta.aggregator.name,
+              ),
+              quoteWithMeta,
+            ]
+              .filter((quote) => quote.amountOut > 0n)
+              .sort(
+                (a, b) =>
+                  (b.netAmountOutUsd ?? 0) - (a.netAmountOutUsd ?? 0) ||
+                  Number(b.amountOut) - Number(a.amountOut),
+              )
             return {
-              best: bestQuote,
+              best:
+                bestQuote && sortedQuotes.length >= 2
+                  ? applyFeeAdjustment(
+                      bestQuote,
+                      sortedQuotes[1],
+                      inputCurrency,
+                      outputCurrency,
+                    )
+                  : bestQuote,
               all: [
                 ...prevQuotes.all.filter(
                   (q) => q.aggregator.name !== quoteWithMeta.aggregator.name,
