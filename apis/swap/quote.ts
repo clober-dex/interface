@@ -346,12 +346,7 @@ export async function fetchQuotesLive(
                       outputCurrency,
                     )
                   : bestQuote,
-              all: [
-                ...prevQuotes.all.filter(
-                  (q) => q.aggregator.name !== quoteWithMeta.aggregator.name,
-                ),
-                quoteWithMeta,
-              ],
+              all: sortedQuotes,
             }
           }
           return prevQuotes
