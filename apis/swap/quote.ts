@@ -136,7 +136,7 @@ export async function fetchAllQuotesAndSelectBest(
       ...quote,
       gasUsd,
       netAmountOutUsd,
-      fee: applyPercent(quote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
+      fee: 0n,
     }
 
     allQuotes.push(quoteWithMeta)
@@ -160,7 +160,7 @@ export async function fetchAllQuotesAndSelectBest(
             ...quote,
             gasUsd: 0,
             netAmountOutUsd: 0,
-            fee: applyPercent(quote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
+            fee: 0n,
           }
         }
       }
@@ -268,7 +268,7 @@ export async function fetchQuotesLive(
         ...quote,
         gasUsd,
         netAmountOutUsd,
-        fee: applyPercent(quote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
+        fee: 0n,
       }
 
       if (quote.amountOut > 0n) {
@@ -290,7 +290,7 @@ export async function fetchQuotesLive(
               ...quote,
               gasUsd: 0,
               netAmountOutUsd: 0,
-              fee: applyPercent(quote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
+              fee: 0n,
             }
           }
         }
@@ -336,17 +336,29 @@ export async function fetchQuotesLive(
                   (b.netAmountOutUsd ?? 0) - (a.netAmountOutUsd ?? 0) ||
                   Number(b.amountOut) - Number(a.amountOut),
               )
+            const adjustBestQuote =
+              bestQuote && sortedQuotes.length >= 2
+                ? applyFeeAdjustment(
+                    bestQuote,
+                    sortedQuotes[1],
+                    inputCurrency,
+                    outputCurrency,
+                  )
+                : bestQuote && sortedQuotes.length === 1
+                  ? {
+                      ...bestQuote,
+                      fee: applyPercent(
+                        bestQuote.amountOut,
+                        CHAIN_CONFIG.MAX_SWAP_FEE,
+                      ),
+                    }
+                  : null
             return {
-              best:
-                bestQuote && sortedQuotes.length >= 2
-                  ? applyFeeAdjustment(
-                      bestQuote,
-                      sortedQuotes[1],
-                      inputCurrency,
-                      outputCurrency,
-                    )
-                  : bestQuote,
-              all: sortedQuotes,
+              best: adjustBestQuote,
+              all: sortedQuotes.map((q) => ({
+                ...q,
+                fee: adjustBestQuote?.fee ?? 0n,
+              })),
             }
           }
           return prevQuotes
