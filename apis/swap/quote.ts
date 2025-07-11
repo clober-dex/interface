@@ -70,7 +70,7 @@ const applyFeeAdjustment = (
   }
 }
 
-export async function fetchAllQuotesAndSelectBest(
+export async function fetchAllQuotesAndSelectBestBeforeFeeAdjustment(
   aggregators: Aggregator[],
   inputCurrency: Currency,
   amountIn: bigint,
