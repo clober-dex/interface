@@ -16,6 +16,16 @@ import RestrictedPageGuard from '../containers/restricted-page-guard'
 import { getStartOfTodayTimestampInSeconds } from '../utils/date'
 import { Currency } from '../model/currency'
 
+const routerMap: {
+  [key: `0x${string}`]: string
+} = {
+  ['0x1e538356D3Cfe7fA04696A92515adD4A895ECB65']: 'MadHouse',
+  ['0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701']: `${CHAIN_CONFIG.REFERENCE_CURRENCY.symbol}`,
+  ['0x6352a56caadC4F1E25CD6c75970Fa768A3304e64']: 'OpenOcean',
+  ['0x11133460F102c5dE431F7749c8Bc2b7c172568E1']: 'Monorail',
+  ['0xfC985A550f7c29EC5266E6591b029FE2509E1D0d']: 'EisenFinance',
+}
+
 const buildCurrencyLabel = (currency: Currency): string =>
   `${currency.symbol}(${currency.address.slice(2, 6)})`
 
@@ -86,6 +96,8 @@ export default function Analytics() {
         accumulatedUniqueUsers: protocolAnalytics.accumulatedUniqueUsers,
         accumulatedUniqueTransactions:
           protocolAnalytics.accumulatedUniqueTransactions,
+        accumulatedUniqueSwapTransactions:
+          protocolAnalytics.accumulatedUniqueSwapTransactions,
         accumulatedVolumeUSD: analyticsSnapshots.reduce(
           (acc, item) => acc + item.volume24hUSD,
           0,
@@ -143,6 +155,27 @@ export default function Analytics() {
         const baseHue = (index * 47) % 360
         const hue = (baseHue + (index % 2) * 180) % 360
         return [type, `hsl(${hue}, 70%, 50%)`]
+      }),
+    )
+  }, [analytics])
+
+  const routerColorMap = useMemo(() => {
+    const router = [
+      ...new Set(
+        (analytics?.analyticsSnapshots ?? []).flatMap((item) =>
+          Object.keys(item.routerCounts).map((router) => router),
+        ),
+      ),
+    ].sort()
+
+    return Object.fromEntries(
+      router.map((address, index) => {
+        const baseHue = (index * 47) % 360
+        const hue = (baseHue + (index % 2) * 180) % 360
+        return [
+          routerMap[address as `0x${string}`] ?? '',
+          `hsl(${hue}, 70%, 50%)`,
+        ]
       }),
     )
   }, [analytics])
@@ -324,7 +357,7 @@ export default function Analytics() {
 
             <div className="flex flex-col flex-1">
               <div className="text-white text-sm md:text-base font-bold">
-                Daily Transactions
+                Daily Router Usage
               </div>
 
               <div className="flex w-[350px] sm:w-[500px]">
@@ -333,22 +366,25 @@ export default function Analytics() {
                     time: item.timestamp as UTCTimestamp,
                     values: {
                       ...Object.fromEntries(
-                        Object.entries(item.transactionTypeCounts)
-                          .map(
-                            ([type, count]) =>
-                              [type, count] as [string, number],
-                          )
-                          .filter(([type]) => type !== 'Unknown'),
+                        Object.entries(item.routerCounts).map(
+                          ([address, count]) =>
+                            [routerMap[address as `0x${string}`], count] as [
+                              string,
+                              number,
+                            ],
+                        ),
                       ),
                     },
                   }))}
-                  colors={Object.entries(transactionTypeColorMap)
-                    .filter(([type]) => type !== 'Unknown')
-                    .map(([type, color]) => ({
+                  colors={Object.entries(routerColorMap).map(
+                    ([type, color]) => ({
                       label: type,
                       color,
-                    }))}
-                  defaultValue={analytics?.accumulatedUniqueTransactions ?? 0}
+                    }),
+                  )}
+                  defaultValue={
+                    analytics?.accumulatedUniqueSwapTransactions ?? 0
+                  }
                   height={312}
                 />
               </div>
