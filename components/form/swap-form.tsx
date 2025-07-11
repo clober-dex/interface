@@ -46,6 +46,7 @@ export type SwapFormProps = {
   outputCurrency: Currency | undefined
   setOutputCurrency: (outputCurrency: Currency | undefined) => void
   outputCurrencyAmount: string
+  minimumReceivedAmount: string
   slippageInput: string
   setSlippageInput: (slippageInput: string) => void
   gasEstimateValue: number
@@ -76,6 +77,7 @@ export const SwapForm = ({
   outputCurrency,
   setOutputCurrency,
   outputCurrencyAmount,
+  minimumReceivedAmount,
   slippageInput,
   setSlippageInput,
   gasEstimateValue,
@@ -377,6 +379,30 @@ export const SwapForm = ({
                         ) : (
                           <></>
                         )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-stretch">
+              <div className="text-gray-400">Minimum Received</div>
+              <div className="flex ml-auto">
+                {!Number.isNaN(minimumReceivedAmount) ? (
+                  <div className="flex relative h-full sm:h-[20px] items-center text-xs sm:text-sm text-white ml-auto">
+                    {isLoadingResults ? (
+                      <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
+                    ) : (
+                      <div className="text-xs sm:text-sm text-gray-400 flex flex-row gap-1 items-center">
+                        <span className="text-white">
+                          {formatSignificantString(
+                            Number(minimumReceivedAmount),
+                          )}{' '}
+                          {quoteCurrency?.symbol ?? ''}
+                        </span>
                       </div>
                     )}
                   </div>

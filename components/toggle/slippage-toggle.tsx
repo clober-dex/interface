@@ -113,14 +113,19 @@ export const SlippageToggle = ({
           </div>
         </div>
       ) : (
-        <div className="hidden sm:flex h-4 sm:h-5 w-1"></div>
+        <></>
       )}
+
       {Number(slippageInput) < FIRST_SLIPPAGE ? (
         <div className="flex w-full text-nowrap justify-end text-yellow-500">
           Slippage below {FIRST_SLIPPAGE}% may result in a failed tx.
         </div>
       ) : (
-        <div className="hidden sm:flex h-4 sm:h-5 w-1"></div>
+        <></>
+      )}
+
+      {Number(slippageInput) < 2 && Number(slippageInput) >= FIRST_SLIPPAGE && (
+        <div className="hidden sm:flex h-4 sm:h-5 w-1" />
       )}
     </div>
   )
