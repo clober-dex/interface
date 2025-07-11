@@ -14,7 +14,7 @@ export const WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES: {
       name: 'Wrapped USDC-MON LP Token',
       symbol: 'wUSDC-MON',
       decimals: 18,
-      icon: '/asset-icon/mon-usdc-lp.png',
+      icon: '/asset-icon/usdc-mon-lp.png',
     },
   },
   {
