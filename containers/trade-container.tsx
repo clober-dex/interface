@@ -364,7 +364,7 @@ export const TradeContainer = () => {
           inputCurrency,
           amountIn,
           outputCurrency,
-          selectedQuote.amountOut,
+          selectedQuote.amountOut - selectedQuote.fee,
           aggregators.find(
             (aggregator) => aggregator.name === selectedQuote.aggregator.name,
           )!,
