@@ -48,9 +48,10 @@ const applyFeeAdjustment = (
     ) &&
       isAddressEqual(outputCurrency.address, zeroAddress))
 
+  const _fee = wrapOrUnwrap ? 0n : fee
   return {
     ...bestQuote,
-    fee: wrapOrUnwrap ? 0n : fee,
+    fee: _fee,
     transaction: {
       ...bestQuote.transaction,
       data: encodeFunctionData({
@@ -60,10 +61,10 @@ const applyFeeAdjustment = (
           args[0], // inputCurrency.address
           args[1], // outputCurrency.address
           args[2], // amountIn
-          args[3] - fee, // minAmountOut
+          args[3] - _fee, // minAmountOut
           args[4], // router
           args[5], // swapData
-          fee,
+          _fee,
         ],
       }),
     },
