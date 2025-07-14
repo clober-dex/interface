@@ -328,7 +328,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </div>
           </div>
           <button
-            className="w-8 h-10 hover:bg-gray-700 rounded sm:rounded-lg flex items-center justify-center"
+            className="w-8 h-8 hover:bg-gray-700 rounded sm:rounded-lg flex items-center justify-center"
             onClick={onMenuClick}
           >
             <MenuSvg />
