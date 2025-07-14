@@ -33,21 +33,23 @@ export class FastLaneExecutor {
     walletClient: WalletClient,
     timeout?: number,
   ): Promise<`0x${string}`> {
+    const { maxFeePerGas } = await this.publicClient.estimateFeesPerGas()
     const payload = {
       jsonrpc: '2.0',
       method: 'atlas_sendUnsignedTransaction',
       params: [
         {
           transaction: {
-            chainId: this.chain.id,
+            chainId: `0x${this.chain.id.toString(16)}`,
             from: transaction.from,
             to: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
               .AggregatorRouterGateway,
-            value: transaction.value,
+            value: `0x${transaction.value.toString(16)}`,
+            maxFeePerGas: `0x${maxFeePerGas.toString(16)}`,
             data: transaction.data,
           },
-          refundRecipient: '0x5F79EE8f8fA862E98201120d83c4eC39D9468D49',
-          refundPercent: 50,
+          refundRecipient: '0xEb386e036ffE592d982d1B0A835E25b11361C9cA',
+          refundPercent: `0x${50n.toString(16)}`,
           bidTokenIsOutputToken: false,
         },
       ],
@@ -57,9 +59,7 @@ export class FastLaneExecutor {
     try {
       const { data: result } = (await axios.post(
         'https://auctioneer-fra.fastlane-labs.xyz',
-        {
-          payload,
-        },
+        payload,
         {
           headers: {
             'Content-Type': 'application/json',
