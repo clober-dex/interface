@@ -354,12 +354,15 @@ export async function fetchQuotesLive(
                       ),
                     }
                   : null
+            const adjustFee = adjustBestQuote?.fee ?? 0n
             return {
               best: adjustBestQuote,
-              all: sortedQuotes.map((q) => ({
-                ...q,
-                fee: adjustBestQuote?.fee ?? 0n,
-              })),
+              all: sortedQuotes
+                .filter((q) => q.amountOut - adjustFee > 0n)
+                .map((q) => ({
+                  ...q,
+                  fee: adjustFee,
+                })),
             }
           }
           return prevQuotes
