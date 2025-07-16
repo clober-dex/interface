@@ -64,14 +64,24 @@ export const TransactionSettingModal = ({
           <div className=" h-9 sm:h-10 w-full items-center justify-center flex bg-gray-700 rounded-[22px] p-1 flex-row relative text-gray-400 text-base font-bold">
             <button
               disabled={!useMevProtection}
-              onClick={() => setUseMevProtection(false)}
+              onClick={() => {
+                setUseMevProtection(false)
+                setSelectedExecutorName(null)
+              }}
               className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
             >
               Disable
             </button>
             <button
               disabled={useMevProtection}
-              onClick={() => setUseMevProtection(true)}
+              onClick={() => {
+                setUseMevProtection(true)
+                if (selectedExecutorName === null) {
+                  setSelectedExecutorName(
+                    executors[0].name, // Default to the first executor
+                  )
+                }
+              }}
               className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
             >
               Enable
