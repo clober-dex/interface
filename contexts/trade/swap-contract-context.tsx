@@ -15,6 +15,7 @@ import { useChainContext } from '../chain-context'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { formatPreciseAmountString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { executors } from '../../chain-configs/executors'
 
 type SwapContractContext = {
   swap: (
@@ -69,7 +70,13 @@ export const SwapContractProvider = ({
           fields: [],
         })
 
-        const spender = getAddress(aggregator.contract)
+        let spender = getAddress(aggregator.contract)
+        if (selectedExecutorName) {
+          spender = getAddress(
+            executors.find((executor) => executor.name === selectedExecutorName)
+              ?.contract || aggregator.contract,
+          )
+        }
         if (
           !isAddressEqual(spender, CHAIN_CONFIG.REFERENCE_CURRENCY.address) &&
           !isAddressEqual(inputCurrency.address, zeroAddress) &&
@@ -110,7 +117,6 @@ export const SwapContractProvider = ({
               await new Promise((resolve) => setTimeout(resolve, 100))
               await queryClient.invalidateQueries({ queryKey: ['quotes'] })
             },
-            selectedExecutorName,
           )
         } else {
           const confirmation = {

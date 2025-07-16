@@ -111,6 +111,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
     gasPriceMultiplier,
     setGasPriceMultiplier,
     selectedExecutorName,
+    setSelectedExecutorName,
   } = useTransactionContext()
 
   const { data: ens } = useQuery({
@@ -140,6 +141,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
       {openTransactionSettingModal && gasPrice && (
         <TransactionSettingModal
           selectedExecutorName={selectedExecutorName}
+          setSelectedExecutorName={setSelectedExecutorName}
           gasPriceMultiplier={gasPriceMultiplier}
           setGasPriceMultiplier={setGasPriceMultiplier}
           currentGasPrice={gasPrice}
@@ -328,7 +330,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </div>
           </div>
           <button
-            className="w-8 h-10 hover:bg-gray-700 rounded sm:rounded-lg flex items-center justify-center"
+            className="w-8 h-8 hover:bg-gray-700 rounded sm:rounded-lg flex items-center justify-center"
             onClick={onMenuClick}
           >
             <MenuSvg />

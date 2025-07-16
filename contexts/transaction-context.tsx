@@ -100,12 +100,10 @@ export const TransactionProvider = ({
   const setSelectedExecutorName = useCallback(
     (executor: string | null) => {
       _setSelectedExecutorName(executor)
-      if (executor) {
-        localStorage.setItem(
-          LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain.id),
-          executor,
-        )
-      }
+      localStorage.setItem(
+        LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain.id),
+        executor ?? '',
+      )
     },
     [selectedChain.id],
   )
@@ -121,7 +119,11 @@ export const TransactionProvider = ({
     const storedExecutorName = localStorage.getItem(
       LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain.id),
     )
-    _setSelectedExecutorName(storedExecutorName || null)
+    _setSelectedExecutorName(
+      storedExecutorName && storedExecutorName.length > 0
+        ? storedExecutorName
+        : null,
+    )
   }, [selectedChain.id])
 
   useEffect(() => {

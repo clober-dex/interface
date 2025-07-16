@@ -16,6 +16,7 @@ type Story = StoryObj<typeof TransactionSettingModal>
 export const Default: Story = {
   args: {
     selectedExecutorName: null,
+    setSelectedExecutorName: () => {},
     gasPriceMultiplier: '1.05',
     setGasPriceMultiplier: () => {},
     currentGasPrice: BigInt(1000000000), // 1 Gwei

@@ -7,6 +7,9 @@ import NumberInput from '../input/number-input'
 import { applyPercent, formatUnits } from '../../utils/bigint'
 import { formatTinyNumber } from '../../utils/bignumber'
 import { QuestionMarkSvg } from '../svg/question-mark-svg'
+import useDropdown from '../../hooks/useDropdown'
+import { executors } from '../../chain-configs/executors'
+import { DownBracketAngleSvg } from '../svg/down-bracket-angle-svg'
 
 const NORMAL_MULTIPLIER = 1.05
 const FAST_MULTIPLIER = 1.3
@@ -14,17 +17,21 @@ const INSTANT_MULTIPLIER = 1.5
 
 export const TransactionSettingModal = ({
   selectedExecutorName,
+  setSelectedExecutorName,
   gasPriceMultiplier,
   setGasPriceMultiplier,
   currentGasPrice,
   onClose,
 }: {
   selectedExecutorName: string | null
+  setSelectedExecutorName: (executorName: string | null) => void
   gasPriceMultiplier: string
   setGasPriceMultiplier: (value: string) => void
   currentGasPrice: bigint
   onClose: () => void
 }) => {
+  const { showDropdown, setShowDropdown } = useDropdown()
+
   const [useMevProtection, setUseMevProtection] = React.useState(
     selectedExecutorName !== null,
   )
@@ -57,20 +64,81 @@ export const TransactionSettingModal = ({
           <div className=" h-9 sm:h-10 w-full items-center justify-center flex bg-gray-700 rounded-[22px] p-1 flex-row relative text-gray-400 text-base font-bold">
             <button
               disabled={!useMevProtection}
-              onClick={() => setUseMevProtection(false)}
+              onClick={() => {
+                setUseMevProtection(false)
+                setSelectedExecutorName(null)
+              }}
               className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
             >
               Disable
             </button>
-            <div
-              // disabled={useMevProtection}
-              // onClick={() => setUseMevProtection(true)}
+            <button
+              disabled={useMevProtection}
+              onClick={() => {
+                setUseMevProtection(true)
+                if (selectedExecutorName === null) {
+                  setSelectedExecutorName(
+                    executors[0].name, // Default to the first executor
+                  )
+                }
+              }}
               className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
             >
               Enable
-            </div>
+            </button>
           </div>
         </div>
+
+        {useMevProtection && (
+          <div className="self-stretch inline-flex flex-col justify-start items-start gap-3">
+            <div className="self-stretch h-[17px] justify-start text-[#7b8394] text-sm font-semibold">
+              Preferred Executor
+            </div>
+            <div className="relative self-stretch h-10 sm:h-12 px-4 py-1 bg-gray-800 rounded-xl flex flex-col justify-center items-center gap-2.5">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="self-stretch inline-flex justify-start items-center gap-2.5"
+              >
+                <div className="flex-1 flex justify-start items-center gap-2">
+                  <div className="justify-start text-white text-sm sm:text-base font-semibold">
+                    {executors.find(
+                      (executor) => executor.name === selectedExecutorName,
+                    )?.name || 'Select Executor'}
+                  </div>
+                </div>
+
+                <DownBracketAngleSvg className="sm:w-5 w-4 sm:h-5 h-4" />
+              </button>
+
+              {showDropdown && (
+                <div className="absolute w-full z-[1000] top-11 sm:top-14 bg-gray-800 rounded-xl shadow-lg gap-1 flex flex-col">
+                  {executors.map(({ name }, index) => (
+                    <button
+                      key={name}
+                      onClick={() => {
+                        const executorName = executors.find(
+                          (executor) => executor.name === name,
+                        )
+                        if (executorName) {
+                          setSelectedExecutorName(executorName.name)
+                        }
+
+                        setShowDropdown(false)
+                      }}
+                      className={`w-full text-left px-4 py-1 h-10 sm:h-12 text-white hover:bg-gray-700 text-sm sm:text-base ${
+                        selectedExecutorName === name ? 'font-bold' : ''
+                      } ${
+                        index === executors.length - 1 ? 'rounded-b-xl' : ''
+                      } ${index === 0 ? 'rounded-t-xl' : ''}`}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row w-full gap-3">
           <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-semibold text-nowrap">
