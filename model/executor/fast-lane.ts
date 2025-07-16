@@ -17,10 +17,12 @@ interface AtlasResponse {
 export class FastLaneExecutor {
   public readonly name = 'FastLane'
   public readonly chain: Chain
+  public readonly contract: `0x${string}`
   private publicClient: PublicClient
   private readonly TIMEOUT = 5000
 
-  constructor(chain: Chain) {
+  constructor(contract: `0x${string}`, chain: Chain) {
+    this.contract = contract
     this.chain = chain
     this.publicClient = createPublicClient({
       chain,
@@ -57,7 +59,9 @@ export class FastLaneExecutor {
     }
 
     try {
-      const { data: result } = (await axios.post(
+      const {
+        data: { result },
+      } = (await axios.post(
         'https://auctioneer-fra.fastlane-labs.xyz',
         payload,
         {
@@ -67,7 +71,7 @@ export class FastLaneExecutor {
           timeout: timeout || this.TIMEOUT,
         },
       )) as {
-        data: AtlasResponse
+        data: { result: AtlasResponse }
       }
       return walletClient.sendTransaction({
         to: result.to,

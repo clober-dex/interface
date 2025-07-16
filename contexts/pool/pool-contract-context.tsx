@@ -166,7 +166,6 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
-            selectedExecutorName,
           )
         }
 
@@ -211,7 +210,6 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
-            selectedExecutorName,
           )
         }
 

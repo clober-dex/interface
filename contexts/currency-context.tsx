@@ -28,6 +28,7 @@ import { formatPreciseAmountString } from '../utils/bignumber'
 import { formatUnits } from '../utils/bigint'
 import { buildTransaction, sendTransaction } from '../utils/transaction'
 import { shortAddress } from '../utils/address'
+import { executors } from '../chain-configs/executors'
 
 import { Confirmation, useTransactionContext } from './transaction-context'
 import { useChainContext } from './chain-context'
@@ -219,6 +220,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         getContractAddresses({ chainId: selectedChain.id }).Controller,
         getContractAddresses({ chainId: selectedChain.id }).Minter,
         ...aggregators.map((aggregator) => aggregator.contract),
+        ...executors.map((executor) => executor.contract),
         CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
       ].filter(
         (spender) =>

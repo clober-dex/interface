@@ -41,7 +41,6 @@ export async function sendTransaction(
     await disconnectAsync()
   }
   const executor = executors.find((executor) => executor.name === executorName)
-  console.log('executor', executor)
   try {
     const publicClient = createPublicClient({
       chain,
