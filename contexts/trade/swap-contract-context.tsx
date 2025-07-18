@@ -16,6 +16,7 @@ import { currentTimestampInSeconds } from '../../utils/date'
 import { formatPreciseAmountString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { executors } from '../../chain-configs/executors'
+import Modal from '../../components/modal/modal'
 
 type SwapContractContext = {
   swap: (
@@ -35,6 +36,7 @@ const Context = React.createContext<SwapContractContext>({
 export const SwapContractProvider = ({
   children,
 }: React.PropsWithChildren<{}>) => {
+  const [showRevertModal, setShowRevertModal] = React.useState(false)
   const queryClient = useQueryClient()
   const { disconnectAsync } = useDisconnect()
 
@@ -178,6 +180,9 @@ export const SwapContractProvider = ({
       } catch (e) {
         await queryClient.invalidateQueries({ queryKey: ['quotes'] })
         console.error(e)
+        if (!(e as any).toString().includes('User rejected the request.')) {
+          setShowRevertModal(true)
+        }
       } finally {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
@@ -207,6 +212,27 @@ export const SwapContractProvider = ({
         swap,
       }}
     >
+      {showRevertModal && selectedExecutorName && (
+        <Modal
+          show
+          onClose={() => {
+            setShowRevertModal(false)
+          }}
+          onButtonClick={() => {
+            setShowRevertModal(false)
+          }}
+        >
+          <h1 className="flex font-bold text-xl mb-2">Transaction Reverted</h1>
+          <h6 className="text-sm">
+            The transaction has been reverted. Please try again with the
+            <span className="font-bold text-blue-500">
+              {' '}
+              Mev Protection
+            </span>{' '}
+            feature turned off.
+          </h6>
+        </Modal>
+      )}
       {children}
     </Context.Provider>
   )
