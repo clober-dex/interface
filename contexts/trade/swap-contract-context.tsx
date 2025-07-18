@@ -186,7 +186,6 @@ export const SwapContractProvider = ({
       } finally {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
-          queryClient.invalidateQueries({ queryKey: ['quotes'] }),
         ])
         setConfirmation(undefined)
       }
