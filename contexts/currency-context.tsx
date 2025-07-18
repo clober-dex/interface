@@ -97,7 +97,6 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutorName,
     gasPrice,
   } = useTransactionContext()
 
@@ -379,7 +378,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
       } catch (e) {
         console.error(e)
@@ -392,7 +391,6 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     },
     [
       gasPrice,
-      selectedExecutorName,
       disconnectAsync,
       prices,
       publicClient,

@@ -128,7 +128,7 @@ export const LimitContractProvider = ({
                 })
               },
               gasPrice,
-              selectedExecutorName,
+              null,
             )
           }
         }
@@ -249,7 +249,7 @@ export const LimitContractProvider = ({
                 })
               },
               gasPrice,
-              selectedExecutorName,
+              null,
             )
           }
           // limit order or take order
@@ -328,7 +328,7 @@ export const LimitContractProvider = ({
                 }
               },
               gasPrice,
-              selectedExecutorName,
+              null,
             )
           }
         }
@@ -345,7 +345,6 @@ export const LimitContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       getAllowance,
       disconnectAsync,
       prices,
@@ -431,7 +430,7 @@ export const LimitContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
       } catch (e) {
         console.error(e)
@@ -446,7 +445,6 @@ export const LimitContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       disconnectAsync,
       isOpenOrderApproved,
       prices,
@@ -532,7 +530,7 @@ export const LimitContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
       } catch (e) {
         console.error(e)
@@ -547,7 +545,6 @@ export const LimitContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       disconnectAsync,
       isOpenOrderApproved,
       prices,

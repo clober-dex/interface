@@ -337,7 +337,7 @@ export const FuturesContractProvider = ({
               })
             },
             gasPrice,
-            selectedExecutorName,
+            null,
           )
           return transactionReceipt?.transactionHash
         }
@@ -353,7 +353,6 @@ export const FuturesContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       getAllowance,
       dequeuePendingPositionCurrency,
       disconnectAsync,
@@ -459,7 +458,7 @@ export const FuturesContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -474,7 +473,6 @@ export const FuturesContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -632,7 +630,7 @@ export const FuturesContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -647,7 +645,6 @@ export const FuturesContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -751,7 +748,7 @@ export const FuturesContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -765,7 +762,6 @@ export const FuturesContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       disconnectAsync,
       publicClient,
       queryClient,
@@ -841,7 +837,7 @@ export const FuturesContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -856,7 +852,6 @@ export const FuturesContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       disconnectAsync,
       prices,
       publicClient,
@@ -947,7 +942,7 @@ export const FuturesContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -962,7 +957,6 @@ export const FuturesContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       disconnectAsync,
       prices,
       publicClient,
@@ -1050,7 +1044,7 @@ export const FuturesContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -1065,7 +1059,6 @@ export const FuturesContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,
@@ -1193,7 +1186,7 @@ export const FuturesContractProvider = ({
             })
           },
           gasPrice,
-          selectedExecutorName,
+          null,
         )
         return transactionReceipt?.transactionHash
       } catch (e) {
@@ -1208,7 +1201,6 @@ export const FuturesContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       dequeuePendingPositionCurrency,
       disconnectAsync,
       prices,

@@ -140,7 +140,6 @@ export const TradingCompetitionContainer = () => {
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutorName,
     gasPrice,
   } = useTransactionContext()
   const { disconnectAsync } = useDisconnect()
@@ -295,7 +294,7 @@ export const TradingCompetitionContainer = () => {
           })
         },
         gasPrice,
-        selectedExecutorName,
+        null,
       )
     } catch (error) {
       console.error('Error registering for trading competition:', error)
@@ -307,7 +306,6 @@ export const TradingCompetitionContainer = () => {
     }
   }, [
     gasPrice,
-    selectedExecutorName,
     disconnectAsync,
     publicClient,
     queryClient,

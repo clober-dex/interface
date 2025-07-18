@@ -85,7 +85,6 @@ export const PoolContractProvider = ({
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutorName,
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
@@ -341,7 +340,7 @@ export const PoolContractProvider = ({
                 })
               },
               gasPrice,
-              selectedExecutorName,
+              null,
             )
           }
         }
@@ -363,7 +362,6 @@ export const PoolContractProvider = ({
       }
     },
     [
-      selectedExecutorName,
       gasPrice,
       getAllowance,
       disconnectAsync,
@@ -501,7 +499,7 @@ export const PoolContractProvider = ({
               })
             },
             gasPrice,
-            selectedExecutorName,
+            null,
           )
         }
       } catch (e) {
@@ -516,7 +514,6 @@ export const PoolContractProvider = ({
       }
     },
     [
-      selectedExecutorName,
       disconnectAsync,
       prices,
       gasPrice,
@@ -607,7 +604,7 @@ export const PoolContractProvider = ({
                 queryClient.invalidateQueries({ queryKey: ['allowances'] }),
               ])
             },
-            selectedExecutorName,
+            null,
           )
         }
         // If currency has sufficient allowance, proceed to wrap
@@ -675,7 +672,7 @@ export const PoolContractProvider = ({
               })
             },
             gasPrice,
-            selectedExecutorName,
+            null,
           )
         }
       } catch (e) {
@@ -689,7 +686,6 @@ export const PoolContractProvider = ({
       }
     },
     [
-      selectedExecutorName,
       gasPrice,
       walletClient,
       selectedChain,
@@ -795,7 +791,7 @@ export const PoolContractProvider = ({
               })
             },
             gasPrice,
-            selectedExecutorName,
+            null,
           )
         }
       } catch (e) {
@@ -810,7 +806,6 @@ export const PoolContractProvider = ({
     },
     [
       gasPrice,
-      selectedExecutorName,
       disconnectAsync,
       queryClient,
       queuePendingTransaction,
