@@ -23,7 +23,7 @@ export interface Aggregator {
     gasPrice: bigint,
     userAddress?: `0x${string}`,
     timeout?: number,
-    estimateGas = true,
+    estimateGas?: boolean,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
