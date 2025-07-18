@@ -57,8 +57,23 @@ export const TransactionSettingModal = ({
       </h1>
       <div className="flex flex-col gap-4 sm:gap-7 mt-4 mb-4">
         <div className="flex flex-col gap-3">
-          <div className="self-stretch justify-start text-[#7b8394] text-sm font-semibold">
-            MEV Protection (Only Swap)
+          <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-semibold">
+            MEV Protection (Swap only)
+            <div className="flex mr-auto mt-[5.3px]">
+              <QuestionMarkSvg
+                data-tooltip-id="mev-protection"
+                data-tooltip-place="bottom-end"
+                data-tooltip-html={
+                  'Monad generally uses a private mempool, so only validators can perform MEV attacks. The MEV Protector only works for Meta Aggregator swaps, and enabling it may cause transactions to fail more often or become slower.'
+                }
+                className="w-3 h-3"
+              />
+              <Tooltip
+                id="mev-protection"
+                className="max-w-[400px] bg-gray-950 !opacity-100 z-[100]"
+                clickable
+              />
+            </div>
           </div>
 
           <div className=" h-9 sm:h-10 w-full items-center justify-center flex bg-gray-700 rounded-[22px] p-1 flex-row relative text-gray-400 text-base font-bold">
