@@ -115,7 +115,6 @@ export const SwapContractProvider = ({
               })
               await queryClient.invalidateQueries({ queryKey: ['allowances'] })
               await new Promise((resolve) => setTimeout(resolve, 100))
-              await queryClient.invalidateQueries({ queryKey: ['quotes'] })
             },
           )
         } else {
