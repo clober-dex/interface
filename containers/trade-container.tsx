@@ -24,6 +24,8 @@ import { useSwapContractContext } from '../contexts/trade/swap-contract-context'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { SwapRouteList } from '../components/swap-router-list'
 import { MobileFixedModal } from '../components/modal/mobile-fixed-modal'
+import { useTransactionContext } from '../contexts/transaction-context'
+import { executors } from '../chain-configs/executors'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
@@ -102,6 +104,7 @@ export const TradeContainer = () => {
   const router = useRouter()
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
+  const { selectedExecutorName } = useTransactionContext()
   const {
     selectedMarket,
     selectedMarketSnapshot,
@@ -387,8 +390,17 @@ export const TradeContainer = () => {
                     ? 'Insufficient balance'
                     : amountIn >
                         getAllowance(
-                          CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
-                            .AggregatorRouterGateway,
+                          selectedExecutorName
+                            ? getAddress(
+                                executors.find(
+                                  (executor) =>
+                                    executor.name === selectedExecutorName,
+                                )?.contract ||
+                                  CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
+                                    .AggregatorRouterGateway,
+                              )
+                            : CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
+                                .AggregatorRouterGateway,
                           inputCurrency,
                         )
                       ? `Max Approve ${inputCurrency.symbol}`
@@ -407,6 +419,7 @@ export const TradeContainer = () => {
                           : `Swap`,
     }),
     [
+      selectedExecutorName,
       amountIn,
       balances,
       getAllowance,
