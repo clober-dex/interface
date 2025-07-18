@@ -178,7 +178,6 @@ export const SwapContractProvider = ({
           )
         }
       } catch (e) {
-        await queryClient.invalidateQueries({ queryKey: ['quotes'] })
         console.error(e)
         if (!(e as any).toString().includes('User rejected the request.')) {
           setShowRevertModal(true)
@@ -186,6 +185,7 @@ export const SwapContractProvider = ({
       } finally {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
+          queryClient.invalidateQueries({ queryKey: ['quotes'] }),
         ])
         setConfirmation(undefined)
       }
