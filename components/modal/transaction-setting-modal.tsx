@@ -58,7 +58,7 @@ export const TransactionSettingModal = ({
       <div className="flex flex-col gap-4 sm:gap-7 mt-4 mb-4">
         <div className="flex flex-col gap-3">
           <div className="self-stretch justify-start text-[#7b8394] text-sm font-semibold">
-            MEV Protection
+            MEV Protection (Only Swap)
           </div>
 
           <div className=" h-9 sm:h-10 w-full items-center justify-center flex bg-gray-700 rounded-[22px] p-1 flex-row relative text-gray-400 text-base font-bold">
@@ -92,7 +92,7 @@ export const TransactionSettingModal = ({
         {useMevProtection && (
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-3">
             <div className="self-stretch h-[17px] justify-start text-[#7b8394] text-sm font-semibold">
-              Preferred Executor
+              Preferred MEV Executor
             </div>
             <div className="relative self-stretch h-10 sm:h-12 px-4 py-1 bg-gray-800 rounded-xl flex flex-col justify-center items-center gap-2.5">
               <button
@@ -159,7 +159,7 @@ export const TransactionSettingModal = ({
               />
             </div>
           </div>
-          <div className="flex ml-auto">
+          <div className="w-full sm:w-fit flex ml-auto">
             <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
               <div className="h-12 bg-gray-600 text-white rounded-[22px] py-0.5 w-full flex flex-row relative text-xs">
                 <button
