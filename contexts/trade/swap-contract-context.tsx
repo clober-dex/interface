@@ -183,11 +183,11 @@ export const SwapContractProvider = ({
           setShowRevertModal(true)
         }
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['quotes'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [

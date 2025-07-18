@@ -353,12 +353,12 @@ export const PoolContractProvider = ({
         }
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['pool'] }),
           queryClient.invalidateQueries({ queryKey: ['lp-balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -505,12 +505,12 @@ export const PoolContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['pool'] }),
           queryClient.invalidateQueries({ queryKey: ['lp-balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -678,11 +678,11 @@ export const PoolContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['lp-balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -797,11 +797,11 @@ export const PoolContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['lp-balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [

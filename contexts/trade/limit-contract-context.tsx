@@ -335,12 +335,12 @@ export const LimitContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['open-orders'] }),
           queryClient.invalidateQueries({ queryKey: ['market'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -435,12 +435,12 @@ export const LimitContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['open-orders'] }),
           queryClient.invalidateQueries({ queryKey: ['market'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -535,12 +535,12 @@ export const LimitContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
           queryClient.invalidateQueries({ queryKey: ['open-orders'] }),
           queryClient.invalidateQueries({ queryKey: ['market'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [

@@ -383,10 +383,10 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [

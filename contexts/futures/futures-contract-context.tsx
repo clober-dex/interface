@@ -344,11 +344,11 @@ export const FuturesContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -464,11 +464,11 @@ export const FuturesContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -636,11 +636,11 @@ export const FuturesContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -754,10 +754,10 @@ export const FuturesContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['futures-assets'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -843,11 +843,11 @@ export const FuturesContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -948,11 +948,11 @@ export const FuturesContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -1050,11 +1050,11 @@ export const FuturesContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
@@ -1192,11 +1192,11 @@ export const FuturesContractProvider = ({
       } catch (e) {
         console.error(e)
       } finally {
+        setConfirmation(undefined)
         await Promise.all([
           // queryClient.invalidateQueries({ queryKey: ['futures-positions'] }),
           queryClient.invalidateQueries({ queryKey: ['balances'] }),
         ])
-        setConfirmation(undefined)
       }
     },
     [
