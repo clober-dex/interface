@@ -43,7 +43,7 @@ export class FastLaneExecutor {
         {
           transaction: {
             chainId: `0x${this.chain.id.toString(16)}`,
-            from: transaction.from,
+            from: transaction.from || walletClient.account!.address,
             to: CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
               .AggregatorRouterGateway,
             value: `0x${transaction.value.toString(16)}`,
@@ -75,6 +75,7 @@ export class FastLaneExecutor {
       }
       return walletClient.sendTransaction({
         to: result.to,
+        from: result.from,
         value: BigInt(result.value),
         gas: BigInt(result.gas),
         maxFeePerGas: BigInt(result.maxFeePerGas),
