@@ -57,6 +57,7 @@ export class AggregatorRouterGateway implements Aggregator {
     gasPrice: bigint,
     userAddress?: `0x${string}`,
     timeout?: number,
+    estimateGas = true,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
@@ -101,7 +102,7 @@ export class AggregatorRouterGateway implements Aggregator {
         gasPrice: transaction.gasPrice,
       }
       let gasEstimate = 2_000_000n // Default gas estimate if no transaction is provided
-      if (userAddress) {
+      if (userAddress && estimateGas) {
         try {
           gasEstimate = await this.publicClient.estimateGas({
             to: getAddress(tx.to),

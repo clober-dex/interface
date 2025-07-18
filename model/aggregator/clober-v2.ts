@@ -68,6 +68,8 @@ export class CloberV2Aggregator implements Aggregator {
     userAddress?: `0x${string}`,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     timeout?: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    estimateGas = true,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint

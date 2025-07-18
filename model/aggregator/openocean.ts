@@ -48,6 +48,8 @@ export class OpenOceanAggregator implements Aggregator {
     gasPrice: bigint,
     userAddress?: `0x${string}`,
     timeout?: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    estimateGas = true,
   ): Promise<{
     amountOut: bigint
     gasLimit: bigint
