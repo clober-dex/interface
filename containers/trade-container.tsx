@@ -474,12 +474,14 @@ export const TradeContainer = () => {
         slippageInput,
         setSlippageInput,
         aggregatorName: selectedQuote?.aggregator?.name ?? '',
+        selectedExecutorName,
         gasEstimateValue: selectedQuote?.gasUsd ?? 0,
         priceImpact,
         isRefreshing,
         refreshQuotesAction,
       }) as SwapFormProps,
     [
+      selectedExecutorName,
       quotes.best?.fee,
       balances,
       currencies,
@@ -706,7 +708,7 @@ export const TradeContainer = () => {
                   )}
                 </div>
 
-                <div className="flex max-h-[560px] sm:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
+                <div className="flex mb-16 sm:mb-0 max-h-[560px] sm:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
                   <SwapForm {...swapFormProps} />
                 </div>
               </>

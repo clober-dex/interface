@@ -52,6 +52,7 @@ export type SwapFormProps = {
   gasEstimateValue: number
   priceImpact: number
   aggregatorName: string
+  selectedExecutorName: string | null
   isRefreshing: boolean
   refreshQuotesAction: () => void
   closeSwapFormAction?: () => void
@@ -83,6 +84,7 @@ export const SwapForm = ({
   gasEstimateValue,
   priceImpact,
   aggregatorName,
+  selectedExecutorName,
   isRefreshing,
   refreshQuotesAction,
   closeSwapFormAction,
@@ -458,7 +460,14 @@ export const SwapForm = ({
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 self-stretch">
-              <div className="text-gray-400">Max Slippage</div>
+              <div className="text-gray-400 flex flex-row sm:flex-col gap-3">
+                <span>Max Slippage</span>
+                {selectedExecutorName && (
+                  <div className="flex ml-auto font-semibold text-blue-500">
+                    Mev Protected
+                  </div>
+                )}
+              </div>
               <div className="flex ml-auto">
                 <SlippageToggle
                   slippageInput={slippageInput}
