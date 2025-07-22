@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import BigNumber from 'bignumber.js'
 import { Tooltip } from 'react-tooltip'
 
@@ -50,6 +50,10 @@ export const TransactionSettingModal = ({
       : '',
   )
 
+  useEffect(() => {
+    setSelectedExecutorName(null)
+  }, [setSelectedExecutorName])
+
   return (
     <Modal show onClose={onClose} onButtonClick={onClose}>
       <h1 className="flex font-bold text-xl mb-2 justify-center items-center">
@@ -89,14 +93,14 @@ export const TransactionSettingModal = ({
             </button>
             <button
               disabled={useMevProtection}
-              onClick={() => {
-                setUseMevProtection(true)
-                if (selectedExecutorName === null) {
-                  setSelectedExecutorName(
-                    executors[0].name, // Default to the first executor
-                  )
-                }
-              }}
+              // onClick={() => {
+              //   setUseMevProtection(true)
+              //   if (selectedExecutorName === null) {
+              //     setSelectedExecutorName(
+              //       executors[0].name, // Default to the first executor
+              //     )
+              //   }
+              // }}
               className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
             >
               Enable
