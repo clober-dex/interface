@@ -264,6 +264,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       selectedChain.id,
       tab,
       latestQuotesRefreshTime,
+      selectedExecutorName,
     ],
     queryFn: async () => {
       if (
