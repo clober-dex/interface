@@ -207,6 +207,7 @@ export async function fetchQuotesLive(
   gasPrice: bigint,
   prices: Prices,
   userAddress: `0x${string}` | undefined,
+  estimateGas: boolean,
   onAllQuotes: (
     callback: (prevQuotes: { best: Quote | null; all: Quote[] }) => {
       best: Quote | null
@@ -244,6 +245,8 @@ export async function fetchQuotesLive(
           slippageLimitPercent,
           gasPrice,
           userAddress,
+          30 * 1000,
+          estimateGas,
         )
         .catch((error) => {
           console.error(`Failed to get quote from ${aggregator.name}: ${error}`)

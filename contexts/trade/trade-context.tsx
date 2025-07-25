@@ -25,6 +25,8 @@ import {
   calculateInputCurrencyAmountString,
   calculateOutputCurrencyAmountString,
 } from '../../utils/order-book'
+import { useTransactionContext } from '../transaction-context'
+import { executors } from '../../chain-configs/executors'
 
 type TradeContext = {
   isBid: boolean
@@ -106,6 +108,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const previousChain = useRef({
     chain: selectedChain,
   })
+  const { selectedExecutorName } = useTransactionContext()
   const { chainId } = useAccount()
   const { whitelistCurrencies, setCurrencies, prices, balances, getAllowance } =
     useCurrencyContext()
@@ -273,10 +276,18 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const insufficientFunds = balances[inputCurrency.address] < amountIn
         const insufficientAllowance =
-          getAllowance(
-            CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
-            inputCurrency,
-          ) < amountIn
+          (!selectedExecutorName &&
+            getAllowance(
+              CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
+              inputCurrency,
+            ) < amountIn) ||
+          (selectedExecutorName &&
+            getAllowance(
+              executors.find(
+                (executor) => executor.name === selectedExecutorName,
+              )?.contract!,
+              inputCurrency,
+            ) < amountIn)
         await fetchQuotesLive(
           aggregators,
           inputCurrency,
@@ -286,6 +297,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
           gasPrice,
           prices,
           insufficientFunds || insufficientAllowance ? undefined : userAddress,
+          selectedExecutorName === null,
           setQuotes,
         )
       }
