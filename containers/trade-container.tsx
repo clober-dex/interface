@@ -128,7 +128,12 @@ const MetaAggregatorInfo = ({
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="h-8 flex w-full px-3 py-1.5 bg-[#819cff]/10 rounded-[32px] shadow-[0px_0px_6px_0px_rgba(96,165,250,0.25)] justify-start items-center gap-2 overflow-hidden">
+                <a
+                  href={`${chain.blockExplorers?.default?.url}/tx/${latestSwap.transaction.id}`}
+                  target="_blank"
+                  className="h-8 flex w-full px-3 py-1.5 bg-[#819cff]/10 rounded-[32px] shadow-[0px_0px_6px_0px_rgba(96,165,250,0.25)] justify-start items-center gap-2 overflow-hidden"
+                  rel="noopener"
+                >
                   <div className="justify-start text-blue-400 font-semibold text-nowrap">
                     <span className="text-white font-bold">
                       {shortAddress(
@@ -171,7 +176,7 @@ const MetaAggregatorInfo = ({
                       {convertTimeAgo(latestSwap.timestamp * 1000)}
                     </div>
                   </div>
-                </div>
+                </a>
               </motion.div>
             ))}
         </AnimatePresence>
