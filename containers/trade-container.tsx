@@ -111,66 +111,69 @@ const MetaAggregatorInfo = ({
         </div>
       </div>
 
-      <div className="absolute flex bottom-2 w-full px-8 gap-3 flex-col max-h-[200px] overflow-y-scroll">
+      <div className="absolute flex bottom-4 w-full px-8 gap-2.5 flex-col max-h-[200px] overflow-y-scroll">
         <AnimatePresence initial={false}>
-          {latestSwaps.map((latestSwap) => (
-            <motion.div
-              key={latestSwap.transaction.id}
-              className="w-full flex items-center justify-between px-4 text-xs text-white"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="h-8 flex w-full px-3 py-1.5 bg-[#819cff]/10 rounded-[32px] shadow-[0px_0px_6px_0px_rgba(96,165,250,0.25)] justify-start items-center gap-2 overflow-hidden">
-                <div className="justify-start text-blue-400 font-semibold text-nowrap">
-                  <span className="text-white font-bold">
-                    {shortAddress(
-                      latestSwap.transaction.from as `0x${string}`,
-                      5,
-                    )}{' '}
-                  </span>
-                  swapped
-                </div>
-                <div className="flex justify-start items-center gap-1.5">
-                  <CurrencyIcon
-                    chain={chain}
-                    currency={latestSwap.currencyIn.currency}
-                    className="w-4 h-4 rounded-full"
-                  />
-                  <div className="justify-start text-white font-semibold">
-                    {formatTinyNumber(latestSwap.currencyIn.amount)}{' '}
-                    {latestSwap.currencyIn.currency.symbol}
-                  </div>
-                  <span className="text-gray-400">→</span>
-                  <CurrencyIcon
-                    chain={chain}
-                    currency={latestSwap.currencyOut.currency}
-                    className="w-4 h-4 rounded-full"
-                  />
-                  <div className="justify-start text-white font-semibold">
-                    {formatTinyNumber(latestSwap.currencyOut.amount)}{' '}
-                    {latestSwap.currencyOut.currency.symbol}
-                  </div>{' '}
-                  <div className="justify-start text-blue-400 font-semibold">
-                    via{' '}
-                    <span className="font-bold">
-                      {CHAIN_CONFIG.ROUTER_MAP[latestSwap.router]}
+          {latestSwaps
+            .filter(
+              ({ router }) =>
+                CHAIN_CONFIG.ROUTER_MAP[router] !==
+                `W${chain.nativeCurrency.symbol.toUpperCase()}`,
+            )
+            .map((latestSwap) => (
+              <motion.div
+                key={latestSwap.transaction.id}
+                className="w-full flex items-center justify-between px-4 text-xs text-white"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="h-8 flex w-full px-3 py-1.5 bg-[#819cff]/10 rounded-[32px] shadow-[0px_0px_6px_0px_rgba(96,165,250,0.25)] justify-start items-center gap-2 overflow-hidden">
+                  <div className="justify-start text-blue-400 font-semibold text-nowrap">
+                    <span className="text-white font-bold">
+                      {shortAddress(
+                        latestSwap.transaction.from as `0x${string}`,
+                        5,
+                      )}{' '}
                     </span>
+                    swapped
                   </div>
-                </div>
+                  <div className="flex justify-start items-center gap-1.5">
+                    <CurrencyIcon
+                      chain={chain}
+                      currency={latestSwap.currencyIn.currency}
+                      className="w-4 h-4 rounded-full"
+                    />
+                    <div className="justify-start text-white font-semibold">
+                      {formatTinyNumber(latestSwap.currencyIn.amount)}{' '}
+                      {latestSwap.currencyIn.currency.symbol}
+                    </div>
+                    <span className="text-gray-400">→</span>
+                    <CurrencyIcon
+                      chain={chain}
+                      currency={latestSwap.currencyOut.currency}
+                      className="w-4 h-4 rounded-full"
+                    />
+                    <div className="justify-start text-white font-semibold">
+                      {formatTinyNumber(latestSwap.currencyOut.amount)}{' '}
+                      {latestSwap.currencyOut.currency.symbol}
+                    </div>{' '}
+                    <div className="justify-start text-blue-400 font-semibold">
+                      via{' '}
+                      <span className="font-bold">
+                        {CHAIN_CONFIG.ROUTER_MAP[latestSwap.router]}
+                      </span>
+                    </div>
+                  </div>
 
-                <div className="flex ml-auto items-center gap-2">
-                  {/*<div className="bg-blue-700 text-white rounded-full px-3 py-1 text-[12px] font-medium">*/}
-                  {/*  ${latestSwap.amountUSD.toFixed(2)}*/}
-                  {/*</div>*/}
-                  <div className="text-white text-[12px]">
-                    {convertTimeAgo(latestSwap.timestamp * 1000)}
+                  <div className="flex ml-auto items-center gap-2">
+                    <div className="text-white text-[12px]">
+                      {convertTimeAgo(latestSwap.timestamp * 1000)}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
         </AnimatePresence>
       </div>
     </div>
