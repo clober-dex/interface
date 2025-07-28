@@ -62,6 +62,14 @@ export const CHAIN_CONFIG: ChainConfig = {
     '0x5F79EE8f8fA862E98201120d83c4eC39D9468D49',
     '0xCcd0964F534c4583C35e07E47AbE8984A6bB1534',
   ],
+  ROUTER_MAP: {
+    ['0x1e538356D3Cfe7fA04696A92515adD4A895ECB65']: 'MadHouse',
+    ['0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701']: `W${monadTestnet.nativeCurrency.symbol.toUpperCase()}`,
+    ['0x6352a56caadC4F1E25CD6c75970Fa768A3304e64']: 'OpenOcean',
+    ['0x11133460F102c5dE431F7749c8Bc2b7c172568E1']: 'Monorail',
+    ['0xfC985A550f7c29EC5266E6591b029FE2509E1D0d']: 'EisenFinance',
+    ['0x08feDaACe14EB141E51282441b05182519D853D1']: 'Clober',
+  },
   EXTERNAL_SUBGRAPH_ENDPOINTS: {
     FUTURES_MARKET:
       'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/clober-futures-subgraph-monad-testnet/latest/gn',
