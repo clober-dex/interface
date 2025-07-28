@@ -4,7 +4,8 @@ import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import { getContractAddresses } from '@clober/v2-sdk'
+import { getContractAddresses, getLatestTrades, Swap } from '@clober/v2-sdk'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { LimitForm, LimitFormProps } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
@@ -43,7 +44,7 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
 
   return (
     <div className="hidden lg:block">
-      <div className="absolute flex justify-center w-full top-40 z-[2]">
+      <div className="absolute flex justify-center w-full top-[118px] z-[2]">
         <Image
           className="rounded-xl"
           src="/chain-configs/meta-aggregator-logo.svg"
@@ -53,7 +54,7 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
         />
       </div>
 
-      <div className="w-full flex justify-center absolute top-1/4">
+      <div className="w-full flex justify-center absolute top-[17%]">
         <div className="w-full md:w-[616px] overflow-x-hidden mt-4 sm:mt-8 relative">
           <div className="flex w-max animate-marquee items-center">
             {shuffledCurrencies.map((currency, i) => {
@@ -78,7 +79,7 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
         </div>
       </div>
 
-      <div className="absolute bottom-[30%] items-center justify-center w-full text-center gap-4">
+      <div className="absolute bottom-[37%] items-center justify-center w-full text-center gap-4">
         <div className="flex flex-col gap-4">
           <span className="text-center justify-center text-blue-400 text-lg font-bold leading-normal">
             One Interface. Every Route, Optimized.
@@ -101,6 +102,7 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
 }
 
 export const TradeContainer = () => {
+  const queryClient = useQueryClient()
   const router = useRouter()
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
@@ -168,6 +170,36 @@ export const TradeContainer = () => {
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
     [inputCurrency?.decimals, inputCurrencyAmount],
   )
+
+  const { data: swaps = [] } = useQuery<Swap[]>({
+    queryKey: ['latest-swaps', selectedChain.id],
+    queryFn: async () => {
+      return getLatestTrades({
+        chainId: selectedChain.id,
+        n: 10,
+        options: { rpcUrl: CHAIN_CONFIG.RPC_URL },
+      })
+    },
+    placeholderData: [],
+    refetchInterval: 5000, // checked
+    refetchIntervalInBackground: true,
+    select: (newData) => {
+      const previous =
+        queryClient.getQueryData<Swap[]>(['latest-swaps', selectedChain.id]) ??
+        []
+
+      const seen = new Set<string>()
+      const combined = [...newData, ...previous]
+
+      return combined.filter((swap) => {
+        if (seen.has(swap.transaction.id)) {
+          return false
+        }
+        seen.add(swap.transaction.id)
+        return true
+      })
+    },
+  })
 
   useEffect(() => {
     if (tab === 'swap' && amountIn === 0n) {
