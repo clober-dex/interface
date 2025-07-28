@@ -30,8 +30,8 @@ import { useTransactionContext } from '../contexts/transaction-context'
 import { executors } from '../chain-configs/executors'
 import { formatTinyNumber } from '../utils/bignumber'
 import { CurrencyIcon } from '../components/icon/currency-icon'
-import { Chain } from '../model/chain'
 import { convertTimeAgo } from '../utils/time'
+import { Chain } from '../model/chain'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
@@ -57,7 +57,7 @@ const MetaAggregatorInfo = ({
 
   return (
     <div className="hidden lg:block">
-      <div className="absolute flex justify-center w-full top-[118px] z-[2]">
+      <div className="absolute flex justify-center w-full top-40 z-[2]">
         <Image
           className="rounded-xl"
           src="/chain-configs/meta-aggregator-logo.svg"
@@ -67,7 +67,7 @@ const MetaAggregatorInfo = ({
         />
       </div>
 
-      <div className="w-full flex justify-center absolute top-[17%]">
+      <div className="w-full flex justify-center absolute top-1/4">
         <div className="w-full md:w-[616px] overflow-x-hidden mt-4 sm:mt-8 relative">
           <div className="flex w-max animate-marquee items-center">
             {shuffledCurrencies.map((currency, i) => {
@@ -92,7 +92,7 @@ const MetaAggregatorInfo = ({
         </div>
       </div>
 
-      <div className="absolute bottom-[42%] items-center justify-center w-full text-center gap-4">
+      <div className="absolute bottom-[30%] items-center justify-center w-full text-center gap-4">
         <div className="flex flex-col gap-4">
           <span className="text-center justify-center text-blue-400 text-lg font-bold leading-normal">
             One Interface. Every Route, Optimized.
@@ -111,7 +111,7 @@ const MetaAggregatorInfo = ({
         </div>
       </div>
 
-      <div className="absolute flex bottom-4 w-full px-8 gap-3 flex-col max-h-[200px] overflow-y-scroll">
+      <div className="absolute flex bottom-4 w-full px-8 gap-3 flex-col max-h-[120px] overflow-y-scroll">
         <AnimatePresence initial={false}>
           {latestSwaps
             .filter(
@@ -119,6 +119,7 @@ const MetaAggregatorInfo = ({
                 CHAIN_CONFIG.ROUTER_MAP[router] !==
                 `W${chain.nativeCurrency.symbol.toUpperCase()}`,
             )
+            .sort((a, b) => b.timestamp - a.timestamp)
             .map((latestSwap) => (
               <motion.div
                 key={latestSwap.transaction.id}
