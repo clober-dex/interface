@@ -38,6 +38,7 @@ export type ChainConfig = {
   MAX_SWAP_FEE: number
   SWAP_FEE_PERCENT: number
   BLACKLISTED_USERS: `0x${string}`[]
+  ROUTER_MAP: Record<`0x${string}`, string>
   EXTERNAL_CONTRACT_ADDRESSES: Record<EXTERNAL_CONTRACT, `0x${string}`>
   EXTERNAL_SUBGRAPH_ENDPOINTS: Record<EXTERNAL_SUBGRAPH, `https://${string}`>
   WHITELISTED_POOL_KEYS: `0x${string}`[]

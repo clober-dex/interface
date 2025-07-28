@@ -4,7 +4,9 @@ import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import { getContractAddresses } from '@clober/v2-sdk'
+import { getContractAddresses, getLatestTrades, Swap } from '@clober/v2-sdk'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import { LimitForm, LimitFormProps } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
@@ -12,7 +14,7 @@ import { useChainContext } from '../contexts/chain-context'
 import { useMarketContext } from '../contexts/trade/market-context'
 import { useLimitContractContext } from '../contexts/trade/limit-contract-context'
 import { useCurrencyContext } from '../contexts/currency-context'
-import { isAddressesEqual } from '../utils/address'
+import { isAddressesEqual, shortAddress } from '../utils/address'
 import { aggregators } from '../chain-configs/aggregators'
 import { applyPercent, formatUnits, max } from '../utils/bigint'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
@@ -26,12 +28,24 @@ import { SwapRouteList } from '../components/swap-router-list'
 import { MobileFixedModal } from '../components/modal/mobile-fixed-modal'
 import { useTransactionContext } from '../contexts/transaction-context'
 import { executors } from '../chain-configs/executors'
+import { formatTinyNumber } from '../utils/bignumber'
+import { CurrencyIcon } from '../components/icon/currency-icon'
+import { Chain } from '../model/chain'
+import { convertTimeAgo } from '../utils/time'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
 import { OpenOrderContainer } from './open-order-container'
 
-const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
+const MetaAggregatorInfo = ({
+  chain,
+  currencies,
+  latestSwaps,
+}: {
+  chain: Chain
+  currencies: Currency[]
+  latestSwaps: Swap[]
+}) => {
   const shuffledCurrencies = useMemo(() => {
     return currencies
       .filter(
@@ -43,7 +57,7 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
 
   return (
     <div className="hidden lg:block">
-      <div className="absolute flex justify-center w-full top-40 z-[2]">
+      <div className="absolute flex justify-center w-full top-[118px] z-[2]">
         <Image
           className="rounded-xl"
           src="/chain-configs/meta-aggregator-logo.svg"
@@ -53,7 +67,7 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
         />
       </div>
 
-      <div className="w-full flex justify-center absolute top-1/4">
+      <div className="w-full flex justify-center absolute top-[17%]">
         <div className="w-full md:w-[616px] overflow-x-hidden mt-4 sm:mt-8 relative">
           <div className="flex w-max animate-marquee items-center">
             {shuffledCurrencies.map((currency, i) => {
@@ -78,7 +92,7 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
         </div>
       </div>
 
-      <div className="absolute bottom-[30%] items-center justify-center w-full text-center gap-4">
+      <div className="absolute bottom-[37%] items-center justify-center w-full text-center gap-4">
         <div className="flex flex-col gap-4">
           <span className="text-center justify-center text-blue-400 text-lg font-bold leading-normal">
             One Interface. Every Route, Optimized.
@@ -96,11 +110,75 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
           </div>
         </div>
       </div>
+
+      <div className="absolute flex bottom-2 w-full px-8 gap-3 flex-col max-h-[200px] overflow-y-scroll">
+        <AnimatePresence initial={false}>
+          {latestSwaps.map((latestSwap) => (
+            <motion.div
+              key={latestSwap.transaction.id}
+              className="w-full flex items-center justify-between px-4 text-xs text-white"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="h-8 flex w-full px-3 py-1.5 bg-[#819cff]/10 rounded-[32px] shadow-[0px_0px_6px_0px_rgba(96,165,250,0.25)] justify-start items-center gap-2 overflow-hidden">
+                <div className="justify-start text-blue-400 font-semibold text-nowrap">
+                  <span className="text-white font-bold">
+                    {shortAddress(
+                      latestSwap.transaction.from as `0x${string}`,
+                      5,
+                    )}{' '}
+                  </span>
+                  swapped
+                </div>
+                <div className="flex justify-start items-center gap-1.5">
+                  <CurrencyIcon
+                    chain={chain}
+                    currency={latestSwap.currencyIn.currency}
+                    className="w-4 h-4 rounded-full"
+                  />
+                  <div className="justify-start text-white font-semibold">
+                    {formatTinyNumber(latestSwap.currencyIn.amount)}{' '}
+                    {latestSwap.currencyIn.currency.symbol}
+                  </div>
+                  <span className="text-gray-400">→</span>
+                  <CurrencyIcon
+                    chain={chain}
+                    currency={latestSwap.currencyOut.currency}
+                    className="w-4 h-4 rounded-full"
+                  />
+                  <div className="justify-start text-white font-semibold">
+                    {formatTinyNumber(latestSwap.currencyOut.amount)}{' '}
+                    {latestSwap.currencyOut.currency.symbol}
+                  </div>{' '}
+                  <div className="justify-start text-blue-400 font-semibold">
+                    via{' '}
+                    <span className="font-bold">
+                      {CHAIN_CONFIG.ROUTER_MAP[latestSwap.router]}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex ml-auto items-center gap-2">
+                  {/*<div className="bg-blue-700 text-white rounded-full px-3 py-1 text-[12px] font-medium">*/}
+                  {/*  ${latestSwap.amountUSD.toFixed(2)}*/}
+                  {/*</div>*/}
+                  <div className="text-white text-[12px]">
+                    {convertTimeAgo(latestSwap.timestamp * 1000)}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }
 
 export const TradeContainer = () => {
+  const queryClient = useQueryClient()
   const router = useRouter()
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
@@ -168,6 +246,36 @@ export const TradeContainer = () => {
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
     [inputCurrency?.decimals, inputCurrencyAmount],
   )
+
+  const { data: latestSwaps = [] } = useQuery<Swap[]>({
+    queryKey: ['latest-swaps', selectedChain.id],
+    queryFn: async () => {
+      return getLatestTrades({
+        chainId: selectedChain.id,
+        n: 10,
+        options: { rpcUrl: CHAIN_CONFIG.RPC_URL },
+      })
+    },
+    placeholderData: [],
+    refetchInterval: 5000, // checked
+    refetchIntervalInBackground: true,
+    select: (newData) => {
+      const previous =
+        queryClient.getQueryData<Swap[]>(['latest-swaps', selectedChain.id]) ??
+        []
+
+      const seen = new Set<string>()
+      const combined = [...newData, ...previous]
+
+      return combined.filter((swap) => {
+        if (seen.has(swap.transaction.id)) {
+          return false
+        }
+        seen.add(swap.transaction.id)
+        return true
+      })
+    },
+  })
 
   useEffect(() => {
     if (tab === 'swap' && amountIn === 0n) {
@@ -695,7 +803,11 @@ export const TradeContainer = () => {
               <>
                 <div className="relative hidden sm:flex flex-col h-full rounded-xl sm:rounded-2xl bg-[#171b24]">
                   {showMetaInfo ? (
-                    <MetaAggregatorInfo currencies={currencies} />
+                    <MetaAggregatorInfo
+                      chain={selectedChain}
+                      currencies={currencies}
+                      latestSwaps={latestSwaps}
+                    />
                   ) : (
                     <SwapRouteList
                       quotes={quotes.all}
