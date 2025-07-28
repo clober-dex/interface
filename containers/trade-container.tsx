@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { getContractAddresses, getLatestTrades, Swap } from '@clober/v2-sdk'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import { LimitForm, LimitFormProps } from '../components/form/limit-form'
 import OrderBook from '../components/order-book'
@@ -32,7 +33,13 @@ import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
 import { OpenOrderContainer } from './open-order-container'
 
-const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
+const MetaAggregatorInfo = ({
+  currencies,
+  latestSwaps,
+}: {
+  currencies: Currency[]
+  latestSwaps: Swap[]
+}) => {
   const shuffledCurrencies = useMemo(() => {
     return currencies
       .filter(
@@ -96,6 +103,23 @@ const MetaAggregatorInfo = ({ currencies }: { currencies: Currency[] }) => {
             behind the scenes.
           </div>
         </div>
+      </div>
+
+      <div className="absolute flex bottom-2 px-8 gap-3 flex-col h-[200px] overflow-y-scroll">
+        <AnimatePresence initial={false}>
+          {latestSwaps.map((latestSwap) => (
+            <motion.div
+              key={latestSwap.transaction.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="text-gray-400 text-xs"
+            >
+              {latestSwap.transaction.id}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   )
@@ -171,7 +195,7 @@ export const TradeContainer = () => {
     [inputCurrency?.decimals, inputCurrencyAmount],
   )
 
-  const { data: swaps = [] } = useQuery<Swap[]>({
+  const { data: latestSwaps = [] } = useQuery<Swap[]>({
     queryKey: ['latest-swaps', selectedChain.id],
     queryFn: async () => {
       return getLatestTrades({
@@ -727,7 +751,10 @@ export const TradeContainer = () => {
               <>
                 <div className="relative hidden sm:flex flex-col h-full rounded-xl sm:rounded-2xl bg-[#171b24]">
                   {showMetaInfo ? (
-                    <MetaAggregatorInfo currencies={currencies} />
+                    <MetaAggregatorInfo
+                      currencies={currencies}
+                      latestSwaps={latestSwaps}
+                    />
                   ) : (
                     <SwapRouteList
                       quotes={quotes.all}
