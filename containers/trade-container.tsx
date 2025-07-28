@@ -92,7 +92,7 @@ const MetaAggregatorInfo = ({
         </div>
       </div>
 
-      <div className="absolute bottom-[37%] items-center justify-center w-full text-center gap-4">
+      <div className="absolute bottom-[42%] items-center justify-center w-full text-center gap-4">
         <div className="flex flex-col gap-4">
           <span className="text-center justify-center text-blue-400 text-lg font-bold leading-normal">
             One Interface. Every Route, Optimized.
