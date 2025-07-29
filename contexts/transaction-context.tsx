@@ -173,6 +173,28 @@ export const TransactionProvider = ({
               currency_flow: transaction.fields,
             },
           })
+
+          // @ts-ignore
+          window.__adrsbl.run('event', transaction.type, [
+            { name: 'user_address', value: userAddress },
+            { name: 'chain_id', value: transaction.chain?.id },
+            {
+              name: 'tx_hash',
+              value: transaction.txHash,
+            },
+            {
+              name: 'timestamp',
+              value: transaction.timestamp,
+            },
+            {
+              name: 'block_number',
+              value: transaction.blockNumber,
+            },
+            {
+              name: 'success',
+              value: transaction.success,
+            },
+          ])
         } catch (e) {
           console.error('Error sending transaction event', e)
         }
