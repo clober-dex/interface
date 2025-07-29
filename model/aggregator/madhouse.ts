@@ -80,7 +80,7 @@ export class MadhouseAggregator implements Aggregator {
         data: string
         value: string
       }
-    }>(this.baseUrl, `stage-a/swap/v1/quote?chain=${this.chain.id}`, {
+    }>(this.baseUrl, `stage-b/swap/v1/quote?chain=${this.chain.id}`, {
       method: 'GET',
       headers: {
         accept: 'application/json',
