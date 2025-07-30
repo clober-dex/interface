@@ -175,7 +175,7 @@ export const TransactionProvider = ({
           })
 
           // @ts-ignore
-          window.__adrsbl.run('event', transaction.type, [
+          window.__adrsbl.run(transaction.type, true, [
             { name: 'user_address', value: userAddress },
             { name: 'chain_id', value: transaction.chain?.id },
             {
