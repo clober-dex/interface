@@ -90,17 +90,18 @@ export default async function handler(
         (quote): quote is any => quote !== undefined && quote.amountOut > 0n,
       )
       .map((quote) => ({
-        price: new BigNumber(1)
+        usdPrice: new BigNumber(1)
           .div(formatUnits(quote.amountOut, cache[token as string].decimals))
           .toFixed(18),
         aggregator: quote.aggregator.name,
         executionMilliseconds: quote.executionMilliseconds,
       }))
-      .sort((a, b) => Number(a.price) - Number(b.price))
+      .sort((a, b) => Number(a.usdPrice) - Number(b.usdPrice))
 
     res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate=1')
     res.status(200).json({
-      usdPrice: results.length > 0 ? results[0].price : '0',
+      usdPrice: results.length > 0 ? results[0].usdPrice : '0',
+      currency: cache[token as string],
       source: results,
     })
   } catch (error) {
