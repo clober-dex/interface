@@ -90,6 +90,17 @@ export default async function handler(
         (quote): quote is any => quote !== undefined && quote.amountOut > 0n,
       )
       .map((quote) => ({
+        amountIn: (
+          10n ** BigInt(CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.decimals)
+        ).toString(),
+        inputCurrency: {
+          address: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.address,
+          name: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.name,
+          symbol: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.symbol,
+          decimals: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.decimals,
+        },
+        amountOut: quote.amountOut.toString(),
+        outputCurrency: cache[token as string] as Currency,
         usdPrice: new BigNumber(1)
           .div(formatUnits(quote.amountOut, cache[token as string].decimals))
           .toFixed(18),
