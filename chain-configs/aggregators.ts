@@ -42,7 +42,7 @@ export const aggregators: Aggregator[] = [
   new AggregatorRouterGateway(
     CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
     monadTestnet,
-    // 0xfC985A550f7c29EC5266E6591b029FE2509E1D0d
+    // 0x0f3Cfe8869d6fFdA410Ae6a7B78e7168780e22C3
     new EisenFinanceAggregator(zeroAddress, monadTestnet),
   ),
 ]
