@@ -92,6 +92,13 @@ export const CHAIN_CONFIG: ChainConfig = {
     decimals: 6,
     icon: '/asset-icon/USDC.webp',
   },
+  DEFAULT_STABLE_COIN_CURRENCY: {
+    address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    decimals: 6,
+    icon: '/asset-icon/USDC.webp',
+  },
   WHITELISTED_CURRENCIES: [
     ...WHITELISTED_CURRENCIES,
     ...WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.filter(

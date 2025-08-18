@@ -45,5 +45,6 @@ export type ChainConfig = {
   REFERENCE_CURRENCY: Currency
   DEFAULT_INPUT_CURRENCY: Currency
   DEFAULT_OUTPUT_CURRENCY: Currency
+  DEFAULT_STABLE_COIN_CURRENCY: Currency
   WHITELISTED_CURRENCIES: Currency[]
 }
