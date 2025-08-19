@@ -68,8 +68,6 @@ export class MadhouseAggregator implements Aggregator {
       tokenInDecimals: inputCurrency.decimals.toString(),
       tokenOutDecimals: outputCurrency.decimals.toString(),
       slippage: (slippageLimitPercent / 100).toString(),
-      protocols:
-        'native-wrapper,uniswap-v2,uniswap-v3,pancakeswap-v2,pancakeswap-v3,atlantis-v2,apriori-liquid-staking,magma-liquid-staking,shmonad,kintsu,octoswap-v1',
       includePoolInfo: true,
     } as any
 
@@ -80,7 +78,7 @@ export class MadhouseAggregator implements Aggregator {
         data: string
         value: string
       }
-    }>(this.baseUrl, `stage-b/swap/v1/quote?chain=${this.chain.id}`, {
+    }>(this.baseUrl, `swap/v1/quote?chain=${this.chain.id}`, {
       method: 'GET',
       headers: {
         accept: 'application/json',
