@@ -151,24 +151,6 @@ function App({ Component, pageProps }: AppProps) {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [handlePopState])
 
-  const getBackground = (pathname: string) => {
-    if (pathname.includes('/trade')) {
-      return "lg:bg-[url('../public/chain-configs/background/trade-background.png')] lg:bg-top"
-    } else if (pathname.includes('/earn')) {
-      return "bg-[url('../public/chain-configs/background/base-background.png')] bg-top"
-    } else if (pathname.includes('/futures')) {
-      return "bg-[url('../public/chain-configs/background/base-background.png')] bg-top"
-    } else if (pathname.includes('/discover')) {
-      return "lg:bg-[url('../public/chain-configs/background/base-background.png')] bg-top"
-    } else if (pathname.includes('/point')) {
-      return "sm:bg-[url('../public/chain-configs/background/base-background.png')] bg-top"
-    } else if (pathname.includes('/trading-competition')) {
-      return "sm:bg-[url('../public/chain-configs/background/trading-competition-background.png')] bg-top"
-    } else if (pathname.includes('/leaderboard')) {
-      return "sm:bg-[url('../public/chain-configs/background/trading-competition-background.png')] bg-top"
-    }
-  }
-
   useEffect(() => {
     const sendPageView = (pathname: string, search: string) => {
       const urlParams = new URLSearchParams(search || '')
@@ -249,11 +231,7 @@ function App({ Component, pageProps }: AppProps) {
           <ChainProvider>
             <TransactionProvider>
               <CurrencyProvider>
-                <div
-                  className={`flex flex-col w-[100vw] min-h-[100vh] bg-[#0F1013] text-white ${getBackground(
-                    router.pathname,
-                  )} bg-right bg-no-repeat`}
-                >
+                <div className="flex flex-col w-[100vw] min-h-[100vh] bg-[#0F1013] text-white bg-right bg-no-repeat">
                   <PanelWrapper open={open} setOpen={setOpen} />
                   <HeaderContainer onMenuClick={() => setOpen(true)} />
 
