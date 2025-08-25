@@ -164,7 +164,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
         />
       )}
 
-      <div className="flex items-center bg-[#151517] border-b border-[#2d2d2e] border-solid justify-between h-[46px] md:h-[60px] py-0 pl-4 pr-5">
+      <div className="flex items-center bg-[#17181e] backdrop-blur-blur sm:bg-[#151517] sm:border-b sm:border-[#2d2d2e] sm:border-solid justify-between h-[46px] md:h-[60px] py-0 pl-4 pr-5">
         <div className="flex items-center gap-2.5 md:gap-12">
           <a
             className="hidden md:flex gap-2 items-center h-7"
@@ -311,7 +311,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </div>
           </div>
           <button
-            className="w-9 h-9 hover:bg-gray-700 rounded sm:rounded-xl flex xl:hidden items-center justify-center"
+            className="w-9 h-9 p-2.5 rounded md:rounded-[10px] flex items-center justify-center hover:bg-gray-700 cursor-pointer"
             onClick={onMenuClick}
           >
             <MenuSvg />
