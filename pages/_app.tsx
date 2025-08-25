@@ -34,6 +34,8 @@ import { PoolContractProvider } from '../contexts/pool/pool-contract-context'
 import { FuturesProvider } from '../contexts/futures/futures-context'
 import { FuturesContractProvider } from '../contexts/futures/futures-contract-context'
 import { CHAIN_CONFIG, getClientConfig } from '../chain-configs'
+import Sidebar from '../components/sidebar'
+import { BlockNumberWidget } from '../components/block-number-widget'
 
 const CacheProvider = ({ children }: React.PropsWithChildren) => {
   const queryClient = useQueryClient()
@@ -124,12 +126,13 @@ const PanelWrapper = ({
   )
 }
 
-const FooterWrapper = () => {
-  const { lastIndexedBlockNumber } = useTransactionContext()
-  return <Footer lastIndexedBlockNumber={lastIndexedBlockNumber} />
+const SidebarWrapper = ({ children }: React.PropsWithChildren) => {
+  const router = useRouter()
+  return <Sidebar router={router}>{children}</Sidebar>
 }
 
 function App({ Component, pageProps }: AppProps) {
+  const { lastIndexedBlockNumber } = useTransactionContext()
   const [open, setOpen] = useState(false)
   const [history, setHistory] = useState<string[]>([])
   const router = useRouter()
@@ -231,8 +234,9 @@ function App({ Component, pageProps }: AppProps) {
           <ChainProvider>
             <TransactionProvider>
               <CurrencyProvider>
-                <div className="flex flex-col w-[100vw] min-h-[100vh] bg-[#0F1013] text-white bg-right bg-no-repeat">
+                <div className="relative flex flex-col w-[100vw] min-h-[100vh] bg-[#0F1013] text-white bg-right bg-no-repeat">
                   <PanelWrapper open={open} setOpen={setOpen} />
+                  <SidebarWrapper />
                   <HeaderContainer onMenuClick={() => setOpen(true)} />
 
                   {router.pathname.includes('/trade') ? (
@@ -269,7 +273,9 @@ function App({ Component, pageProps }: AppProps) {
                     </TradeProvidersWrapper>
                   )}
 
-                  <FooterWrapper />
+                  <BlockNumberWidget
+                    latestBlockNumber={lastIndexedBlockNumber}
+                  />
                 </div>
               </CurrencyProvider>
             </TransactionProvider>

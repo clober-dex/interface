@@ -164,7 +164,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
         />
       )}
 
-      <div className="flex items-center bg-[#17181e] backdrop-blur-blur sm:bg-[#151517] sm:border-b sm:border-[#2d2d2e] sm:border-solid justify-between h-[46px] md:h-[60px] py-0 pl-4 pr-5">
+      <div className="z-[1] flex items-center bg-[#17181e] backdrop-blur-blur sm:bg-[#151517] sm:border-b sm:border-[#2d2d2e] sm:border-solid justify-between h-[46px] md:h-[60px] py-0 pl-4 pr-5">
         <div className="flex items-center gap-2.5 md:gap-12">
           <a
             className="hidden md:flex gap-2 items-center h-7"

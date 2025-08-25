@@ -11,7 +11,7 @@ const Footer = ({
 }) => {
   return (
     <>
-      <div className="flex h-8 justify-between items-center px-4 text-xs text-gray-500 bg-gray-950">
+      <div className="z-[1] flex h-8 justify-between items-center px-4 text-xs text-gray-500 bg-gray-950">
         <div className="flex items-center">
           Support:{' '}
           <a
