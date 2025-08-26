@@ -68,7 +68,7 @@ const MetaAggregatorInfo = ({
       </div>
 
       <div className="w-full flex justify-center absolute top-1/4">
-        <div className="w-full md:w-[616px] overflow-x-hidden mt-4 sm:mt-8 relative">
+        <div className="w-full md:w-[616px] overflow-x-hidden mt-4 md:mt-8 relative">
           <div className="flex w-max animate-marquee items-center">
             {shuffledCurrencies.map((currency, i) => {
               return (
@@ -652,25 +652,25 @@ export const TradeContainer = () => {
         <></>
       )}
 
-      <div className="bg-[#191d25] rounded-[22px] py-1 w-full h-10 flex sm:hidden flex-row relative text-gray-400 text-base font-bold">
+      <div className="bg-[#191d25] rounded-[22px] py-1 w-full max-w-[248px] h-10 flex md:hidden flex-row relative text-blue-300 text-base font-semibold">
         <button
           disabled={tab === 'swap'}
           onClick={() => setTab('swap')}
-          className="text-sm flex flex-1 px-6 py-1.5 h-full rounded-[20px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
+          className="text-sm flex flex-1 px-[15px] py-1.5 h-full rounded-[20px] text-[#8d94a1] disabled:text-blue-300 disabled:bg-blue-500/40 justify-center items-center gap-1"
         >
           Swap
         </button>
         <button
           disabled={tab === 'limit'}
           onClick={() => setTab('limit')}
-          className="text-sm flex flex-1 px-6 py-1.5 h-full rounded-[20px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
+          className="text-sm flex flex-1 px-[15px] py-1.5 h-full rounded-[20px] text-[#8d94a1] disabled:text-blue-300 disabled:bg-blue-500/40 justify-center items-center gap-1"
         >
           Limit
         </button>
       </div>
 
-      <div className="flex flex-col w-full sm:w-fit mb-4 sm:mb-6 items-center">
-        <div className="w-full max-w-[482px] items-center justify-center mb-10 hidden sm:flex bg-[#191d25] rounded-[22px] py-1 h-12 flex-row relative text-gray-400 text-base font-bold">
+      <div className="flex flex-col w-full md:w-fit mb-4 md:mb-6 items-center">
+        <div className="w-full md:max-w-[324px] items-center justify-center mb-10 hidden md:flex bg-[#191d25] py-1 h-10 md:h-12 flex-row relative text-[#8d94a1] text-base font-semibold rounded-3xl">
           <button
             disabled={tab === 'swap'}
             onClick={() => setTab('swap')}
@@ -688,9 +688,9 @@ export const TradeContainer = () => {
         </div>
 
         <div
-          className={`flex flex-col w-full lg:flex-row gap-4 justify-center ${tab === 'swap' ? 'sm:flex-col-reverse' : ''}`}
+          className={`flex flex-col w-full lg:flex-row gap-4 justify-center ${tab === 'swap' ? 'md:flex-col-reverse' : ''}`}
         >
-          <div className="flex flex-col gap-[26px] sm:gap-4 w-full lg:w-[740px]">
+          <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[740px]">
             {tab === 'limit' && (
               <>
                 {baseCurrency && quoteCurrency && (
@@ -751,7 +751,7 @@ export const TradeContainer = () => {
                   />
                 )}
 
-                <div className="flex flex-col h-full rounded-xl sm:rounded-2xl bg-[#171b24]">
+                <div className="flex flex-col h-full rounded-xl md:rounded-2xl bg-[#171b24]">
                   <div className="flex lg:hidden w-full h-10">
                     <button
                       disabled={showOrderBook}
@@ -799,7 +799,7 @@ export const TradeContainer = () => {
                       }
                       setShowOrderBook={setShowOrderBook}
                       setTab={setTab}
-                      className="flex flex-col px-0.5 lg:px-4 pb-4 pt-2 sm:pb-6 bg-[#171b24] rounded-b-xl sm:rounded-2xl gap-[20px] h-[300px] lg:h-full w-full"
+                      className="flex flex-col px-0.5 lg:px-4 pb-4 pt-2 md:pb-6 bg-[#171b24] rounded-b-xl md:rounded-2xl gap-[20px] h-[300px] lg:h-full w-full"
                     />
                   ) : (
                     <></>
@@ -810,7 +810,7 @@ export const TradeContainer = () => {
 
             {tab === 'swap' && (
               <>
-                <div className="relative hidden sm:flex flex-col h-full rounded-xl sm:rounded-2xl bg-[#171b24]">
+                <div className="relative hidden md:flex flex-col h-full rounded-xl md:rounded-2xl bg-[#171b24]">
                   {showMetaInfo ? (
                     <MetaAggregatorInfo
                       chain={selectedChain}
@@ -829,7 +829,7 @@ export const TradeContainer = () => {
                   )}
                 </div>
 
-                <div className="flex mb-16 sm:mb-0 max-h-[560px] sm:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
+                <div className="flex mb-16 md:mb-0 max-h-[560px] md:hidden w-full justify-center rounded-2xl bg-[#171b24] p-5">
                   <SwapForm {...swapFormProps} />
                 </div>
               </>
@@ -837,7 +837,7 @@ export const TradeContainer = () => {
           </div>
 
           <div className="flex flex-col items-start gap-3">
-            <div className="hidden sm:flex flex-col rounded-2xl bg-[#171b24] p-6 w-fit sm:w-[480px] h-[626px]">
+            <div className="hidden md:flex flex-col rounded-2xl bg-[#171b24] p-6 w-fit md:w-[480px] h-[626px]">
               {tab === 'limit' ? (
                 <LimitForm {...limitFormProps} />
               ) : (
@@ -857,7 +857,7 @@ export const TradeContainer = () => {
             selectedMarket={selectedMarket}
           />
         ) : (
-          <div className="hidden sm:flex mb-28 lg:mb-2" />
+          <div className="hidden md:flex mb-28 lg:mb-2" />
         )}
       </div>
 

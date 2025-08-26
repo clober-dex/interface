@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import BigNumber from 'bignumber.js'
-import { isAddressEqual } from 'viem'
 import { NextRouter } from 'next/router'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
@@ -9,9 +8,7 @@ import { shortAddress } from '../../../utils/address'
 import { handleCopyClipBoard } from '../../../utils/string'
 import { ClipboardSvg } from '../../svg/clipboard-svg'
 import { Toast } from '../../toast'
-import { ActionButton } from '../../button/action-button'
 import { Chain } from '../../../model/chain'
-import { WHITELISTED_FUTURES_ASSETS } from '../../../constants/futures'
 import {
   formatAbbreviatedNumberString,
   formatTinyNumber,
@@ -63,10 +60,10 @@ export const MarketInfoCard = ({
         </div>
       </Toast>
 
-      <div className="flex w-full h-full lg:h-[74px] lg:w-[740px] flex-col lg:flex-row justify-start items-start px-4 lg:px-0 lg:pl-5 lg:pr-4 lg:py-3 lg:bg-[#171b24] lg:rounded-2xl lg:justify-start lg:items-center gap-4">
+      <div className="flex w-full h-full lg:h-[74px] lg:w-[740px] flex-col lg:flex-row justify-start items-start px-5 lg:py-[18px] lg:bg-[#17181e] lg:rounded-2xl lg:justify-start lg:items-center gap-4 lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
         <div className="flex flex-row w-full lg:w-fit">
           <div className="justify-start items-center gap-2.5 flex w-full">
-            <div className="justify-start items-center flex relative w-14">
+            <div className="justify-start items-center flex relative w-11 sm:w-14">
               <CurrencyIcon
                 chain={chain}
                 currency={baseCurrency}
@@ -79,9 +76,9 @@ export const MarketInfoCard = ({
               />
             </div>
 
-            <div className="flex flex-col justify-center gap-0.5 lg:gap-1 w-[165px] lg:w-[180px] overflow-y-hidden">
+            <div className="flex flex-col justify-center gap-0.5 lg:gap-1 w-[155px] lg:w-[170px] overflow-y-hidden">
               <div className="flex flex-row gap-2 w-full h-full justify-start items-center">
-                <div className="text-white text-base lg:text-lg max-w-[180px] lg:max-w-[200px] font-semibold text-nowrap overflow-y-hidden">
+                <div className="text-white text-base lg:text-[16px] max-w-[180px] lg:max-w-[200px] font-semibold text-nowrap overflow-y-hidden">
                   <span>{baseCurrency.symbol} </span>
                   <span className="text-[#8690a5]">/</span>
                   <span> {quoteCurrency.symbol}</span>
@@ -94,7 +91,7 @@ export const MarketInfoCard = ({
                     await handleCopyClipBoard(baseCurrency.address)
                     setIsCopyToast(true)
                   }}
-                  className="cursor-pointer h-5 px-1.5 py-0.5 bg-gray-800 rounded-md justify-center items-center gap-0.5 flex"
+                  className="cursor-pointer h-4 rounded-md justify-center items-center gap-0.5 flex"
                 >
                   <div className="text-gray-400 text-xs leading-none">
                     {shortAddress(baseCurrency.address)}
@@ -173,57 +170,6 @@ export const MarketInfoCard = ({
                       />
                     </svg>
                   </Link>
-                ) : (
-                  <></>
-                )}
-
-                {twitterUrl.length + telegramUrl.length + websiteUrl.length ===
-                0 ? (
-                  <>
-                    {isAddressEqual(
-                      baseCurrency.address,
-                      '0x836047a99e11f376522b447bffb6e3495dd0637c',
-                    ) && (
-                      <ActionButton
-                        disabled={false}
-                        onClick={async () => {
-                          window.open(
-                            `https://testnet.orbiter.finance/en?src_chain=11155111&tgt_chain=10143&src_token=ETH`,
-                            '_blank',
-                          )
-                        }}
-                        text="Bridge"
-                        className="disabled:text-gray-400 text-white text-xs font-semibold px-2 py-0.5 bg-blue-500 rounded justify-center items-center flex"
-                      />
-                    )}
-
-                    {isAddressEqual(
-                      baseCurrency.address,
-                      '0xA296f47E8Ff895Ed7A092b4a9498bb13C46ac768',
-                    ) && (
-                      <ActionButton
-                        disabled={false}
-                        onClick={async () => {
-                          window.open(`https://www.monadbridge.com/`, '_blank')
-                        }}
-                        text="Bridge"
-                        className="disabled:text-gray-400 text-white text-xs font-semibold px-2 py-0.5 bg-blue-500 rounded justify-center items-center flex"
-                      />
-                    )}
-
-                    {WHITELISTED_FUTURES_ASSETS.some(({ address }) =>
-                      isAddressEqual(baseCurrency.address, address),
-                    ) && (
-                      <ActionButton
-                        disabled={false}
-                        onClick={() => {
-                          router.push(`/futures/mint/${baseCurrency.address}`)
-                        }}
-                        text="Mint"
-                        className="disabled:text-gray-400 text-white text-xs font-semibold px-2 py-0.5 bg-blue-500 rounded justify-center items-center flex"
-                      />
-                    )}
-                  </>
                 ) : (
                   <></>
                 )}
@@ -317,20 +263,20 @@ export const MarketInfoCard = ({
 
         <div className="hidden lg:flex h-full ml-auto items-center gap-7">
           <div className="flex-col lg:items-end gap-0.5 flex w-[100px]">
-            <div className="text-[#38e69f] text-[17px] font-bold">
+            <div className="text-[#38e69f] font-semibold">
               {formatTinyNumber(price)}
             </div>
-            <div className="text-white text-xs font-bold">
+            <div className="text-white text-xs font-semibold">
               ${formatTinyNumber(dollarValue)}
             </div>
           </div>
 
           <div className="flex flex-row gap-4 ml-auto lg:w-[310px]">
-            <div className="min-w-[60px] flex-1 flex-col justify-center items-start gap-1 flex">
+            <div className="min-w-[60px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 Liquidity
               </div>
-              <div className="w-[61px] text-white text-[13px] font-bold">
+              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
                 {!isFetchingMarketSnapshot ? (
                   liquidityUsd > 0 ? (
                     `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
@@ -343,11 +289,11 @@ export const MarketInfoCard = ({
               </div>
             </div>
 
-            <div className="min-w-[55px] flex-1 flex-col justify-center items-start gap-1 flex">
+            <div className="min-w-[55px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 FDV
               </div>
-              <div className="w-[61px] text-white text-[13px] font-bold">
+              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
                 {!isFetchingMarketSnapshot ? (
                   fdv > 0 ? (
                     `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
@@ -360,11 +306,11 @@ export const MarketInfoCard = ({
               </div>
             </div>
 
-            <div className="min-w-[70px] flex-1 flex-col justify-center items-start gap-1 flex">
+            <div className="min-w-[70px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 Market Cap
               </div>
-              <div className="w-[61px] text-white text-[13px] font-bold">
+              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
                 {!isFetchingMarketSnapshot ? (
                   marketCap > 0 ? (
                     `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
@@ -377,11 +323,11 @@ export const MarketInfoCard = ({
               </div>
             </div>
 
-            <div className="min-w-[70px] flex-1 flex-col justify-center items-start gap-1 flex">
+            <div className="min-w-[70px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 24H Volume
               </div>
-              <div className="w-[61px] text-white text-[13px] font-bold">
+              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
                 {!isFetchingMarketSnapshot ? (
                   dailyVolume > 0 ? (
                     `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`

@@ -13,11 +13,8 @@ const Sidebar = ({
   router: NextRouter
 } & React.PropsWithChildren) => {
   const { showDropdown, setShowDropdown } = useDropdown()
-  const isMoreSelected = PAGE_BUTTONS.filter((page) => page.isHiddenMenu).some(
-    (page) => router.pathname.includes(page.path),
-  )
   return (
-    <div className="invisible md:visible fixed z-[1] flex top-0 left-0 h-screen items-center justify-center w-20 bg-[#151517] border-r border-[#2d2d2e] border-solid">
+    <div className="invisible md:visible fixed z-[2] flex top-0 left-0 h-screen items-center justify-center w-20 bg-[#151517] border-r border-[#2d2d2e] border-solid">
       <div className="flex flex-col justify-center items-center gap-3">
         {PAGE_BUTTONS.filter((page) => !page.isHiddenMenu).map((page) => (
           <div key={page.path}>
