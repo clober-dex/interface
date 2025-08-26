@@ -469,11 +469,9 @@ const CHAIN_LIST = [
 ]
 
 export const IframeChartContainer = ({
-  setShowOrderBook,
   pairAddress,
   chainId,
 }: {
-  setShowOrderBook: (showOrderBook: boolean) => void
   pairAddress: `0x${string}`
   chainId: CHAIN_IDS
 }) => {
@@ -486,51 +484,16 @@ export const IframeChartContainer = ({
   return (
     <>
       {fullscreen && (
-        <div className="flex flex-col rounded-2xl bg-[#171b24] overflow-hidden min-h-[280px] w-full md:w-[480px] lg:w-[740px]" />
+        <div className="flex flex-col rounded-2xl bg-[#171b24] overflow-hidden min-h-[280px] w-full md:w-[480px] lg:w-[740px] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]" />
       )}
       <div
-        className={`flex flex-col bg-[#171b24] overflow-hidden ${
+        className={`lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] flex flex-col bg-[#171b24] overflow-hidden ${
           fullscreen
             ? 'w-full fixed left-0 top-0 right-0 bottom-0 z-10'
             : 'rounded-2xl min-h-[280px] h-[500px] lg:h-full w-full md:w-[480px] lg:w-[740px] z-[0]'
         }`}
       >
         <div className="left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 px-4 py-2">
-          <button
-            onClick={() => setShowOrderBook(true)}
-            className="hidden lg:flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="13"
-              height="12"
-              viewBox="0 0 13 12"
-              fill="none"
-            >
-              <g clipPath="url(#clip0_164_5640)">
-                <path
-                  d="M10.6304 8.5H1.63037M10.6304 8.5L9.13037 10M10.6304 8.5L9.13037 7M3.13037 5L1.63037 3.5M1.63037 3.5L3.13037 2M1.63037 3.5H10.6304"
-                  stroke="#3B82F6"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_164_5640">
-                  <rect
-                    width="12"
-                    height="12"
-                    fill="white"
-                    transform="translate(0.130371)"
-                  />
-                </clipPath>
-              </defs>
-            </svg>
-            <div className="text-center text-blue-400 text-[13px] font-semibold">
-              View OrderBook
-            </div>
-          </button>
           <div className="w-full mr-auto sm:ml-auto flex">
             <button
               className="ml-auto p-0 pl-2 bg-transparent"
