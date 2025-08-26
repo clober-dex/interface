@@ -73,17 +73,17 @@ export const TradingViewChartContainer = ({
       timezone: Intl.DateTimeFormat().resolvedOptions()
         .timeZone as CustomTimezones,
       autosize: true,
-      toolbar_bg: '#111827',
+      toolbar_bg: '#17181e',
       loading_screen: {
-        backgroundColor: '#111827',
-        foregroundColor: '#111827',
+        backgroundColor: '#17181e',
+        foregroundColor: '#17181e',
       },
     })
 
     tvWidget.onChartReady(() => {
       tvWidget.applyOverrides({
-        'paneProperties.backgroundGradientStartColor': '#111827',
-        'paneProperties.backgroundGradientEndColor': '#111827',
+        'paneProperties.backgroundGradientStartColor': '#17181e',
+        'paneProperties.backgroundGradientEndColor': '#17181e',
       })
     })
 
