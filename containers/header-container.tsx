@@ -164,10 +164,10 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
         />
       )}
 
-      <div className="z-[1] flex items-center bg-[#17181e] backdrop-blur-blur sm:bg-[#151517] sm:border-b sm:border-[#2d2d2e] sm:border-solid justify-between h-[46px] md:h-[60px] py-0 pl-4 pr-5">
-        <div className="flex items-center gap-2.5 md:gap-12">
+      <div className="z-[1] flex items-center bg-[#696c72]/10 backdrop-blur-blur sm:bg-[#151517] sm:border-b sm:border-[#2d2d2e] sm:border-solid justify-between h-12 sm:h-[60px] py-2 sm:py-0 p-4 sm:pl-4 sm:pr-5">
+        <div className="flex items-center gap-2.5 sm:gap-12">
           <a
-            className="hidden md:flex gap-2 items-center h-7"
+            className="hidden sm:flex gap-2 items-center h-7"
             target="_blank"
             href={CHAIN_CONFIG.LANDING_PAGE_URL}
             rel="noopener noreferrer"
@@ -180,7 +180,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             />
           </a>
           <a
-            className="flex md:hidden gap-2 items-center h-5"
+            className="flex sm:hidden gap-2 items-center h-5"
             target="_blank"
             href={CHAIN_CONFIG.LANDING_PAGE_URL}
             rel="noopener noreferrer"
@@ -196,7 +196,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             <PageButtons />
           </div>
         </div>
-        <div className="flex gap-1 w-auto md:gap-2 ml-auto h-[30px] md:h-9">
+        <div className="flex gap-1 w-auto sm:gap-2 ml-auto h-[30px] sm:h-9">
           <div className="relative flex items-center flex-row gap-1 sm:gap-2">
             {status === 'disconnected' || status === 'connecting' ? (
               <ConnectButton openConnectModal={openConnectModal} />
@@ -218,7 +218,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             ) : (
               <button
                 disabled={true}
-                className="flex items-center h-8 py-0 px-3 md:px-4 rounded bg-blue-500 hover:bg-blue-600 disabled:bg-gray-800 text-white disabled:text-green-500 text-xs sm:text-sm"
+                className="flex items-center h-8 py-0 px-3 sm:px-4 rounded bg-blue-500 hover:bg-blue-600 disabled:bg-gray-800 text-white disabled:text-green-500 text-xs sm:text-sm"
               >
                 {status}
               </button>
@@ -226,7 +226,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
 
             <button
               onClick={() => setOpenTransactionSettingModal(true)}
-              className="w-9 h-9 p-2.5 bg-[#2b2c30] rounded md:rounded-[10px] flex items-center justify-center hover:bg-gray-700 cursor-pointer"
+              className="w-[30px] h-[30px] sm:w-9 sm:h-9 p-1.5 sm:p-2.5 bg-[#2b2c30] rounded sm:rounded-[10px] flex items-center justify-center hover:bg-gray-700 cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -311,7 +311,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </div>
           </div>
           <button
-            className="w-9 h-9 p-2.5 rounded md:rounded-[10px] flex items-center justify-center hover:bg-gray-700 cursor-pointer"
+            className="sm:w-9 sm:h-9 p-1.5 sm:p-2.5 rounded sm:rounded-[10px] flex items-center justify-center hover:bg-gray-700 cursor-pointer"
             onClick={onMenuClick}
           >
             <MenuSvg />

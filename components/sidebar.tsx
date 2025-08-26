@@ -7,7 +7,7 @@ const Sidebar = ({
   router: NextRouter
 } & React.PropsWithChildren) => {
   return (
-    <div className="absolute top-0 left-0 h-full w-20 bg-[#151517] border-r border-[#2d2d2e] border-solid">
+    <div className="invisible md:visible absolute top-0 left-0 h-full w-20 bg-[#151517] border-r border-[#2d2d2e] border-solid">
       Test
     </div>
   )
