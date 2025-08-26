@@ -83,7 +83,7 @@ const Context = React.createContext<TradeContext>({
   setPriceInput: () => {},
   slippageInput: '1',
   setSlippageInput: () => {},
-  showOrderBook: true,
+  showOrderBook: false,
   setShowOrderBook: () => {},
   selectedQuote: null,
   setSelectedQuote: () => {},
@@ -132,7 +132,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     all: [],
   })
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
-  const [showOrderBook, setShowOrderBook] = useState(true)
+  const [showOrderBook, setShowOrderBook] = useState(false)
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
   const [inputCurrency, _setInputCurrency] = useState<Currency | undefined>(
     undefined,

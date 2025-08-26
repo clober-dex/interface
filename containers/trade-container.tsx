@@ -751,30 +751,10 @@ export const TradeContainer = () => {
                   />
                 )}
 
-                <div className="flex flex-col h-full rounded-xl md:rounded-2xl bg-[#171b24]">
-                  <div className="flex lg:hidden w-full h-10">
-                    <button
-                      disabled={showOrderBook}
-                      onClick={() => setShowOrderBook(true)}
-                      className="flex-1 h-full px-6 py-2.5 text-gray-500 disabled:text-blue-500 disabled:border-b-2 disabled:border-solid disabled:border-b-blue-500 justify-center items-center gap-1 inline-flex"
-                    >
-                      <div className="text-[13px] font-semibold">
-                        Order Book
-                      </div>
-                    </button>
-                    <button
-                      disabled={!showOrderBook}
-                      onClick={() => setShowOrderBook(false)}
-                      className="flex-1 h-full px-6 py-2.5 text-gray-500 disabled:text-blue-500 disabled:border-b-2 disabled:border-solid disabled:border-b-blue-500 justify-center items-center gap-1 inline-flex"
-                    >
-                      <div className="text-[13px] font-semibold">Chart</div>
-                    </button>
-                  </div>
-
+                <div className="flex flex-col h-full rounded-xl md:rounded-2xl">
                   {!showOrderBook && baseCurrency && quoteCurrency ? (
                     !selectedChain.testnet && selectedTokenInfo?.pairAddress ? (
                       <IframeChartContainer
-                        setShowOrderBook={setShowOrderBook}
                         pairAddress={getAddress(selectedTokenInfo.pairAddress)}
                         chainId={selectedChain.id}
                       />
@@ -782,7 +762,6 @@ export const TradeContainer = () => {
                       <NativeChartContainer
                         baseCurrency={baseCurrency}
                         quoteCurrency={quoteCurrency}
-                        setShowOrderBook={setShowOrderBook}
                       />
                     )
                   ) : (
