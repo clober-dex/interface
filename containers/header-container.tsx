@@ -248,7 +248,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </div>
           </div>
           <button
-            className="flex sm:hidden sm:w-9 sm:h-9 p-1.5 sm:p-2.5 rounded sm:rounded-[10px] items-center justify-center hover:bg-gray-700 cursor-pointer"
+            className="flex md:hidden sm:w-9 sm:h-9 p-1.5 sm:p-2.5 rounded sm:rounded-[10px] items-center justify-center hover:bg-gray-700 cursor-pointer"
             onClick={onMenuClick}
           >
             <MenuSvg />

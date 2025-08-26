@@ -21,8 +21,16 @@ const Sidebar = ({
             <PageButton
               disabled={router.pathname.includes(page.path)}
               onClick={() => router.push(page.path)}
+              className="relative"
             >
               {page.icon}
+
+              <div className="absolute left-12 top-1/2 -translate-y-1/2 z-10 group-hover:opacity-100 opacity-0 transition-opacity duration-150">
+                <div className="relative bg-[#17181E] text-[#8d94a1] text-sm font-semibold px-4 py-2 rounded-lg shadow-md whitespace-nowrap outline outline-1 outline-offset-[-1px] outline-[#272930]">
+                  <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-y-8 border-y-transparent border-r-8 border-r-[#17181E]" />
+                  {page.label}
+                </div>
+              </div>
             </PageButton>
           </div>
         ))}
