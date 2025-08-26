@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { getContractAddresses, getLatestTrades, Swap } from '@clober/v2-sdk'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -188,7 +187,6 @@ const MetaAggregatorInfo = ({
 
 export const TradeContainer = () => {
   const queryClient = useQueryClient()
-  const router = useRouter()
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
   const { selectedExecutorName } = useTransactionContext()
@@ -696,7 +694,6 @@ export const TradeContainer = () => {
                 {baseCurrency && quoteCurrency && (
                   <MarketInfoCard
                     chain={selectedChain}
-                    router={router}
                     baseCurrency={
                       {
                         ...baseCurrency,

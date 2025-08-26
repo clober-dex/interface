@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import BigNumber from 'bignumber.js'
-import { NextRouter } from 'next/router'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
 import { shortAddress } from '../../../utils/address'
@@ -17,7 +16,6 @@ import { Currency } from '../../../model/currency'
 
 export const MarketInfoCard = ({
   chain,
-  router,
   baseCurrency,
   quoteCurrency,
   price,
@@ -32,7 +30,6 @@ export const MarketInfoCard = ({
   isFetchingMarketSnapshot,
 }: {
   chain: Chain
-  router: NextRouter
   baseCurrency: Currency
   quoteCurrency: Currency
   price: number
