@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
-import { useRouter } from 'next/router'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -8,16 +7,12 @@ import Image from 'next/image'
 
 import { useChainContext } from '../contexts/chain-context'
 import MenuSvg from '../components/svg/menu-svg'
-import { PageButton } from '../components/button/page-button'
 import { ConnectButton } from '../components/button/connect-button'
 import { UserButton } from '../components/button/user-button'
 import { UserWalletModal } from '../components/modal/user-wallet-modal'
 import { useTransactionContext } from '../contexts/transaction-context'
 import { fetchEnsName } from '../apis/ens'
 import { CHAIN_CONFIG } from '../chain-configs'
-import { PAGE_BUTTONS } from '../chain-configs/page-button'
-import useDropdown from '../hooks/useDropdown'
-import { PageSelector } from '../components/selector/page-selector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
 import { useCurrencyContext } from '../contexts/currency-context'
@@ -29,61 +24,6 @@ const WrongNetwork = ({
   openChainModal,
 }: { openChainModal: () => void } & any) => {
   return <>{openChainModal && openChainModal()}</>
-}
-
-const PageButtons = () => {
-  const router = useRouter()
-  const { showDropdown, setShowDropdown } = useDropdown()
-  const isMoreSelected = PAGE_BUTTONS.filter((page) => page.isHiddenMenu).some(
-    (page) => router.pathname.includes(page.path),
-  )
-
-  return (
-    <>
-      {PAGE_BUTTONS.filter((page) => !page.isHiddenMenu).map((page) => (
-        <div key={page.path}>
-          <PageButton
-            disabled={router.pathname.includes(page.path)}
-            onClick={() => router.push(page.path)}
-          >
-            {page.icon}
-            {page.label}
-          </PageButton>
-        </div>
-      ))}
-
-      {PAGE_BUTTONS.filter((page) => page.isHiddenMenu).length > 0 && (
-        <button
-          className="flex flex-row gap-2 items-center text-gray-500 font-semibold disabled:text-white stroke-gray-500 fill-gray-500 disabled:stroke-blue-500 disabled:fill-blue-500"
-          disabled={false}
-          onClick={() => {
-            setShowDropdown((prev) => !prev)
-          }}
-        >
-          <span className={isMoreSelected ? 'text-white' : ''}>More</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="10"
-            height="6"
-            viewBox="0 0 10 6"
-            fill="none"
-            className="rotate-180"
-          >
-            <path
-              d="M9 5L5 1L1 5"
-              stroke={isMoreSelected ? '#60A5FA' : '#9CA3AF'}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <div className="relative">
-            {showDropdown ? <PageSelector /> : <></>}
-          </div>
-        </button>
-      )}
-    </>
-  )
 }
 
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
@@ -192,9 +132,6 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
               alt="logo"
             />
           </a>
-          <div className="hidden xl:flex py-1 justify-start items-center gap-8">
-            <PageButtons />
-          </div>
         </div>
         <div className="flex gap-1 w-auto sm:gap-2 ml-auto h-[30px] sm:h-9">
           <div className="relative flex items-center flex-row gap-1 sm:gap-2">
