@@ -363,7 +363,7 @@ export const DiscoverContainer = () => {
   )
 
   return (
-    <div className="text-white mb-4 flex w-full lg:w-[1072px]  flex-col items-center mt-6 lg:mt-8 px-4 lg:px-0 gap-4 lg:gap-8">
+    <div className="text-white mb-4 flex w-full lg:w-[1072px]  flex-col items-center mt-6 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
       {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
       {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
       {/*    <div className="relative h-4 w-4">*/}
@@ -388,7 +388,7 @@ export const DiscoverContainer = () => {
       {/*</div>*/}
 
       <div className="flex flex-col w-full h-full gap-6">
-        <div className="hidden lg:flex self-stretch px-4 justify-start items-center gap-4">
+        <div className="hidden lg:flex fixed top-[100px] w-[1072px] z-50 px-4 justify-start items-center gap-4">
           <button
             onClick={() => sort('market')}
             className="w-[330px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
@@ -457,8 +457,8 @@ export const DiscoverContainer = () => {
           <Loading className="mt-36 sm:mt-24" />
         )}
 
-        <div className="relative flex justify-center w-full lg:w-[1072px] h-full mb-6">
-          <div className="relative flex justify-center w-full h-full mb-6">
+        <div className="relative flex w-full lg:w-[1072px] h-full mb-6">
+          <div className="relative flex w-full h-full mb-6">
             {/* desktop: 1-column list */}
             <div className="hidden lg:block w-full overflow-hidden">
               <List
@@ -474,7 +474,7 @@ export const DiscoverContainer = () => {
             </div>
 
             {/* tablet: 2-column grid (md~lg) */}
-            <div className="hidden md:block lg:hidden w-full overflow-hidden">
+            <div className="hidden md:block lg:hidden overflow-hidden max-w-[810px]">
               <Grid
                 columnCount={2}
                 columnWidth={Math.floor(
