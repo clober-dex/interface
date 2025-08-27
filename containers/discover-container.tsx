@@ -364,7 +364,7 @@ export const DiscoverContainer = () => {
   )
 
   return (
-    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-10 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
+    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-10 px-4 md:px-0 gap-4 lg:gap-8">
       {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
       {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
       {/*    <div className="relative h-4 w-4">*/}
