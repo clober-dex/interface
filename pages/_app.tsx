@@ -265,7 +265,7 @@ function App({ Component, pageProps }: AppProps) {
                   ) : (
                     <TradeProvidersWrapper>
                       <div className="flex flex-1 relative justify-center">
-                        <div className="flex w-full flex-col items-center gap-6 md:gap-11 px-2 pb-0 mt-[30px] md:mt-[56px]">
+                        <div className="flex w-full flex-col gap-6 md:gap-11 md:ml-36 lg:ml-24 px-2 pb-0 mt-[30px] md:mt-[56px]">
                           <Component {...pageProps} />
                         </div>
                       </div>

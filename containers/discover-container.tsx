@@ -457,8 +457,8 @@ export const DiscoverContainer = () => {
           <Loading className="mt-36 sm:mt-24" />
         )}
 
-        <div className="relative flex justify-center w-full lg:w-[1072px] h-full lg:h-[680px] mb-6">
-          <div className="relative flex justify-center w-full h-full lg:h-[680px] mb-6">
+        <div className="relative flex justify-center w-full lg:w-[1072px] h-full mb-6">
+          <div className="relative flex justify-center w-full h-full mb-6">
             {/* desktop: 1-column list */}
             <div className="hidden lg:block w-full overflow-hidden">
               <List
@@ -477,7 +477,9 @@ export const DiscoverContainer = () => {
             <div className="hidden md:block lg:hidden w-full overflow-hidden">
               <Grid
                 columnCount={2}
-                columnWidth={Math.floor((window.innerWidth - 24 * 2) / 2)}
+                columnWidth={Math.floor(
+                  (window.innerWidth - 24 * 2) / 2 - 24 * 2,
+                )}
                 height={height}
                 rowCount={Math.ceil(filteredMarketSnapshots.length / 2)}
                 rowHeight={MOBILE_ROW_HEIGHT + 12}
