@@ -72,9 +72,9 @@ export const MarketDailySnapshotCard = ({
             `/trade?inputCurrency=${baseCurrency.address}&outputCurrency=${quoteCurrency.address}`,
           )
         }}
-        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-gray-800'} hidden lg:flex max-w-[1072px] text-left h-16 px-5 py-4 rounded-2xl justify-start items-center gap-4`}
+        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-gray-800'} hidden lg:flex max-w-[1200px] text-left h-16 px-5 py-4 rounded-2xl justify-start items-center gap-4`}
       >
-        <div className="flex w-[280px] items-center gap-3">
+        <div className="flex w-[350px] items-center gap-3">
           <div className="w-14 h-8 shrink-0 relative">
             <CurrencyIcon
               chain={chain}
@@ -89,7 +89,7 @@ export const MarketDailySnapshotCard = ({
               className="w-8 h-8 absolute left-6 top-0 rounded-full"
             />
           </div>
-          <div className="flex items-center text-white text-base font-bold gap-1 text-nowrap overflow-y-scroll max-w-[185px]">
+          <div className="flex items-center text-white text-base font-bold gap-1 text-nowrap overflow-y-scroll max-w-[300px]">
             <div>{baseCurrency.symbol}</div>
             <div>-</div>
             <div>{quoteCurrency.symbol}</div>

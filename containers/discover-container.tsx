@@ -364,7 +364,7 @@ export const DiscoverContainer = () => {
   )
 
   return (
-    <div className="text-white mb-4 flex w-full lg:w-[1072px]  flex-col items-center mt-6 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
+    <div className="text-white mb-4 flex w-full lg:w-[1200px]  flex-col items-center mt-6 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
       {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
       {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
       {/*    <div className="relative h-4 w-4">*/}
@@ -388,85 +388,85 @@ export const DiscoverContainer = () => {
       {/*  </div>*/}
       {/*</div>*/}
 
-      <div className="flex flex-col w-full h-full gap-6">
-        <div className="hidden lg:flex top-[100px] w-[1072px] px-4 justify-start items-center gap-4">
-          <button
-            onClick={() => sort('market')}
-            className="w-[330px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            Market
-            <TriangleDown column="market" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('age')}
-            className="w-[180px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            Age
-            <TriangleDown column="age" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('price')}
-            className="w-[150px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            Price
-            <TriangleDown column="price" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('daily-volume')}
-            className="flex flex-row gap-1 w-[160px] text-sm font-semibold hover:underline cursor-pointer"
-          >
-            24h Volume
-            <div className="flex mr-auto justify-center items-center">
-              <QuestionMarkSvg
-                data-tooltip-id="24h-volume-info"
-                data-tooltip-place="bottom-end"
-                data-tooltip-html={'Cumulative volume from 00:00 UTC to now.'}
-                className="w-3 h-3"
-              />
-              <Tooltip
-                id="24h-volume-info"
-                className="max-w-[300px] bg-gray-950 !opacity-100 z-[100]"
-                clickable
-              />
-              <TriangleDown column="daily-volume" sortOption={sortOption} />
-            </div>
-          </button>
-          <button
-            onClick={() => sort('fdv')}
-            className="w-[160px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            FDV
-            <TriangleDown column="fdv" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('daily-change')}
-            className="w-[140px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            24h Change
-            <TriangleDown column="daily-change" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('verified')}
-            className="flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            Verified
-            <TriangleDown column="verified" sortOption={sortOption} />
-          </button>
-        </div>
+      <div className="absolute hidden lg:flex top-24 w-[1200px] px-4 justify-start items-center gap-4 z-50">
+        <button
+          onClick={() => sort('market')}
+          className="w-[410px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          Market
+          <TriangleDown column="market" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('age')}
+          className="w-[170px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          Age
+          <TriangleDown column="age" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('price')}
+          className="w-[150px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          Price
+          <TriangleDown column="price" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('daily-volume')}
+          className="flex flex-row gap-1 w-[170px] text-sm font-semibold hover:underline cursor-pointer"
+        >
+          24h Volume
+          <div className="flex mr-auto justify-center items-center">
+            <QuestionMarkSvg
+              data-tooltip-id="24h-volume-info"
+              data-tooltip-place="bottom-end"
+              data-tooltip-html={'Cumulative volume from 00:00 UTC to now.'}
+              className="w-3 h-3"
+            />
+            <Tooltip
+              id="24h-volume-info"
+              className="max-w-[290px] bg-gray-950 !opacity-100 z-[100]"
+              clickable
+            />
+            <TriangleDown column="daily-volume" sortOption={sortOption} />
+          </div>
+        </button>
+        <button
+          onClick={() => sort('fdv')}
+          className="w-[160px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          FDV
+          <TriangleDown column="fdv" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('daily-change')}
+          className="w-[140px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          24h Change
+          <TriangleDown column="daily-change" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('verified')}
+          className="flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          Verified
+          <TriangleDown column="verified" sortOption={sortOption} />
+        </button>
+      </div>
 
+      <div className="flex flex-col w-full h-full gap-6">
         {filteredMarketSnapshots.length === 0 && (
           <Loading className="mt-36 sm:mt-24" />
         )}
 
-        <div className="relative flex w-full lg:w-[1072px] h-full mb-6">
+        <div className="relative flex w-full lg:w-[1200px] h-full mb-6">
           <div className="relative flex w-full h-full mb-6">
             {/* desktop: 1-column list */}
-            <div className="hidden lg:block w-full overflow-hidden">
+            <div className="hidden lg:block w-full overflow-hidden mt-12">
               <List
                 height={height - (64 + 12) * 2}
                 itemCount={filteredMarketSnapshots.length}
                 itemSize={64 + 12}
-                width={1072}
+                width={1200}
                 itemKey={(index) => `desktop-${index}`}
                 itemData={listItemData}
               >
@@ -495,7 +495,7 @@ export const DiscoverContainer = () => {
             {/* mobile: 1-column list */}
             <div className="block md:hidden w-full overflow-hidden">
               <List
-                height={height - (MOBILE_ROW_HEIGHT + 12)}
+                height={height - 20}
                 itemCount={filteredMarketSnapshots.length}
                 itemSize={MOBILE_ROW_HEIGHT + 12}
                 width="100%"
