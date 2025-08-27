@@ -72,9 +72,9 @@ export const MarketDailySnapshotCard = ({
             `/trade?inputCurrency=${baseCurrency.address}&outputCurrency=${quoteCurrency.address}`,
           )
         }}
-        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-gray-800'} hidden lg:flex max-w-[1200px] text-left h-16 px-5 py-4 rounded-2xl justify-start items-center gap-4`}
+        className={`transition-colors duration-500 py-3 px-5 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-transparent'} hidden lg:flex max-w-[1200px] text-left px-5 justify-start items-center gap-4`}
       >
-        <div className="flex w-[350px] items-center gap-3">
+        <div className="flex w-[350px] items-center gap-3 h-[37px]">
           <div className="w-14 h-8 shrink-0 relative">
             <CurrencyIcon
               chain={chain}
@@ -134,6 +134,18 @@ export const MarketDailySnapshotCard = ({
           {verified ? <VerifiedSvg /> : <></>}
         </div>
       </button>
+
+      <div className="mx-5">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1165"
+          height="1"
+          viewBox="0 0 1165 1"
+          fill="none"
+        >
+          <path d="M0 1H1165" stroke="#2D2D2E" />
+        </svg>
+      </div>
 
       <button
         onClick={() => {
