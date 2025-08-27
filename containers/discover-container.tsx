@@ -19,6 +19,7 @@ import { Loading } from '../components/loading'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { currentTimestampInSeconds } from '../utils/date'
+import { useWindowHeight } from '../hooks/useWindowHeight'
 
 const MOBILE_ROW_HEIGHT = 168
 
@@ -157,6 +158,7 @@ const MarketSnapshotGridCell = ({
 }
 
 export const DiscoverContainer = () => {
+  const height = useWindowHeight()
   const { selectedChain } = useChainContext()
   const { currencies } = useCurrencyContext()
   const { lastIndexedBlockNumber } = useTransactionContext()
@@ -362,28 +364,28 @@ export const DiscoverContainer = () => {
 
   return (
     <div className="text-white mb-4 flex w-full lg:w-[1072px]  flex-col items-center mt-6 lg:mt-8 px-4 lg:px-0 gap-4 lg:gap-8">
-      <div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-          <div className="relative h-4 w-4">
-            <SearchSvg />
-          </div>
-        </div>
-        <div className="inline-block">
-          <div className="invisible h-0 mx-[29px]" aria-hidden="true">
-            Search by markets
-          </div>
-          <input
-            type="search"
-            name="discover-search"
-            id="search"
-            autoComplete="off"
-            className="inline w-full pl-10 py-2 lg:py-3 text-white bg-gray-800 rounded-xl border border-solid border-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-400 flex-col placeholder:text-gray-400 text-xs sm:text-sm"
-            placeholder="Search markets"
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-          />
-        </div>
-      </div>
+      {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
+      {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
+      {/*    <div className="relative h-4 w-4">*/}
+      {/*      <SearchSvg />*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*  <div className="inline-block">*/}
+      {/*    <div className="invisible h-0 mx-[29px]" aria-hidden="true">*/}
+      {/*      Search by markets*/}
+      {/*    </div>*/}
+      {/*    <input*/}
+      {/*      type="search"*/}
+      {/*      name="discover-search"*/}
+      {/*      id="search"*/}
+      {/*      autoComplete="off"*/}
+      {/*      className="inline w-full pl-10 py-2 lg:py-3 text-white bg-gray-800 rounded-xl border border-solid border-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-400 flex-col placeholder:text-gray-400 text-xs sm:text-sm"*/}
+      {/*      placeholder="Search markets"*/}
+      {/*      value={searchValue}*/}
+      {/*      onChange={(event) => setSearchValue(event.target.value)}*/}
+      {/*    />*/}
+      {/*  </div>*/}
+      {/*</div>*/}
 
       <div className="flex flex-col w-full h-full gap-6">
         <div className="hidden lg:flex self-stretch px-4 justify-start items-center gap-4">
@@ -460,7 +462,7 @@ export const DiscoverContainer = () => {
             {/* desktop: 1-column list */}
             <div className="hidden lg:block w-full overflow-hidden">
               <List
-                height={680}
+                height={height - (64 + 12) * 2}
                 itemCount={filteredMarketSnapshots.length}
                 itemSize={64 + 12}
                 width={1072}
@@ -476,7 +478,7 @@ export const DiscoverContainer = () => {
               <Grid
                 columnCount={2}
                 columnWidth={Math.floor((window.innerWidth - 24 * 2) / 2)}
-                height={680}
+                height={height}
                 rowCount={Math.ceil(filteredMarketSnapshots.length / 2)}
                 rowHeight={MOBILE_ROW_HEIGHT + 12}
                 width={window.innerWidth - 24 * 2}
@@ -492,7 +494,7 @@ export const DiscoverContainer = () => {
             {/* mobile: 1-column list */}
             <div className="block md:hidden w-full overflow-hidden">
               <List
-                height={680}
+                height={height}
                 itemCount={filteredMarketSnapshots.length}
                 itemSize={MOBILE_ROW_HEIGHT + 12}
                 width="100%"
