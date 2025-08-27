@@ -10,7 +10,6 @@ import { isAddressEqual } from 'viem'
 
 import { MarketDailySnapshotCard } from '../components/card/market/market-daily-snapshot-card'
 import { useChainContext } from '../contexts/chain-context'
-import { SearchSvg } from '../components/svg/search-svg'
 import { QuestionMarkSvg } from '../components/svg/question-mark-svg'
 import { TriangleDownSvg } from '../components/svg/triangle-down-svg'
 import { useTransactionContext } from '../contexts/transaction-context'
@@ -165,7 +164,7 @@ export const DiscoverContainer = () => {
   const prevMarketSnapshots = useRef<MarketSnapshot[]>([])
   const prevSubgraphBlockNumber = useRef<number>(0)
 
-  const [searchValue, setSearchValue] = React.useState('')
+  // const [searchValue, setSearchValue] = React.useState('')
   const [sortOption, setSortOption] = useState<SortOption>('none')
 
   useEffect(() => {
@@ -263,72 +262,74 @@ export const DiscoverContainer = () => {
   })
 
   const filteredMarketSnapshots = useMemo(() => {
-    return (marketSnapshots ?? prevMarketSnapshots.current ?? [])
-      .filter(
-        (marketSnapshot) =>
-          marketSnapshot.base.symbol
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          marketSnapshot.quote.symbol
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          marketSnapshot.base.name
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          marketSnapshot.quote.name
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          marketSnapshot.base.address
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          marketSnapshot.quote.address
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          `${marketSnapshot.base.name}${marketSnapshot.quote.name}`
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          `${marketSnapshot.base.symbol}${marketSnapshot.quote.symbol}`
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()),
-      )
-      .sort((a, b) => {
-        if (sortOption === 'none') {
-          return (
-            b.volume24hUSD - a.volume24hUSD ||
-            b.totalValueLockedUSD - a.totalValueLockedUSD
-          )
-        } else if (sortOption === 'market-asc') {
-          return a.base.symbol.localeCompare(b.base.symbol)
-        } else if (sortOption === 'market-desc') {
-          return b.base.symbol.localeCompare(a.base.symbol)
-        } else if (sortOption === 'age-asc') {
-          return a.createdAtTimestamp - b.createdAtTimestamp
-        } else if (sortOption === 'age-desc') {
-          return b.createdAtTimestamp - a.createdAtTimestamp
-        } else if (sortOption === 'price-asc') {
-          return a.price - b.price
-        } else if (sortOption === 'price-desc') {
-          return b.price - a.price
-        } else if (sortOption === 'daily-volume-asc') {
-          return a.volume24hUSD - b.volume24hUSD
-        } else if (sortOption === 'daily-volume-desc') {
-          return b.volume24hUSD - a.volume24hUSD
-        } else if (sortOption === 'fdv-asc') {
-          return a.fdv - b.fdv
-        } else if (sortOption === 'fdv-desc') {
-          return b.fdv - a.fdv
-        } else if (sortOption === 'daily-change-asc') {
-          return a.priceChange24h - b.priceChange24h
-        } else if (sortOption === 'daily-change-desc') {
-          return b.priceChange24h - a.priceChange24h
-        } else if (sortOption === 'verified-asc') {
-          return a.verified ? -1 : 1
-        } else if (sortOption === 'verified-desc') {
-          return b.verified ? -1 : 1
-        }
-        return 0
-      })
-  }, [marketSnapshots, searchValue, sortOption])
+    return (
+      (marketSnapshots ?? prevMarketSnapshots.current ?? [])
+        // .filter(
+        //   (marketSnapshot) =>
+        //     marketSnapshot.base.symbol
+        //       .toLowerCase()
+        //       .includes(searchValue.toLowerCase()) ||
+        //     marketSnapshot.quote.symbol
+        //       .toLowerCase()
+        //       .includes(searchValue.toLowerCase()) ||
+        //     marketSnapshot.base.name
+        //       .toLowerCase()
+        //       .includes(searchValue.toLowerCase()) ||
+        //     marketSnapshot.quote.name
+        //       .toLowerCase()
+        //       .includes(searchValue.toLowerCase()) ||
+        //     marketSnapshot.base.address
+        //       .toLowerCase()
+        //       .includes(searchValue.toLowerCase()) ||
+        //     marketSnapshot.quote.address
+        //       .toLowerCase()
+        //       .includes(searchValue.toLowerCase()) ||
+        //     `${marketSnapshot.base.name}${marketSnapshot.quote.name}`
+        //       .toLowerCase()
+        //       .includes(searchValue.toLowerCase()) ||
+        //     `${marketSnapshot.base.symbol}${marketSnapshot.quote.symbol}`
+        //       .toLowerCase()
+        //       .includes(searchValue.toLowerCase()),
+        // )
+        .sort((a, b) => {
+          if (sortOption === 'none') {
+            return (
+              b.volume24hUSD - a.volume24hUSD ||
+              b.totalValueLockedUSD - a.totalValueLockedUSD
+            )
+          } else if (sortOption === 'market-asc') {
+            return a.base.symbol.localeCompare(b.base.symbol)
+          } else if (sortOption === 'market-desc') {
+            return b.base.symbol.localeCompare(a.base.symbol)
+          } else if (sortOption === 'age-asc') {
+            return a.createdAtTimestamp - b.createdAtTimestamp
+          } else if (sortOption === 'age-desc') {
+            return b.createdAtTimestamp - a.createdAtTimestamp
+          } else if (sortOption === 'price-asc') {
+            return a.price - b.price
+          } else if (sortOption === 'price-desc') {
+            return b.price - a.price
+          } else if (sortOption === 'daily-volume-asc') {
+            return a.volume24hUSD - b.volume24hUSD
+          } else if (sortOption === 'daily-volume-desc') {
+            return b.volume24hUSD - a.volume24hUSD
+          } else if (sortOption === 'fdv-asc') {
+            return a.fdv - b.fdv
+          } else if (sortOption === 'fdv-desc') {
+            return b.fdv - a.fdv
+          } else if (sortOption === 'daily-change-asc') {
+            return a.priceChange24h - b.priceChange24h
+          } else if (sortOption === 'daily-change-desc') {
+            return b.priceChange24h - a.priceChange24h
+          } else if (sortOption === 'verified-asc') {
+            return a.verified ? -1 : 1
+          } else if (sortOption === 'verified-desc') {
+            return b.verified ? -1 : 1
+          }
+          return 0
+        })
+    )
+  }, [marketSnapshots, sortOption])
 
   const sort = useCallback(
     (column: Column) => {
@@ -363,7 +364,7 @@ export const DiscoverContainer = () => {
   )
 
   return (
-    <div className="fixed text-white mb-4 flex w-full lg:w-[1072px]  flex-col items-center mt-6 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
+    <div className="text-white mb-4 flex w-full lg:w-[1072px]  flex-col items-center mt-6 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
       {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
       {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
       {/*    <div className="relative h-4 w-4">*/}
@@ -388,7 +389,7 @@ export const DiscoverContainer = () => {
       {/*</div>*/}
 
       <div className="flex flex-col w-full h-full gap-6">
-        <div className="hidden lg:flex z-50 top-[100px] w-[1072px] px-4 justify-start items-center gap-4">
+        <div className="hidden lg:flex top-[100px] w-[1072px] px-4 justify-start items-center gap-4">
           <button
             onClick={() => sort('market')}
             className="w-[330px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
@@ -474,7 +475,7 @@ export const DiscoverContainer = () => {
             </div>
 
             {/* tablet: 2-column grid (md~lg) */}
-            <div className="hidden md:block lg:hidden overflow-hidden max-w-[840px]">
+            <div className="hidden md:block lg:hidden overflow-hidden max-w-full">
               <Grid
                 columnCount={2}
                 columnWidth={Math.floor((window.innerWidth - 24 * 2) / 2 - 36)}
@@ -494,7 +495,7 @@ export const DiscoverContainer = () => {
             {/* mobile: 1-column list */}
             <div className="block md:hidden w-full overflow-hidden">
               <List
-                height={height}
+                height={height - (MOBILE_ROW_HEIGHT + 12)}
                 itemCount={filteredMarketSnapshots.length}
                 itemSize={MOBILE_ROW_HEIGHT + 12}
                 width="100%"
