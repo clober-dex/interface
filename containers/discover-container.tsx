@@ -387,72 +387,72 @@ export const DiscoverContainer = () => {
       {/*  </div>*/}
       {/*</div>*/}
 
-      <div className="flex flex-col w-full h-full gap-6">
-        <div className="hidden lg:flex fixed top-[100px] w-[1072px] z-50 px-4 justify-start items-center gap-4">
-          <button
-            onClick={() => sort('market')}
-            className="w-[330px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            Market
-            <TriangleDown column="market" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('age')}
-            className="w-[180px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            Age
-            <TriangleDown column="age" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('price')}
-            className="w-[150px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            Price
-            <TriangleDown column="price" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('daily-volume')}
-            className="flex flex-row gap-1 w-[160px] text-sm font-semibold hover:underline cursor-pointer"
-          >
-            24h Volume
-            <div className="flex mr-auto justify-center items-center">
-              <QuestionMarkSvg
-                data-tooltip-id="24h-volume-info"
-                data-tooltip-place="bottom-end"
-                data-tooltip-html={'Cumulative volume from 00:00 UTC to now.'}
-                className="w-3 h-3"
-              />
-              <Tooltip
-                id="24h-volume-info"
-                className="max-w-[300px] bg-gray-950 !opacity-100 z-[100]"
-                clickable
-              />
-              <TriangleDown column="daily-volume" sortOption={sortOption} />
-            </div>
-          </button>
-          <button
-            onClick={() => sort('fdv')}
-            className="w-[160px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            FDV
-            <TriangleDown column="fdv" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('daily-change')}
-            className="w-[140px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            24h Change
-            <TriangleDown column="daily-change" sortOption={sortOption} />
-          </button>
-          <button
-            onClick={() => sort('verified')}
-            className="flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
-          >
-            Verified
-            <TriangleDown column="verified" sortOption={sortOption} />
-          </button>
-        </div>
+      <div className="hidden absolute lg:flex z-50 top-[100px] w-[1072px] px-4 justify-start items-center gap-4">
+        <button
+          onClick={() => sort('market')}
+          className="w-[330px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          Market
+          <TriangleDown column="market" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('age')}
+          className="w-[180px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          Age
+          <TriangleDown column="age" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('price')}
+          className="w-[150px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          Price
+          <TriangleDown column="price" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('daily-volume')}
+          className="flex flex-row gap-1 w-[160px] text-sm font-semibold hover:underline cursor-pointer"
+        >
+          24h Volume
+          <div className="flex mr-auto justify-center items-center">
+            <QuestionMarkSvg
+              data-tooltip-id="24h-volume-info"
+              data-tooltip-place="bottom-end"
+              data-tooltip-html={'Cumulative volume from 00:00 UTC to now.'}
+              className="w-3 h-3"
+            />
+            <Tooltip
+              id="24h-volume-info"
+              className="max-w-[300px] bg-gray-950 !opacity-100 z-[100]"
+              clickable
+            />
+            <TriangleDown column="daily-volume" sortOption={sortOption} />
+          </div>
+        </button>
+        <button
+          onClick={() => sort('fdv')}
+          className="w-[160px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          FDV
+          <TriangleDown column="fdv" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('daily-change')}
+          className="w-[140px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          24h Change
+          <TriangleDown column="daily-change" sortOption={sortOption} />
+        </button>
+        <button
+          onClick={() => sort('verified')}
+          className="flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+        >
+          Verified
+          <TriangleDown column="verified" sortOption={sortOption} />
+        </button>
+      </div>
 
+      <div className="flex flex-col w-full h-full gap-6">
         {filteredMarketSnapshots.length === 0 && (
           <Loading className="mt-36 sm:mt-24" />
         )}
@@ -474,12 +474,10 @@ export const DiscoverContainer = () => {
             </div>
 
             {/* tablet: 2-column grid (md~lg) */}
-            <div className="hidden md:block lg:hidden overflow-hidden max-w-[810px]">
+            <div className="hidden md:block lg:hidden overflow-hidden max-w-[840px]">
               <Grid
                 columnCount={2}
-                columnWidth={Math.floor(
-                  (window.innerWidth - 24 * 2) / 2 - 24 * 2,
-                )}
+                columnWidth={Math.floor((window.innerWidth - 24 * 2) / 2 - 36)}
                 height={height}
                 rowCount={Math.ceil(filteredMarketSnapshots.length / 2)}
                 rowHeight={MOBILE_ROW_HEIGHT + 12}
