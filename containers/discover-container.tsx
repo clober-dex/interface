@@ -364,7 +364,7 @@ export const DiscoverContainer = () => {
   )
 
   return (
-    <div className="text-white mb-4 flex w-full lg:w-[1200px]  flex-col items-center mt-6 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
+    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-6 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
       {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
       {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
       {/*    <div className="relative h-4 w-4">*/}
@@ -388,7 +388,7 @@ export const DiscoverContainer = () => {
       {/*  </div>*/}
       {/*</div>*/}
 
-      <div className="absolute hidden lg:flex top-24 w-[1200px] px-4 justify-start items-center gap-4 z-50">
+      <div className="absolute hidden lg:flex top-24 w-[1200px] px-4 justify-start items-center gap-4 z-[1]">
         <button
           onClick={() => sort('market')}
           className="w-[410px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
@@ -463,7 +463,7 @@ export const DiscoverContainer = () => {
             {/* desktop: 1-column list */}
             <div className="hidden lg:block w-full overflow-hidden mt-12">
               <List
-                height={height - (64 + 12) * 2}
+                height={Math.floor(height - 200)}
                 itemCount={filteredMarketSnapshots.length}
                 itemSize={64 + 12}
                 width={1200}
