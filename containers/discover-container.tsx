@@ -364,7 +364,7 @@ export const DiscoverContainer = () => {
   )
 
   return (
-    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-6 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
+    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-10 lg:mt-8 px-4 md:px-0 gap-4 lg:gap-8">
       {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
       {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
       {/*    <div className="relative h-4 w-4">*/}
@@ -388,31 +388,31 @@ export const DiscoverContainer = () => {
       {/*  </div>*/}
       {/*</div>*/}
 
-      <div className="absolute hidden lg:flex top-24 w-[1200px] px-4 justify-start items-center gap-4 z-[1]">
+      <div className="text-[#8d94a1] text-sm font-medium absolute hidden lg:flex top-24 w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
         <button
           onClick={() => sort('market')}
-          className="w-[410px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+          className="w-[410px] flex items-center hover:underline cursor-pointer"
         >
           Market
           <TriangleDown column="market" sortOption={sortOption} />
         </button>
         <button
           onClick={() => sort('age')}
-          className="w-[170px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+          className="w-[170px] flex items-center hover:underline cursor-pointer"
         >
           Age
           <TriangleDown column="age" sortOption={sortOption} />
         </button>
         <button
           onClick={() => sort('price')}
-          className="w-[150px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+          className="w-[150px] flex items-center hover:underline cursor-pointer"
         >
           Price
           <TriangleDown column="price" sortOption={sortOption} />
         </button>
         <button
           onClick={() => sort('daily-volume')}
-          className="flex flex-row gap-1 w-[170px] text-sm font-semibold hover:underline cursor-pointer"
+          className="flex flex-row gap-1.5 w-[170px] text-sm font-semibold hover:underline cursor-pointer"
         >
           24h Volume
           <div className="flex mr-auto justify-center items-center">
@@ -432,21 +432,21 @@ export const DiscoverContainer = () => {
         </button>
         <button
           onClick={() => sort('fdv')}
-          className="w-[160px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+          className="w-[160px] flex items-center hover:underline cursor-pointer"
         >
           FDV
           <TriangleDown column="fdv" sortOption={sortOption} />
         </button>
         <button
           onClick={() => sort('daily-change')}
-          className="w-[140px] flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+          className="w-[140px] flex items-center hover:underline cursor-pointer"
         >
           24h Change
           <TriangleDown column="daily-change" sortOption={sortOption} />
         </button>
         <button
           onClick={() => sort('verified')}
-          className="flex items-center gap-1 text-sm font-semibold hover:underline cursor-pointer"
+          className="flex items-center hover:underline cursor-pointer"
         >
           Verified
           <TriangleDown column="verified" sortOption={sortOption} />

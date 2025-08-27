@@ -101,38 +101,58 @@ export const MarketDailySnapshotCard = ({
             </div>
           </div>
         </div>
-        <div className="w-[160px] h-full text-white text-base font-semibold gap-2 flex flex-row items-center">
+        <div className="w-[160px] h-full text-white text-base font-semibold gap-1 flex flex-row items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="17"
-            height="18"
-            viewBox="0 0 17 18"
+            width="14"
+            height="15"
+            viewBox="0 0 14 15"
             fill="none"
-            className="pt-0.5"
           >
             <path
-              d="M6 10.6667L8.5 9V4.83333M1 9C1 9.98491 1.19399 10.9602 1.5709 11.8701C1.94781 12.7801 2.50026 13.6069 3.1967 14.3033C3.89314 14.9997 4.71993 15.5522 5.62987 15.9291C6.53982 16.306 7.51509 16.5 8.5 16.5C9.48491 16.5 10.4602 16.306 11.3701 15.9291C12.2801 15.5522 13.1069 14.9997 13.8033 14.3033C14.4997 13.6069 15.0522 12.7801 15.4291 11.8701C15.806 10.9602 16 9.98491 16 9C16 8.01509 15.806 7.03982 15.4291 6.12987C15.0522 5.21993 14.4997 4.39314 13.8033 3.6967C13.1069 3.00026 12.2801 2.44781 11.3701 2.0709C10.4602 1.69399 9.48491 1.5 8.5 1.5C7.51509 1.5 6.53982 1.69399 5.62987 2.0709C4.71993 2.44781 3.89314 3.00026 3.1967 3.6967C2.50026 4.39314 1.94781 5.21993 1.5709 6.12987C1.19399 7.03982 1 8.01509 1 9Z"
-              stroke="#6B7280"
-              strokeWidth="1.5"
+              d="M5 8.83333L7 7.5V4.16667M1 7.5C1 8.28793 1.15519 9.06815 1.45672 9.7961C1.75825 10.5241 2.20021 11.1855 2.75736 11.7426C3.31451 12.2998 3.97595 12.7417 4.7039 13.0433C5.43185 13.3448 6.21207 13.5 7 13.5C7.78793 13.5 8.56815 13.3448 9.2961 13.0433C10.0241 12.7417 10.6855 12.2998 11.2426 11.7426C11.7998 11.1855 12.2417 10.5241 12.5433 9.7961C12.8448 9.06815 13 8.28793 13 7.5C13 6.71207 12.8448 5.93185 12.5433 5.2039C12.2417 4.47595 11.7998 3.81451 11.2426 3.25736C10.6855 2.70021 10.0241 2.25825 9.2961 1.95672C8.56815 1.65519 7.78793 1.5 7 1.5C6.21207 1.5 5.43185 1.65519 4.7039 1.95672C3.97595 2.25825 3.31451 2.70021 2.75736 3.25736C2.20021 3.81451 1.75825 4.47595 1.45672 5.2039C1.15519 5.93185 1 6.71207 1 7.5Z"
+              stroke="#8D94A1"
+              strokeWidth="1.4"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
-          {createAt > 0 ? convertShortTimeAgo(createAt * 1000) : '-'}
+          <span className="justify-start text-white text-sm font-medium">
+            {createAt > 0 ? convertShortTimeAgo(createAt * 1000) : '-'}
+          </span>
         </div>
-        <div className="w-[140px] text-white text-base font-semibold">
-          ${formatTinyNumber(price)}
+        <div className="flex flex-row gap-1 w-[140px] text-white text-base font-semibold">
+          <span className="justify-start text-[#8d94a1] text-sm font-medium">
+            $
+          </span>
+          <span className="justify-start text-white text-sm font-medium">
+            {formatTinyNumber(price)}
+          </span>
         </div>
-        <div className="w-[140px] text-white text-base font-semibold">
-          ${formatAbbreviatedNumberString(dailyVolume)}
+        <div className="flex flex-row gap-1 w-[140px] text-white text-base font-semibold">
+          <span className="justify-start text-[#8d94a1] text-sm font-medium">
+            $
+          </span>
+          <span className="justify-start text-white text-sm font-medium">
+            {formatAbbreviatedNumberString(dailyVolume)}
+          </span>
         </div>
-        <div className="w-[140px] text-white text-base font-semibold">
-          {fdv > 0
-            ? `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
-            : '-'}
+        <div className="flex flex-row gap-1 w-[140px] text-white text-base font-semibold">
+          {fdv > 0 ? (
+            <div className="flex flex-row gap-1 w-[140px] text-white text-base font-semibold">
+              <span className="justify-start text-[#8d94a1] text-sm font-medium">
+                $
+              </span>
+              <span className="justify-start text-white text-sm font-medium">
+                {formatAbbreviatedNumberString(new BigNumber(fdv))}
+              </span>
+            </div>
+          ) : (
+            '-'
+          )}
         </div>
         <div
-          className={`w-[120px] ${dailyChange === 0 ? 'text-white' : dailyChange > 0 ? 'text-green-500' : 'text-red-500'} text-base font-semibold`}
+          className={`w-[120px] ${dailyChange === 0 ? 'text-white' : dailyChange > 0 ? 'text-green-500' : 'text-red-500'} text-sm font-medium`}
         >
           {formatAbbreviatedNumberString(dailyChange.toFixed(2), 2)}%
         </div>
