@@ -89,13 +89,19 @@ export const MarketDailySnapshotCard = ({
               className="w-8 h-8 absolute left-6 top-0 rounded-full"
             />
           </div>
-          <div className="flex items-center text-white text-base font-bold gap-1 text-nowrap overflow-y-scroll max-w-[300px]">
-            <div>{baseCurrency.symbol}</div>
-            <div>-</div>
-            <div>{quoteCurrency.symbol}</div>
+          <div className="flex items-center text-white text-base font-semibold gap-1 text-nowrap overflow-y-scroll max-w-[300px]">
+            <div className="justify-start text-white text-base font-semibold">
+              {baseCurrency.symbol}
+            </div>
+            <div className="justify-start text-[#8d94a1] text-base font-semibold">
+              /
+            </div>
+            <div className="justify-start text-white text-base font-semibold">
+              {quoteCurrency.symbol}
+            </div>
           </div>
         </div>
-        <div className="w-[160px] h-full text-white text-base font-bold gap-2 flex flex-row items-center">
+        <div className="w-[160px] h-full text-white text-base font-semibold gap-2 flex flex-row items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="17"
@@ -114,23 +120,23 @@ export const MarketDailySnapshotCard = ({
           </svg>
           {createAt > 0 ? convertShortTimeAgo(createAt * 1000) : '-'}
         </div>
-        <div className="w-[140px] text-white text-base font-bold">
+        <div className="w-[140px] text-white text-base font-semibold">
           ${formatTinyNumber(price)}
         </div>
-        <div className="w-[140px] text-white text-base font-bold">
+        <div className="w-[140px] text-white text-base font-semibold">
           ${formatAbbreviatedNumberString(dailyVolume)}
         </div>
-        <div className="w-[140px] text-white text-base font-bold">
+        <div className="w-[140px] text-white text-base font-semibold">
           {fdv > 0
             ? `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
             : '-'}
         </div>
         <div
-          className={`w-[120px] ${dailyChange === 0 ? 'text-white' : dailyChange > 0 ? 'text-green-500' : 'text-red-500'} text-base font-bold`}
+          className={`w-[120px] ${dailyChange === 0 ? 'text-white' : dailyChange > 0 ? 'text-green-500' : 'text-red-500'} text-base font-semibold`}
         >
           {formatAbbreviatedNumberString(dailyChange.toFixed(2), 2)}%
         </div>
-        <div className="w-[59px] flex h-full text-white text-base font-bold items-center justify-center">
+        <div className="w-[59px] flex h-full text-white text-base font-semibold items-center justify-center">
           {verified ? <VerifiedSvg /> : <></>}
         </div>
       </button>
@@ -171,11 +177,13 @@ export const MarketDailySnapshotCard = ({
             />
           </div>
           <div className="flex gap-1 justify-start items-center">
-            <div className="text-white text-base font-bold">
+            <div className="justify-start text-white text-base font-semibold">
               {baseCurrency.symbol}
             </div>
-            <div className="text-white text-base font-bold">-</div>
-            <div className="text-white text-base font-bold">
+            <div className="justify-start text-[#8d94a1] text-base font-semibold">
+              /
+            </div>
+            <div className="justify-start text-white text-base font-semibold">
               {quoteCurrency.symbol}
             </div>
           </div>
@@ -187,7 +195,7 @@ export const MarketDailySnapshotCard = ({
           <div className="w-full flex flex-row flex-1 h-11 justify-start items-start gap-2 text-left">
             <div className="flex flex-1 w-full flex-col justify-start items-center gap-1">
               <div className="self-stretch text-gray-400 text-xs">Age</div>
-              <div className="flex flex-row self-stretch text-white text-sm font-bold items-center gap-1 text-nowrap">
+              <div className="flex flex-row self-stretch text-white text-sm font-semibold items-center gap-1 text-nowrap">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="18"
@@ -209,7 +217,7 @@ export const MarketDailySnapshotCard = ({
             </div>
             <div className="flex flex-1 w-full flex-col justify-start items-center gap-1">
               <div className="self-stretch text-gray-400 text-xs">Price</div>
-              <div className="self-stretch text-white text-sm font-bold">
+              <div className="self-stretch text-white text-sm font-semibold">
                 ${formatTinyNumber(price)}
               </div>
             </div>
@@ -232,7 +240,7 @@ export const MarketDailySnapshotCard = ({
                 </div>
                 24h Volume
               </div>
-              <div className="self-stretch text-white text-sm font-bold">
+              <div className="self-stretch text-white text-sm font-semibold">
                 ${formatAbbreviatedNumberString(dailyVolume)}
               </div>
             </div>
@@ -241,7 +249,7 @@ export const MarketDailySnapshotCard = ({
           <div className="w-full flex flex-row flex-1 h-11 justify-start items-start gap-2 text-left">
             <div className="flex w-full flex-col justify-start items-center gap-2">
               <div className="self-stretch text-gray-400 text-xs">FDV</div>
-              <div className="flex flex-row self-stretch text-white text-sm font-bold items-center gap-1">
+              <div className="flex flex-row self-stretch text-white text-sm font-semibold items-center gap-1">
                 {fdv > 0
                   ? `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
                   : '-'}
@@ -251,7 +259,7 @@ export const MarketDailySnapshotCard = ({
               <div className="self-stretch text-gray-400 text-xs">
                 24h Change
               </div>
-              <div className="self-stretch text-white text-sm font-bold">
+              <div className="self-stretch text-white text-sm font-semibold">
                 <div
                   className={`${
                     dailyChange === 0
