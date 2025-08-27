@@ -447,7 +447,7 @@ export const DiscoverContainer = () => {
         <div className="relative flex w-full lg:w-[1200px] h-full mb-6">
           <div className="relative flex w-full h-full mb-6 bg-[#161617] rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930]">
             {/* desktop: 1-column list */}
-            <div className="hidden lg:block w-full overflow-hidden mt-12">
+            <div className="hidden lg:block w-full overflow-hidden mt-10">
               <List
                 height={Math.floor(height - 200)}
                 itemCount={filteredMarketSnapshots.length}
