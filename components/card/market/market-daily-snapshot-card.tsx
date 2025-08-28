@@ -249,23 +249,24 @@ export const MarketDailySnapshotCard = ({
           </div>
         </div>
 
-        <div className="flex flex-col w-full gap-[12px]">
+        <div className="flex flex-col w-full gap-3.5">
           <div className="w-full flex flex-row flex-1 h-11 justify-start items-start gap-2 text-left">
-            <div className="flex flex-1 w-full flex-col justify-start items-center gap-1">
-              <div className="self-stretch text-gray-400 text-xs">Age</div>
-              <div className="flex flex-row self-stretch text-white text-sm font-semibold items-center gap-1 text-nowrap">
+            <div className="flex flex-1 w-full flex-col justify-start items-center gap-1.5">
+              <div className="self-stretch text-gray-500 text-xs font-medium">
+                Age
+              </div>
+              <div className="flex flex-row self-stretch text-white text-sm font-medium items-center gap-1 text-nowrap">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 18 18"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
                   fill="none"
-                  className="mt-0.5"
                 >
                   <path
-                    d="M6.66667 10.5556L9 9V5.11111M2 9C2 9.91925 2.18106 10.8295 2.53284 11.6788C2.88463 12.5281 3.40024 13.2997 4.05025 13.9497C4.70026 14.5998 5.47194 15.1154 6.32122 15.4672C7.1705 15.8189 8.08075 16 9 16C9.91925 16 10.8295 15.8189 11.6788 15.4672C12.5281 15.1154 13.2997 14.5998 13.9497 13.9497C14.5998 13.2997 15.1154 12.5281 15.4672 11.6788C15.8189 10.8295 16 9.91925 16 9C16 8.08075 15.8189 7.1705 15.4672 6.32122C15.1154 5.47194 14.5998 4.70026 13.9497 4.05025C13.2997 3.40024 12.5281 2.88463 11.6788 2.53284C10.8295 2.18106 9.91925 2 9 2C8.08075 2 7.1705 2.18106 6.32122 2.53284C5.47194 2.88463 4.70026 3.40024 4.05025 4.05025C3.40024 4.70026 2.88463 5.47194 2.53284 6.32122C2.18106 7.1705 2 8.08075 2 9Z"
+                    d="M6 9.33333L8 8V4.66667M2 8C2 8.78793 2.15519 9.56815 2.45672 10.2961C2.75825 11.0241 3.20021 11.6855 3.75736 12.2426C4.31451 12.7998 4.97595 13.2417 5.7039 13.5433C6.43185 13.8448 7.21207 14 8 14C8.78793 14 9.56815 13.8448 10.2961 13.5433C11.0241 13.2417 11.6855 12.7998 12.2426 12.2426C12.7998 11.6855 13.2417 11.0241 13.5433 10.2961C13.8448 9.56815 14 8.78793 14 8C14 7.21207 13.8448 6.43185 13.5433 5.7039C13.2417 4.97595 12.7998 4.31451 12.2426 3.75736C11.6855 3.20021 11.0241 2.75825 10.2961 2.45672C9.56815 2.15519 8.78793 2 8 2C7.21207 2 6.43185 2.15519 5.7039 2.45672C4.97595 2.75825 4.31451 3.20021 3.75736 3.75736C3.20021 4.31451 2.75825 4.97595 2.45672 5.7039C2.15519 6.43185 2 7.21207 2 8Z"
                     stroke="#6B7280"
-                    strokeWidth="1.5"
+                    strokeWidth="1.2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -273,36 +274,53 @@ export const MarketDailySnapshotCard = ({
                 {createAt > 0 ? convertShortTimeAgo(createAt * 1000) : '-'}
               </div>
             </div>
-            <div className="flex flex-1 w-full flex-col justify-start items-center gap-1">
-              <div className="self-stretch text-gray-400 text-xs">Price</div>
-              <div className="self-stretch text-white text-sm font-semibold">
-                ${formatTinyNumber(price)}
+            <div className="flex flex-1 w-full flex-col justify-start items-center gap-1.5">
+              <div className="self-stretch text-gray-500 text-xs font-medium">
+                Price
+              </div>
+              <div className="self-stretch text-white text-sm font-medium flex flex-row gap-0.5">
+                <div className="justify-start text-[#8d94a1] text-sm font-medium">
+                  $
+                </div>
+                {formatTinyNumber(price)}
               </div>
             </div>
-            <div className="flex flex-1 flex-col justify-start items-center gap-2">
-              <div className="flex w-full ml-auto self-stretch text-gray-400 text-xs text-nowrap gap-1">
+            <div className="flex flex-1 w-full flex-col justify-start items-center gap-1.5">
+              <div className="flex w-full ml-auto self-stretch text-gray-500 text-xs font-medium text-nowrap gap-1">
                 24h Volume
               </div>
-              <div className="self-stretch text-white text-sm font-semibold">
-                ${formatAbbreviatedNumberString(dailyVolume)}
+              <div className="self-stretch text-white text-sm font-medium flex flex-row gap-0.5">
+                <div className="justify-start text-[#8d94a1] text-sm font-medium">
+                  $
+                </div>
+                {formatAbbreviatedNumberString(dailyVolume)}
               </div>
             </div>
           </div>
 
           <div className="w-full flex flex-row flex-1 h-11 justify-start items-start gap-2 text-left">
-            <div className="flex w-full flex-col justify-start items-center gap-2">
-              <div className="self-stretch text-gray-400 text-xs">FDV</div>
-              <div className="flex flex-row self-stretch text-white text-sm font-semibold items-center gap-1">
-                {fdv > 0
-                  ? `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
-                  : '-'}
+            <div className="flex flex-1 w-full flex-col justify-start items-center gap-1.5">
+              <div className="self-stretch text-gray-500 text-xs font-medium">
+                FDV
+              </div>
+              <div className="self-stretch text-white text-sm font-medium flex flex-row gap-0.5">
+                {fdv > 0 ? (
+                  <>
+                    <div className="justify-start text-[#8d94a1] text-sm font-medium">
+                      $
+                    </div>
+                    {formatAbbreviatedNumberString(new BigNumber(fdv))}
+                  </>
+                ) : (
+                  '-'
+                )}
               </div>
             </div>
-            <div className="flex w-full flex-col justify-start items-center gap-2">
-              <div className="self-stretch text-gray-400 text-xs">
+            <div className="flex flex-1 w-full flex-col justify-start items-center gap-1.5">
+              <div className="self-stretch text-gray-500 text-xs font-medium">
                 24h Change
               </div>
-              <div className="self-stretch text-white text-sm font-semibold">
+              <div className="self-stretch text-white text-sm font-medium flex flex-row">
                 <div
                   className={`${
                     dailyChange === 0
@@ -316,7 +334,7 @@ export const MarketDailySnapshotCard = ({
                 </div>
               </div>
             </div>
-            <div className="flex w-full flex-col justify-start items-center gap-2"></div>
+            <div className="flex flex-1 w-full flex-col justify-start items-center gap-1.5"></div>
           </div>
         </div>
       </button>
