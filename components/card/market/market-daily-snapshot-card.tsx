@@ -73,6 +73,7 @@ export const MarketDailySnapshotCard = ({
 
   return (
     <>
+      {/*pc*/}
       <button
         onClick={() => {
           router.push(
@@ -181,7 +182,7 @@ export const MarketDailySnapshotCard = ({
         </div>
       </button>
 
-      <div className="mx-5">
+      <div className="hidden lg:mx-5">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="1165"
@@ -193,13 +194,14 @@ export const MarketDailySnapshotCard = ({
         </svg>
       </div>
 
+      {/*tablet and mobile*/}
       <button
         onClick={() => {
           router.push(
             `/trade?inputCurrency=${baseCurrency.address}&outputCurrency=${quoteCurrency.address}`,
           )
         }}
-        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-gray-800'} flex lg:hidden w-full h-[168px] p-4 bg-gray-800 rounded-xl flex-col justify-center items-start gap-4`}
+        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-[#17181e]'} flex lg:hidden w-full h-[168px] p-4 bg-gray-800 rounded-2xl flex-col justify-center items-start gap-4 outline outline-1 outline-offset-[-1px] outline-[#272930]`}
       >
         <div className="flex items-center gap-2 self-stretch">
           <div className="w-10 h-6 relative">
