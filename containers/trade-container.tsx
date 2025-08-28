@@ -812,18 +812,17 @@ export const TradeContainer = () => {
             )}
           </div>
 
-          <div className="flex flex-col items-start gap-3">
-            <div className="hidden md:flex flex-col rounded-2xl bg-[#171b24] p-6 w-fit md:w-[480px] h-[626px]">
-              {tab === 'limit' ? (
-                <LimitForm {...limitFormProps} />
-              ) : (
-                <SwapForm
-                  {...swapFormProps}
-                  closeSwapFormAction={() => setShowMobileModal(false)}
-                  actionButtonProps={swapActionButtonProps}
-                />
-              )}
-            </div>
+          {/*only tablet or pc*/}
+          <div className="hidden md:flex flex-col rounded-2xl bg-[#171b24] p-6 w-[480px] lg:w-[420px] h-[571px]">
+            {tab === 'limit' ? (
+              <LimitForm {...limitFormProps} />
+            ) : (
+              <SwapForm
+                {...swapFormProps}
+                closeSwapFormAction={() => setShowMobileModal(false)}
+                actionButtonProps={swapActionButtonProps}
+              />
+            )}
           </div>
         </div>
 

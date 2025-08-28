@@ -32,7 +32,7 @@ export const MobileFixedModal = ({
   swapActionButtonProps: ActionButtonProps
 }) => {
   return (
-    <div className="fixed flex w-full overflow-y-scroll sm:hidden bottom-0 z-[1000]">
+    <div className="fixed flex w-full overflow-y-scroll md:hidden bottom-0 z-[1000]">
       <div
         className={`${
           showMobileModal ? 'flex' : 'hidden'

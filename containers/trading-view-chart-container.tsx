@@ -101,7 +101,7 @@ export const TradingViewChartContainer = ({
         className={`lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] flex flex-col bg-[#171b24] overflow-hidden ${
           fullscreen
             ? 'w-full fixed left-0 top-0 right-0 bottom-0 z-10'
-            : 'rounded-2xl min-h-[280px] h-[300px] lg:h-full w-full md:w-[480px] lg:w-[740px] z-[0]'
+            : 'rounded-2xl min-h-[280px] h-[481px] lg:h-full w-full md:w-[480px] lg:w-[740px] z-[0]'
         }`}
       >
         <div className="left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 px-4 py-2">
