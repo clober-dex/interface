@@ -13,6 +13,11 @@ import {
   formatTinyNumber,
 } from '../../../utils/bignumber'
 import { Currency } from '../../../model/currency'
+import { shortAddress } from '../../../utils/address'
+import { CopySvg } from '../../svg/copy-svg'
+import { handleCopyClipBoard } from '../../../utils/string'
+import { Toast } from '../../toast'
+import { ClipboardSvg } from '../../svg/clipboard-svg'
 
 export const MarketDailySnapshotCard = ({
   chain,
@@ -39,6 +44,7 @@ export const MarketDailySnapshotCard = ({
   isBidTaken: boolean
   isAskTaken: boolean
 }) => {
+  const [isCopyToast, setIsCopyToast] = useState(false)
   const [flashState, setFlashState] = useState<'green' | 'red' | null>(null)
   const router = useRouter()
 
@@ -66,6 +72,17 @@ export const MarketDailySnapshotCard = ({
 
   return (
     <>
+      <Toast
+        isCopyToast={isCopyToast}
+        setIsCopyToast={setIsCopyToast}
+        durationInMs={1300}
+      >
+        <div className="w-[240px] items-center justify-center flex flex-row gap-1.5 text-white text-sm font-semibold">
+          <ClipboardSvg />
+          Address copied to clipboard
+        </div>
+      </Toast>
+
       <button
         onClick={() => {
           router.push(
@@ -89,16 +106,29 @@ export const MarketDailySnapshotCard = ({
               className="w-8 h-8 absolute left-6 top-0 rounded-full"
             />
           </div>
-          <div className="flex items-center text-white text-base font-semibold gap-1 text-nowrap overflow-y-scroll max-w-[300px]">
-            <div className="justify-start text-white text-base font-semibold">
-              {baseCurrency.symbol}
+          <div className="flex flex-col text-white text-base font-semibold gap-0.5 text-nowrap overflow-y-scroll max-w-[300px]">
+            <div className="flex flex-row gap-0.5 justify-start">
+              <div className="justify-start text-white text-base font-semibold">
+                {baseCurrency.symbol}
+              </div>
+              <div className="justify-start text-[#8d94a1] text-base font-semibold">
+                /
+              </div>
+              <div className="justify-start text-white text-base font-semibold">
+                {quoteCurrency.symbol}
+              </div>
             </div>
-            <div className="justify-start text-[#8d94a1] text-base font-semibold">
-              /
-            </div>
-            <div className="justify-start text-white text-base font-semibold">
-              {quoteCurrency.symbol}
-            </div>
+
+            <button
+              onClick={async () => {
+                await handleCopyClipBoard(baseCurrency.address)
+                setIsCopyToast(true)
+              }}
+              className="text-[#8d94a1] text-[13px] font-medium flex flex-row gap-[3px] h-3.5 items-center"
+            >
+              {shortAddress(baseCurrency.address)}
+              <CopySvg className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
         <div className="w-[160px] h-full text-white text-base font-semibold gap-1 flex flex-row items-center">

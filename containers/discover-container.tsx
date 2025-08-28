@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Tooltip } from 'react-tooltip'
 import { FixedSizeGrid as Grid, FixedSizeList as List } from 'react-window'
 import {
   getMarketSnapshots,
@@ -10,7 +9,6 @@ import { isAddressEqual } from 'viem'
 
 import { MarketDailySnapshotCard } from '../components/card/market/market-daily-snapshot-card'
 import { useChainContext } from '../contexts/chain-context'
-import { QuestionMarkSvg } from '../components/svg/question-mark-svg'
 import { TriangleDownSvg } from '../components/svg/triangle-down-svg'
 import { useTransactionContext } from '../contexts/transaction-context'
 import { Chain } from '../model/chain'
@@ -388,7 +386,7 @@ export const DiscoverContainer = () => {
       {/*  </div>*/}
       {/*</div>*/}
 
-      <div className="text-[#8d94a1] text-sm font-medium absolute hidden lg:flex top-24 w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
+      <div className="text-[#8d94a1] text-sm font-medium absolute hidden lg:flex top-24 w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-tl-lg rounded-tr-lg">
         <button
           onClick={() => sort('market')}
           className="w-[410px] flex items-center hover:underline cursor-pointer flex-row gap-0.5"
