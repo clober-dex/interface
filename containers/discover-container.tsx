@@ -467,18 +467,20 @@ export const DiscoverContainer = () => {
         <div className="relative flex w-full lg:w-[1200px] h-full mb-6">
           <div className="relative flex w-full h-full mb-6 rounded-2xl">
             {/* desktop: 1-column list */}
-            <div className="hidden lg:block w-full overflow-hidden mt-10 bg-[#17181e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
-              <List
-                height={Math.floor(height - 200)}
-                itemCount={filteredMarketSnapshots.length}
-                itemSize={37 + 12 * 2}
-                width={1200}
-                itemKey={(index) => `desktop-${index}`}
-                itemData={listItemData}
-              >
-                {MarketSnapshotListRow}
-              </List>
-            </div>
+            {filteredMarketSnapshots.length > 0 && (
+              <div className="hidden lg:block w-full overflow-hidden mt-10 bg-[#17181e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
+                <List
+                  height={Math.floor(height - 200)}
+                  itemCount={filteredMarketSnapshots.length}
+                  itemSize={37 + 12 * 2}
+                  width={1200}
+                  itemKey={(index) => `desktop-${index}`}
+                  itemData={listItemData}
+                >
+                  {MarketSnapshotListRow}
+                </List>
+              </div>
+            )}
 
             {/* tablet: 2-column grid (md~lg) */}
             <div className="hidden md:block lg:hidden overflow-hidden max-w-full">
