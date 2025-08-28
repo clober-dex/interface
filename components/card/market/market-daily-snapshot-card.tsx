@@ -16,8 +16,6 @@ import { Currency } from '../../../model/currency'
 import { shortAddress } from '../../../utils/address'
 import { CopySvg } from '../../svg/copy-svg'
 import { handleCopyClipBoard } from '../../../utils/string'
-import { Toast } from '../../toast'
-import { ClipboardSvg } from '../../svg/clipboard-svg'
 
 export const MarketDailySnapshotCard = ({
   chain,
@@ -31,6 +29,8 @@ export const MarketDailySnapshotCard = ({
   verified,
   isBidTaken,
   isAskTaken,
+  isCopyToast,
+  setIsCopyToast,
 }: {
   chain: Chain
   baseCurrency: Currency
@@ -43,8 +43,9 @@ export const MarketDailySnapshotCard = ({
   verified: boolean
   isBidTaken: boolean
   isAskTaken: boolean
+  isCopyToast: boolean
+  setIsCopyToast: (isCopyToast: boolean) => void
 }) => {
-  const [isCopyToast, setIsCopyToast] = useState(false)
   const [flashState, setFlashState] = useState<'green' | 'red' | null>(null)
   const router = useRouter()
 
@@ -72,17 +73,6 @@ export const MarketDailySnapshotCard = ({
 
   return (
     <>
-      <Toast
-        isCopyToast={isCopyToast}
-        setIsCopyToast={setIsCopyToast}
-        durationInMs={1300}
-      >
-        <div className="w-[240px] items-center justify-center flex flex-row gap-1.5 text-white text-sm font-semibold">
-          <ClipboardSvg />
-          Address copied to clipboard
-        </div>
-      </Toast>
-
       <button
         onClick={() => {
           router.push(
@@ -106,7 +96,7 @@ export const MarketDailySnapshotCard = ({
               className="w-8 h-8 absolute left-6 top-0 rounded-full"
             />
           </div>
-          <div className="flex flex-col text-white text-base font-semibold gap-0.5 text-nowrap overflow-y-scroll max-w-[300px]">
+          <div className="flex flex-col text-white text-base font-semibold gap-0.5 text-nowrap overflow-hidden max-w-[300px]">
             <div className="flex flex-row gap-0.5 justify-start">
               <div className="justify-start text-white text-base font-semibold">
                 {baseCurrency.symbol}
@@ -118,9 +108,9 @@ export const MarketDailySnapshotCard = ({
                 {quoteCurrency.symbol}
               </div>
             </div>
-
             <button
-              onClick={async () => {
+              onClick={async (e) => {
+                e.stopPropagation()
                 await handleCopyClipBoard(baseCurrency.address)
                 setIsCopyToast(true)
               }}

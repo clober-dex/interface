@@ -17,6 +17,8 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { currentTimestampInSeconds } from '../utils/date'
 import { useWindowHeight } from '../hooks/useWindowHeight'
+import { Toast } from '../components/toast'
+import { ClipboardSvg } from '../components/svg/clipboard-svg'
 
 const MOBILE_ROW_HEIGHT = 168
 
@@ -81,6 +83,8 @@ const MarketSnapshotListRow = ({
   data: {
     items: MarketSnapshot[]
     chain: Chain
+    isCopyToast: boolean
+    setIsCopyToast: (isCopyToast: boolean) => void
   }
 }) => {
   const marketSnapshot = data.items[index]
@@ -102,6 +106,8 @@ const MarketSnapshotListRow = ({
         verified={marketSnapshot.verified}
         isBidTaken={marketSnapshot.isBidTaken || false}
         isAskTaken={marketSnapshot.isAskTaken || false}
+        isCopyToast={data.isCopyToast}
+        setIsCopyToast={data.setIsCopyToast}
       />
     </div>
   )
@@ -120,6 +126,8 @@ const MarketSnapshotGridCell = ({
     items: MarketSnapshot[]
     columnCount: number
     chain: Chain
+    isCopyToast: boolean
+    setIsCopyToast: (isCopyToast: boolean) => void
   }
 }) => {
   const index = rowIndex * data.columnCount + columnIndex
@@ -149,6 +157,8 @@ const MarketSnapshotGridCell = ({
         verified={marketSnapshot.verified}
         isBidTaken={marketSnapshot.isBidTaken || false}
         isAskTaken={marketSnapshot.isAskTaken || false}
+        isCopyToast={data.isCopyToast}
+        setIsCopyToast={data.setIsCopyToast}
       />
     </div>
   )
@@ -161,6 +171,7 @@ export const DiscoverContainer = () => {
   const { lastIndexedBlockNumber } = useTransactionContext()
   const prevMarketSnapshots = useRef<MarketSnapshot[]>([])
   const prevSubgraphBlockNumber = useRef<number>(0)
+  const [isCopyToast, setIsCopyToast] = useState(false)
 
   // const [searchValue, setSearchValue] = React.useState('')
   const [sortOption, setSortOption] = useState<SortOption>('none')
@@ -348,8 +359,10 @@ export const DiscoverContainer = () => {
     () => ({
       items: filteredMarketSnapshots,
       chain: selectedChain,
+      isCopyToast,
+      setIsCopyToast,
     }),
-    [filteredMarketSnapshots, selectedChain],
+    [filteredMarketSnapshots, isCopyToast, selectedChain],
   )
 
   const gridItemData = useMemo(
@@ -357,12 +370,25 @@ export const DiscoverContainer = () => {
       items: filteredMarketSnapshots,
       columnCount: 2,
       chain: selectedChain,
+      isCopyToast,
+      setIsCopyToast,
     }),
-    [filteredMarketSnapshots, selectedChain],
+    [filteredMarketSnapshots, isCopyToast, selectedChain],
   )
 
   return (
     <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-10 px-4 md:px-0 gap-4 lg:gap-8">
+      <Toast
+        isCopyToast={isCopyToast}
+        setIsCopyToast={setIsCopyToast}
+        durationInMs={1300}
+      >
+        <div className="w-[240px] items-center justify-center flex flex-row gap-1.5 text-white text-sm font-semibold">
+          <ClipboardSvg />
+          Address copied to clipboard
+        </div>
+      </Toast>
+
       {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
       {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
       {/*    <div className="relative h-4 w-4">*/}
