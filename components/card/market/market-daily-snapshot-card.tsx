@@ -76,7 +76,7 @@ export const MarketDailySnapshotCard = ({
             `/trade?inputCurrency=${baseCurrency.address}&outputCurrency=${quoteCurrency.address}`,
           )
         }}
-        className={`transition-colors duration-500 py-3 px-5 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-transparent'} hidden lg:flex max-w-[1200px] text-left px-5 py-0.5 justify-start items-center gap-4`}
+        className={`transition-colors duration-500 py-3 px-5 ${flashState === 'green' ? 'bg-green-400/30' : flashState === 'red' ? 'bg-red-400/30' : 'bg-transparent'} hidden lg:flex max-w-[1200px] text-left px-5 py-0.5 justify-start items-center gap-4`}
       >
         <div className="flex w-[350px] items-center gap-3 h-[37px]">
           <div className="w-14 h-8 shrink-0 relative">
@@ -169,7 +169,7 @@ export const MarketDailySnapshotCard = ({
           )}
         </div>
         <div
-          className={`w-[120px] ${dailyChange === 0 ? 'text-white' : dailyChange > 0 ? 'text-green-500' : 'text-red-500'} text-sm font-medium`}
+          className={`w-[120px] ${dailyChange === 0 ? 'text-white' : dailyChange > 0 ? 'text-green-400' : 'text-red-400'} text-sm font-medium`}
         >
           {formatAbbreviatedNumberString(dailyChange.toFixed(2), 2)}%
         </div>
@@ -198,7 +198,7 @@ export const MarketDailySnapshotCard = ({
             `/trade?inputCurrency=${baseCurrency.address}&outputCurrency=${quoteCurrency.address}`,
           )
         }}
-        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-[#17181E]'} flex lg:hidden w-full h-[195px] p-4 rounded-2xl flex-col justify-center items-start gap-4 outline outline-1 outline-offset-[-1px] outline-[#272930]`}
+        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-green-400/30' : flashState === 'red' ? 'bg-red-400/30' : 'bg-[#17181E]'} flex lg:hidden w-full h-[195px] p-4 rounded-2xl flex-col justify-center items-start gap-4 outline outline-1 outline-offset-[-1px] outline-[#272930]`}
       >
         <div className="flex w-full h-full">
           <div className="flex items-center gap-2.5 self-stretch">
@@ -326,8 +326,8 @@ export const MarketDailySnapshotCard = ({
                     dailyChange === 0
                       ? 'text-white'
                       : dailyChange > 0
-                        ? 'text-green-500'
-                        : 'text-red-500'
+                        ? 'text-green-400'
+                        : 'text-red-400'
                   }`}
                 >
                   {formatAbbreviatedNumberString(dailyChange.toFixed(2), 2)}%
