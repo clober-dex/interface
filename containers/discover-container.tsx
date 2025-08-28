@@ -373,7 +373,7 @@ export const DiscoverContainer = () => {
   )
 
   return (
-    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-10 px-4 md:px-0 gap-4 lg:gap-8">
+    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-[26px] px-4 md:px-0 gap-4 lg:gap-8">
       <Toast
         isCopyToast={isCopyToast}
         setIsCopyToast={setIsCopyToast}
@@ -408,7 +408,7 @@ export const DiscoverContainer = () => {
       {/*  </div>*/}
       {/*</div>*/}
 
-      <div className="text-[#8d94a1] text-sm font-medium absolute hidden lg:flex top-24 w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
+      <div className="text-[#8d94a1] text-sm font-medium absolute hidden lg:flex top-[84px] w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[3] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
         <button
           onClick={() => sort('market')}
           className="w-[410px] flex items-center hover:underline cursor-pointer flex-row gap-0.5"
