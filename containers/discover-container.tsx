@@ -20,7 +20,7 @@ import { useWindowHeight } from '../hooks/useWindowHeight'
 import { Toast } from '../components/toast'
 import { ClipboardSvg } from '../components/svg/clipboard-svg'
 
-const MOBILE_ROW_HEIGHT = 168
+const MOBILE_ROW_HEIGHT = 195
 
 type Column =
   | 'market'
@@ -83,7 +83,6 @@ const MarketSnapshotListRow = ({
   data: {
     items: MarketSnapshot[]
     chain: Chain
-    isCopyToast: boolean
     setIsCopyToast: (isCopyToast: boolean) => void
   }
 }) => {
@@ -106,7 +105,6 @@ const MarketSnapshotListRow = ({
         verified={marketSnapshot.verified}
         isBidTaken={marketSnapshot.isBidTaken || false}
         isAskTaken={marketSnapshot.isAskTaken || false}
-        isCopyToast={data.isCopyToast}
         setIsCopyToast={data.setIsCopyToast}
       />
     </div>
@@ -126,7 +124,6 @@ const MarketSnapshotGridCell = ({
     items: MarketSnapshot[]
     columnCount: number
     chain: Chain
-    isCopyToast: boolean
     setIsCopyToast: (isCopyToast: boolean) => void
   }
 }) => {
@@ -157,7 +154,6 @@ const MarketSnapshotGridCell = ({
         verified={marketSnapshot.verified}
         isBidTaken={marketSnapshot.isBidTaken || false}
         isAskTaken={marketSnapshot.isAskTaken || false}
-        isCopyToast={data.isCopyToast}
         setIsCopyToast={data.setIsCopyToast}
       />
     </div>
@@ -465,13 +461,13 @@ export const DiscoverContainer = () => {
 
       <div className="flex flex-col w-full h-full gap-6">
         {filteredMarketSnapshots.length === 0 && (
-          <Loading className="mt-36 sm:mt-24" />
+          <Loading className="mt-36 sm:mt-48" />
         )}
 
         <div className="relative flex w-full lg:w-[1200px] h-full mb-6">
-          <div className="relative flex w-full h-full mb-6 bg-[#161617] rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930]">
+          <div className="relative flex w-full h-full mb-6 rounded-2xl">
             {/* desktop: 1-column list */}
-            <div className="hidden lg:block w-full overflow-hidden mt-10">
+            <div className="hidden lg:block w-full overflow-hidden mt-10 bg-[#17181e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
               <List
                 height={Math.floor(height - 200)}
                 itemCount={filteredMarketSnapshots.length}

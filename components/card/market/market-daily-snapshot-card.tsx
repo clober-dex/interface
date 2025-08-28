@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import BigNumber from 'bignumber.js'
-import { Tooltip } from 'react-tooltip'
 import { useRouter } from 'next/router'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
-import { QuestionMarkSvg } from '../../svg/question-mark-svg'
 import { VerifiedSvg } from '../../svg/verified-svg'
 import { convertShortTimeAgo } from '../../../utils/time'
 import { Chain } from '../../../model/chain'
@@ -29,7 +27,6 @@ export const MarketDailySnapshotCard = ({
   verified,
   isBidTaken,
   isAskTaken,
-  isCopyToast,
   setIsCopyToast,
 }: {
   chain: Chain
@@ -43,7 +40,6 @@ export const MarketDailySnapshotCard = ({
   verified: boolean
   isBidTaken: boolean
   isAskTaken: boolean
-  isCopyToast: boolean
   setIsCopyToast: (isCopyToast: boolean) => void
 }) => {
   const [flashState, setFlashState] = useState<'green' | 'red' | null>(null)
@@ -80,7 +76,7 @@ export const MarketDailySnapshotCard = ({
             `/trade?inputCurrency=${baseCurrency.address}&outputCurrency=${quoteCurrency.address}`,
           )
         }}
-        className={`transition-colors duration-500 py-3 px-5 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-transparent'} hidden lg:flex max-w-[1200px] text-left px-5 justify-start items-center gap-4`}
+        className={`transition-colors duration-500 py-3 px-5 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-transparent'} hidden lg:flex max-w-[1200px] text-left px-5 py-0.5 justify-start items-center gap-4`}
       >
         <div className="flex w-[350px] items-center gap-3 h-[37px]">
           <div className="w-14 h-8 shrink-0 relative">
@@ -182,15 +178,16 @@ export const MarketDailySnapshotCard = ({
         </div>
       </button>
 
-      <div className="hidden lg:mx-5">
+      <div className="hidden lg:flex lg:mx-5 lg:h-0.5">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="1165"
-          height="1"
-          viewBox="0 0 1165 1"
+          width="1768"
+          height="2"
+          viewBox="0 0 1768 2"
           fill="none"
+          strokeWidth="1"
         >
-          <path d="M0 1H1165" stroke="#2D2D2E" />
+          <path d="M0 1H1768" stroke="#2D2D2E" />
         </svg>
       </div>
 
@@ -201,36 +198,55 @@ export const MarketDailySnapshotCard = ({
             `/trade?inputCurrency=${baseCurrency.address}&outputCurrency=${quoteCurrency.address}`,
           )
         }}
-        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-[#17181e]'} flex lg:hidden w-full h-[168px] p-4 bg-gray-800 rounded-2xl flex-col justify-center items-start gap-4 outline outline-1 outline-offset-[-1px] outline-[#272930]`}
+        className={`transition-colors duration-500 ${flashState === 'green' ? 'bg-[#39e79f]/30' : flashState === 'red' ? 'bg-red-500/30' : 'bg-[#17181E]'} flex lg:hidden w-full h-[195px] p-4 rounded-2xl flex-col justify-center items-start gap-4 outline outline-1 outline-offset-[-1px] outline-[#272930]`}
       >
-        <div className="flex items-center gap-2 self-stretch">
-          <div className="w-10 h-6 relative">
-            <CurrencyIcon
-              chain={chain}
-              currency={baseCurrency}
-              unoptimized={true}
-              className="w-6 h-6 absolute left-0 top-0 z-[1] rounded-full"
-            />
-            <CurrencyIcon
-              chain={chain}
-              currency={quoteCurrency}
-              unoptimized={true}
-              className="w-6 h-6 absolute left-[16px] top-0 rounded-full"
-            />
-          </div>
-          <div className="flex gap-1 justify-start items-center">
-            <div className="justify-start text-white text-base font-semibold">
-              {baseCurrency.symbol}
+        <div className="flex w-full h-full">
+          <div className="flex items-center gap-2.5 self-stretch">
+            <div className="w-10 h-6 relative">
+              <CurrencyIcon
+                chain={chain}
+                currency={baseCurrency}
+                unoptimized={true}
+                className="w-6 h-6 absolute left-0 top-0 z-[1] rounded-full"
+              />
+              <CurrencyIcon
+                chain={chain}
+                currency={quoteCurrency}
+                unoptimized={true}
+                className="w-6 h-6 absolute left-[16px] top-0 rounded-full"
+              />
             </div>
-            <div className="justify-start text-[#8d94a1] text-base font-semibold">
-              /
-            </div>
-            <div className="justify-start text-white text-base font-semibold">
-              {quoteCurrency.symbol}
-            </div>
-          </div>
+            <div className="flex gap-0.5 justify-start items-center">
+              <div className="flex flex-col gap-0.5">
+                <div className="flex flex-row gap-0.5">
+                  <div className="justify-start text-white text-base font-semibold">
+                    {baseCurrency.symbol}
+                  </div>
+                  <div className="justify-start text-[#8d94a1] text-base font-semibold">
+                    /
+                  </div>
+                  <div className="justify-start text-white text-base font-semibold">
+                    {quoteCurrency.symbol}
+                  </div>
+                </div>
 
-          {verified ? <VerifiedSvg /> : <></>}
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    await handleCopyClipBoard(baseCurrency.address)
+                    setIsCopyToast(true)
+                  }}
+                  className="flex h-3.5 justify-start text-[#8d94a1] text-xs font-medium items-center gap-[3px]"
+                >
+                  {shortAddress(baseCurrency.address)}
+                  <CopySvg className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="w-6 h-6 ml-auto items-center justify-center">
+            {verified ? <VerifiedSvg /> : <></>}
+          </div>
         </div>
 
         <div className="flex flex-col w-full gap-[12px]">
@@ -265,21 +281,6 @@ export const MarketDailySnapshotCard = ({
             </div>
             <div className="flex flex-1 flex-col justify-start items-center gap-2">
               <div className="flex w-full ml-auto self-stretch text-gray-400 text-xs text-nowrap gap-1">
-                <div className="flex justify-center items-center mt-0.5">
-                  <QuestionMarkSvg
-                    data-tooltip-id="24h-volume-info"
-                    data-tooltip-place="bottom-end"
-                    data-tooltip-html={
-                      'Cumulative volume from 00:00 UTC to now.'
-                    }
-                    className="w-3 h-3"
-                  />
-                  <Tooltip
-                    id="24h-volume-info"
-                    className="max-w-[300px] bg-gray-950 !opacity-100 z-[100]"
-                    clickable
-                  />
-                </div>
                 24h Volume
               </div>
               <div className="self-stretch text-white text-sm font-semibold">
