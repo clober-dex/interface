@@ -254,11 +254,16 @@ export default async function handler(
       inputCurrencyAllowance,
     } = await getSwapContext(inputTokenAddress, outputTokenAddress, userAddress)
     if (inputCurrencyBalance < amountIn) {
-      res.status(422).json({ error: 'Insufficient balance' })
+      res
+        .status(422)
+        .json({ code: 'INSUFFICIENT_BALANCE', error: 'Insufficient balance' })
       return
     }
     if (inputCurrencyAllowance < amountIn) {
-      res.status(422).json({ error: 'Insufficient allowance' })
+      res.status(422).json({
+        code: 'INSUFFICIENT_ALLOWANCE',
+        error: `Please approve spender ${CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway} first`,
+      })
       return
     }
 
@@ -309,11 +314,13 @@ export default async function handler(
   } catch (error: any) {
     console.error('Error processing quote request:', error)
     if (error.message?.startsWith('Invalid')) {
-      res.status(400).json({ error: error.message })
+      res.status(400).json({ code: 'BAD_REQUEST', error: error.message })
       return
     }
 
-    res.status(500).json({ error: error.message })
+    res
+      .status(500)
+      .json({ code: 'INTERNAL_SERVER_ERROR', error: error.message })
     return
   }
 }
