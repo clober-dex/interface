@@ -54,6 +54,12 @@ function validateQueryParams(query: NextApiRequest['query']) {
     throw new Error('Invalid userAddress')
   }
 
+  if (isAddressEqual(inputTokenAddress, outputTokenAddress)) {
+    throw new Error(
+      'Invalid inputTokenAddress and outputTokenAddress: they must be different addresses',
+    )
+  }
+
   return {
     inputTokenAddress: inputTokenAddress!,
     outputTokenAddress: outputTokenAddress!,
