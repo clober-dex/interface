@@ -267,7 +267,7 @@ export const LimitForm = ({
         <div className="flex flex-col gap-5 self-stretch w-full">
           <div className="flex flex-col gap-5 self-stretch">
             <div className="flex flex-col gap-3 self-stretch">
-              <div className="h-[92px] sm:h-[104px] items-center hover:ring-1 hover:ring-gray-700 flex rounded-xl border-solid border-2 border-gray-700 p-4">
+              <div className="self-stretch p-4 bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] flex justify-center items-start gap-2">
                 <div className="flex flex-col flex-1 gap-2">
                   {setMarketRateAction && setMarketRateAction.isLoading ? (
                     <span className="flex justify-start items-start w-[235px] sm:w-[340px] h-[28px] sm:h-[36px] rounded animate-pulse bg-gray-500" />

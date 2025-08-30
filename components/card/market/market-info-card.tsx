@@ -260,7 +260,7 @@ export const MarketInfoCard = ({
 
         <div className="hidden lg:flex h-full items-center gap-7">
           <div className="flex-col lg:items-end gap-0.5 flex w-[100px]">
-            <div className="text-[#38e69f] font-semibold">
+            <div className="text-green-400 font-semibold">
               {formatTinyNumber(price)}
             </div>
             <div className="text-white text-xs font-semibold">
