@@ -5,10 +5,6 @@ import { Currency } from '../../model/currency'
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { formatDollarValue, formatUnits } from '../../utils/bigint'
-import {
-  formatSignificantString,
-  formatWithCommas,
-} from '../../utils/bignumber'
 import { Chain } from '../../model/chain'
 
 import NumberInput from './number-input'
@@ -54,31 +50,29 @@ const CurrencyAmountInput = ({
         {onCurrencyClick ? (
           currency ? (
             <button
-              className="flex h-7 sm:h-8 w-fit items-center rounded-full bg-gray-700 py-1 pl-2 pr-3 gap-2"
+              className="h-full pl-1.5 pr-2 py-1 bg-[#3d3e40] rounded-[30.64px] flex justify-start items-center gap-1.5"
               onClick={onCurrencyClick}
             >
               <div className="w-4 h-4 sm:w-5 sm:h-5 relative">
                 <CurrencyIcon chain={chain} currency={currency} />
               </div>
-              <div className="text-sm sm:text-base text-white">
+              <div className="text-white text-sm font-medium">
                 {currency.symbol}
               </div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
                 fill="none"
               >
-                <g opacity="0.5">
-                  <path
-                    d="M3.5 5.25L7 8.75L10.5 5.25"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
+                <path
+                  d="M4 6L8 10L12 6"
+                  stroke="#8D94A1"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           ) : (
@@ -90,11 +84,11 @@ const CurrencyAmountInput = ({
             </button>
           )
         ) : currency ? (
-          <div className="flex h-7 sm:h-8 w-fit items-center rounded-full bg-gray-700 py-1 pl-2 pr-3 gap-2">
+          <div className="h-full pl-1.5 pr-2 py-1 bg-[#3d3e40] rounded-[30.64px] flex justify-start items-center gap-1.5">
             <div className="w-5 h-5 relative">
               <CurrencyIcon chain={chain} currency={currency} />
             </div>
-            <div className="text-sm sm:text-base text-white">
+            <div className="text-white text-sm font-medium">
               {currency.symbol}
             </div>
           </div>
@@ -112,7 +106,7 @@ const CurrencyAmountInput = ({
                 {formatUnits(availableAmount, decimals, price)}
               </div>
               <button
-                className="px-1.5 py-1 bg-[#367fff]/25 rounded-xl inline-flex justify-center items-center text-center text-[#86c0ff] text-xs font-medium"
+                className="px-1.5 py-[1px] bg-[#367fff]/25 rounded-xl inline-flex justify-center items-center text-center text-[#86c0ff] text-[11px] font-medium"
                 onClick={onMaxClick}
               >
                 MAX
@@ -143,100 +137,6 @@ const CurrencyAmountInput = ({
           )}
         </div>
       </div>
-
-      {/*<div className="flex flex-1 justify-between gap-2">*/}
-      {/*  <NumberInput*/}
-      {/*    className="flex-1 text-xl w-full sm:text-3xl bg-transparent placeholder-gray-500 text-white outline-none"*/}
-      {/*    value={value}*/}
-      {/*    onValueChange={onValueChange}*/}
-      {/*    placeholder="0.0000"*/}
-      {/*    {...props}*/}
-      {/*  />*/}
-      {/*  {onCurrencyClick ? (*/}
-      {/*    currency ? (*/}
-      {/*      <button*/}
-      {/*        className="flex h-7 sm:h-8 w-fit items-center rounded-full bg-gray-700 py-1 pl-2 pr-3 gap-2"*/}
-      {/*        onClick={onCurrencyClick}*/}
-      {/*      >*/}
-      {/*        <div className="w-4 h-4 sm:w-5 sm:h-5 relative">*/}
-      {/*          <CurrencyIcon chain={chain} currency={currency} />*/}
-      {/*        </div>*/}
-      {/*        <div className="text-sm sm:text-base text-white">*/}
-      {/*          {currency.symbol}*/}
-      {/*        </div>*/}
-      {/*        <svg*/}
-      {/*          xmlns="http://www.w3.org/2000/svg"*/}
-      {/*          width="14"*/}
-      {/*          height="14"*/}
-      {/*          viewBox="0 0 14 14"*/}
-      {/*          fill="none"*/}
-      {/*        >*/}
-      {/*          <g opacity="0.5">*/}
-      {/*            <path*/}
-      {/*              d="M3.5 5.25L7 8.75L10.5 5.25"*/}
-      {/*              stroke="white"*/}
-      {/*              strokeWidth="1.5"*/}
-      {/*              strokeLinecap="round"*/}
-      {/*              strokeLinejoin="round"*/}
-      {/*            />*/}
-      {/*          </g>*/}
-      {/*        </svg>*/}
-      {/*      </button>*/}
-      {/*    ) : (*/}
-      {/*      <button*/}
-      {/*        className="h-8 flex items-center rounded-full bg-blue-500 text-white font-semibold pl-3 pr-2 py-1 gap-2 text-sm"*/}
-      {/*        onClick={onCurrencyClick}*/}
-      {/*      >*/}
-      {/*        Select token <TriangleDownSvg className="fill-gray-950" />*/}
-      {/*      </button>*/}
-      {/*    )*/}
-      {/*  ) : currency ? (*/}
-      {/*    <div className="flex h-7 sm:h-8 w-fit items-center rounded-full bg-gray-700 py-1 pl-2 pr-3 gap-2">*/}
-      {/*      <div className="w-5 h-5 relative">*/}
-      {/*        <CurrencyIcon chain={chain} currency={currency} />*/}
-      {/*      </div>*/}
-      {/*      <div className="text-sm sm:text-base text-white">*/}
-      {/*        {currency.symbol}*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  ) : (*/}
-      {/*    <></>*/}
-      {/*  )}*/}
-      {/*</div>*/}
-      {/*<div className="flex items-end justify-between">*/}
-      {/*  {price ? (*/}
-      {/*    <div className="flex flex-row gap-0.5 sm:gap-1">*/}
-      {/*      <div className="text-gray-500 text-xs sm:text-sm">*/}
-      {/*        ~{formatDollarValue(parseUnits(value, decimals), decimals, price)}*/}
-      {/*      </div>*/}
-      {/*      <div>{children}</div>*/}
-      {/*    </div>*/}
-      {/*  ) : (*/}
-      {/*    <div></div>*/}
-      {/*  )}*/}
-      {/*  <div className="h-full flex items-center">*/}
-      {/*    {!props.disabled && currency ? (*/}
-      {/*      <div className="flex items-center text-xs sm:text-sm gap-1 sm:gap-2">*/}
-      {/*        <div className="text-gray-500">Available</div>*/}
-      {/*        <div className="text-white">*/}
-      {/*          {formatWithCommas(*/}
-      {/*            formatSignificantString(*/}
-      {/*              formatUnits(availableAmount, currency.decimals, price),*/}
-      {/*            ),*/}
-      {/*          )}*/}
-      {/*        </div>*/}
-      {/*        <button*/}
-      {/*          className="h-[19px] sm:h-6 px-1.5 sm:px-2 py-1 sm:py-[5px] bg-blue-500/25 rounded-xl justify-center items-center gap-2.5 flex text-center text-blue-500 text-[11px] sm:text-xs"*/}
-      {/*          onClick={onMaxClick}*/}
-      {/*        >*/}
-      {/*          MAX*/}
-      {/*        </button>*/}
-      {/*      </div>*/}
-      {/*    ) : (*/}
-      {/*      <></>*/}
-      {/*    )}*/}
-      {/*  </div>*/}
-      {/*</div>*/}
     </div>
   )
 }
