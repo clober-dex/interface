@@ -258,7 +258,7 @@ export const LimitForm = ({
         <div className="flex flex-col gap-5 self-stretch w-full">
           <div className="flex flex-col gap-5 self-stretch">
             <div className="flex flex-col gap-3 self-stretch">
-              <div className="self-stretch p-4 bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] flex justify-center items-start gap-[14px]">
+              <div className="hover:ring-1 hover:ring-gray-700 self-stretch p-4 bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] flex justify-center items-start gap-[14px]">
                 <div className="flex flex-col flex-1 gap-2 w-full items-end">
                   {setMarketRateAction && setMarketRateAction.isLoading ? (
                     <span className="flex w-full h-[28px] sm:h-[33px] rounded animate-pulse bg-gray-500" />
@@ -280,7 +280,7 @@ export const LimitForm = ({
                           setDebouncedPriceInput('')
                           await setMarketRateAction.action()
                         }}
-                        className="px-2 py-1 bg-[#367fff]/25 rounded-xl inline-flex justify-center items-center gap-2.5 text-center text-[#86c0ff] text-[11px] sm:text-xs font-semibold"
+                        className="px-2 py-1 bg-[#367fff]/25 rounded-xl inline-flex justify-center items-center gap-2.5 text-center text-[#86c0ff] text-[11px] sm:text-xs font-medium"
                       >
                         Set to market rate
                       </button>
@@ -434,11 +434,11 @@ export const LimitForm = ({
               </div>
             </div>
 
-            <div className="flex flex-col w-full relative gap-5 self-stretch">
-              <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-                <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-semibold">
+            <div className="flex flex-col w-full relative gap-4 self-stretch">
+              <div className="flex flex-col w-full gap-2.5 sm:gap-4 self-stretch items-start">
+                <span className="text-[#8d94a1] text-[13px] font-medium">
                   Pay
-                </div>
+                </span>
                 <CurrencyAmountInput
                   chain={chain}
                   currency={inputCurrency}
@@ -456,10 +456,10 @@ export const LimitForm = ({
                 />
               </div>
 
-              <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-                <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-semibold">
+              <div className="flex flex-col w-full gap-2.5 sm:gap-4 self-stretch items-start">
+                <span className="text-[#8d94a1] text-[13px] font-medium">
                   Receive
-                </div>
+                </span>
                 <CurrencyAmountInput
                   chain={chain}
                   currency={outputCurrency}

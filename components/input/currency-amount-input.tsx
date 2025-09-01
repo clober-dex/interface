@@ -49,7 +49,7 @@ const CurrencyAmountInput = ({
   }, [availableAmount, currency?.decimals, onValueChange])
 
   return (
-    <div className="h-[77px] sm:h-[98px] w-full group hover:ring-1 hover:ring-gray-700 flex flex-col bg-gray-800 rounded-xl gap-2 pl-4 pr-3 py-3 sm:pl-5 sm:pr-4 sm:py-4">
+    <div className="h-[77px] sm:h-[98px] w-full group hover:ring-1 hover:ring-gray-700 flex flex-col bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] gap-2 pl-4 pr-3 py-3 sm:pl-4 sm:pr-5 sm:py-4">
       <div className="flex flex-1 justify-between gap-2">
         <NumberInput
           className="flex-1 text-xl w-full sm:text-3xl bg-transparent placeholder-gray-500 text-white outline-none"
