@@ -502,13 +502,13 @@ export const LimitForm = ({
             </div>
           </div>
 
-          {/*<div className="flex justify-end text-white text-[13px] sm:text-sm h-5">*/}
-          {/*  <CheckIcon*/}
-          {/*    checked={isPostOnly}*/}
-          {/*    onCheck={() => setIsPostOnly((prevState) => !prevState)}*/}
-          {/*    text="Post Only"*/}
-          {/*  />*/}
-          {/*</div>*/}
+          <div className="flex sm:hidden justify-end text-white text-[13px] sm:text-sm h-4 sm:h-0">
+            {/*<CheckIcon*/}
+            {/*  checked={isPostOnly}*/}
+            {/*  onCheck={() => setIsPostOnly((prevState) => !prevState)}*/}
+            {/*  text="Post Only"*/}
+            {/*/>*/}
+          </div>
         </div>
       </div>
 

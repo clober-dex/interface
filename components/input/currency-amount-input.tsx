@@ -45,7 +45,7 @@ const CurrencyAmountInput = ({
   }, [availableAmount, currency?.decimals, onValueChange])
 
   return (
-    <div className="h-[77px] sm:h-[98px] w-full group hover:ring-1 hover:ring-gray-700 flex flex-row bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] gap-2.5 pl-4 pr-3 py-3 sm:pl-4 sm:pr-5 sm:py-4">
+    <div className="h-[77px] sm:h-[92px] w-full group hover:ring-1 hover:ring-gray-700 flex flex-row bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] gap-2.5 pl-4 pr-3 py-3 sm:pl-4 sm:pr-5 sm:py-4">
       <div className="flex flex-col justify-center items-start gap-1.5 w-full">
         {onCurrencyClick ? (
           currency ? (
