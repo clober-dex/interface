@@ -813,7 +813,7 @@ export const TradeContainer = () => {
           </div>
 
           {/*only tablet or pc*/}
-          <div className="hidden md:flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-6 w-[480px] lg:w-[420px] h-[571px]">
+          <div className="hidden md:flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 w-[480px] lg:w-[420px] h-[571px]">
             {tab === 'limit' ? (
               <LimitForm {...limitFormProps} />
             ) : (

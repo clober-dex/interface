@@ -221,7 +221,7 @@ export const LimitForm = ({
     />
   ) : (
     <div className="flex flex-col gap-5 h-full w-full">
-      <div className="flex flex-col gap-4 self-stretch w-full">
+      <div className="flex flex-col gap-4 self-stretch w-full px-5">
         <div className="flex items-start gap-4 self-stretch">
           <div className="flex flex-row gap-1 text-[#8d94a1] text-[13px] font-medium h-full justify-start">
             Pay {inputCurrency?.symbol} at rate
@@ -513,7 +513,7 @@ export const LimitForm = ({
       </div>
 
       {actionButtonProps && (
-        <div className="flex mt-auto">
+        <div className="flex mt-auto px-5">
           <ActionButton {...actionButtonProps} />
         </div>
       )}
