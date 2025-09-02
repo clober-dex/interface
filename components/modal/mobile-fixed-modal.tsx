@@ -40,7 +40,7 @@ export const MobileFixedModal = ({
         onClick={() => setShowMobileModal(false)}
       />
       <div className="w-full h-full top-0 absolute bg-[#171b24] shadow rounded-tl-2xl rounded-tr-2xl border" />
-      <div className="z-[10000] w-full flex flex-col px-5 pt-5 pb-3">
+      <div className="z-[10000] w-full flex flex-col px-3 sm:px-5 pt-5 pb-3">
         <div
           className={`${
             showMobileModal ? 'flex max-h-[560px]' : 'hidden'
