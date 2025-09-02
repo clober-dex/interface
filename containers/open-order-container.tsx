@@ -88,58 +88,58 @@ export const OpenOrderContainer = ({
 
   return (
     <>
-      <div className="flex flex-col w-full lg:flex-row gap-4 lg:gap-0 mt-[20px] mb-4 lg:mt-12 text-white">
-        <div className="border-b-blue-500 text-[13px] lg:text-base border-solid lg:border-0 flex w-1/2 lg:w-[161px] h-[37px] px-6 lg:px-0 lg:justify-start pt-1.5 pb-2.5 border-b-2 border-[#ffc32d] justify-center items-center gap-2">
-          <div className="text-white font-semibold">Open Order</div>
-          <div className="flex px-2 py-0.5 lg:h-7 lg:px-2.5 lg:py-0.5 bg-blue-500/20 rounded-[17.02px] flex-col justify-center items-center">
-            <div className="text-blue-500 text-[13px] font-semibold">
-              {filteredOpenOrders.length}
-            </div>
-          </div>
-        </div>
+      {/*<div className="flex flex-col w-full lg:flex-row gap-4 lg:gap-0 mt-[20px] mb-4 lg:mt-12 text-white">*/}
+      {/*  <div className="border-b-blue-500 text-[13px] lg:text-base border-solid lg:border-0 flex w-1/2 lg:w-[161px] h-[37px] px-6 lg:px-0 lg:justify-start pt-1.5 pb-2.5 border-b-2 border-[#ffc32d] justify-center items-center gap-2">*/}
+      {/*    <div className="text-white font-semibold">Open Order</div>*/}
+      {/*    <div className="flex px-2 py-0.5 lg:h-7 lg:px-2.5 lg:py-0.5 bg-blue-500/20 rounded-[17.02px] flex-col justify-center items-center">*/}
+      {/*      <div className="text-blue-500 text-[13px] font-semibold">*/}
+      {/*        {filteredOpenOrders.length}*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
 
-        <div className="flex flex-row mb-4 gap-5 max-w-[480px] lg:max-w-full lg:ml-auto lg:flex-row-reverse">
-          <div className="w-full lg:w-[246px] flex flex-col relative rounded shadow-sm">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <div className="relative h-4 w-4">
-                <SearchSvg />
-              </div>
-            </div>
-            <div className="inline-block">
-              <div className="invisible h-0 mx-[29px]" aria-hidden="true">
-                Search by symbol
-              </div>
-              <input
-                type="search"
-                name="open-order-search"
-                id="search"
-                autoComplete="off"
-                className="inline w-full pl-10 py-1.5 lg:py-2.5 text-white bg-transparent rounded-xl border border-solid border-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-400 flex-col placeholder:text-gray-400 text-xs sm:text-sm"
-                placeholder="Search tokens"
-                value={searchValue}
-                onChange={(event) => setSearchValue(event.target.value)}
-              />
-            </div>
-          </div>
+      {/*  <div className="flex flex-row mb-4 gap-5 max-w-[480px] lg:max-w-full lg:ml-auto lg:flex-row-reverse">*/}
+      {/*    <div className="w-full lg:w-[246px] flex flex-col relative rounded shadow-sm">*/}
+      {/*      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
+      {/*        <div className="relative h-4 w-4">*/}
+      {/*          <SearchSvg />*/}
+      {/*        </div>*/}
+      {/*      </div>*/}
+      {/*      <div className="inline-block">*/}
+      {/*        <div className="invisible h-0 mx-[29px]" aria-hidden="true">*/}
+      {/*          Search by symbol*/}
+      {/*        </div>*/}
+      {/*        <input*/}
+      {/*          type="search"*/}
+      {/*          name="open-order-search"*/}
+      {/*          id="search"*/}
+      {/*          autoComplete="off"*/}
+      {/*          className="inline w-full pl-10 py-1.5 lg:py-2.5 text-white bg-transparent rounded-xl border border-solid border-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-400 flex-col placeholder:text-gray-400 text-xs sm:text-sm"*/}
+      {/*          placeholder="Search tokens"*/}
+      {/*          value={searchValue}*/}
+      {/*          onChange={(event) => setSearchValue(event.target.value)}*/}
+      {/*        />*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
 
-          <button className="flex justify-start items-center gap-2">
-            <CheckIcon
-              checked={searchInCurrentMarket}
-              onCheck={setSearchInCurrentMarket}
-              text="Current Market"
-            />
-          </button>
-        </div>
-      </div>
+      {/*    <button className="flex justify-start items-center gap-2">*/}
+      {/*      <CheckIcon*/}
+      {/*        checked={searchInCurrentMarket}*/}
+      {/*        onCheck={setSearchInCurrentMarket}*/}
+      {/*        text="Current Market"*/}
+      {/*      />*/}
+      {/*    </button>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
 
       {/*pc open order card*/}
       {filteredOpenOrders.length > 0 ? (
-        <div className="hidden lg:flex flex-col w-full justify-start items-center gap-4 bg-transparent mb-14">
-          <div className="w-full justify-start items-end inline-flex">
-            <div className="flex text-gray-50 text-sm font-semibold">
-              <div className="flex w-[225px] ml-5">Market</div>
+        <div className="hidden lg:flex flex-col w-full bg-[#17181e] rounded-[20px] border border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
+          <div className="h-11 w-full justify-start items-center flex bg-[#24272e]/50 border-t border-b border-[#2d2d2e]">
+            <div className="flex text-[#8d94a1] text-sm font-medium">
+              <div className="flex w-[220px] ml-5">Market</div>
               <div className="flex w-[145px]">Price</div>
-              <div className="flex w-[200px]">Amount</div>
+              <div className="flex w-[205px]">Amount</div>
               <div className="flex w-[100px]">Filled</div>
               <div className="flex w-[200px]">Claimable</div>
             </div>

@@ -667,7 +667,7 @@ export const TradeContainer = () => {
         </button>
       </div>
 
-      <div className="flex flex-col w-full md:w-fit mb-4 md:mb-6 items-center">
+      <div className="flex flex-col w-full md:w-fit mb-4 md:mb-6 items-center gap-[17px]">
         <div className="w-full md:max-w-[324px] items-center justify-center mb-10 hidden md:flex bg-[#191d25] py-1 h-10 md:h-12 flex-row relative text-[#8d94a1] text-base font-semibold rounded-3xl">
           <button
             disabled={tab === 'swap'}
