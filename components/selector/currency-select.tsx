@@ -109,7 +109,7 @@ const CurrencySelect = ({
         setInspectingCurrency={setInspectingCurrency}
         explorerUrl={explorerUrl}
       />
-      <div className="flex flex-col w-full h-full">
+      <div className="flex flex-col w-full h-full py-1">
         <div className="flex flex-col gap-6 mb-4 w-full px-6">
           <div className="flex justify-start items-center h-full relative">
             <button

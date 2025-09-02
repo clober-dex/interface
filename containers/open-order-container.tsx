@@ -134,8 +134,10 @@ export const OpenOrderContainer = ({
 
       {/*pc open order card*/}
       {filteredOpenOrders.length > 0 ? (
-        <div className="hidden lg:flex flex-col w-full bg-[#17181e] rounded-[20px] border border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
-          <div className="h-11 w-full justify-start items-center flex bg-[#24272e]/50 border-t border-b border-[#2d2d2e]">
+        <div className="hidden lg:flex flex-col w-full rounded-[20px] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-tl-lg rounded-tr-lg">
+          <div>buttons</div>
+
+          <div className="h-11 w-full justify-start items-center flex bg-[#222223] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
             <div className="flex text-[#8d94a1] text-sm font-medium">
               <div className="flex w-[220px] ml-5">Market</div>
               <div className="flex w-[145px]">Price</div>
@@ -143,22 +145,22 @@ export const OpenOrderContainer = ({
               <div className="flex w-[100px]">Filled</div>
               <div className="flex w-[200px]">Claimable</div>
             </div>
-            <div className="h-full ml-auto justify-center items-center gap-3 flex">
+            <div className="h-full ml-auto justify-center items-center gap-4 flex mr-4">
               <ActionButton
                 disabled={claimableOpenOrders.length === 0}
                 onClick={async () => {
                   await claims(claimableOpenOrders)
                 }}
-                text="Claim All"
-                className="disabled:text-gray-400 text-white text-[13px] font-semibold w-[110px] h-8 px-3 py-1.5 disabled:bg-[#2b3544] bg-blue-500 rounded-[10px] justify-center items-center flex"
+                text="Claim all"
+                className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] shadow-[8px_8px_64px_0px_rgba(191,57,0,0.32)] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
               />
               <ActionButton
                 disabled={cancellableOpenOrders.length === 0}
                 onClick={async () => {
                   await cancels(cancellableOpenOrders)
                 }}
-                text="Cancel All"
-                className="disabled:text-gray-400 text-white text-[13px] font-semibold w-[110px] h-8 px-3 py-1.5 disabled:bg-[#2b3544] bg-blue-500 rounded-[10px] justify-center items-center flex"
+                text="Cancel all"
+                className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] shadow-[8px_8px_64px_0px_rgba(191,57,0,0.32)] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
               />
             </div>
           </div>
