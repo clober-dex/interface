@@ -58,10 +58,10 @@ export const OpenOrderCard = ({
           <div className="flex flex-col text-xs sm:text-sm">
             <div className="flex flex-col align-baseline justify-between gap-2">
               <div className="flex flex-row align-baseline justify-between">
-                <label className="text-gray-500 text-xs font-medium">
+                <label className="text-gray-500 text-xs sm:text-sm font-medium">
                   Price
                 </label>
-                <p className="text-white text-xs font-medium">
+                <p className="text-white text-xs sm:text-sm  font-medium">
                   {formatTickPriceString(
                     chainId,
                     BigInt(openOrder.tick),
@@ -72,10 +72,10 @@ export const OpenOrderCard = ({
                 </p>
               </div>
               <div className="flex flex-row align-baseline justify-between">
-                <label className="text-gray-500 text-xs font-medium">
+                <label className="text-gray-500 text-xs sm:text-sm  font-medium">
                   Amount
                 </label>
-                <p className="flex gap-1 text-white text-xs font-medium">
+                <p className="flex gap-1 text-white text-xs sm:text-sm  font-medium">
                   {formatWithCommas(
                     formatSignificantString(openOrder.amount.value),
                   )}{' '}
@@ -86,11 +86,11 @@ export const OpenOrderCard = ({
               </div>
               <div className="flex flex-col gap-1.5">
                 <div className="flex flex-row align-baseline justify-between">
-                  <label className="text-gray-500 text-xs font-medium">
+                  <label className="text-gray-500 text-xs sm:text-sm  font-medium">
                     Filled
                   </label>
                   <div className="flex flex-row gap-1">
-                    <p className="text-white text-xs font-medium">
+                    <p className="text-white text-xs sm:text-sm  font-medium">
                       {filledRatio.toFixed(2)}%
                     </p>
                   </div>
@@ -105,10 +105,10 @@ export const OpenOrderCard = ({
                 </div>
               </div>
               <div className="flex flex-row align-baseline justify-between">
-                <label className="text-gray-500 text-xs font-medium">
+                <label className="text-gray-500 text-xs sm:text-sm  font-medium">
                   Claimable
                 </label>
-                <p className="flex gap-1 text-white text-xs font-medium">
+                <p className="flex gap-1 text-white text-xs sm:text-sm  font-medium">
                   {formatWithCommas(
                     formatSignificantString(openOrder.claimable.value),
                   )}{' '}
