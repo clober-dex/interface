@@ -88,50 +88,6 @@ export const OpenOrderContainer = ({
 
   return (
     <>
-      {/*<div className="flex flex-col w-full lg:flex-row gap-4 lg:gap-0 mt-[20px] mb-4 lg:mt-12 text-white">*/}
-      {/*  <div className="border-b-blue-500 text-[13px] lg:text-base border-solid lg:border-0 flex w-1/2 lg:w-[161px] h-[37px] px-6 lg:px-0 lg:justify-start pt-1.5 pb-2.5 border-b-2 border-[#ffc32d] justify-center items-center gap-2">*/}
-      {/*    <div className="text-white font-semibold">Open Order</div>*/}
-      {/*    <div className="flex px-2 py-0.5 lg:h-7 lg:px-2.5 lg:py-0.5 bg-blue-500/20 rounded-[17.02px] flex-col justify-center items-center">*/}
-      {/*      <div className="text-blue-500 text-[13px] font-semibold">*/}
-      {/*        {filteredOpenOrders.length}*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-
-      {/*  <div className="flex flex-row mb-4 gap-5 max-w-[480px] lg:max-w-full lg:ml-auto lg:flex-row-reverse">*/}
-      {/*    <div className="w-full lg:w-[246px] flex flex-col relative rounded shadow-sm">*/}
-      {/*      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
-      {/*        <div className="relative h-4 w-4">*/}
-      {/*          <SearchSvg />*/}
-      {/*        </div>*/}
-      {/*      </div>*/}
-      {/*      <div className="inline-block">*/}
-      {/*        <div className="invisible h-0 mx-[29px]" aria-hidden="true">*/}
-      {/*          Search by symbol*/}
-      {/*        </div>*/}
-      {/*        <input*/}
-      {/*          type="search"*/}
-      {/*          name="open-order-search"*/}
-      {/*          id="search"*/}
-      {/*          autoComplete="off"*/}
-      {/*          className="inline w-full pl-10 py-1.5 lg:py-2.5 text-white bg-transparent rounded-xl border border-solid border-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-400 flex-col placeholder:text-gray-400 text-xs sm:text-sm"*/}
-      {/*          placeholder="Search tokens"*/}
-      {/*          value={searchValue}*/}
-      {/*          onChange={(event) => setSearchValue(event.target.value)}*/}
-      {/*        />*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-
-      {/*    <button className="flex justify-start items-center gap-2">*/}
-      {/*      <CheckIcon*/}
-      {/*        checked={searchInCurrentMarket}*/}
-      {/*        onCheck={setSearchInCurrentMarket}*/}
-      {/*        text="Current Market"*/}
-      {/*      />*/}
-      {/*    </button>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
-
       {/*pc open order card*/}
       <div className="hidden lg:flex flex-col w-full max-w-[1176px] bg-[#17181e] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-t-[20px] rounded-b-none">
         <div className="flex flex-row w-full h-[58px]">
@@ -149,7 +105,23 @@ export const OpenOrderContainer = ({
           </div>
 
           <div className="flex flex-row gap-4 items-center w-auto ml-auto">
-            <div>1</div>
+            <div className="flex justify-start items-center gap-2">
+              <div className="justify-start text-[#8d94a1] text-sm font-medium leading-tight">
+                Current Market
+              </div>
+              <label className="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  disabled={false}
+                  defaultChecked={false}
+                  onChange={() => {
+                    setSearchInCurrentMarket(!searchInCurrentMarket)
+                  }}
+                />
+                <div className="relative w-7 sm:w-11 h-4 sm:h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 sm:after:h-5 after:w-3 sm:after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
 
             <div className="flex flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b] mr-3">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center p-3">
