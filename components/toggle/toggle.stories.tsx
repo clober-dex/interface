@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
 
 import '../../styles/globals.css'
-import { SlippageToggle } from './slippage-toggle'
 import { Toggle } from './toggle'
+
 export default {
   title: 'Toggle/Toggle',
   component: Toggle,
