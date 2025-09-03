@@ -5,11 +5,11 @@ import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 
 import { SearchSvg } from '../components/svg/search-svg'
-import CheckIcon from '../components/icon/check-icon'
 import { ActionButton } from '../components/button/action-button'
 import { OpenOrderCardList } from '../components/card/open-order/open-order-card-list'
 import { useOpenOrderContext } from '../contexts/trade/open-order-context'
 import { useLimitContractContext } from '../contexts/trade/limit-contract-context'
+import { Toggle } from '../components/toggle/toggle'
 
 export const OpenOrderContainer = ({
   chainId,
@@ -109,18 +109,13 @@ export const OpenOrderContainer = ({
               <div className="justify-start text-[#8d94a1] text-sm font-medium leading-tight">
                 Current Market
               </div>
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  disabled={false}
-                  defaultChecked={false}
-                  onChange={() => {
-                    setSearchInCurrentMarket(!searchInCurrentMarket)
-                  }}
-                />
-                <div className="relative w-7 sm:w-11 h-4 sm:h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 sm:after:h-5 after:w-3 sm:after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              </label>
+              <Toggle
+                disabled={false}
+                defaultChecked={false}
+                onChange={() => {
+                  setSearchInCurrentMarket(!searchInCurrentMarket)
+                }}
+              />
             </div>
 
             <div className="flex flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b] mr-3">
@@ -190,33 +185,89 @@ export const OpenOrderContainer = ({
       </div>
 
       {/*mobile open order card*/}
-      <div className="flex lg:hidden w-full justify-center mb-28 sm:mb-0">
-        <div className="flex flex-col w-full lg:w-auto h-full lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredOpenOrders.length > 0 ? (
-            <div className="flex ml-auto h-6 opacity-80 justify-start items-center gap-2">
-              <button
-                disabled={claimableOpenOrders.length === 0}
-                onClick={async () => {
-                  await claims(claimableOpenOrders)
-                }}
-                className="flex flex-1 w-[95px] px-3 py-1 disabled:bg-[#2b3544] bg-[#3B82F6]/20 rounded-lg justify-center items-center disabled:text-gray-400 text-[#3B82F6] text-[13px] font-semibold"
-              >
-                Claim All
-              </button>
-              <button
-                disabled={cancellableOpenOrders.length === 0}
-                onClick={async () => {
-                  await cancels(cancellableOpenOrders)
-                }}
-                className="flex flex-1 w-[95px] px-3 py-1 disabled:bg-[#2b3544] bg-[#3B82F6]/20 rounded-lg justify-center items-center disabled:text-gray-400 text-[#3B82F6] text-[13px] font-semibold"
-              >
-                Cancel All
-              </button>
-            </div>
-          ) : (
-            <></>
-          )}
+      <div className="flex flex-col gap-4 lg:hidden w-full justify-center mb-28 sm:mb-0 bg-[#17181e] rounded-2xl">
+        <div className="flex flex-col gap-3">
+          <div className="flex w-full h-[37px] relative mt-[5px]">
+            <div className="relative flex-1 px-6 pt-1.5 pb-2.5 border-b-2 border-[#65a7ff] inline-flex justify-center items-center gap-2">
+              <div className="justify-start text-[#65a7ff] text-[13px] font-semibold leading-tight">
+                Open Order
+              </div>
+              <div className="px-2 py-0.5 bg-blue-500/25 rounded-[17.02px] inline-flex flex-col justify-center items-center">
+                <div className="flex text-[#65a7ff] text-[13px] font-medium">
+                  {filteredOpenOrders.length}
+                </div>
+              </div>
 
+              <div className="absolute w-full left-0 -bottom-0.5 h-0.5 bg-[#65a7ff]" />
+            </div>
+
+            <div className="relative flex-1 px-6 pt-1.5 pb-2.5 border-b-2 border-[#65a7ff] inline-flex justify-center items-center gap-2" />
+          </div>
+
+          <div className="flex px-3 items-center justify-end gap-2 w-full">
+            <div className="justify-start text-[#8d94a1] text-sm font-medium leading-tight">
+              Current Market
+            </div>
+            <Toggle
+              disabled={false}
+              defaultChecked={false}
+              onChange={() => {
+                setSearchInCurrentMarket(!searchInCurrentMarket)
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="mx-3 flex flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b]">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center p-3">
+            <div className="relative h-4 w-4">
+              <SearchSvg />
+            </div>
+          </div>
+          <div className="inline-block">
+            <div className="invisible h-0 mx-[29px]" aria-hidden="true">
+              Search open orders
+            </div>
+            <input
+              // ref={inputRef}
+              type="search"
+              name="open-order-search"
+              id="search"
+              autoComplete="off"
+              className="w-full h-8 placeholder:text-[#8c94a1] placeholder:text-[13px] placeholder:justify-center placeholder:font-normal focus:outline-none focus-visible:outline-none focus:ring-1 focus:rounded-[10px] focus:ring-gray-400 inline rounded-md border-0 pl-9 py-2 bg-[#24272e] text-xs sm:text-sm text-white"
+              placeholder="Search open orders"
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="w-full px-3 opacity-80 inline-flex justify-start items-center gap-2">
+          <div className="flex-1 h-7 px-3 py-1 bg-blue-500/25 rounded-lg flex justify-center items-center">
+            <button
+              disabled={claimableOpenOrders.length === 0}
+              onClick={async () => {
+                await claims(claimableOpenOrders)
+              }}
+              className="justify-start text-blue-400 text-[13px] font-semibold leading-none"
+            >
+              Claim all
+            </button>
+          </div>
+          <div className="flex-1 h-7 px-3 py-1 bg-[#2b3544] rounded-lg flex justify-center items-center">
+            <button
+              disabled={cancellableOpenOrders.length === 0}
+              onClick={async () => {
+                await cancels(cancellableOpenOrders)
+              }}
+              className="justify-start text-gray-400 text-[13px] font-semibold leading-none"
+            >
+              Cancel all
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col px-3 w-full lg:w-auto h-full lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
           {userAddress && (
             <OpenOrderCardList
               chainId={chainId}
