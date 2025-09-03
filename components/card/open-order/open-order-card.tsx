@@ -122,33 +122,33 @@ export const OpenOrderCard = ({
         </div>
       </div>
 
-      <div className="w-full relative hidden text-white lg:flex h-14 pl-5 pr-2 bg-[#171b24] rounded-xl justify-start items-center gap-[3px]">
+      <div className="h-[58px] w-full relative hidden text-white lg:flex pl-5 pr-2 bg-transparent justify-start items-center gap-[3px]">
         {!openOrder.isBid ? (
-          <div className="absolute left-0 h-full bg-red-500 w-1 rounded-l-3xl" />
+          <div className="absolute left-0 h-full bg-red-400 w-0.5 pt-1 rounded-l-xl" />
         ) : (
-          <div className="absolute left-0 h-full bg-green-500 w-1 rounded-l-3xl" />
+          <div className="absolute left-0 h-full bg-green-400 w-0.5 pt-1 rounded-l-xl" />
         )}
 
         <div className="justify-start items-center gap-6 flex text-nowrap">
           <div className="flex flex-row gap-1.5 text-sm font-semibold">
-            <div className="flex flex-row items-center gap-1.5 w-[180px] max-w-[180px] overflow-x-scroll">
+            <div className="flex flex-row items-center gap-1.5 w-[190px] max-w-[190px] overflow-x-scroll text-white text-sm font-medium">
               {openOrder.inputCurrency.symbol}{' '}
               <p className="text-sm text-gray-500">&#x2192;</p>
               {'  '}
               {openOrder.outputCurrency.symbol}
+              <button
+                onClick={() =>
+                  router.push(
+                    `/trade?inputCurrency=${openOrder.inputCurrency.address}&outputCurrency=${openOrder.outputCurrency.address}`,
+                  )
+                }
+              >
+                <OutlinkSvg className="w-3 h-3" />
+              </button>
             </div>
-            <button
-              onClick={() =>
-                router.push(
-                  `/trade?inputCurrency=${openOrder.inputCurrency.address}&outputCurrency=${openOrder.outputCurrency.address}`,
-                )
-              }
-            >
-              <OutlinkSvg className="w-3 h-3" />
-            </button>
           </div>
 
-          <div className="w-[120px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
+          <div className="w-[120px] h-full justify-start items-center flex text-white text-sm font-medium">
             {formatWithCommas(
               formatTickPriceString(
                 chainId,
@@ -160,7 +160,7 @@ export const OpenOrderCard = ({
             )}
           </div>
 
-          <div className="w-[180px] max-w-[180px] overflow-x-scroll h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
+          <div className="w-[180px] max-w-[180px] overflow-x-scroll h-full justify-start items-center flex text-white text-sm font-medium">
             <p className="flex gap-1 text-white">
               {formatWithCommas(
                 formatSignificantString(openOrder.amount.value),
@@ -171,11 +171,11 @@ export const OpenOrderCard = ({
             </p>
           </div>
 
-          <div className="w-[80px] h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium flex-row gap-1">
+          <div className="w-[80px] h-full justify-start items-center flex text-white text-sm font-medium flex-row gap-1">
             <p className="text-white">{filledRatio.toFixed(2)}%</p>
           </div>
 
-          <div className="w-[180px] max-w-[180px] overflow-x-scroll h-full justify-start items-center flex text-[#e6e7eb] text-sm font-medium">
+          <div className="w-[180px] max-w-[180px] overflow-x-scroll h-full justify-start items-center flex text-white text-sm font-medium">
             <p className="flex gap-1 text-white">
               {formatWithCommas(
                 formatSignificantString(openOrder.claimable.value),
@@ -191,18 +191,31 @@ export const OpenOrderCard = ({
           <div className="h-full ml-auto justify-center items-center gap-3 flex">
             <ActionButton
               {...claimActionButtonProps}
-              className="disabled:text-gray-400 text-white text-[13px] font-semibold w-[110px] h-8 px-3 py-1.5 disabled:bg-[#2b3544] bg-blue-500 rounded-[10px] justify-center items-center flex"
+              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-semibold leading-tight"
             >
               Claim
             </ActionButton>
             <ActionButton
               {...cancelActionButtonProps}
-              className="disabled:text-gray-400 text-white text-[13px] font-semibold w-[110px] h-8 px-3 py-1.5 disabled:bg-[#2b3544] bg-blue-500 rounded-[10px] justify-center items-center flex"
+              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-semibold leading-tight"
             >
               Cancel
             </ActionButton>
           </div>
         </div>
+      </div>
+
+      <div className="hidden lg:flex lg:mx-5 lg:h-0.5">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1768"
+          height="2"
+          viewBox="0 0 1768 2"
+          fill="none"
+          strokeWidth="1"
+        >
+          <path d="M0 1H1768" stroke="#2D2D2E" />
+        </svg>
       </div>
     </>
   )

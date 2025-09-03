@@ -134,7 +134,7 @@ export const OpenOrderContainer = ({
 
       {/*pc open order card*/}
       {filteredOpenOrders.length > 0 ? (
-        <div className="hidden lg:flex flex-col w-full rounded-[20px] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-tl-lg rounded-tr-lg">
+        <div className="hidden lg:flex flex-col w-full max-w-[1176px] bg-[#17181e] rounded-[20px] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-tl-lg rounded-tr-lg">
           <div>buttons</div>
 
           <div className="h-11 w-full justify-start items-center flex bg-[#222223] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
@@ -152,7 +152,7 @@ export const OpenOrderContainer = ({
                   await claims(claimableOpenOrders)
                 }}
                 text="Claim all"
-                className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] shadow-[8px_8px_64px_0px_rgba(191,57,0,0.32)] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
+                className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
               />
               <ActionButton
                 disabled={cancellableOpenOrders.length === 0}
@@ -160,7 +160,7 @@ export const OpenOrderContainer = ({
                   await cancels(cancellableOpenOrders)
                 }}
                 text="Cancel all"
-                className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] shadow-[8px_8px_64px_0px_rgba(191,57,0,0.32)] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
+                className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
               />
             </div>
           </div>
