@@ -21,7 +21,7 @@ export const OpenOrderCardList = ({
   router: NextRouter
 }) => {
   return (
-    <div className="lg:max-h-[356px] lg:overflow-y-scroll">
+    <div className="flex lg:block flex-col gap-2 lg:gap-0 lg:max-h-[356px] lg:overflow-y-scroll">
       {openOrders.map((openOrder, index) => (
         <OpenOrderCard
           chainId={chainId}

@@ -29,9 +29,15 @@ export const OpenOrderCard = ({
   return (
     <>
       <div
-        className="flex lg:hidden flex-col shadow border border-solid border-gray-800 lg:w-[310px] bg-gray-900 rounded-2xl p-4 gap-[20px]"
+        className="relative flex lg:hidden flex-col shadow border border-solid border-gray-800 lg:w-[310px] bg-[#24272e]/50 lg:bg-gray-900 rounded-tr-xl rounded-br-xl rounded-tl-md rounded-bl-md px-4 py-3.5 lg:p-4 gap-4 lg:gap-[20px] outline outline-1 outline-offset-[-1px] outline-[#272930]"
         {...props}
       >
+        {!openOrder.isBid ? (
+          <div className="absolute left-0 top-0 h-full bg-red-400 w-0.5 rounded-l-xl" />
+        ) : (
+          <div className="absolute left-0 top-0 h-full bg-green-400 w-0.5 rounded-l-xl" />
+        )}
+
         <div className="flex flex-col gap-[14px]">
           <div className="flex text-sm text-white justify-between">
             <div className="font-bold flex flex-row items-center gap-2">
@@ -56,7 +62,7 @@ export const OpenOrderCard = ({
             </div>
           </div>
           <div className="flex flex-col text-xs sm:text-sm">
-            <div className="flex flex-col align-baseline justify-between gap-3">
+            <div className="flex flex-col align-baseline justify-between gap-2">
               <div className="flex flex-row align-baseline justify-between">
                 <label className="text-gray-500">Price</label>
                 <p className="text-white">
@@ -80,7 +86,7 @@ export const OpenOrderCard = ({
                   </span>
                 </p>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <div className="flex flex-row align-baseline justify-between">
                   <label className="text-gray-500">Filled</label>
                   <div className="flex flex-row gap-1">
@@ -110,7 +116,7 @@ export const OpenOrderCard = ({
             </div>
           </div>
         </div>
-        <div className="flex w-full gap-3 h-6">
+        <div className="flex w-full gap-3 h-full">
           <ActionButton
             className="flex flex-1 h-7 px-3 py-1.5 disabled:bg-[#2b3544] bg-blue-500/20 rounded-lg justify-center items-center disabled:text-gray-400 text-blue-500 text-[13px] font-semibold"
             {...claimActionButtonProps}
