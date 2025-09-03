@@ -8,6 +8,7 @@ import { formatDollarValue, formatUnits } from '../../../utils/bigint'
 import { SlippageToggle } from '../../toggle/slippage-toggle'
 import { Chain } from '../../../model/chain'
 import { Pool } from '../../../model/pool'
+import { Toggle } from '../../toggle/toggle'
 
 export const AddLiquidityForm = ({
   chain,
@@ -80,18 +81,13 @@ export const AddLiquidityForm = ({
           <div className="text-white text-xs sm:text-sm font-semibold">
             Auto-Balance Liquidity
           </div>
-          <label className="inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              disabled={disableDisableSwap}
-              defaultChecked={!isNoLiquidity}
-              onChange={() => {
-                setDisableSwap(!disableSwap)
-              }}
-            />
-            <div className="relative w-7 sm:w-11 h-4 sm:h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 sm:after:h-5 after:w-3 sm:after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-          </label>
+          <Toggle
+            disabled={disableDisableSwap}
+            defaultChecked={!isNoLiquidity}
+            onChange={() => {
+              setDisableSwap(!disableSwap)
+            }}
+          />
         </div>
       </div>
       <div className="flex flex-col items-start gap-3 md:gap-4 self-stretch text-xs sm:text-sm">
