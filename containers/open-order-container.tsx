@@ -133,52 +133,88 @@ export const OpenOrderContainer = ({
       {/*</div>*/}
 
       {/*pc open order card*/}
-      {filteredOpenOrders.length > 0 ? (
-        <div className="hidden lg:flex flex-col w-full max-w-[1176px] bg-[#17181e] rounded-[20px] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-tl-lg rounded-tr-lg">
-          <div>buttons</div>
+      <div className="hidden lg:flex flex-col w-full max-w-[1176px] bg-[#17181e] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-t-[20px] rounded-b-none">
+        <div className="flex flex-row w-full h-[58px]">
+          <div className="w-[180px] h-full relative">
+            <div className="flex flex-row gap-1.5 absolute left-[27px] top-[18px] justify-center items-center">
+              <div className="text-[#65a7ff] text-base font-semibold leading-tight">
+                Open Orders
+              </div>
+              <div className="px-2 py-[3px] bg-blue-500/25 rounded-[17.02px] flex flex-col text-blue-400 text-sm font-semibold">
+                {filteredOpenOrders.length}
+              </div>
+            </div>
 
-          <div className="h-11 w-full justify-start items-center flex bg-[#222223] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
-            <div className="flex text-[#8d94a1] text-sm font-medium">
-              <div className="flex w-[220px] ml-5">Market</div>
-              <div className="flex w-[145px]">Price</div>
-              <div className="flex w-[205px]">Amount</div>
-              <div className="flex w-[100px]">Filled</div>
-              <div className="flex w-[200px]">Claimable</div>
-            </div>
-            <div className="h-full ml-auto justify-center items-center gap-4 flex mr-4">
-              <ActionButton
-                disabled={claimableOpenOrders.length === 0}
-                onClick={async () => {
-                  await claims(claimableOpenOrders)
-                }}
-                text="Claim all"
-                className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
-              />
-              <ActionButton
-                disabled={cancellableOpenOrders.length === 0}
-                onClick={async () => {
-                  await cancels(cancellableOpenOrders)
-                }}
-                text="Cancel all"
-                className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
-              />
-            </div>
+            <div className="absolute bottom-0 w-[180px] h-0.5 bg-[#65a7ff]" />
           </div>
 
-          {userAddress && (
-            <OpenOrderCardList
-              chainId={chainId}
-              userAddress={userAddress}
-              openOrders={filteredOpenOrders}
-              claims={claims}
-              cancels={cancels}
-              router={router}
-            />
-          )}
+          <div className="flex flex-row gap-4 items-center w-auto ml-auto">
+            <div>1</div>
+            <div className="flex flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b] mr-3">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center p-3">
+                <div className="relative h-4 w-4">
+                  <SearchSvg />
+                </div>
+              </div>
+              <div className="inline-block">
+                <div className="invisible h-0 mx-[29px]" aria-hidden="true">
+                  Search open orders
+                </div>
+                <input
+                  // ref={inputRef}
+                  type="search"
+                  name="open-order-search"
+                  id="search"
+                  autoComplete="off"
+                  className="w-60 h-8 placeholder:text-[#8c94a1] placeholder:text-[13px] placeholder:justify-center placeholder:font-normal focus:outline-none focus-visible:outline-none focus:ring-1 focus:rounded-[10px] focus:ring-gray-400 inline rounded-md border-0 pl-9 py-2 bg-[#24272e] text-xs sm:text-sm text-white"
+                  placeholder="Search open orders"
+                  value={searchValue}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-      ) : (
-        <></>
-      )}
+
+        <div className="h-11 w-full justify-start items-center flex bg-[#222223] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
+          <div className="flex text-[#8d94a1] text-sm font-medium">
+            <div className="flex w-[220px] ml-5">Market</div>
+            <div className="flex w-[145px]">Price</div>
+            <div className="flex w-[205px]">Amount</div>
+            <div className="flex w-[100px]">Filled</div>
+            <div className="flex w-[200px]">Claimable</div>
+          </div>
+          <div className="h-full ml-auto justify-center items-center gap-4 flex mr-4">
+            <ActionButton
+              disabled={claimableOpenOrders.length === 0}
+              onClick={async () => {
+                await claims(claimableOpenOrders)
+              }}
+              text="Claim all"
+              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
+            />
+            <ActionButton
+              disabled={cancellableOpenOrders.length === 0}
+              onClick={async () => {
+                await cancels(cancellableOpenOrders)
+              }}
+              text="Cancel all"
+              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
+            />
+          </div>
+        </div>
+
+        {filteredOpenOrders.length > 0 && userAddress && (
+          <OpenOrderCardList
+            chainId={chainId}
+            userAddress={userAddress}
+            openOrders={filteredOpenOrders}
+            claims={claims}
+            cancels={cancels}
+            router={router}
+          />
+        )}
+      </div>
 
       {/*mobile open order card*/}
       <div className="flex lg:hidden w-full justify-center mb-28 sm:mb-0">

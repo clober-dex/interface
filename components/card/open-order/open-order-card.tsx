@@ -122,7 +122,7 @@ export const OpenOrderCard = ({
         </div>
       </div>
 
-      <div className="h-[58px] w-full relative hidden text-white lg:flex pl-5 pr-2 bg-transparent justify-start items-center gap-[3px]">
+      <div className="h-[58px] w-full relative hidden text-white lg:flex px-4 bg-transparent justify-start items-center gap-[3px]">
         {!openOrder.isBid ? (
           <div className="absolute left-0 h-full bg-red-400 w-0.5 pt-1 rounded-l-xl" />
         ) : (
