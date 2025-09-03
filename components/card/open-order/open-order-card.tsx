@@ -39,33 +39,29 @@ export const OpenOrderCard = ({
         )}
 
         <div className="flex flex-col gap-[14px]">
-          <div className="flex text-sm text-white justify-between">
-            <div className="font-bold flex flex-row items-center gap-2">
-              {openOrder.inputCurrency.symbol} &#x2192;{'  '}
-              {openOrder.outputCurrency.symbol}
-              <button
-                onClick={() =>
-                  router.push(
-                    `/trade?inputCurrency=${openOrder.inputCurrency.address}&outputCurrency=${openOrder.outputCurrency.address}`,
-                  )
-                }
-              >
-                <OutlinkSvg className="w-3 h-3" />
-              </button>
+          <div className="flex flex-row gap-2 text-sm text-white">
+            <div className="font-semibold flex flex-row items-start gap-1">
+              <span>{openOrder.inputCurrency.symbol}</span>{' '}
+              <span className="text-gray-500">&#x2192;{'  '}</span>
+              <span>{openOrder.outputCurrency.symbol}</span>
             </div>
-            <div
-              className={`${
-                openOrder.isBid ? 'text-green-500' : 'text-red-500'
-              } text-sm font-bold`}
+            <button
+              onClick={() =>
+                router.push(
+                  `/trade?inputCurrency=${openOrder.inputCurrency.address}&outputCurrency=${openOrder.outputCurrency.address}`,
+                )
+              }
             >
-              {openOrder.isBid ? 'Bid' : 'Ask'}
-            </div>
+              <OutlinkSvg className="w-3 h-3" />
+            </button>
           </div>
           <div className="flex flex-col text-xs sm:text-sm">
             <div className="flex flex-col align-baseline justify-between gap-2">
               <div className="flex flex-row align-baseline justify-between">
-                <label className="text-gray-500">Price</label>
-                <p className="text-white">
+                <label className="text-gray-500 text-xs font-medium">
+                  Price
+                </label>
+                <p className="text-white text-xs font-medium">
                   {formatTickPriceString(
                     chainId,
                     BigInt(openOrder.tick),
@@ -76,8 +72,10 @@ export const OpenOrderCard = ({
                 </p>
               </div>
               <div className="flex flex-row align-baseline justify-between">
-                <label className="text-gray-500">Amount</label>
-                <p className="flex gap-1 text-white">
+                <label className="text-gray-500 text-xs font-medium">
+                  Amount
+                </label>
+                <p className="flex gap-1 text-white text-xs font-medium">
                   {formatWithCommas(
                     formatSignificantString(openOrder.amount.value),
                   )}{' '}
@@ -88,14 +86,18 @@ export const OpenOrderCard = ({
               </div>
               <div className="flex flex-col gap-1.5">
                 <div className="flex flex-row align-baseline justify-between">
-                  <label className="text-gray-500">Filled</label>
+                  <label className="text-gray-500 text-xs font-medium">
+                    Filled
+                  </label>
                   <div className="flex flex-row gap-1">
-                    <p className="text-white">{filledRatio.toFixed(2)}%</p>
+                    <p className="text-white text-xs font-medium">
+                      {filledRatio.toFixed(2)}%
+                    </p>
                   </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-lg dark:bg-gray-700">
+                <div className="w-full h-1 bg-gray-200 dark:bg-gray-700 rounded-2xl">
                   <div
-                    className="flex items-center justify-center h-1.5 bg-blue-500 text-gray-100 text-center p-0.5 leading-none rounded-lg"
+                    className="flex items-center justify-center bg-blue-500 text-gray-100 text-center p-0.5 leading-none w-full"
                     style={{
                       width: `${filledRatio}%`,
                     }}
@@ -103,8 +105,10 @@ export const OpenOrderCard = ({
                 </div>
               </div>
               <div className="flex flex-row align-baseline justify-between">
-                <label className="text-gray-500">Claimable</label>
-                <p className="flex gap-1 text-white">
+                <label className="text-gray-500 text-xs font-medium">
+                  Claimable
+                </label>
+                <p className="flex gap-1 text-white text-xs font-medium">
                   {formatWithCommas(
                     formatSignificantString(openOrder.claimable.value),
                   )}{' '}
