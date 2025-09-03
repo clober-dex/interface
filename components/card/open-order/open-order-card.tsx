@@ -131,7 +131,7 @@ export const OpenOrderCard = ({
 
         <div className="justify-start items-center gap-6 flex text-nowrap">
           <div className="flex flex-row gap-1.5 text-sm font-semibold">
-            <div className="flex flex-row items-center gap-1.5 w-[190px] max-w-[190px] overflow-x-scroll text-white text-sm font-medium">
+            <div className="flex flex-row items-center gap-1.5 w-[200px] max-w-[200px] overflow-x-scroll text-white text-sm font-medium">
               {openOrder.inputCurrency.symbol}{' '}
               <p className="text-sm text-gray-500">&#x2192;</p>
               {'  '}
@@ -148,7 +148,7 @@ export const OpenOrderCard = ({
             </div>
           </div>
 
-          <div className="w-[120px] h-full justify-start items-center flex text-white text-sm font-medium">
+          <div className="w-[110px] h-full justify-start items-center flex text-white text-sm font-medium">
             {formatWithCommas(
               formatTickPriceString(
                 chainId,

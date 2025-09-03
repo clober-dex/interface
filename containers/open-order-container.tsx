@@ -137,7 +137,7 @@ export const OpenOrderContainer = ({
         <div className="flex flex-row w-full h-[58px]">
           <div className="w-[180px] h-full relative">
             <div className="flex flex-row gap-1.5 absolute left-[27px] top-[18px] justify-center items-center">
-              <div className="text-[#65a7ff] text-base font-semibold leading-tight">
+              <div className="text-[#65a7ff] text-base font-medium">
                 Open Orders
               </div>
               <div className="px-2 py-[3px] bg-blue-500/25 rounded-[17.02px] flex flex-col text-blue-400 text-sm font-semibold">
@@ -150,6 +150,7 @@ export const OpenOrderContainer = ({
 
           <div className="flex flex-row gap-4 items-center w-auto ml-auto">
             <div>1</div>
+
             <div className="flex flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b] mr-3">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center p-3">
                 <div className="relative h-4 w-4">
@@ -179,9 +180,9 @@ export const OpenOrderContainer = ({
         <div className="h-11 w-full justify-start items-center flex bg-[#222223] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
           <div className="flex text-[#8d94a1] text-sm font-medium">
             <div className="flex w-[220px] ml-5">Market</div>
-            <div className="flex w-[145px]">Price</div>
-            <div className="flex w-[205px]">Amount</div>
-            <div className="flex w-[100px]">Filled</div>
+            <div className="flex w-[135px]">Price</div>
+            <div className="flex w-[200px]">Amount</div>
+            <div className="flex w-[105px]">Filled</div>
             <div className="flex w-[200px]">Claimable</div>
           </div>
           <div className="h-full ml-auto justify-center items-center gap-4 flex mr-4">
