@@ -9,7 +9,7 @@ import { ActionButton } from '../components/button/action-button'
 import { OpenOrderCardList } from '../components/card/open-order/open-order-card-list'
 import { useOpenOrderContext } from '../contexts/trade/open-order-context'
 import { useLimitContractContext } from '../contexts/trade/limit-contract-context'
-import { Toggle } from '../components/toggle/toggle'
+import { Toggle } from '../components/toggle'
 
 export const OpenOrderContainer = ({
   chainId,

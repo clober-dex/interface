@@ -8,7 +8,7 @@ import { formatDollarValue, formatUnits } from '../../../utils/bigint'
 import { SlippageToggle } from '../../toggle/slippage-toggle'
 import { Chain } from '../../../model/chain'
 import { Pool } from '../../../model/pool'
-import { Toggle } from '../../toggle/toggle'
+import { Toggle } from '../../toggle'
 
 export const AddLiquidityForm = ({
   chain,

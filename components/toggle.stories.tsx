@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import '../../styles/globals.css'
+import '../styles/globals.css'
 import { Toggle } from './toggle'
 
 export default {
-  title: 'Toggle/Toggle',
+  title: 'Toggle',
   component: Toggle,
   parameters: {
     layout: 'centered',
