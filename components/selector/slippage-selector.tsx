@@ -6,7 +6,7 @@ const UNLIMITED_SLIPPAGE = 50
 const FIRST_SLIPPAGE = 0.5
 const SECOND_SLIPPAGE = 1.0
 
-export const SlippageToggle = ({
+export const SlippageSelector = ({
   slippageInput,
   setSlippageInput,
 }: {

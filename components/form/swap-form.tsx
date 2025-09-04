@@ -20,7 +20,7 @@ import { Chain } from '../../model/chain'
 import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
-import { SlippageToggle } from '../toggle/slippage-toggle'
+import { SlippageSelector } from '../selector/slippage-selector'
 import { QuestionMarkSvg } from '../svg/question-mark-svg'
 
 export type SwapFormProps = {
@@ -469,7 +469,7 @@ export const SwapForm = ({
                 )}
               </div>
               <div className="flex ml-auto">
-                <SlippageToggle
+                <SlippageSelector
                   slippageInput={slippageInput}
                   setSlippageInput={setSlippageInput}
                 />

@@ -1,16 +1,16 @@
 import { Meta, StoryObj } from '@storybook/react'
 
 import '../../styles/globals.css'
-import { SlippageToggle } from './slippage-toggle'
+import { SlippageSelector } from './slippage-selector'
 export default {
-  title: 'Toggle/SlippageToggle',
-  component: SlippageToggle,
+  title: 'Selector/SlippageSelector',
+  component: SlippageSelector,
   parameters: {
     layout: 'centered',
   },
-} as Meta<typeof SlippageToggle>
+} as Meta<typeof SlippageSelector>
 
-type Story = StoryObj<typeof SlippageToggle>
+type Story = StoryObj<typeof SlippageSelector>
 
 export const Default: Story = {
   args: {

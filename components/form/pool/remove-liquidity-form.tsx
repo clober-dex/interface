@@ -5,7 +5,7 @@ import { Currency } from '../../../model/currency'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
 import LpCurrencyAmountInput from '../../input/lp-currency-amount-input'
 import { formatDollarValue, formatUnits } from '../../../utils/bigint'
-import { SlippageToggle } from '../../toggle/slippage-toggle'
+import { SlippageSelector } from '../../selector/slippage-selector'
 import { Chain } from '../../../model/chain'
 import { Pool } from '../../../model/pool'
 import { formatWithCommas } from '../../../utils/bignumber'
@@ -97,7 +97,7 @@ export const RemoveLiquidityForm = ({
             Max Slippage
           </div>
           <div className="flex items-center gap-1 ml-auto">
-            <SlippageToggle
+            <SlippageSelector
               slippageInput={slippageInput}
               setSlippageInput={setSlippageInput}
             />
