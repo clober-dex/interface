@@ -34,15 +34,15 @@ export const SlippageSelector = ({
   }, [customValue, setSlippageInput])
 
   return (
-    <div className="flex h-full w-full flex-col gap-1.5 text-sm text-white">
-      <div className="bg-gray-600 text-white rounded-[22px] h-7 py-0.5 w-full flex flex-row relative text-xs">
+    <div className="flex h-full w-full flex-col gap-1.5 text-white">
+      <div className="bg-gray-600 text-white rounded-[22px] h-7 py-0.5 w-full flex flex-row relative text-xs mt-1">
         <button
           disabled={Number(slippageInput) === FIRST_SLIPPAGE}
           onClick={() => {
             setSlippageInput(FIRST_SLIPPAGE.toString())
             setCustomValue('')
           }}
-          className="flex flex-1 pr-2 pl-4 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
+          className="flex flex-1 pr-2 pl-3 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
           {FIRST_SLIPPAGE.toFixed(2)}%
         </button>
@@ -62,10 +62,11 @@ export const SlippageSelector = ({
             setSlippageInput(UNLIMITED_SLIPPAGE.toString())
             setCustomValue('')
           }}
-          className="flex flex-1 px-2 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
+          className="min-w-[46px] flex flex-1 px-2 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          Unlimited
+          ∞
         </button>
+
         <div
           className={`flex flex-row items-center pr-2 ${customValue.length > 0 && (Number(slippageInput) >= 2 || Number(slippageInput) <= 0.05) ? 'text-yellow-500' : 'text-white'} ${customValue.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
         >
@@ -107,7 +108,7 @@ export const SlippageSelector = ({
               <path d="M8.63628 7.34878C8.63628 6.99732 8.35136 6.7124 7.9999 6.7124C7.64844 6.7124 7.36353 6.99732 7.36353 7.34878V9.25791C7.36353 9.60937 7.64844 9.89429 7.9999 9.89429C8.35136 9.89429 8.63628 9.60937 8.63628 9.25791V7.34878Z" />
             </svg>
             {Number(slippageInput) >= UNLIMITED_SLIPPAGE
-              ? `${Number(UNLIMITED_SLIPPAGE)}%`
+              ? '∞'
               : `${Number(slippageInput)}%`}{' '}
             Slippage
           </div>

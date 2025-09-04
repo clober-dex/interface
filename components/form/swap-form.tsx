@@ -136,69 +136,77 @@ export const SwapForm = ({
   }, [inputCurrency, inputCurrencyAmount, outputCurrencyAmount, quoteCurrency])
 
   return showInputCurrencySelect ? (
-    <CurrencySelect
-      chain={chain}
-      explorerUrl={explorerUrl}
-      currencies={
-        outputCurrency
-          ? currencies.filter(
-              (currency) =>
-                !isAddressEqual(currency.address, outputCurrency.address),
-            )
-          : currencies
-      }
-      balances={balances}
-      prices={prices}
-      onBack={() =>
-        setShowInputCurrencySelect
-          ? setShowInputCurrencySelect(false)
-          : undefined
-      }
-      onCurrencySelect={(currency) => {
-        if (setShowInputCurrencySelect) {
-          setCurrencies(
-            !currencies.find((c) => isAddressEqual(c.address, currency.address))
-              ? [...currencies, currency]
-              : currencies,
-          )
-          setInputCurrency(currency)
-          setShowInputCurrencySelect(false)
+    <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 h-[566px]">
+      <CurrencySelect
+        chain={chain}
+        explorerUrl={explorerUrl}
+        currencies={
+          outputCurrency
+            ? currencies.filter(
+                (currency) =>
+                  !isAddressEqual(currency.address, outputCurrency.address),
+              )
+            : currencies
         }
-      }}
-      defaultBlacklistedCurrency={outputCurrency}
-    />
+        balances={balances}
+        prices={prices}
+        onBack={() =>
+          setShowInputCurrencySelect
+            ? setShowInputCurrencySelect(false)
+            : undefined
+        }
+        onCurrencySelect={(currency) => {
+          if (setShowInputCurrencySelect) {
+            setCurrencies(
+              !currencies.find((c) =>
+                isAddressEqual(c.address, currency.address),
+              )
+                ? [...currencies, currency]
+                : currencies,
+            )
+            setInputCurrency(currency)
+            setShowInputCurrencySelect(false)
+          }
+        }}
+        defaultBlacklistedCurrency={outputCurrency}
+      />
+    </div>
   ) : showOutputCurrencySelect ? (
-    <CurrencySelect
-      chain={chain}
-      explorerUrl={explorerUrl}
-      currencies={
-        inputCurrency
-          ? currencies.filter(
-              (currency) =>
-                !isAddressEqual(currency.address, inputCurrency.address),
-            )
-          : currencies
-      }
-      balances={balances}
-      prices={prices}
-      onBack={() =>
-        setShowOutputCurrencySelect
-          ? setShowOutputCurrencySelect(false)
-          : undefined
-      }
-      onCurrencySelect={(currency) => {
-        if (setShowOutputCurrencySelect) {
-          setCurrencies(
-            !currencies.find((c) => isAddressEqual(c.address, currency.address))
-              ? [...currencies, currency]
-              : currencies,
-          )
-          setOutputCurrency(currency)
-          setShowOutputCurrencySelect(false)
+    <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 h-[566px]">
+      <CurrencySelect
+        chain={chain}
+        explorerUrl={explorerUrl}
+        currencies={
+          inputCurrency
+            ? currencies.filter(
+                (currency) =>
+                  !isAddressEqual(currency.address, inputCurrency.address),
+              )
+            : currencies
         }
-      }}
-      defaultBlacklistedCurrency={inputCurrency}
-    />
+        balances={balances}
+        prices={prices}
+        onBack={() =>
+          setShowOutputCurrencySelect
+            ? setShowOutputCurrencySelect(false)
+            : undefined
+        }
+        onCurrencySelect={(currency) => {
+          if (setShowOutputCurrencySelect) {
+            setCurrencies(
+              !currencies.find((c) =>
+                isAddressEqual(c.address, currency.address),
+              )
+                ? [...currencies, currency]
+                : currencies,
+            )
+            setOutputCurrency(currency)
+            setShowOutputCurrencySelect(false)
+          }
+        }}
+        defaultBlacklistedCurrency={inputCurrency}
+      />
+    </div>
   ) : (
     <div className="flex flex-col gap-2.5 h-full w-full">
       <Toast
@@ -206,7 +214,7 @@ export const SwapForm = ({
         setIsCopyToast={setIsCopyToast}
         durationInMs={1300}
       >
-        <div className="w-[240px] items-center justify-center flex flex-row gap-1.5 text-white text-sm font-semibold">
+        <div className="w-[240px] items-center justify-center flex flex-row gap-1.5 text-white text-[13px] sm:text-sm font-semibold">
           <ClipboardSvg />
           Swap URL copied to clipboard
         </div>
@@ -214,8 +222,8 @@ export const SwapForm = ({
 
       <div className="flex flex-col gap-2.5 self-stretch w-full">
         <div className="p-5 flex flex-col gap-4 self-stretch bg-[#16181d] rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930]">
-          <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-sm font-semibold">
-            <div className="flex flex-row gap-1 justify-start text-white text-[13px] font-medium">
+          <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-[13px] sm:text-sm font-semibold">
+            <div className="flex flex-row gap-1 justify-start text-white text-[13px] font-semibold">
               Swap {inputCurrency?.symbol ?? ''}{' '}
               <span className="text-[#8690a5]">&#8594; </span>
               {outputCurrency?.symbol ?? ''}
@@ -296,7 +304,7 @@ export const SwapForm = ({
                 disabled={true}
               >
                 <div
-                  className={`text-sm ${priceImpact < -5 ? 'text-yellow-400' : 'text-gray-400'} flex flex-row gap-0.5 items-center`}
+                  className={`text-[13px] sm:text-sm ${priceImpact < -5 ? 'text-yellow-400' : 'text-gray-400'} flex flex-row gap-0.5 items-center`}
                 >
                   {Number.isNaN(priceImpact)
                     ? ''
@@ -342,22 +350,22 @@ export const SwapForm = ({
           </div>
         </div>
 
-        <div className="p-5 bg-[#16181d] rounded-2xl flex flex-col gap-3 text-[13px] font-medium outline outline-1 outline-offset-[-1px] outline-[#272930]">
+        <div className="p-5 bg-[#16181d] rounded-2xl flex flex-col gap-3 text-[13px] font-medium outline outline-1 outline-offset-[-1px] outline-[#272930] mb-6 md:mb-0">
           <div className="flex flex-col items-start gap-2 md:gap-2.5 self-stretch justify-end text-white">
             <div className="flex items-center gap-2 self-stretch">
               <div className="text-gray-400">Gas Fee</div>
               <div className="flex ml-auto">
                 {!Number.isNaN(gasEstimateValue) ? (
-                  <div className="flex relative h-full sm:h-[20px] items-center text-sm text-white ml-auto">
+                  <div className="flex relative h-full sm:h-[20px] items-center text-[13px] sm:text-sm text-white ml-auto">
                     {isLoadingResults ? (
                       <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
                     ) : (
                       <div className="text-gray-400 flex flex-row gap-2 items-center">
-                        <span className="text-white text-sm font-medium">
+                        <span className="text-white text-[13px] sm:text-sm font-medium">
                           ${formatSignificantString(gasEstimateValue)}
                         </span>
                         {aggregatorName.length > 0 ? (
-                          <span className="text-[#8d94a1] text-sm font-medium">
+                          <span className="text-[#8d94a1] text-[13px] sm:text-sm font-medium">
                             via {aggregatorName}
                           </span>
                         ) : (
@@ -376,11 +384,11 @@ export const SwapForm = ({
               <div className="text-gray-400">Minimum Received</div>
               <div className="flex ml-auto">
                 {!Number.isNaN(minimumReceivedAmount) ? (
-                  <div className="flex relative h-full sm:h-[20px] items-center text-sm text-white ml-auto">
+                  <div className="flex relative h-full sm:h-[20px] items-center text-[13px] sm:text-sm text-white ml-auto">
                     {isLoadingResults ? (
                       <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
                     ) : (
-                      <div className="text-sm text-white flex flex-row gap-1 items-center">
+                      <div className="text-[13px] sm:text-sm text-white flex flex-row gap-1 items-center">
                         {formatSignificantString(Number(minimumReceivedAmount))}{' '}
                         {quoteCurrency?.symbol ?? ''}
                       </div>
@@ -413,11 +421,11 @@ export const SwapForm = ({
               </div>
               <div className="flex ml-auto">
                 {baseCurrency && quoteCurrency ? (
-                  <div className="flex relative h-full sm:h-[20px] items-center text-sm text-white ml-auto">
+                  <div className="flex relative h-full sm:h-[20px] items-center text-[13px] sm:text-sm text-white ml-auto">
                     {isLoadingResults ? (
                       <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
                     ) : (
-                      <div className="text-sm text-gray-400 flex flex-row gap-1 items-center">
+                      <div className="text-[13px] sm:text-sm text-gray-400 flex flex-row gap-1 items-center">
                         <span className="text-white">
                           1 {baseCurrency.symbol}
                         </span>
@@ -437,7 +445,7 @@ export const SwapForm = ({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 self-stretch">
+            <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2 self-stretch">
               <div className="text-gray-400 flex flex-row sm:flex-col gap-3">
                 <span>Max Slippage</span>
                 {selectedExecutorName && (

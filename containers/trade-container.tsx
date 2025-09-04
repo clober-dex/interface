@@ -818,7 +818,7 @@ export const TradeContainer = () => {
               <LimitForm {...limitFormProps} />
             </div>
           ) : (
-            <div className="hidden md:flex flex-col w-[480px] lg:w-[420px] h-full">
+            <div className="hidden md:flex flex-col w-[480px] lg:w-[420px] h-fit">
               <SwapForm
                 {...swapFormProps}
                 closeSwapFormAction={() => setShowMobileModal(false)}
