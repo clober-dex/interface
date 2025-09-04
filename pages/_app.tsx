@@ -238,7 +238,15 @@ function App({ Component, pageProps }: AppProps) {
                   <SidebarWrapper />
                   <HeaderContainer onMenuClick={() => setOpen(true)} />
 
-                  {router.pathname.includes('/trade') ? (
+                  {router.pathname.includes('/discover') ? (
+                    <TradeProvidersWrapper>
+                      <div className="flex flex-1 relative w-full lg:w-fit">
+                        <div className="flex w-full lg:w-fit flex-col gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] md:mt-[56px]">
+                          <Component {...pageProps} />
+                        </div>
+                      </div>
+                    </TradeProvidersWrapper>
+                  ) : router.pathname.includes('/trade') ? (
                     <TradeProvidersWrapper>
                       <div className="flex flex-1 relative justify-center">
                         <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[112px]">
@@ -254,12 +262,6 @@ function App({ Component, pageProps }: AppProps) {
                         </div>
                       </div>
                     </PoolProvidersWrapper>
-                  ) : router.pathname.includes('/analytics') ? (
-                    <div className="flex flex-1 relative justify-center">
-                      <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 sm:mt-[84px]">
-                        <Component {...pageProps} />
-                      </div>
-                    </div>
                   ) : router.pathname.includes('/futures') ? (
                     <FuturesProvidersWrapper>
                       <div className="flex flex-1 relative justify-center">
@@ -270,8 +272,8 @@ function App({ Component, pageProps }: AppProps) {
                     </FuturesProvidersWrapper>
                   ) : (
                     <TradeProvidersWrapper>
-                      <div className="flex flex-1 relative w-full lg:w-fit">
-                        <div className="flex w-full lg:w-fit flex-col gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] md:mt-[56px]">
+                      <div className="flex flex-1 relative justify-center">
+                        <div className="flex w-full flex-col items-center gap-6 md:gap-11 px-2 pb-0 mt-[30px] md:mt-[56px]">
                           <Component {...pageProps} />
                         </div>
                       </div>
