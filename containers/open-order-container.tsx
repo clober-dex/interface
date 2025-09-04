@@ -185,7 +185,7 @@ export const OpenOrderContainer = ({
       </div>
 
       {/*mobile open order card*/}
-      <div className="flex flex-col gap-4 lg:hidden w-full justify-center mb-28 sm:mb-0 bg-[#17181e] rounded-2xl">
+      <div className="flex flex-col gap-4 lg:hidden w-full justify-center mb-28 md:mb-0 bg-[#17181e] rounded-2xl">
         <div className="flex flex-col gap-3">
           <div className="flex w-full h-[37px] relative mt-[5px]">
             <div className="relative flex-1 px-6 pt-1.5 pb-2.5 border-b-2 border-[#65a7ff] inline-flex justify-center items-center gap-2">
