@@ -433,7 +433,7 @@ export const LeaderboardContainer = () => {
   }, [])
 
   return (
-    <div className="w-full flex items-center flex-col text-white px-4 gap-8">
+    <div className="w-full flex items-center flex-col text-white px-4 gap-8 mt-14">
       <div className="w-full lg:w-[960px] flex flex-col sm:gap-12 items-center">
         {userAddress && (
           <div className="flex w-full h-20 mt-6 sm:mt-0 sm:h-28 px-4 justify-start items-center gap-3 sm:gap-4">

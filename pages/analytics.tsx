@@ -173,7 +173,7 @@ export default function Analytics() {
   return (
     <RestrictedPageGuard>
       {analytics && (
-        <div className="flex flex-col w-full h-full items-center justify-center gap-8 px-16 pb-16">
+        <div className="flex flex-col w-full h-full items-center justify-center gap-8 px-16 pb-16 sm:mt-[84px]">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex flex-col">
               <div className="text-white text-sm md:text-base font-bold">
