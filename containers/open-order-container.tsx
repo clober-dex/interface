@@ -89,7 +89,7 @@ export const OpenOrderContainer = ({
   return (
     <>
       {/*pc open order card*/}
-      <div className="hidden lg:flex flex-col w-full max-w-[1176px] bg-[#17181e] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-t-[20px] rounded-b-none">
+      <div className="hidden lg:flex flex-col w-full max-w-[1176px] bg-[#17181e] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-t-[20px] rounded-b-none mb-4">
         <div className="flex flex-row w-full h-[58px]">
           <div className="w-[180px] h-full relative">
             <div className="flex flex-row gap-1.5 absolute left-[27px] top-[18px] justify-center items-center">
