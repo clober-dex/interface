@@ -34,7 +34,7 @@ export const SlippageSelector = ({
   }, [customValue, setSlippageInput])
 
   return (
-    <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
+    <div className="flex h-full w-full flex-col gap-1.5 text-sm text-white">
       <div className="bg-gray-600 text-white rounded-[22px] h-7 py-0.5 w-full flex flex-row relative text-xs">
         <button
           disabled={Number(slippageInput) === FIRST_SLIPPAGE}
@@ -96,7 +96,7 @@ export const SlippageSelector = ({
 
       {Number(slippageInput) >= 2 ? (
         <div className="flex w-full">
-          <div className="flex flex-row items-center gap-1 ml-auto">
+          <div className="flex flex-row items-center gap-1 ml-auto text-[13px] font-medium">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -107,7 +107,7 @@ export const SlippageSelector = ({
               <path d="M8.63628 7.34878C8.63628 6.99732 8.35136 6.7124 7.9999 6.7124C7.64844 6.7124 7.36353 6.99732 7.36353 7.34878V9.25791C7.36353 9.60937 7.64844 9.89429 7.9999 9.89429C8.35136 9.89429 8.63628 9.60937 8.63628 9.25791V7.34878Z" />
             </svg>
             {Number(slippageInput) >= UNLIMITED_SLIPPAGE
-              ? 'Unlimited'
+              ? `${Number(UNLIMITED_SLIPPAGE)}%`
               : `${Number(slippageInput)}%`}{' '}
             Slippage
           </div>
