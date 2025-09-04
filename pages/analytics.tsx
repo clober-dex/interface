@@ -511,7 +511,7 @@ export default function Analytics() {
 
       {!analytics && <Loading />}
 
-      <div className="flex sm:mb-[400px]" />
+      <div className="flex sm:mb-[80px]" />
     </RestrictedPageGuard>
   )
 }

@@ -254,6 +254,12 @@ function App({ Component, pageProps }: AppProps) {
                         </div>
                       </div>
                     </PoolProvidersWrapper>
+                  ) : router.pathname.includes('/analytics') ? (
+                    <div className="flex flex-1 relative justify-center">
+                      <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 sm:mt-[84px]">
+                        <Component {...pageProps} />
+                      </div>
+                    </div>
                   ) : router.pathname.includes('/futures') ? (
                     <FuturesProvidersWrapper>
                       <div className="flex flex-1 relative justify-center">
