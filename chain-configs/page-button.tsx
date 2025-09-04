@@ -34,12 +34,6 @@ export const PAGE_BUTTONS: PageButton[] = [
     isHiddenMenu: false,
   },
   {
-    path: '/trading-competition',
-    label: 'Competition',
-    icon: <TradingCompetitionPageSvg className="w-6 h-6" />,
-    isHiddenMenu: false,
-  },
-  {
     path: '/futures',
     label: 'Futures',
     icon: <LimitPageSvg className="w-6 h-6" />,
