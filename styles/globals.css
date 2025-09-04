@@ -31,7 +31,7 @@ body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-    background-color: #090906;
+    background-color: #0F1013;
 }
 
 a {
@@ -59,13 +59,13 @@ a {
 
 .custom-scrollbar::-webkit-scrollbar-track {
     width: 4px;
-    background: #090906;
+    background: #0F1013;
     border-radius: 12px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
     width: 4px;
     height: 80px;
-    background: #090906;
+    background: #0F1013;
     border-radius: 12px;
 }
