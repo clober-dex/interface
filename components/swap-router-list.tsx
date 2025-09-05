@@ -35,7 +35,7 @@ export const SwapRouteList = ({
     [quotes],
   )
   return (
-    <div className="flex flex-col p-5 sm:p-7 gap-2.5 sm:gap-3">
+    <div className="flex flex-col md:p-7 gap-2.5 sm:gap-3">
       <AnimatePresence initial={false}>
         {bestQuote && quotes.length > 0 ? (
           [bestQuote, ...quotesWithoutBestQuote]

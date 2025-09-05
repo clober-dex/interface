@@ -801,7 +801,7 @@ export const TradeContainer = () => {
 
           {tab === 'swap' && (
             <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[620px]">
-              <div className="relative hidden md:flex flex-col h-[572px] rounded-xl md:rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d]">
+              <div className="relative hidden md:flex flex-col lg:h-[572px] rounded-xl md:rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d]">
                 {showMetaInfo ? (
                   <MetaAggregatorInfo
                     chain={selectedChain}
@@ -855,6 +855,7 @@ export const TradeContainer = () => {
         tab={tab}
         disabled={tab === 'swap' && amountIn === 0n}
         quotes={quotes}
+        inputCurrency={inputCurrency}
         outputCurrency={outputCurrency}
         showMobileModal={showMobileModal}
         setShowMobileModal={setShowMobileModal}
