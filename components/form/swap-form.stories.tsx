@@ -48,7 +48,6 @@ export const Default: Story = {
     selectedExecutorName: null,
     isRefreshing: false,
     refreshQuotesAction: () => {},
-    closeSwapFormAction: () => {},
     priceImpact: 0.01,
     actionButtonProps: {
       disabled: false,
@@ -83,7 +82,6 @@ export const Selected: Story = {
     selectedExecutorName: null,
     isRefreshing: false,
     refreshQuotesAction: () => {},
-    closeSwapFormAction: () => {},
     priceImpact: 0.01,
     actionButtonProps: {
       disabled: false,

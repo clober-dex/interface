@@ -15,7 +15,6 @@ import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
 import { ExchangeSvg } from '../svg/exchange-svg'
-import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
 import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
@@ -55,7 +54,6 @@ export type SwapFormProps = {
   selectedExecutorName: string | null
   isRefreshing: boolean
   refreshQuotesAction: () => void
-  closeSwapFormAction?: () => void
   actionButtonProps?: ActionButtonProps
 }
 
@@ -87,7 +85,6 @@ export const SwapForm = ({
   selectedExecutorName,
   isRefreshing,
   refreshQuotesAction,
-  closeSwapFormAction,
   actionButtonProps,
 }: SwapFormProps) => {
   const isLoadingResults = useMemo(() => {

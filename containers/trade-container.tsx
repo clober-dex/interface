@@ -835,7 +835,6 @@ export const TradeContainer = () => {
             <div className="hidden md:flex flex-col w-[480px] lg:w-[420px] h-fit">
               <SwapForm
                 {...swapFormProps}
-                closeSwapFormAction={() => setShowMobileModal(false)}
                 actionButtonProps={swapActionButtonProps}
               />
             </div>
