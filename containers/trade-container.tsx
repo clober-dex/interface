@@ -110,7 +110,7 @@ const MetaAggregatorInfo = ({
         </div>
       </div>
 
-      <div className="absolute flex bottom-4 w-full px-8 gap-3 flex-col max-h-[120px] overflow-y-scroll">
+      <div className="absolute flex bottom-[34px] w-full px-4 gap-2 flex-col max-h-[174px] overflow-y-scroll">
         <AnimatePresence initial={false}>
           {latestSwaps
             .filter(
@@ -122,7 +122,7 @@ const MetaAggregatorInfo = ({
             .map((latestSwap) => (
               <motion.div
                 key={latestSwap.transaction.id}
-                className="w-full flex items-center justify-between px-4 text-xs text-white"
+                className="w-full flex items-center justify-between text-xs text-white text-nowrap"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
@@ -131,48 +131,64 @@ const MetaAggregatorInfo = ({
                 <a
                   href={`${chain.blockExplorers?.default?.url}/tx/${latestSwap.transaction.id}`}
                   target="_blank"
-                  className="h-8 max-h-8 flex w-full px-3 py-1.5 bg-[#819cff]/10 rounded-[32px] shadow-[0px_0px_6px_0px_rgba(96,165,250,0.25)] justify-start items-center gap-2 overflow-hidden"
+                  className="h-7 w-full flex self-stretch px-2.5 py-[7px] bg-[#24272e] rounded-[10px] justify-start items-center gap-2"
                   rel="noopener"
                 >
-                  <div className="justify-start text-blue-400 font-semibold text-nowrap">
-                    <span className="text-white font-bold">
-                      {shortAddress(
-                        latestSwap.transaction.from as `0x${string}`,
-                        5,
-                      )}{' '}
-                    </span>
+                  <div className="justify-start text-nowrap text-[#8d94a1] text-xs font-medium w-[144px]">
+                    {shortAddress(latestSwap.transaction.from as `0x${string}`)}{' '}
                     swapped
                   </div>
                   <div className="flex justify-start items-center gap-1.5">
-                    <CurrencyIcon
-                      chain={chain}
-                      currency={latestSwap.currencyIn.currency}
-                      className="w-4 h-4 rounded-full"
-                    />
-                    <div className="justify-start text-white font-semibold">
-                      {formatTinyNumber(latestSwap.currencyIn.amount)}{' '}
-                      {latestSwap.currencyIn.currency.symbol}
+                    <div className="flex justify-start items-center gap-1">
+                      <CurrencyIcon
+                        chain={chain}
+                        currency={latestSwap.currencyIn.currency}
+                        className="w-3.5 h-3.5 rounded-full"
+                      />
+                      <div className="justify-start text-white text-xs font-medium">
+                        {formatTinyNumber(latestSwap.currencyIn.amount)}{' '}
+                        <span className="text-[#8d94a1]">
+                          {latestSwap.currencyIn.currency.symbol}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-gray-400">→</span>
-                    <CurrencyIcon
-                      chain={chain}
-                      currency={latestSwap.currencyOut.currency}
-                      className="w-4 h-4 rounded-full"
-                    />
-                    <div className="justify-start text-white font-semibold">
-                      {formatTinyNumber(latestSwap.currencyOut.amount)}{' '}
-                      {latestSwap.currencyOut.currency.symbol}
-                    </div>{' '}
-                    <div className="justify-start text-blue-400 font-semibold">
-                      via{' '}
-                      <span className="font-bold">
-                        {CHAIN_CONFIG.ROUTER_MAP[latestSwap.router]}
-                      </span>
+
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                    >
+                      <path
+                        d="M11.0833 7.00004L2.91659 7.00004M11.0833 7.00004L8.74992 4.66671M11.0833 7.00004L8.74992 9.33337"
+                        stroke="#8D94A1"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+
+                    <div className="flex justify-start items-center gap-1">
+                      <CurrencyIcon
+                        chain={chain}
+                        currency={latestSwap.currencyOut.currency}
+                        className="w-3.5 h-3.5 rounded-full"
+                      />
+                      <div className="justify-start text-white text-xs font-medium">
+                        {formatTinyNumber(latestSwap.currencyOut.amount)}{' '}
+                        <span className="text-[#8d94a1]">
+                          {latestSwap.currencyOut.currency.symbol}
+                        </span>
+                      </div>{' '}
+                    </div>
+                    <div className="text-nowrap text-blue-400 text-xs font-medium">
+                      via {CHAIN_CONFIG.ROUTER_MAP[latestSwap.router]}
                     </div>
                   </div>
 
-                  <div className="flex ml-auto items-center gap-2">
-                    <div className="text-white text-[12px]">
+                  <div className="flex ml-auto items-center">
+                    <div className="text-[#8d94a1] text-xs font-medium">
                       {convertTimeAgo(latestSwap.timestamp * 1000)}
                     </div>
                   </div>
@@ -784,7 +800,7 @@ export const TradeContainer = () => {
           )}
 
           {tab === 'swap' && (
-            <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[528px]">
+            <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[600px]">
               <div className="relative hidden md:flex flex-col h-full rounded-xl md:rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d]">
                 {showMetaInfo ? (
                   <MetaAggregatorInfo
