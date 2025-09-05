@@ -220,8 +220,8 @@ export const SwapForm = ({
         </div>
       </Toast>
 
-      <div className="flex flex-col gap-2.5 self-stretch w-full">
-        <div className="p-5 flex flex-col gap-4 self-stretch bg-[#16181d] rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930]">
+      <div className="flex flex-col gap-0 md:gap-2.5 self-stretch w-full rounded-2xl md:rounded-none bg-[#171b24] md:bg-transparent">
+        <div className="p-5 flex flex-col gap-4 self-stretch md:bg-[#16181d] md:rounded-2xl md:outline md:outline-1 md:outline-offset-[-1px] md:outline-[#272930]">
           <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-[13px] sm:text-sm font-semibold">
             <div className="flex flex-row gap-1 justify-start text-white text-[13px] font-semibold">
               Swap {inputCurrency?.symbol ?? ''}{' '}
@@ -350,7 +350,7 @@ export const SwapForm = ({
           </div>
         </div>
 
-        <div className="p-5 bg-[#16181d] rounded-2xl flex flex-col gap-3 text-[13px] font-medium outline outline-1 outline-offset-[-1px] outline-[#272930] mb-6 md:mb-0">
+        <div className="relative px-5 md:py-5 md:bg-[#16181d] md:rounded-2xl flex flex-col gap-3 text-[13px] font-medium md:outline md:outline-1 md:outline-offset-[-1px] md:outline-[#272930] mb-5 md:mb-0">
           <div className="flex flex-col items-start gap-2 md:gap-2.5 self-stretch justify-end text-white">
             <div className="flex items-center gap-2 self-stretch">
               <div className="text-gray-400">Gas Fee</div>
@@ -360,7 +360,7 @@ export const SwapForm = ({
                     {isLoadingResults ? (
                       <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
                     ) : (
-                      <div className="text-gray-400 flex flex-row gap-2 items-center">
+                      <div className="text-gray-400 flex flex-row gap-1 items-center">
                         <span className="text-white text-[13px] sm:text-sm font-medium">
                           ${formatSignificantString(gasEstimateValue)}
                         </span>
@@ -445,14 +445,9 @@ export const SwapForm = ({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2 self-stretch">
+            <div className="flex flex-row w-full">
               <div className="text-gray-400 flex flex-row sm:flex-col gap-3">
                 <span>Max Slippage</span>
-                {selectedExecutorName && (
-                  <div className="flex ml-auto font-semibold text-blue-500">
-                    Mev Protected
-                  </div>
-                )}
               </div>
               <div className="flex ml-auto">
                 <SlippageSelector
@@ -460,6 +455,10 @@ export const SwapForm = ({
                   setSlippageInput={setSlippageInput}
                 />
               </div>
+            </div>
+
+            <div className="absolute flex text-blue-500 font-semibold">
+              {selectedExecutorName && 'Mev Protected'}
             </div>
           </div>
 

@@ -688,129 +688,127 @@ export const TradeContainer = () => {
         <div
           className={`flex flex-col w-full lg:flex-row gap-4 justify-center ${tab === 'swap' ? 'md:flex-col-reverse' : ''}`}
         >
-          <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[740px]">
-            {tab === 'limit' && (
-              <>
-                {baseCurrency && quoteCurrency && (
-                  <MarketInfoCard
-                    chain={selectedChain}
-                    baseCurrency={
-                      {
-                        ...baseCurrency,
-                        icon: currencies.find((c) =>
-                          isAddressEqual(c.address, baseCurrency.address),
-                        )?.icon,
-                      } as Currency
-                    }
-                    quoteCurrency={
-                      {
-                        ...quoteCurrency,
-                        icon: currencies.find((c) =>
-                          isAddressEqual(c.address, quoteCurrency.address),
-                        )?.icon,
-                      } as Currency
-                    }
-                    price={
-                      selectedTokenInfo?.price ||
-                      selectedMarketSnapshot?.price ||
-                      0
-                    }
-                    dollarValue={
-                      selectedTokenInfo?.priceUsd ||
-                      selectedMarketSnapshot?.priceUSD ||
-                      0
-                    }
-                    fdv={
-                      selectedTokenInfo?.fdv || selectedMarketSnapshot?.fdv || 0
-                    }
-                    marketCap={
-                      selectedTokenInfo?.marketCap ||
-                      selectedMarketSnapshot?.fdv ||
-                      0
-                    }
-                    dailyVolume={
-                      selectedTokenInfo?.volume24hUSD ||
-                      selectedMarketSnapshot?.volume24hUSD ||
-                      0
-                    }
-                    liquidityUsd={
-                      selectedTokenInfo?.totalValueLockedUSD ||
-                      selectedMarketSnapshot?.totalValueLockedUSD ||
-                      0
-                    }
-                    websiteUrl={selectedTokenInfo?.website ?? ''}
-                    twitterUrl={selectedTokenInfo?.twitter ?? ''}
-                    telegramUrl={selectedTokenInfo?.telegram ?? ''}
-                    isFetchingMarketSnapshot={
-                      selectedMarketSnapshot === undefined ||
-                      selectedTokenInfo === undefined
-                    }
-                  />
+          {tab === 'limit' && (
+            <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[740px]">
+              {baseCurrency && quoteCurrency && (
+                <MarketInfoCard
+                  chain={selectedChain}
+                  baseCurrency={
+                    {
+                      ...baseCurrency,
+                      icon: currencies.find((c) =>
+                        isAddressEqual(c.address, baseCurrency.address),
+                      )?.icon,
+                    } as Currency
+                  }
+                  quoteCurrency={
+                    {
+                      ...quoteCurrency,
+                      icon: currencies.find((c) =>
+                        isAddressEqual(c.address, quoteCurrency.address),
+                      )?.icon,
+                    } as Currency
+                  }
+                  price={
+                    selectedTokenInfo?.price ||
+                    selectedMarketSnapshot?.price ||
+                    0
+                  }
+                  dollarValue={
+                    selectedTokenInfo?.priceUsd ||
+                    selectedMarketSnapshot?.priceUSD ||
+                    0
+                  }
+                  fdv={
+                    selectedTokenInfo?.fdv || selectedMarketSnapshot?.fdv || 0
+                  }
+                  marketCap={
+                    selectedTokenInfo?.marketCap ||
+                    selectedMarketSnapshot?.fdv ||
+                    0
+                  }
+                  dailyVolume={
+                    selectedTokenInfo?.volume24hUSD ||
+                    selectedMarketSnapshot?.volume24hUSD ||
+                    0
+                  }
+                  liquidityUsd={
+                    selectedTokenInfo?.totalValueLockedUSD ||
+                    selectedMarketSnapshot?.totalValueLockedUSD ||
+                    0
+                  }
+                  websiteUrl={selectedTokenInfo?.website ?? ''}
+                  twitterUrl={selectedTokenInfo?.twitter ?? ''}
+                  telegramUrl={selectedTokenInfo?.telegram ?? ''}
+                  isFetchingMarketSnapshot={
+                    selectedMarketSnapshot === undefined ||
+                    selectedTokenInfo === undefined
+                  }
+                />
+              )}
+
+              <div className="flex flex-col h-full rounded-xl md:rounded-2xl">
+                {!showOrderBook && baseCurrency && quoteCurrency ? (
+                  !selectedChain.testnet && selectedTokenInfo?.pairAddress ? (
+                    <IframeChartContainer
+                      pairAddress={getAddress(selectedTokenInfo.pairAddress)}
+                      chainId={selectedChain.id}
+                    />
+                  ) : (
+                    <NativeChartContainer
+                      baseCurrency={baseCurrency}
+                      quoteCurrency={quoteCurrency}
+                    />
+                  )
+                ) : (
+                  <></>
                 )}
 
-                <div className="flex flex-col h-full rounded-xl md:rounded-2xl">
-                  {!showOrderBook && baseCurrency && quoteCurrency ? (
-                    !selectedChain.testnet && selectedTokenInfo?.pairAddress ? (
-                      <IframeChartContainer
-                        pairAddress={getAddress(selectedTokenInfo.pairAddress)}
-                        chainId={selectedChain.id}
-                      />
-                    ) : (
-                      <NativeChartContainer
-                        baseCurrency={baseCurrency}
-                        quoteCurrency={quoteCurrency}
-                      />
-                    )
-                  ) : (
-                    <></>
-                  )}
+                {showOrderBook ? (
+                  <OrderBook
+                    market={selectedMarket}
+                    bids={bids}
+                    asks={asks}
+                    setDepthClickedIndex={
+                      isFetchingOnChainPrice ? () => {} : setDepthClickedIndex
+                    }
+                    setShowOrderBook={setShowOrderBook}
+                    setTab={setTab}
+                    className="flex flex-col px-0.5 lg:px-4 pb-4 pt-2 md:pb-6 bg-[#171b24] rounded-b-xl md:rounded-2xl gap-[20px] h-[300px] lg:h-full w-full"
+                  />
+                ) : (
+                  <></>
+                )}
+              </div>
+            </div>
+          )}
 
-                  {showOrderBook ? (
-                    <OrderBook
-                      market={selectedMarket}
-                      bids={bids}
-                      asks={asks}
-                      setDepthClickedIndex={
-                        isFetchingOnChainPrice ? () => {} : setDepthClickedIndex
-                      }
-                      setShowOrderBook={setShowOrderBook}
-                      setTab={setTab}
-                      className="flex flex-col px-0.5 lg:px-4 pb-4 pt-2 md:pb-6 bg-[#171b24] rounded-b-xl md:rounded-2xl gap-[20px] h-[300px] lg:h-full w-full"
-                    />
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              </>
-            )}
+          {tab === 'swap' && (
+            <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[528px]">
+              <div className="relative hidden md:flex flex-col h-full rounded-xl md:rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d]">
+                {showMetaInfo ? (
+                  <MetaAggregatorInfo
+                    chain={selectedChain}
+                    currencies={currencies}
+                    latestSwaps={latestSwaps}
+                  />
+                ) : (
+                  <SwapRouteList
+                    quotes={quotes.all}
+                    bestQuote={quotes.best}
+                    outputCurrency={outputCurrency}
+                    aggregatorNames={aggregators.map((a) => a.name)}
+                    selectedQuote={selectedQuote}
+                    setSelectedQuote={setSelectedQuote}
+                  />
+                )}
+              </div>
 
-            {tab === 'swap' && (
-              <>
-                <div className="relative hidden md:flex flex-col h-full rounded-xl md:rounded-2xl bg-[#171b24]">
-                  {showMetaInfo ? (
-                    <MetaAggregatorInfo
-                      chain={selectedChain}
-                      currencies={currencies}
-                      latestSwaps={latestSwaps}
-                    />
-                  ) : (
-                    <SwapRouteList
-                      quotes={quotes.all}
-                      bestQuote={quotes.best}
-                      outputCurrency={outputCurrency}
-                      aggregatorNames={aggregators.map((a) => a.name)}
-                      selectedQuote={selectedQuote}
-                      setSelectedQuote={setSelectedQuote}
-                    />
-                  )}
-                </div>
-
-                <div className="flex mb-16 md:mb-0 max-h-[560px] md:hidden w-full justify-center rounded-2xl bg-[#171b24] md:p-5">
-                  <SwapForm {...swapFormProps} />
-                </div>
-              </>
-            )}
-          </div>
+              <div className="flex mb-16 md:mb-0 max-h-[560px] md:hidden w-full justify-center md:rounded-2xl md:bg-[#171b24] md:p-5">
+                <SwapForm {...swapFormProps} />
+              </div>
+            </div>
+          )}
 
           {/*only tablet or pc*/}
           {tab === 'limit' ? (
