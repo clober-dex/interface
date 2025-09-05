@@ -20,36 +20,40 @@ export const OpenOrderCardList = ({
   cancels: (openOrders: OpenOrder[]) => Promise<void>
   router: NextRouter
 }) => {
-  return openOrders.map((openOrder, index) => (
-    <OpenOrderCard
-      chainId={chainId}
-      openOrder={openOrder}
-      key={index}
-      router={router}
-      claimActionButtonProps={{
-        disabled:
-          !isAddressEqual(openOrder.user, userAddress) ||
-          parseUnits(
-            openOrder.claimable.value,
-            openOrder.claimable.currency.decimals,
-          ) === 0n,
-        onClick: async () => {
-          await claims([openOrder])
-        },
-        text: 'Claim',
-      }}
-      cancelActionButtonProps={{
-        disabled:
-          !isAddressEqual(openOrder.user, userAddress) ||
-          parseUnits(
-            openOrder.cancelable.value,
-            openOrder.cancelable.currency.decimals,
-          ) === 0n,
-        onClick: async () => {
-          await cancels([openOrder])
-        },
-        text: 'Cancel',
-      }}
-    />
-  ))
+  return (
+    <div className="flex lg:block flex-col gap-2 lg:gap-0 lg:max-h-[356px] lg:overflow-y-scroll">
+      {openOrders.map((openOrder, index) => (
+        <OpenOrderCard
+          chainId={chainId}
+          openOrder={openOrder}
+          key={index}
+          router={router}
+          claimActionButtonProps={{
+            disabled:
+              !isAddressEqual(openOrder.user, userAddress) ||
+              parseUnits(
+                openOrder.claimable.value,
+                openOrder.claimable.currency.decimals,
+              ) === 0n,
+            onClick: async () => {
+              await claims([openOrder])
+            },
+            text: 'Claim',
+          }}
+          cancelActionButtonProps={{
+            disabled:
+              !isAddressEqual(openOrder.user, userAddress) ||
+              parseUnits(
+                openOrder.cancelable.value,
+                openOrder.cancelable.currency.decimals,
+              ) === 0n,
+            onClick: async () => {
+              await cancels([openOrder])
+            },
+            text: 'Cancel',
+          }}
+        />
+      ))}
+    </div>
+  )
 }

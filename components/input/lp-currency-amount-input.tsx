@@ -67,7 +67,7 @@ const LpCurrencyAmountInput = ({
         {onCurrencyClick ? (
           currency ? (
             <button
-              className="flex h-7 sm:h-8 w-fit items-center rounded-full bg-gray-700 py-1 pl-2 pr-3 gap-2"
+              className="h-full pl-1.5 pr-2 py-1 bg-[#3d3e40] rounded-[30.64px] flex justify-start items-center gap-1.5"
               onClick={onCurrencyClick}
             >
               <LpCurrencyIcon

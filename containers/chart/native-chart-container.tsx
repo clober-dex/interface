@@ -16,12 +16,10 @@ const TVChartContainer = dynamic(
 export const NativeChartContainer = ({
   baseCurrency,
   quoteCurrency,
-  setShowOrderBook,
   totalSupply,
 }: {
   baseCurrency: Currency
   quoteCurrency: Currency
-  setShowOrderBook?: ((showOrderBook: boolean) => void) | undefined
   totalSupply?: number
 }) => {
   const { selectedChain } = useChainContext()
@@ -41,7 +39,6 @@ export const NativeChartContainer = ({
           chainId={selectedChain.id}
           baseCurrency={baseCurrency}
           quoteCurrency={quoteCurrency}
-          setShowOrderBook={setShowOrderBook}
           totalSupply={totalSupply}
         />
       ) : (
