@@ -27,7 +27,7 @@ const Modal = ({
       onClick={onClose}
     >
       <div
-        className="relative flex flex-col w-full sm:w-auto bg-[#171b24] text-white rounded-xl sm:rounded-2xl p-4 sm:p-6"
+        className="relative flex flex-col w-full sm:w-auto bg-[#17181e] text-white rounded-xl sm:rounded-2xl p-4 sm:p-6"
         style={{ width }}
         onClick={(e) => {
           onModalClick?.()
