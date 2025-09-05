@@ -29,7 +29,7 @@ import { useTransactionContext } from '../contexts/transaction-context'
 import { executors } from '../chain-configs/executors'
 import { formatTinyNumber } from '../utils/bignumber'
 import { CurrencyIcon } from '../components/icon/currency-icon'
-import { convertTimeAgo } from '../utils/time'
+import { convertShortTimeAgo } from '../utils/time'
 import { Chain } from '../model/chain'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
@@ -189,7 +189,7 @@ const MetaAggregatorInfo = ({
 
                   <div className="flex ml-auto items-center">
                     <div className="text-[#8d94a1] text-xs font-medium">
-                      {convertTimeAgo(latestSwap.timestamp * 1000)}
+                      {convertShortTimeAgo(latestSwap.timestamp * 1000)}
                     </div>
                   </div>
                 </a>
