@@ -56,7 +56,7 @@ const MetaAggregatorInfo = ({
 
   return (
     <div className="hidden lg:block">
-      <div className="absolute flex justify-center w-full top-40 z-[2]">
+      <div className="absolute flex justify-center w-full top-[60px] z-[2]">
         <Image
           className="rounded-xl"
           src="/chain-configs/meta-aggregator-logo.svg"
@@ -66,8 +66,8 @@ const MetaAggregatorInfo = ({
         />
       </div>
 
-      <div className="w-full flex justify-center absolute top-1/4">
-        <div className="w-full md:w-[616px] overflow-x-hidden mt-4 md:mt-8 relative">
+      <div className="w-full flex justify-center absolute top-20">
+        <div className="w-full md:w-[616px] overflow-x-hidden relative">
           <div className="flex w-max animate-marquee items-center">
             {shuffledCurrencies.map((currency, i) => {
               return (
@@ -91,12 +91,12 @@ const MetaAggregatorInfo = ({
         </div>
       </div>
 
-      <div className="absolute bottom-[30%] items-center justify-center w-full text-center gap-4">
+      <div className="absolute top-[196px] items-center justify-center w-full text-center gap-4">
         <div className="flex flex-col gap-4">
-          <span className="text-center justify-center text-blue-400 text-lg font-bold leading-normal">
+          <span className="text-blue-400 text-base font-semibold">
             One Interface. Every Route, Optimized.
           </span>
-          <div className="self-stretch text-center justify-start text-Gray-300 text-[13px] font-light">
+          <div className="text-[#8d94a1] text-xs font-medium leading-[18px]">
             {CHAIN_CONFIG.DEX_NAME} intelligently scans across multiple DEX
             aggregators
             <br />
