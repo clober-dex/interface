@@ -40,10 +40,14 @@ export const MobileFixedModal = ({
         onClick={() => setShowMobileModal(false)}
       />
       <div className="w-full h-full top-0 absolute bg-[#171b24] shadow rounded-tl-2xl rounded-tr-2xl border" />
-      <div className="z-[10000] w-full flex flex-col px-3 sm:px-5 py-3">
+      <div
+        className={`z-[10000] w-full flex flex-col ${
+          showMobileModal ? '' : 'px-5 sm:px-5 pt-3'
+        }`}
+      >
         <div
           className={`${
-            showMobileModal ? 'flex max-h-[560px]' : 'hidden'
+            showMobileModal ? 'flex max-h-[560px] mt-5' : 'hidden'
           } flex-col mb-5`}
         >
           {tab === 'limit' ? (
@@ -78,7 +82,7 @@ export const MobileFixedModal = ({
           disabled={disabled}
           className={`disabled:bg-[#2b3544] disabled:text-gray-400 text-white w-full ${
             showMobileModal ? 'hidden' : 'flex'
-          } h-12 bg-blue-500 rounded-xl justify-center items-center mb-3`}
+          } h-12 bg-blue-500 rounded-xl justify-center items-center mb-5`}
         >
           <div className="grow shrink basis-0 opacity-90 text-center text-base font-semibold">
             {tab === 'limit' ? 'Make order' : 'Quotes'}
