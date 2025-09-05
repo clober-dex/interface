@@ -73,8 +73,8 @@ export const UserWalletModal = ({
   const cache = new Map<string, boolean>()
   const [showTokenTransferModal, setShowTokenTransferModal] = useState(false)
   const [isCopyToast, setIsCopyToast] = useState(false)
-  const [tab, setTab] = React.useState<'my-tokens' | 'my-transactions'>(
-    'my-transactions',
+  const [tab, setTab] = React.useState<'tokens' | 'transactions'>(
+    'transactions',
   )
   const [selectedCurrency, setSelectedCurrency] = useState<
     Currency | undefined
@@ -117,6 +117,18 @@ export const UserWalletModal = ({
           Address copied to clipboard
         </div>
       </Toast>
+
+      <div className="absolute left-0 top-[155.5px] sm:top-[188px] w-full flex z-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="480"
+          height="2"
+          viewBox="0 0 480 2"
+          fill="none"
+        >
+          <path d="M0 1H480" stroke="#272930" />
+        </svg>
+      </div>
 
       <div className="flex flex-col max-h-[460px] sm:max-h-[576px]">
         <h1 className="flex font-semibold mb-6 sm:text-xl items-center justify-center w-full">
@@ -270,42 +282,42 @@ export const UserWalletModal = ({
             </div>
           </div>
           <div className="flex items-center justify-center w-full border-b border-[#2f313d]">
-            <div className="flex gap-10">
+            <div className="flex gap-12 w-full justify-center">
               <button
-                onClick={() => setTab('my-tokens')}
-                className={`pb-2 text-sm sm:text-base font-medium transition-all duration-150 ${
-                  tab === 'my-tokens'
-                    ? 'text-white border-b-2 border-white'
+                onClick={() => setTab('tokens')}
+                className={`flex-1 pb-2 text-sm sm:text-base font-medium transition-all duration-150 ${
+                  tab === 'tokens'
+                    ? 'text-white border-b-2 border-white z-[1]'
                     : 'text-gray-500 border-b-2 border-transparent'
                 }`}
               >
-                My Tokens
+                Tokens
               </button>
               <button
-                onClick={() => setTab('my-transactions')}
-                className={`pb-2 text-sm sm:text-base font-medium transition-all duration-150 ${
-                  tab === 'my-transactions'
-                    ? 'text-white border-b-2 border-white'
+                onClick={() => setTab('transactions')}
+                className={`flex-1 pb-2 text-sm sm:text-base font-medium transition-all duration-150 ${
+                  tab === 'transactions'
+                    ? 'text-white border-b-2 border-white z-[1]'
                     : 'text-gray-500 border-b-2 border-transparent'
                 }`}
               >
-                My Transactions
+                Transactions
               </button>
             </div>
           </div>
         </div>
 
-        {tab === 'my-tokens' && (
-          <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-medium mb-4 mt-2 py-2">
+        {tab === 'tokens' && (
+          <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-medium mb-7 mt-[30px]">
             ${formatTinyNumber(portfolioUSD)}
           </div>
         )}
 
         <div className="flex flex-col w-full overflow-y-scroll">
           <AnimatePresence mode="wait">
-            {tab === 'my-tokens' ? (
+            {tab === 'tokens' ? (
               <motion.div
-                key="my-tokens"
+                key="tokens"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -340,59 +352,53 @@ export const UserWalletModal = ({
                         className="self-stretch px-4 py-3 bg-gray-800 rounded-xl flex justify-start items-center"
                         key={currency.address}
                       >
-                        <div className="w-60 flex justify-start items-center gap-3">
-                          <CurrencyIcon chain={chain} currency={currency} />
+                        <div className="flex justify-start items-center gap-2.5">
+                          <CurrencyIcon
+                            chain={chain}
+                            currency={currency}
+                            className="w-7 h-7"
+                          />
                           <div className="text-nowrap flex-1 flex flex-col justify-center items-start gap-0.5">
-                            <div className="w-[200px] max-w-[200px] overflow-x-scroll text-start justify-start text-white text-sm font-medium">
+                            <div className="w-full overflow-x-scroll text-start justify-start text-white text-sm font-medium">
                               {currency.symbol}
                             </div>
-                            <div className="text-center justify-start text-[#a8afbc] text-xs font-medium">
-                              ${formatTinyNumber(prices[currency.address])}{' '}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex-1 flex flex-col justify-center items-start gap-1">
-                          <div className="text-center justify-start text-white text-sm font-medium">
-                            {formatWithCommas(
-                              formatUnits(
-                                balances[currency.address],
-                                currency.decimals,
-                                prices[currency.address],
-                              ),
-                            )}
-                          </div>
-                          <div className="text-center justify-start text-[#a9b0bc] text-xs font-medium">
-                            {prices[currency.address] ? (
-                              <div className="text-gray-500 text-xs">
+                            <div className="text-center justify-start text-white text-xs font-medium flex flex-row gap-1">
+                              {formatWithCommas(
+                                formatUnits(
+                                  balances[currency.address],
+                                  currency.decimals,
+                                  prices[currency.address],
+                                ),
+                              )}
+                              <span className="text-[#a9b0bc]">
+                                (~
                                 {formatDollarValue(
                                   balances[currency.address],
                                   currency.decimals,
                                   prices[currency.address],
                                 )}
-                              </div>
-                            ) : (
-                              <></>
-                            )}
+                                )
+                              </span>
+                            </div>
                           </div>
                         </div>
+
                         <button
                           onClick={() => {
                             setSelectedCurrency(currency)
                             setShowTokenTransferModal(true)
                           }}
-                          className="px-3 py-2 bg-blue-400/20 rounded-lg flex justify-center items-center gap-2.5"
+                          className="ml-auto px-3 py-2 bg-blue-400/20 rounded-lg inline-flex justify-center items-center gap-2.5 text-[#65a7ff] text-[13px] font-semibold"
                         >
-                          <div className="justify-start text-blue-300 text-[13px] font-medium">
-                            Send
-                          </div>
+                          Send
                         </button>
                       </div>
                     ))}
                 </div>
               </motion.div>
-            ) : tab === 'my-transactions' ? (
+            ) : tab === 'transactions' ? (
               <motion.div
-                key="my-transactions"
+                key="transactions"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
