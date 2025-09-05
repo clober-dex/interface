@@ -30,7 +30,7 @@ export const SwapRouteCard = ({
         setSelectedQuote ? () => setSelectedQuote(quote ?? null) : undefined
       }
       disabled={!setSelectedQuote}
-      className={`hover:bg-[#e5eaff]/10 h-full lg:h-[84px] text-white w-full self-stretch px-3.5 sm:px-4 py-3 bg-[#e5eaff]/5 rounded-xl flex flex-col justify-start items-start gap-1.5 sm:gap-3 ${isSelected ? 'outline outline-[1.20px] outline-offset-[-1.20px] outline-blue-400/80' : ''}`}
+      className={`hover:bg-[#e5eaff]/10 h-full lg:h-[74px] text-white w-full self-stretch px-3.5 sm:px-4 py-3 bg-[#e5eaff]/5 rounded-xl flex flex-col justify-start items-start gap-1.5 ${isSelected ? 'outline outline-[1.20px] outline-offset-[-1.20px] outline-blue-400/80' : ''}`}
     >
       <div className="self-stretch flex justify-start items-start">
         <div className="self-stretch inline-flex justify-start items-center gap-1.5">
