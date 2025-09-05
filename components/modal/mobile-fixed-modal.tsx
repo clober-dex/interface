@@ -7,7 +7,6 @@ import { ActionButton, ActionButtonProps } from '../button/action-button'
 import CloseSvg from '../svg/close-svg'
 import { SwapRouteList } from '../swap-router-list'
 import { aggregators } from '../../chain-configs/aggregators'
-import { handleCopyClipBoard } from '../../utils/string'
 
 export const MobileFixedModal = ({
   tab,
