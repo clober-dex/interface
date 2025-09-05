@@ -138,12 +138,12 @@ const MetaAggregatorInfo = ({
                     {shortAddress(latestSwap.transaction.from as `0x${string}`)}{' '}
                     swapped
                   </div>
-                  <div className="flex justify-start items-center gap-1.5">
+                  <div className="flex justify-start items-center gap-1.5 w-fit">
                     <div className="flex justify-start items-center gap-1">
                       <CurrencyIcon
                         chain={chain}
                         currency={latestSwap.currencyIn.currency}
-                        className="w-3.5 h-3.5 rounded-full"
+                        className="min-w-3.5 w-3.5 min-h-3.5 h-3.5 rounded-full"
                       />
                       <div className="justify-start text-white text-xs font-medium">
                         {formatTinyNumber(latestSwap.currencyIn.amount)}{' '}
@@ -173,7 +173,7 @@ const MetaAggregatorInfo = ({
                       <CurrencyIcon
                         chain={chain}
                         currency={latestSwap.currencyOut.currency}
-                        className="w-3.5 h-3.5 rounded-full"
+                        className="min-w-3.5 w-3.5 min-h-3.5 h-3.5 rounded-full"
                       />
                       <div className="justify-start text-white text-xs font-medium">
                         {formatTinyNumber(latestSwap.currencyOut.amount)}{' '}
@@ -800,8 +800,8 @@ export const TradeContainer = () => {
           )}
 
           {tab === 'swap' && (
-            <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[600px]">
-              <div className="relative hidden md:flex flex-col h-full rounded-xl md:rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d]">
+            <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[620px]">
+              <div className="relative hidden md:flex flex-col h-[572px] rounded-xl md:rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d]">
                 {showMetaInfo ? (
                   <MetaAggregatorInfo
                     chain={selectedChain}
