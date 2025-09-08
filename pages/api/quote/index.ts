@@ -54,6 +54,12 @@ function validateQueryParams(query: NextApiRequest['query']) {
     throw new Error('Invalid userAddress')
   }
 
+  if (isAddressEqual(inputTokenAddress, outputTokenAddress)) {
+    throw new Error(
+      'Invalid inputTokenAddress and outputTokenAddress: they must be different addresses',
+    )
+  }
+
   return {
     inputTokenAddress: inputTokenAddress!,
     outputTokenAddress: outputTokenAddress!,
@@ -63,13 +69,16 @@ function validateQueryParams(query: NextApiRequest['query']) {
   }
 }
 
-async function getTokenInfo(
+async function getSwapContext(
   inputTokenAddress: `0x${string}`,
   outputTokenAddress: `0x${string}`,
+  userAddress?: `0x${string}`,
 ): Promise<{
   inputCurrency: Currency
   outputCurrency: Currency
   gasPrice: bigint
+  inputCurrencyBalance: bigint
+  inputCurrencyAllowance: bigint
 }> {
   const publicClient = createPublicClient({
     chain: CHAIN_CONFIG.CHAIN,
@@ -120,6 +129,55 @@ async function getTokenInfo(
     )
   }
 
+  if (userAddress) {
+    if (isInputNative) {
+      if (!CHAIN_CONFIG.CHAIN.contracts?.multicall3?.address) {
+        throw new Error(
+          'Multicall3 contract address is not defined in chain config',
+        )
+      }
+
+      // check native currency balance
+      contracts.push({
+        address: CHAIN_CONFIG.CHAIN.contracts.multicall3.address,
+        abi: [
+          {
+            inputs: [
+              { internalType: 'address', name: 'addr', type: 'address' },
+            ],
+            name: 'getEthBalance',
+            outputs: [
+              { internalType: 'uint256', name: 'balance', type: 'uint256' },
+            ],
+            stateMutability: 'view',
+            type: 'function',
+          },
+        ] as const,
+        functionName: 'getEthBalance',
+        args: [userAddress],
+      })
+    } else {
+      // check erc20 balance and allowance
+      contracts.push(
+        {
+          address: inputTokenAddress,
+          abi: erc20Abi,
+          functionName: 'balanceOf',
+          args: [userAddress],
+        },
+        {
+          address: inputTokenAddress,
+          abi: erc20Abi,
+          functionName: 'allowance',
+          args: [
+            userAddress,
+            CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
+          ],
+        },
+      )
+    }
+  }
+
   const [gasPrice, results] = await Promise.all([
     publicClient.getGasPrice(),
     contracts.length > 0
@@ -149,10 +207,27 @@ async function getTokenInfo(
         decimals: Number(results[i++].result!),
       }
 
+  let inputCurrencyBalance = 0n
+  let inputCurrencyAllowance = 0n
+  if (userAddress) {
+    inputCurrencyBalance = BigInt(
+      results[i++].result! as number | bigint | string,
+    )
+    if (isInputNative) {
+      inputCurrencyAllowance = 2n ** 256n - 1n
+    } else {
+      inputCurrencyAllowance = BigInt(
+        results[i++].result! as number | bigint | string,
+      )
+    }
+  }
+
   return {
     inputCurrency,
     outputCurrency,
     gasPrice,
+    inputCurrencyBalance,
+    inputCurrencyAllowance,
   }
 }
 
@@ -171,10 +246,26 @@ export default async function handler(
       userAddress,
     } = validated
 
-    const { inputCurrency, outputCurrency, gasPrice } = await getTokenInfo(
-      inputTokenAddress,
-      outputTokenAddress,
-    )
+    const {
+      inputCurrency,
+      outputCurrency,
+      gasPrice,
+      inputCurrencyBalance,
+      inputCurrencyAllowance,
+    } = await getSwapContext(inputTokenAddress, outputTokenAddress, userAddress)
+    if (inputCurrencyBalance < amountIn) {
+      res
+        .status(422)
+        .json({ code: 'INSUFFICIENT_BALANCE', error: 'Insufficient balance' })
+      return
+    }
+    if (inputCurrencyAllowance < amountIn) {
+      res.status(422).json({
+        code: 'INSUFFICIENT_ALLOWANCE',
+        error: `Please approve spender ${CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway} first`,
+      })
+      return
+    }
 
     const results = (
       await Promise.allSettled(
@@ -222,7 +313,14 @@ export default async function handler(
     })
   } catch (error: any) {
     console.error('Error processing quote request:', error)
-    res.status(400).json({ error: error.message })
+    if (error.message?.startsWith('Invalid')) {
+      res.status(400).json({ code: 'BAD_REQUEST', error: error.message })
+      return
+    }
+
+    res
+      .status(500)
+      .json({ code: 'INTERNAL_SERVER_ERROR', error: error.message })
     return
   }
 }
