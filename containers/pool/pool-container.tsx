@@ -143,9 +143,43 @@ export const PoolContainer = () => {
       {/*</div>*/}
 
       <div className="flex flex-col w-full lg:w-[1200px] h-full">
+        <div className="hidden lg:flex flex-col w-full bg-[#17181e] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-t-[20px] rounded-b-none">
+          <div className="w-full flex justify-start h-[56px] items-center">
+            <button
+              onClick={() => setTab('pool')}
+              disabled={tab === 'pool'}
+              className="w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-[#65a7ff] disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-[#65a7ff]"
+            >
+              CLV
+            </button>
+            <button
+              onClick={() =>
+                userAddress &&
+                Object.entries(lpBalances).reduce(
+                  (acc, [, amount]) => acc + amount,
+                  0n,
+                ) +
+                  WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.reduce(
+                    (acc, { wrappedLpCurrency }) =>
+                      wrappedLpCurrency && balances[wrappedLpCurrency.address]
+                        ? acc + BigInt(balances[wrappedLpCurrency.address])
+                        : acc,
+                    0n,
+                  ) >
+                  0n &&
+                setTab('my-liquidity')
+              }
+              disabled={tab === 'my-liquidity'}
+              className="w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-[#65a7ff] disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-[#65a7ff]"
+            >
+              My Vaults
+            </button>
+          </div>
+        </div>
+
         {tab === 'pool' ? (
           <>
-            <div className="text-[#8d94a1] text-sm font-medium hidden lg:flex w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
+            <div className="text-[#8d94a1] text-sm font-medium hidden lg:flex w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
               <div className="w-[335px] text-gray-400 text-sm font-semibold">
                 Liquidity Vault
               </div>
