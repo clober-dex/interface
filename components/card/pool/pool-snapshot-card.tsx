@@ -190,9 +190,9 @@ export const PoolSnapshotCard = ({
           </div>
         </div>
         <div className="w-full flex flex-row flex-1 h-11 justify-start items-start gap-2">
-          <div className="flex flex-1 w-full flex-col justify-start items-center gap-1.5">
-            <div className="flex gap-1 self-stretch text-gray-500 text-sm font-medium text-center">
-              <div className="self-stretch text-gray-500 text-xs">APY</div>
+          <div className="flex flex-1 w-full flex-col justify-center items-start gap-1.5">
+            <div className="flex gap-1 self-stretch text-gray-500 text-sm font-medium">
+              <div className="text-gray-500 text-xs">APY</div>
               <div className="flex justify-center items-center">
                 <QuestionMarkSvg
                   data-tooltip-id="apy-info"
@@ -212,18 +212,16 @@ export const PoolSnapshotCard = ({
             </div>
           </div>
 
-          <div className="flex flex-1 w-full flex-col justify-center items-start gap-1.5">
-            <div className="self-stretch text-gray-500 text-xs">
-              Total Liquidity
-            </div>
+          <div className="flex flex-1 w-full flex-col justify-center items-center gap-1.5">
+            <div className="text-gray-500 text-xs">Total Liquidity</div>
             <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
               <span className="text-[#8d94a1]">$</span>
               {formatWithCommas(tvl.toFixed(0))}
             </div>
           </div>
 
-          <div className="flex flex-1 w-full flex-col justify-center items-start gap-1.5">
-            <div className="self-stretch text-gray-500 text-xs">24h Volume</div>
+          <div className="flex flex-1 w-full flex-col justify-center items-end gap-1.5">
+            <div className="text-gray-500 text-xs">24h Volume</div>
             <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
               <span className="text-[#8d94a1]">$</span>
               {formatWithCommas(volume24h.toFixed(0))}
