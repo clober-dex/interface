@@ -18,14 +18,14 @@ const ConfirmationModal = ({
   return createPortal(
     <div className="flex items-center justify-center fixed inset-0 bg-black bg-opacity-50 z-[1000] backdrop-blur-sm px-4 sm:px-0">
       <div
-        className="flex flex-col w-full sm:w-fit min-w-[320px] bg-[#17181e] text-white rounded-xl sm:rounded-2xl p-4 gap-2 outline outline-1 outline-offset-[-1px] outline-[#272930]"
+        className="flex flex-col w-full sm:w-fit min-w-[320px] bg-[#17181e] text-white rounded-xl sm:rounded-2xl p-4 gap-1 outline outline-1 outline-offset-[-1px] outline-[#272930]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="font-semibold">{confirmation.title}</span>
             <div
-              className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-green-500 border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"
+              className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-blue-500 border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"
               role="status"
             />
           </div>
@@ -35,7 +35,7 @@ const ConfirmationModal = ({
         </div>
 
         <div className="flex flex-col gap-2.5">
-          <div className="flex text-xs sm:text-sm text-gray-50 items-center justify-between">
+          <div className="flex text-xs text-gray-50 items-center justify-between">
             {confirmation.chain ? (
               <>
                 <div className="flex flex-row gap-1 items-center w-full justify-end">
@@ -88,7 +88,7 @@ const ConfirmationModal = ({
                 ) : (
                   <></>
                 )}
-                <div className="flex w-full items-center justify-between bg-gray-700 px-3 py-1.5 text-sm rounded-lg">
+                <div className="flex w-full items-center justify-between bg-[#24272e] px-3 py-1.5 text-sm rounded-lg">
                   <div className="flex items-center gap-2 truncate">
                     {field.currency && confirmation.chain ? (
                       <CurrencyIcon

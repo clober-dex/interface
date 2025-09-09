@@ -27,7 +27,7 @@ const UserTransactionCard = ({
           <div className="flex flex-row gap-2 items-center">
             {isPending ? (
               <div
-                className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-green-500 border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-blue-500 border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"
                 role="status"
               />
             ) : transaction.success ? (
