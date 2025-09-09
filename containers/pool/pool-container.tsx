@@ -128,14 +128,14 @@ export const PoolContainer = () => {
       {/*  </div>*/}
       {/*</div>*/}
 
-      <div className="flex flex-col w-full lg:w-[1060px] h-full">
+      <div className="flex flex-col w-full lg:w-[1200px] h-full">
         {tab === 'pool' ? (
           <>
-            <div className="text-[#8d94a1] text-sm font-medium hidden lg:flex w-[1060px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
-              <div className="w-72 text-gray-400 text-sm font-semibold">
+            <div className="text-[#8d94a1] text-sm font-medium hidden lg:flex w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
+              <div className="w-[335px] text-gray-400 text-sm font-semibold">
                 Liquidity Vault
               </div>
-              <div className="flex flex-row gap-2 w-[120px] text-gray-400 text-sm font-semibold">
+              <div className="flex flex-row gap-2 w-[130px] text-gray-400 text-sm font-semibold">
                 APY
                 <div className="flex mr-auto justify-center items-center">
                   <QuestionMarkSvg
@@ -151,7 +151,7 @@ export const PoolContainer = () => {
                   />
                 </div>
               </div>
-              <div className="w-[120px] text-gray-400 text-sm font-semibold">
+              <div className="w-[130px] text-gray-400 text-sm font-semibold">
                 Total Liquidity
               </div>
               <div className="w-[140px] text-gray-400 text-sm font-semibold">
@@ -163,8 +163,8 @@ export const PoolContainer = () => {
               <Loading className="flex mt-8 sm:mt-0" />
             )}
 
-            <div className="relative flex justify-center w-full h-full lg:h-[660px]">
-              <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex gap-3">
+            <div className="relative flex justify-center w-full h-full lg:h-[660px] bg-[#17181e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
+              <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex">
                 {poolSnapshots.map((poolSnapshot) => (
                   <PoolSnapshotCard
                     chain={selectedChain}
