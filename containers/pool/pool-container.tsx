@@ -174,27 +174,29 @@ export const PoolContainer = () => {
             </div>
 
             {poolSnapshots.length === 0 && (
-              <Loading className="flex mt-8 sm:mt-0" />
+              <Loading className="mt-36 sm:mt-48" />
             )}
 
-            <div className="relative flex justify-center w-full h-full lg:h-[660px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
-              <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex gap-3 lg:gap-0">
-                {poolSnapshots.map((poolSnapshot) => (
-                  <PoolSnapshotCard
-                    chain={selectedChain}
-                    key={`pool-snapshot-${poolSnapshot.key}`}
-                    poolKey={poolSnapshot.key}
-                    currencyA={poolSnapshot.currencyA}
-                    currencyB={poolSnapshot.currencyB}
-                    apy={poolSnapshot.apy}
-                    tvl={Number(poolSnapshot.totalTvlUSD)}
-                    volume24h={Number(poolSnapshot.volumeUSD24h)}
-                    router={router}
-                    setIsCopyToast={setIsCopyToast}
-                  />
-                ))}
+            {poolSnapshots.length > 0 && (
+              <div className="relative flex justify-center w-full h-full lg:h-[660px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+                <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex gap-3 lg:gap-0">
+                  {poolSnapshots.map((poolSnapshot) => (
+                    <PoolSnapshotCard
+                      chain={selectedChain}
+                      key={`pool-snapshot-${poolSnapshot.key}`}
+                      poolKey={poolSnapshot.key}
+                      currencyA={poolSnapshot.currencyA}
+                      currencyB={poolSnapshot.currencyB}
+                      apy={poolSnapshot.apy}
+                      tvl={Number(poolSnapshot.totalTvlUSD)}
+                      volume24h={Number(poolSnapshot.volumeUSD24h)}
+                      router={router}
+                      setIsCopyToast={setIsCopyToast}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </>
         ) : tab === 'my-liquidity' ? (
           <div className="w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-[18px]">
