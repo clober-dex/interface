@@ -110,7 +110,7 @@ const MetaAggregatorInfo = ({
         </div>
       </div>
 
-      <div className="absolute flex bottom-[34px] w-full px-4 gap-2 flex-col max-h-[174px] overflow-y-scroll">
+      <div className="absolute flex bottom-[34px] w-full px-[34px] gap-2 flex-col max-h-[174px] overflow-y-scroll">
         <AnimatePresence initial={false}>
           {latestSwaps
             .filter(
