@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { Tooltip } from 'react-tooltip'
 import { useQuery } from '@tanstack/react-query'
@@ -16,6 +16,8 @@ import { CHAIN_CONFIG } from '../../chain-configs'
 import { formatWithCommas } from '../../utils/bignumber'
 import { WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES } from '../../chain-configs/pool'
 import { usePoolContractContext } from '../../contexts/pool/pool-contract-context'
+import { Toast } from '../../components/toast'
+import { ClipboardSvg } from '../../components/svg/clipboard-svg'
 
 export const PoolContainer = () => {
   const router = useRouter()
@@ -24,6 +26,7 @@ export const PoolContainer = () => {
   const { selectedChain } = useChainContext()
   const { prices, balances } = useCurrencyContext()
   const { wrap, unwrap } = usePoolContractContext()
+  const [isCopyToast, setIsCopyToast] = useState(false)
 
   const [tab, setTab] = React.useState<'my-liquidity' | 'pool'>('pool')
 
@@ -58,6 +61,17 @@ export const PoolContainer = () => {
 
   return (
     <div className="w-full flex flex-col text-white mb-4 pr-4 pl-4 md:pl-0">
+      <Toast
+        isCopyToast={isCopyToast}
+        setIsCopyToast={setIsCopyToast}
+        durationInMs={1300}
+      >
+        <div className="w-[240px] items-center justify-center flex flex-row gap-1.5 text-white text-sm font-semibold">
+          <ClipboardSvg />
+          Address copied to clipboard
+        </div>
+      </Toast>
+
       {/*<div className="flex justify-center w-auto sm:h-[400px]">*/}
       {/*  <div className="w-[960px] mt-8 sm:mt-16 flex flex-col sm:gap-12 items-center">*/}
       {/*    <div className="flex w-full h-12 sm:h-[72px] flex-col justify-start items-center gap-2 sm:gap-3">*/}
@@ -163,8 +177,8 @@ export const PoolContainer = () => {
               <Loading className="flex mt-8 sm:mt-0" />
             )}
 
-            <div className="relative flex justify-center w-full h-full lg:h-[660px] bg-[#17181e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
-              <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex">
+            <div className="relative flex justify-center w-full h-full lg:h-[660px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+              <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex gap-3 lg:gap-0">
                 {poolSnapshots.map((poolSnapshot) => (
                   <PoolSnapshotCard
                     chain={selectedChain}
@@ -176,6 +190,7 @@ export const PoolContainer = () => {
                     tvl={Number(poolSnapshot.totalTvlUSD)}
                     volume24h={Number(poolSnapshot.volumeUSD24h)}
                     router={router}
+                    setIsCopyToast={setIsCopyToast}
                   />
                 ))}
               </div>
