@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { Tooltip } from 'react-tooltip'
 import { useQuery } from '@tanstack/react-query'
@@ -59,8 +59,27 @@ export const PoolContainer = () => {
     return [totalTvl, total24hVolume]
   }, [poolSnapshots])
 
+  const hasLpBalance = useMemo(() => {
+    if (!userAddress) {
+      return false
+    }
+    const totalLpBalance = Object.entries(lpBalances).reduce(
+      (acc, [, amount]) => acc + amount,
+      0n,
+    )
+    const totalWrappedLpBalance =
+      WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.reduce(
+        (acc, { wrappedLpCurrency }) =>
+          wrappedLpCurrency && balances[wrappedLpCurrency.address]
+            ? acc + BigInt(balances[wrappedLpCurrency.address])
+            : acc,
+        0n,
+      )
+    return totalLpBalance + totalWrappedLpBalance > 0n
+  }, [lpBalances, userAddress, balances])
+
   return (
-    <div className="w-full flex flex-col text-white mb-4 pr-4 pl-4 md:pl-0">
+    <div className="w-full flex flex-col text-white mb-4 pr-4 pl-4 md:pl-0 gap-5 lg:gap-[40px]">
       <Toast
         isCopyToast={isCopyToast}
         setIsCopyToast={setIsCopyToast}
@@ -72,75 +91,77 @@ export const PoolContainer = () => {
         </div>
       </Toast>
 
-      {/*<div className="flex justify-center w-auto sm:h-[400px]">*/}
-      {/*  <div className="w-[960px] mt-8 sm:mt-16 flex flex-col sm:gap-12 items-center">*/}
-      {/*    <div className="flex w-full h-12 sm:h-[72px] flex-col justify-start items-center gap-2 sm:gap-3">*/}
-      {/*      <div className="self-stretch text-center text-white text-lg sm:text-4xl font-bold">*/}
-      {/*        {CHAIN_CONFIG.DEX_NAME} Liquidity Vault (*/}
-      {/*        {CHAIN_CONFIG.DEX_NAME.slice(0, 1)}LV)*/}
-      {/*      </div>*/}
-      {/*      <div className="self-stretch text-center text-gray-400 text-xs sm:text-sm font-bold">*/}
-      {/*        Provide liquidity and earn fees!*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*    <div className="flex w-full h-20 mt-6 sm:mt-0 sm:h-28 px-4 justify-start items-center gap-3 sm:gap-4">*/}
-      {/*      <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">*/}
-      {/*        <div className="text-center text-gray-400 text-sm font-semibold">*/}
-      {/*          TVL*/}
-      {/*        </div>*/}
-      {/*        <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">*/}
-      {/*          ${formatWithCommas(totalTvl.toFixed(2))}*/}
-      {/*        </div>*/}
-      {/*      </div>*/}
-      {/*      <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">*/}
-      {/*        <div className="text-center text-gray-400 text-sm font-semibold">*/}
-      {/*          24h Volume*/}
-      {/*        </div>*/}
-      {/*        <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">*/}
-      {/*          ${formatWithCommas(total24hVolume.toFixed(2))}*/}
-      {/*        </div>*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*    <div className="flex w-full mt-8 sm:mt-0 sm:mr-auto px-4">*/}
-      {/*      <div className="w-full sm:w-[378px] h-[40px] sm:h-[56px] items-center flex">*/}
-      {/*        <button*/}
-      {/*          onClick={() => setTab('pool')}*/}
-      {/*          disabled={tab === 'pool'}*/}
-      {/*          className="flex flex-1 gap-2 items-center justify-center w-full h-full text-gray-500 disabled:text-white disabled:bg-gray-800 bg-transparent rounded-tl-2xl rounded-tr-2xl"*/}
-      {/*        >*/}
-      {/*          <div className="text-center text-sm sm:text-base font-bold">*/}
-      {/*            CLV*/}
-      {/*          </div>*/}
-      {/*        </button>*/}
+      <div className="flex justify-center lg:justify-start w-full h-full">
+        <div className="mt-8 sm:mt-16 flex flex-col items-center w-full lg:w-fit">
+          <div className="flex w-full h-12 sm:h-[72px] flex-col justify-start items-center gap-2 sm:gap-3">
+            <div className="self-stretch text-center text-white text-lg sm:text-4xl font-bold">
+              {CHAIN_CONFIG.DEX_NAME} Liquidity Vault (
+              {CHAIN_CONFIG.DEX_NAME.slice(0, 1)}LV)
+            </div>
+            <div className="self-stretch text-center text-gray-400 text-xs sm:text-sm font-bold">
+              Provide liquidity and earn fees!
+            </div>
+          </div>
+          <div className="flex w-full h-full mt-6 sm:mt-0 justify-start items-center gap-3 sm:gap-4 mb-11 lg:mb-0">
+            <div className="md:w-[300px] outline outline-1 outline-offset-[-1px] outline-[#272930] flex-1 w-full h-full p-4 lg:p-6 bg-[#16181d] rounded-2xl flex-col gap-2.5 inline-flex">
+              <div className="text-[#8d94a1] text-xs lg:text-sm font-medium">
+                TVL
+              </div>
+              <div className="self-stretch text-white text-lg lg:text-2xl font-medium flex flex-row gap-1">
+                <span className="text-[#8d94a1]">$</span>
+                {formatWithCommas(totalTvl.toFixed(2))}
+              </div>
+            </div>
+            <div className="md:w-[300px] outline outline-1 outline-offset-[-1px] outline-[#272930] flex-1 w-full h-full p-4 lg:p-6 bg-[#16181d] rounded-2xl flex-col gap-2.5 inline-flex">
+              <div className="text-[#8d94a1] text-xs lg:text-sm font-medium">
+                24h Volume
+              </div>
+              <div className="self-stretch text-white text-lg lg:text-2xl font-medium flex flex-row gap-1">
+                <span className="text-[#8d94a1]">$</span>
+                {formatWithCommas(total24hVolume.toFixed(2))}
+              </div>
+            </div>
+          </div>
 
-      {/*        <button*/}
-      {/*          onClick={() =>*/}
-      {/*            userAddress &&*/}
-      {/*            Object.entries(lpBalances).reduce(*/}
-      {/*              (acc, [, amount]) => acc + amount,*/}
-      {/*              0n,*/}
-      {/*            ) +*/}
-      {/*              WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.reduce(*/}
-      {/*                (acc, { wrappedLpCurrency }) =>*/}
-      {/*                  wrappedLpCurrency && balances[wrappedLpCurrency.address]*/}
-      {/*                    ? acc + BigInt(balances[wrappedLpCurrency.address])*/}
-      {/*                    : acc,*/}
-      {/*                0n,*/}
-      {/*              ) >*/}
-      {/*              0n &&*/}
-      {/*            setTab('my-liquidity')*/}
-      {/*          }*/}
-      {/*          disabled={tab === 'my-liquidity'}*/}
-      {/*          className="flex flex-1 gap-2 items-center justify-center w-full h-full text-gray-500 disabled:text-white disabled:bg-gray-800 bg-transparent rounded-tl-2xl rounded-tr-2xl"*/}
-      {/*        >*/}
-      {/*          <div className="text-center text-sm sm:text-base font-bold">*/}
-      {/*            My Vaults*/}
-      {/*          </div>*/}
-      {/*        </button>*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
+          <div className="bg-[#191d25] rounded-[22px] py-1 w-full max-w-[248px] h-10 flex sm:hidden flex-row relative text-blue-300 text-base font-semibold">
+            <button
+              onClick={() => setTab('pool')}
+              disabled={tab === 'pool'}
+              className="text-sm flex flex-1 px-[15px] py-1.5 h-full rounded-[20px] text-[#8d94a1] disabled:text-blue-300 disabled:bg-blue-500/40 justify-center items-center gap-1"
+            >
+              {CHAIN_CONFIG.DEX_NAME.slice(0, 1)}LV
+            </button>
+            <button
+              onClick={() =>
+                userAddress && hasLpBalance && setTab('my-liquidity')
+              }
+              disabled={tab === 'my-liquidity'}
+              className="text-sm flex flex-1 px-[15px] py-1.5 h-full rounded-[20px] text-[#8d94a1] disabled:text-blue-300 disabled:bg-blue-500/40 justify-center items-center gap-1"
+            >
+              My Vaults
+            </button>
+          </div>
+
+          <div className="w-full sm:max-w-[324px] items-center justify-center hidden sm:flex lg:hidden bg-[#191d25] py-1 h-10 sm:h-12 flex-row relative text-[#8d94a1] text-base font-semibold rounded-3xl">
+            <button
+              onClick={() => setTab('pool')}
+              disabled={tab === 'pool'}
+              className="flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
+            >
+              {CHAIN_CONFIG.DEX_NAME.slice(0, 1)}LV
+            </button>
+            <button
+              onClick={() =>
+                userAddress && hasLpBalance && setTab('my-liquidity')
+              }
+              disabled={tab === 'my-liquidity'}
+              className="flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
+            >
+              My Vaults
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="flex flex-col w-full lg:w-[1200px] h-full">
         <div className="hidden lg:flex flex-col w-full bg-[#17181e] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-t-[20px] rounded-b-none">
@@ -150,27 +171,14 @@ export const PoolContainer = () => {
               disabled={tab === 'pool'}
               className="w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-[#65a7ff] disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-[#65a7ff]"
             >
-              CLV
+              {CHAIN_CONFIG.DEX_NAME.slice(0, 1)}LV
             </button>
             <button
               onClick={() =>
-                userAddress &&
-                Object.entries(lpBalances).reduce(
-                  (acc, [, amount]) => acc + amount,
-                  0n,
-                ) +
-                  WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.reduce(
-                    (acc, { wrappedLpCurrency }) =>
-                      wrappedLpCurrency && balances[wrappedLpCurrency.address]
-                        ? acc + BigInt(balances[wrappedLpCurrency.address])
-                        : acc,
-                    0n,
-                  ) >
-                  0n &&
-                setTab('my-liquidity')
+                userAddress && hasLpBalance && setTab('my-liquidity')
               }
               disabled={tab === 'my-liquidity'}
-              className="w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-[#65a7ff] disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-[#65a7ff]"
+              className={`w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-[#65a7ff] disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-[#65a7ff] ${hasLpBalance ? '' : 'cursor-not-allowed'}`}
             >
               My Vaults
             </button>
