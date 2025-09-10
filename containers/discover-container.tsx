@@ -19,6 +19,7 @@ import { currentTimestampInSeconds } from '../utils/date'
 import { useWindowHeight } from '../hooks/useWindowHeight'
 import { Toast } from '../components/toast'
 import { ClipboardSvg } from '../components/svg/clipboard-svg'
+import { SearchSvg } from '../components/svg/search-svg'
 
 const MOBILE_ROW_HEIGHT = 195
 
@@ -169,7 +170,7 @@ export const DiscoverContainer = () => {
   const prevSubgraphBlockNumber = useRef<number>(0)
   const [isCopyToast, setIsCopyToast] = useState(false)
 
-  // const [searchValue, setSearchValue] = React.useState('')
+  const [searchValue, setSearchValue] = React.useState('')
   const [sortOption, setSortOption] = useState<SortOption>('none')
 
   useEffect(() => {
@@ -373,7 +374,30 @@ export const DiscoverContainer = () => {
   )
 
   return (
-    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-[26px] px-4 md:px-0 gap-4 lg:gap-8">
+    <div className="text-white mb-4 flex w-full lg:w-[1200px] flex-col items-center mt-[26px] px-4 md:px-0 gap-5 lg:gap-8">
+      <div className="w-full flex lg:hidden flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b]">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center p-3">
+          <div className="relative h-4 w-4">
+            <SearchSvg />
+          </div>
+        </div>
+        <div className="inline-block">
+          <div className="invisible h-0 mx-[29px]" aria-hidden="true">
+            Search markets
+          </div>
+          <input
+            type="search"
+            name="token-search"
+            id="search"
+            autoComplete="off"
+            className="focus:outline-none focus-visible:outline-none focus:ring-1 focus:rounded-[10px] focus:ring-gray-400 inline w-full rounded-md border-0 pl-9 py-3 bg-gray-800 placeholder:text-gray-500 text-xs sm:text-sm text-white"
+            placeholder="Search markets"
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.target.value)}
+          />
+        </div>
+      </div>
+
       <Toast
         isCopyToast={isCopyToast}
         setIsCopyToast={setIsCopyToast}
@@ -384,29 +408,6 @@ export const DiscoverContainer = () => {
           Address copied to clipboard
         </div>
       </Toast>
-
-      {/*<div className="flex max-w-[480px] lg:max-w-full mr-auto w-full lg:w-[432px] flex-col relative rounded shadow-sm">*/}
-      {/*  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">*/}
-      {/*    <div className="relative h-4 w-4">*/}
-      {/*      <SearchSvg />*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*  <div className="inline-block">*/}
-      {/*    <div className="invisible h-0 mx-[29px]" aria-hidden="true">*/}
-      {/*      Search by markets*/}
-      {/*    </div>*/}
-      {/*    <input*/}
-      {/*      type="search"*/}
-      {/*      name="discover-search"*/}
-      {/*      id="search"*/}
-      {/*      autoComplete="off"*/}
-      {/*      className="inline w-full pl-10 py-2 lg:py-3 text-white bg-gray-800 rounded-xl border border-solid border-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-400 flex-col placeholder:text-gray-400 text-xs sm:text-sm"*/}
-      {/*      placeholder="Search markets"*/}
-      {/*      value={searchValue}*/}
-      {/*      onChange={(event) => setSearchValue(event.target.value)}*/}
-      {/*    />*/}
-      {/*  </div>*/}
-      {/*</div>*/}
 
       <div className="text-[#8d94a1] text-sm font-medium absolute hidden lg:flex top-[84px] w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
         <button
