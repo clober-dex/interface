@@ -242,22 +242,23 @@ export const PoolManagerContainer = ({
   )
 
   return (
-    <div className="flex w-full h-full justify-center mt-8 mb-[30px] md:mb-20">
+    <div className="flex w-full h-full justify-center mb-[30px] md:mb-20">
       <div className="w-full lg:w-[992px] h-full flex flex-col items-start gap-8 md:gap-12 px-2 sm:px-4 lg:px-0">
-        <div className="flex w-full h-full items-center">
+        <div className="flex w-full items-center">
           <button
             onClick={() => router.push('/earn')}
             className="flex items-center gap-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
               viewBox="0 0 32 32"
               fill="none"
-              className="mr-auto w-6 h-6 md:w-8 md:h-8"
             >
               <path
-                d="M6.66699 16.0003H25.3337M6.66699 16.0003L12.0003 21.3337M6.66699 16.0003L12.0003 10.667"
-                stroke="white"
+                d="M6.66675 16H25.3334M6.66675 16L12.0001 21.3333M6.66675 16L12.0001 10.6667"
+                stroke="#8D94A1"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -280,13 +281,13 @@ export const PoolManagerContainer = ({
               </div>
 
               <div className="flex justify-center items-start gap-1 md:gap-2">
-                <div className="text-center text-white md:text-3xl font-bold">
+                <div className="text-center text-white md:text-2xl font-medium">
                   {pool.currencyB.symbol}
                 </div>
-                <div className="text-center text-white md:text-3xl font-bold">
+                <div className="text-center text-white md:text-2xl font-medium">
                   -
                 </div>
-                <div className="text-center text-white md:text-3xl font-bold">
+                <div className="text-center text-white md:text-2xl font-medium">
                   {pool.currencyA.symbol}
                 </div>
               </div>

@@ -220,7 +220,7 @@ export const PoolContainer = () => {
             )}
 
             {poolSnapshots.length > 0 && (
-              <div className="relative flex justify-center w-full h-full lg:h-[660px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+              <div className="relative flex justify-center w-full h-full lg:h-[460px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
                 <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex gap-3 lg:gap-0">
                   {poolSnapshots.map((poolSnapshot) => (
                     <PoolSnapshotCard
@@ -257,7 +257,7 @@ export const PoolContainer = () => {
               </div>
             </div>
 
-            <div className="relative flex justify-center w-full h-full lg:h-[660px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+            <div className="relative flex justify-center w-full h-full lg:h-[460px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
               <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex gap-3 lg:gap-0">
                 {Object.entries(lpBalances).flatMap(([poolKey, amount]) => {
                   const poolSnapshot = poolSnapshots.find(
