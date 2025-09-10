@@ -171,7 +171,7 @@ const CurrencySelect = ({
                       '_blank',
                     )
                   }}
-                  className="flex ml-auto sm:bottom-0 sm:absolute sm:right-4 text-blue-500 text-[13px] font-medium hover:underline"
+                  className="flex ml-auto md:bottom-0 md:absolute md:right-4 text-blue-500 text-[13px] font-medium hover:underline"
                 >
                   Add your token to the list ➔
                 </button>
