@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react'
 import { NextRouter } from 'next/router'
+import { Tooltip } from 'react-tooltip'
+import BigNumber from 'bignumber.js'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
-import { formatDollarValue, formatUnits } from '../../../utils/bigint'
+import { formatUnits } from '../../../utils/bigint'
 import { Chain } from '../../../model/chain'
 import { LpWrapModal } from '../../modal/lp-wrap-modal'
 import { PoolContractContext } from '../../../contexts/pool/pool-contract-context'
@@ -11,7 +13,8 @@ import { LpUnwrapModal } from '../../modal/lp-unwrap-modal'
 import { handleCopyClipBoard } from '../../../utils/string'
 import { shortAddress } from '../../../utils/address'
 import { CopySvg } from '../../svg/copy-svg'
-import { formatWithCommas } from '../../../utils/bignumber'
+import { formatTinyNumber, formatWithCommas } from '../../../utils/bignumber'
+import { QuestionMarkSvg } from '../../svg/question-mark-svg'
 
 export const LpPositionCard = ({
   chain,
@@ -36,13 +39,8 @@ export const LpPositionCard = ({
     React.useState(false)
   const usdValue = useMemo(
     () =>
-      Number(
-        formatUnits(
-          amount,
-          poolSnapshot.lpCurrency.decimals,
-          Number(poolSnapshot.lpPriceUSD),
-        ),
-      ),
+      Number(formatUnits(amount, poolSnapshot.lpCurrency.decimals)) *
+      Number(poolSnapshot.lpPriceUSD),
     [amount, poolSnapshot.lpCurrency.decimals, poolSnapshot.lpPriceUSD],
   )
 
@@ -129,9 +127,12 @@ export const LpPositionCard = ({
             </div>
             <div className="flex flex-row gap-1 w-[140px] text-white text-sm font-medium">
               <span className="text-[#8d94a1]">$</span>
+              {formatTinyNumber(poolSnapshot.lpPriceUSD)}
+            </div>
+            <div className="flex flex-row gap-1 w-[140px] text-white text-sm font-medium">
+              <span className="text-[#8d94a1]">$</span>
               {formatWithCommas(usdValue.toFixed(2))}
             </div>
-            <div className="flex flex-row gap-1 w-[140px] text-white text-sm font-medium" />
 
             <div className="flex gap-4 ml-auto">
               <button
@@ -164,32 +165,89 @@ export const LpPositionCard = ({
         </div>
 
         {/*mobile*/}
-        <div className="flex lg:hidden w-full h-[164px] p-4 bg-gray-800 rounded-xl flex-col justify-center items-start gap-4">
+        <div className="flex lg:hidden w-full h-full p-4 bg-[#17181e] rounded-2xl flex-col justify-center items-start gap-4 outline outline-1 outline-offset-[-1px] outline-[#272930]">
           <div className="flex items-center gap-2 self-stretch">
             <div className="w-10 h-6 relative">
               <CurrencyIcon
                 chain={chain}
                 currency={poolSnapshot.currencyA}
-                className="w-6 h-6 absolute left-0 top-0 z-[1]"
+                className="w-6 h-6 absolute left-0 top-0 z-[1] rounded-full"
               />
               <CurrencyIcon
                 chain={chain}
                 currency={poolSnapshot.currencyB}
-                className="w-6 h-6 absolute left-[16px] top-0"
+                className="w-6 h-6 absolute left-[16px] top-0 rounded-full"
               />
             </div>
-            <div className="flex gap-1 items-center text-white text-sm sm:text-base font-bold text-nowrap">
-              {isERC20
-                ? `${poolSnapshot.lpCurrency.symbol} (ERC20)`
-                : `${poolSnapshot.lpCurrency.symbol}`}
+
+            <div className="flex flex-col justify-center items-start gap-0.5">
+              <div className="flex justify-start items-center gap-0.5">
+                <div className="justify-start text-white text-base font-semibold">
+                  {poolSnapshot.currencyB.symbol}
+                </div>
+                <div className="justify-start text-[#8d94a1] text-base font-semibold">
+                  /
+                </div>
+                <div className="justify-start text-white text-base font-semibold">
+                  {poolSnapshot.currencyA.symbol}
+                </div>
+              </div>
+
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  await handleCopyClipBoard(
+                    isERC20
+                      ? poolSnapshot.lpCurrency.address
+                      : poolSnapshot.currencyB.address,
+                  )
+                  setIsCopyToast(true)
+                }}
+                className="flex justify-start items-center gap-[3px]"
+              >
+                <div className="justify-start text-[#8d94a1] text-xs font-medium">
+                  {shortAddress(
+                    isERC20
+                      ? poolSnapshot.lpCurrency.address
+                      : poolSnapshot.currencyB.address,
+                  )}
+                </div>
+
+                <div className="w-full h-full items-center justify-center p-0.5 flex">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                  >
+                    <rect
+                      x="3.28577"
+                      y="3.28577"
+                      width="5.71429"
+                      height="5.71429"
+                      rx="1"
+                      stroke="#8D94A1"
+                      strokeWidth="1.2"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M2.14286 6.71429H2C1.44772 6.71429 1 6.26657 1 5.71429V2C1 1.44772 1.44772 1 2 1H5.71428C6.26657 1 6.71429 1.44772 6.71429 2V2.14286"
+                      stroke="#8D94A1"
+                      strokeWidth="1.2"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </button>
             </div>
           </div>
-          <div className="flex flex-col justify-center items-start gap-2 h-11">
-            <div className="self-stretch text-gray-400 text-xs font-medium">
-              LP in wallet
-            </div>
-            <div className="justify-start items-center gap-1 sm:gap-2 flex">
-              <div className="text-white text-sm font-bold">
+          <div className="w-full flex flex-row flex-1 h-11 justify-start items-start gap-2">
+            <div className="flex flex-1 w-full flex-col justify-center items-start gap-1.5">
+              <div className="flex gap-1 self-stretch text-gray-500 text-sm font-medium">
+                <div className="text-gray-500 text-xs">Balance</div>
+              </div>
+              <div className="self-stretch text-white text-sm font-medium">
                 {formatWithCommas(
                   formatUnits(
                     amount,
@@ -198,38 +256,40 @@ export const LpPositionCard = ({
                   ),
                 )}
               </div>
-              <div className="text-gray-400 text-xs font-semibold">
-                (
-                {formatDollarValue(
-                  amount,
-                  poolSnapshot.lpCurrency.decimals,
-                  Number(poolSnapshot.lpPriceUSD),
-                )}
-                )
+            </div>
+
+            <div className="flex flex-1 w-full flex-col justify-center items-center gap-1.5">
+              <div className="text-gray-500 text-xs">
+                LP Price
+                <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
+                  <span className="text-[#8d94a1]">$</span>
+                  {formatTinyNumber(poolSnapshot.lpPriceUSD)}
+                </div>
+              </div>
+
+              <div className="flex flex-1 w-full flex-col justify-center items-end gap-1.5">
+                <div className="text-gray-500 text-xs">USD Value</div>
+                <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
+                  <span className="text-[#8d94a1]">$</span>
+                  {formatWithCommas(usdValue.toFixed(2))}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex w-full flex-row gap-2 justify-center items-center">
-            {!isERC20 && (
-              <div className="flex flex-1 self-stretch h-7 px-2 py-1 rounded-lg border border-solid border-blue-500 justify-center items-center gap-1">
-                <button
-                  onClick={() => router.push(`/earn/${poolSnapshot.key}`)}
-                  className="grow shrink basis-0 opacity-90 text-center text-blue-500 text-xs font-bold"
-                >
-                  Remove Liquidity
-                </button>
-              </div>
-            )}
-
-            <div className="flex flex-1 self-stretch h-7 px-3 py-2 rounded-lg border border-solid border-blue-500 justify-center items-center gap-1">
-              <button
-                onClick={() => setShowWrapOrUnwrapModal(true)}
-                className="grow shrink basis-0 opacity-90 text-center text-blue-500 text-xs font-bold"
-              >
-                {isERC20 ? 'Unwrap' : 'Wrap'}
-              </button>
-            </div>
+          <div className="self-stretch inline-flex justify-start items-center gap-2">
+            <button
+              onClick={() => setShowWrapOrUnwrapModal(true)}
+              className="flex-1 h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-[#86c0ff] text-[13px] font-semibold leading-tight"
+            >
+              {isERC20 ? 'Unwrap' : 'Wrap'}
+            </button>
+            <button
+              onClick={() => router.push(`/earn/${poolSnapshot.key}`)}
+              className="flex-1 h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-[#86c0ff] text-[13px] font-semibold leading-tight"
+            >
+              Manage Position
+            </button>
           </div>
         </div>
       </>

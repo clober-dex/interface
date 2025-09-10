@@ -242,9 +242,11 @@ export const PoolContainer = () => {
                 Balance
               </div>
               <div className="w-[130px] text-gray-400 text-sm font-semibold">
+                LP Price
+              </div>
+              <div className="w-[140px] text-gray-400 text-sm font-semibold">
                 USD Value
               </div>
-              <div className="w-[140px] text-gray-400 text-sm font-semibold" />
             </div>
 
             <div className="relative flex justify-center w-full h-full lg:h-[660px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
