@@ -58,6 +58,7 @@ const LpCurrencyAmountInput = ({
                   chain={chain}
                   currencyA={currency0}
                   currencyB={currency1}
+                  className="w-full h-full shrink-0 relative"
                 />
               </div>
               <div className="text-white text-sm font-medium">
@@ -94,6 +95,7 @@ const LpCurrencyAmountInput = ({
                 chain={chain}
                 currencyA={currency0}
                 currencyB={currency1}
+                className="w-full h-full shrink-0 relative"
               />
             </div>
             <div className="text-white text-sm font-medium">
