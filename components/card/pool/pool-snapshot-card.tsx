@@ -35,6 +35,7 @@ export const PoolSnapshotCard = ({
 }) => {
   return (
     <>
+      {/*pc*/}
       <div className="hidden lg:flex w-full flex-col">
         <div className="flex w-full px-5 py-3 bg-transparent justify-start items-center gap-4">
           <div className="flex w-[360px] max-w-[360px] overflow-x-scroll items-center gap-2">
@@ -120,6 +121,7 @@ export const PoolSnapshotCard = ({
         </div>
       </div>
 
+      {/*mobile*/}
       <div className="flex lg:hidden w-full h-full p-4 bg-[#17181e] rounded-2xl flex-col justify-center items-start gap-4 outline outline-1 outline-offset-[-1px] outline-[#272930]">
         <div className="flex items-center gap-2 self-stretch">
           <div className="w-10 h-6 relative">

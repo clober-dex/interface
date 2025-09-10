@@ -233,47 +233,66 @@ export const PoolContainer = () => {
             )}
           </>
         ) : tab === 'my-liquidity' ? (
-          <div className="w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-[18px]">
-            {Object.entries(lpBalances).flatMap(([poolKey, amount]) => {
-              const poolSnapshot = poolSnapshots.find(
-                ({ key }) => key === poolKey,
-              )
-              if (!poolSnapshot) {
-                return <></>
-              }
-              const wrappedLpCurrency =
-                WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.find(
-                  ({ poolKey: key }) => key === poolKey,
-                )?.wrappedLpCurrency
-              return [
-                amount > 0n && (
-                  <LpPositionCard
-                    amount={amount}
-                    chain={selectedChain}
-                    key={`lp-position-${poolKey}`}
-                    poolSnapshot={poolSnapshot}
-                    isERC20={false}
-                    router={router}
-                    onWrap={wrap}
-                    onUnwrap={unwrap}
-                  />
-                ),
-                wrappedLpCurrency &&
-                  balances[wrappedLpCurrency.address] > 0n && (
-                    <LpPositionCard
-                      amount={balances[wrappedLpCurrency.address]}
-                      chain={selectedChain}
-                      key={`wlp-position-${poolKey}`}
-                      poolSnapshot={poolSnapshot}
-                      isERC20={true}
-                      router={router}
-                      onWrap={wrap}
-                      onUnwrap={unwrap}
-                    />
-                  ),
-              ]
-            })}
-          </div>
+          <>
+            <div className="text-[#8d94a1] text-sm font-medium hidden lg:flex w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+              <div className="w-[335px] text-gray-400 text-sm font-semibold">
+                Liquidity Vault
+              </div>
+              <div className="flex flex-row gap-2 w-[130px] text-gray-400 text-sm font-semibold">
+                Balance
+              </div>
+              <div className="w-[130px] text-gray-400 text-sm font-semibold">
+                USD Value
+              </div>
+              <div className="w-[140px] text-gray-400 text-sm font-semibold" />
+            </div>
+
+            <div className="relative flex justify-center w-full h-full lg:h-[660px] lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+              <div className="lg:absolute lg:top-0 lg:overflow-x-scroll w-full h-full items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex gap-3 lg:gap-0">
+                {Object.entries(lpBalances).flatMap(([poolKey, amount]) => {
+                  const poolSnapshot = poolSnapshots.find(
+                    ({ key }) => key === poolKey,
+                  )
+                  if (!poolSnapshot) {
+                    return <></>
+                  }
+                  const wrappedLpCurrency =
+                    WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.find(
+                      ({ poolKey: key }) => key === poolKey,
+                    )?.wrappedLpCurrency
+                  return [
+                    amount > 0n && (
+                      <LpPositionCard
+                        amount={amount}
+                        chain={selectedChain}
+                        key={`lp-position-${poolKey}`}
+                        poolSnapshot={poolSnapshot}
+                        isERC20={false}
+                        router={router}
+                        onWrap={wrap}
+                        onUnwrap={unwrap}
+                        setIsCopyToast={setIsCopyToast}
+                      />
+                    ),
+                    wrappedLpCurrency &&
+                      balances[wrappedLpCurrency.address] > 0n && (
+                        <LpPositionCard
+                          amount={balances[wrappedLpCurrency.address]}
+                          chain={selectedChain}
+                          key={`wlp-position-${poolKey}`}
+                          poolSnapshot={poolSnapshot}
+                          isERC20={true}
+                          router={router}
+                          onWrap={wrap}
+                          onUnwrap={unwrap}
+                          setIsCopyToast={setIsCopyToast}
+                        />
+                      ),
+                  ]
+                })}
+              </div>
+            </div>
+          </>
         ) : (
           <></>
         )}
