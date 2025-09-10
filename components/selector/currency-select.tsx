@@ -153,7 +153,7 @@ const CurrencySelect = ({
                   name="token-search"
                   id="search"
                   autoComplete="off"
-                  className="focus:outline-none focus-visible:outline-none focus:ring-1 focus:rounded-[10px] focus:ring-gray-400 inline w-full rounded-md border-0 pl-9 py-3 bg-gray-800 placeholder:text-gray-500 text-xs sm:text-sm text-white"
+                  className="focus:outline-none focus-visible:outline-none focus:ring-1 focus:rounded-[10px] focus:ring-gray-400 inline w-full rounded-md border-0 pl-9 py-3 bg-[#2a2b2f] placeholder:text-gray-500 text-xs sm:text-sm text-white"
                   placeholder="Search by token name, symbol, or address"
                   value={value}
                   onChange={(event) => setValue(event.target.value)}
