@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react'
 import { NextRouter } from 'next/router'
-import { Tooltip } from 'react-tooltip'
-import BigNumber from 'bignumber.js'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
 import { formatUnits } from '../../../utils/bigint'
@@ -14,7 +12,6 @@ import { handleCopyClipBoard } from '../../../utils/string'
 import { shortAddress } from '../../../utils/address'
 import { CopySvg } from '../../svg/copy-svg'
 import { formatTinyNumber, formatWithCommas } from '../../../utils/bignumber'
-import { QuestionMarkSvg } from '../../svg/question-mark-svg'
 
 export const LpPositionCard = ({
   chain,
@@ -259,20 +256,18 @@ export const LpPositionCard = ({
             </div>
 
             <div className="flex flex-1 w-full flex-col justify-center items-center gap-1.5">
-              <div className="text-gray-500 text-xs">
-                LP Price
-                <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
-                  <span className="text-[#8d94a1]">$</span>
-                  {formatTinyNumber(poolSnapshot.lpPriceUSD)}
-                </div>
+              <div className="text-gray-500 text-xs">LP Price</div>
+              <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
+                <span className="text-[#8d94a1]">$</span>
+                {formatTinyNumber(poolSnapshot.lpPriceUSD)}
               </div>
+            </div>
 
-              <div className="flex flex-1 w-full flex-col justify-center items-end gap-1.5">
-                <div className="text-gray-500 text-xs">USD Value</div>
-                <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
-                  <span className="text-[#8d94a1]">$</span>
-                  {formatWithCommas(usdValue.toFixed(2))}
-                </div>
+            <div className="flex flex-1 w-full flex-col justify-center items-end gap-1.5">
+              <div className="text-gray-500 text-xs">USD Value</div>
+              <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
+                <span className="text-[#8d94a1]">$</span>
+                {formatWithCommas(usdValue.toFixed(2))}
               </div>
             </div>
           </div>
