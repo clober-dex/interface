@@ -52,31 +52,16 @@ export const TransactionSettingModal = ({
 
   return (
     <Modal show onClose={onClose} onButtonClick={onClose}>
-      <h1 className="flex font-bold text-xl mb-2 justify-center items-center">
+      <h1 className="flex font-semibold text-xl mb-2 justify-center items-center">
         Settings
       </h1>
-      <div className="flex flex-col gap-4 sm:gap-7 mt-4 mb-4">
+      <div className="flex flex-col gap-4 sm:gap-7 mt-4">
         <div className="flex flex-col gap-3">
-          <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-semibold">
-            MEV Protection (Swap only)
-            <div className="flex mr-auto mt-[5.3px]">
-              <QuestionMarkSvg
-                data-tooltip-id="mev-protection"
-                data-tooltip-place="bottom-end"
-                data-tooltip-html={
-                  'Monad generally uses a private mempool, so only validators can perform MEV attacks. The MEV Protector only works for Meta Aggregator swaps, and enabling it may cause transactions to fail more often or become slower.'
-                }
-                className="w-3 h-3"
-              />
-              <Tooltip
-                id="mev-protection"
-                className="max-w-[400px] bg-gray-950 !opacity-100 z-[100]"
-                clickable
-              />
-            </div>
+          <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-medium">
+            MEV Protection
           </div>
 
-          <div className=" h-9 sm:h-10 w-full items-center justify-center flex bg-gray-700 rounded-[22px] p-1 flex-row relative text-gray-400 text-base font-bold">
+          <div className="h-9 sm:h-10 w-full items-center justify-center flex bg-gray-700 rounded-[22px] flex-row relative text-gray-400 text-base font-semibold">
             <button
               disabled={!useMevProtection}
               onClick={() => {
@@ -106,7 +91,7 @@ export const TransactionSettingModal = ({
 
         {useMevProtection && (
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-3">
-            <div className="self-stretch h-[17px] justify-start text-[#7b8394] text-sm font-semibold">
+            <div className="self-stretch h-[17px] justify-start text-[#7b8394] text-sm font-medium">
               Preferred MEV Executor
             </div>
             <div className="relative self-stretch h-10 sm:h-12 px-4 py-1 bg-gray-800 rounded-xl flex flex-col justify-center items-center gap-2.5">
@@ -115,7 +100,7 @@ export const TransactionSettingModal = ({
                 className="self-stretch inline-flex justify-start items-center gap-2.5"
               >
                 <div className="flex-1 flex justify-start items-center gap-2">
-                  <div className="justify-start text-white text-sm sm:text-base font-semibold">
+                  <div className="justify-start text-white text-sm sm:text-base font-medium">
                     {executors.find(
                       (executor) => executor.name === selectedExecutorName,
                     )?.name || 'Select Executor'}
@@ -141,7 +126,7 @@ export const TransactionSettingModal = ({
                         setShowDropdown(false)
                       }}
                       className={`w-full text-left px-4 py-1 h-10 sm:h-12 text-white hover:bg-gray-700 text-sm sm:text-base ${
-                        selectedExecutorName === name ? 'font-bold' : ''
+                        selectedExecutorName === name ? 'font-semibold' : ''
                       } ${
                         index === executors.length - 1 ? 'rounded-b-xl' : ''
                       } ${index === 0 ? 'rounded-t-xl' : ''}`}
@@ -156,7 +141,7 @@ export const TransactionSettingModal = ({
         )}
 
         <div className="flex flex-col sm:flex-row w-full gap-3">
-          <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-semibold text-nowrap">
+          <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-medium text-nowrap">
             Gas Price (Gwei)
             <div className="flex mr-auto mt-[5.3px]">
               <QuestionMarkSvg
@@ -176,7 +161,7 @@ export const TransactionSettingModal = ({
           </div>
           <div className="w-full sm:w-fit flex ml-auto">
             <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
-              <div className="h-12 bg-gray-600 text-white rounded-[22px] py-0.5 w-full flex flex-row relative text-xs">
+              <div className="sm:mt-4 h-12 bg-gray-600 text-white rounded-[22px] py-0.5 w-full flex flex-row relative text-xs">
                 <button
                   disabled={Number(gasPriceMultiplier) === NORMAL_MULTIPLIER}
                   onClick={() => {
@@ -186,7 +171,7 @@ export const TransactionSettingModal = ({
                   className="w-[69px] flex flex-col flex-1 px-6 py-0 rounded-[20px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
                 >
                   Normal
-                  <span className="text-nowrap font-bold">
+                  <span className="text-nowrap font-semibold">
                     {new BigNumber(
                       formatTinyNumber(calculateGasPrice(NORMAL_MULTIPLIER)),
                     ).toFixed(1)}
@@ -202,7 +187,7 @@ export const TransactionSettingModal = ({
                   className="w-[69px] flex flex-col flex-1 px-6 py-0 rounded-[20px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
                 >
                   Fast
-                  <span className="text-nowrap font-bold">
+                  <span className="text-nowrap font-semibold">
                     {new BigNumber(
                       formatTinyNumber(calculateGasPrice(FAST_MULTIPLIER)),
                     ).toFixed(1)}
@@ -218,7 +203,7 @@ export const TransactionSettingModal = ({
                   className="w-[69px] flex flex-col flex-1 px-6 py-0 rounded-[20px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
                 >
                   Instant
-                  <span className="text-nowrap font-bold">
+                  <span className="text-nowrap font-semibold">
                     {new BigNumber(
                       formatTinyNumber(calculateGasPrice(INSTANT_MULTIPLIER)),
                     ).toFixed(1)}
@@ -265,7 +250,7 @@ export const TransactionSettingModal = ({
         </div>
 
         {/*<div className="flex flex-col sm:flex-row w-full gap-3">*/}
-        {/*  <div className="self-stretch justify-start text-[#7b8394] text-sm font-semibold">*/}
+        {/*  <div className="self-stretch justify-start text-[#7b8394] text-sm font-medium">*/}
         {/*    Max Slippage*/}
         {/*  </div>*/}
         {/*  <div className="flex ml-auto">*/}
