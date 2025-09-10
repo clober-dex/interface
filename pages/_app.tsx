@@ -249,7 +249,7 @@ function App({ Component, pageProps }: AppProps) {
                   ) : router.pathname.includes('/trade') ? (
                     <TradeProvidersWrapper>
                       <div className="flex flex-1 relative justify-center">
-                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[112px]">
+                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[108px]">
                           <Component {...pageProps} />
                         </div>
                       </div>
