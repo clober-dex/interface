@@ -132,7 +132,9 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
     all: [],
   })
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null)
-  const [showOrderBook, setShowOrderBook] = useState(true)
+  const [showOrderBook, setShowOrderBook] = useState(
+    !CHAIN_CONFIG.HIDE_ORDERBOOK,
+  )
   const [showInputCurrencySelect, setShowInputCurrencySelect] = useState(false)
   const [inputCurrency, _setInputCurrency] = useState<Currency | undefined>(
     undefined,

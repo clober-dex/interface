@@ -10,6 +10,7 @@ import {
 import CloberDatafeed from '../model/datafeed/clober-datafeed'
 import { SUPPORTED_INTERVALS } from '../utils/chart'
 import { Currency } from '../model/currency'
+import { CHAIN_CONFIG } from '../chain-configs'
 
 function getLanguageFromURL(): LanguageCode | null {
   const regex = new RegExp('[\\?&]lang=([^&#]*)')
@@ -107,7 +108,7 @@ export const TradingViewChartContainer = ({
         }`}
       >
         <div className="left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 px-4 py-2">
-          {setShowOrderBook && (
+          {!CHAIN_CONFIG.HIDE_ORDERBOOK && setShowOrderBook && (
             <button
               onClick={() => setShowOrderBook(true)}
               className="hidden lg:flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
