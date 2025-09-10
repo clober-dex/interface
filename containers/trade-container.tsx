@@ -774,6 +774,7 @@ export const TradeContainer = () => {
                     <NativeChartContainer
                       baseCurrency={baseCurrency}
                       quoteCurrency={quoteCurrency}
+                      setShowOrderBook={setShowOrderBook}
                     />
                   )
                 ) : (

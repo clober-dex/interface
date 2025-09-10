@@ -75,7 +75,7 @@ export default function OrderBook({
               </clipPath>
             </defs>
           </svg>
-          <div className="text-center text-blue-400 text-[13px] font-semibold">
+          <div className="text-center text-blue-400 text-[13px] font-medium">
             View Chart
           </div>
         </button>
