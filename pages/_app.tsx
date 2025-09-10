@@ -254,6 +254,14 @@ function App({ Component, pageProps }: AppProps) {
                         </div>
                       </div>
                     </TradeProvidersWrapper>
+                  ) : router.pathname.includes('/earn/[poolKey]') ? (
+                    <PoolProvidersWrapper>
+                      <div className="flex flex-1 relative justify-center">
+                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[112px]">
+                          <Component {...pageProps} />
+                        </div>
+                      </div>
+                    </PoolProvidersWrapper>
                   ) : router.pathname.includes('/earn') ? (
                     <PoolProvidersWrapper>
                       <div className="flex flex-1 relative w-full lg:w-fit">
