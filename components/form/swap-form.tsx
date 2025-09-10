@@ -133,7 +133,7 @@ export const SwapForm = ({
   }, [inputCurrency, inputCurrencyAmount, outputCurrencyAmount, quoteCurrency])
 
   return showInputCurrencySelect ? (
-    <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 h-[566px]">
+    <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 max-h-full sm:h-[572px] sm:max-h-[572px]">
       <CurrencySelect
         chain={chain}
         explorerUrl={explorerUrl}
@@ -169,7 +169,7 @@ export const SwapForm = ({
       />
     </div>
   ) : showOutputCurrencySelect ? (
-    <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 h-[566px]">
+    <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 max-h-full sm:h-[572px] sm:max-h-[572px]">
       <CurrencySelect
         chain={chain}
         explorerUrl={explorerUrl}
