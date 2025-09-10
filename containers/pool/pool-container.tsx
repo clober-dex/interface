@@ -92,17 +92,17 @@ export const PoolContainer = () => {
       </Toast>
 
       <div className="flex justify-center lg:justify-start w-full h-full">
-        <div className="mt-8 sm:mt-16 flex flex-col items-center w-full lg:w-fit">
-          <div className="flex w-full h-12 sm:h-[72px] flex-col justify-start items-center gap-2 sm:gap-3">
-            <div className="self-stretch text-center text-white text-lg sm:text-4xl font-bold">
+        <div className="mt-10 flex flex-col items-center w-full lg:w-fit">
+          <div className="flex w-full flex-col justify-start items-center lg:items-start gap-2 lg:gap-1.5">
+            <div className="self-stretch text-center lg:text-start text-white text-base font-semibold md:text-2xl">
               {CHAIN_CONFIG.DEX_NAME} Liquidity Vault (
               {CHAIN_CONFIG.DEX_NAME.slice(0, 1)}LV)
             </div>
-            <div className="self-stretch text-center text-gray-400 text-xs sm:text-sm font-bold">
+            <div className="self-stretch text-center lg:text-start text-gray-400 text-xs md:text-sm font-medium">
               Provide liquidity and earn fees!
             </div>
           </div>
-          <div className="flex w-full h-full mt-6 sm:mt-0 justify-start items-center gap-3 sm:gap-4 mb-11 lg:mb-0">
+          <div className="flex w-full h-full mt-8 sm:mt-10 justify-start items-center gap-3 sm:gap-4 mb-11 lg:mb-0">
             <div className="md:w-[300px] outline outline-1 outline-offset-[-1px] outline-[#272930] flex-1 w-full h-full p-4 lg:p-6 bg-[#16181d] rounded-2xl flex-col gap-2.5 inline-flex">
               <div className="text-[#8d94a1] text-xs lg:text-sm font-medium">
                 TVL

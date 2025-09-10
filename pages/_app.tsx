@@ -257,7 +257,7 @@ function App({ Component, pageProps }: AppProps) {
                   ) : router.pathname.includes('/earn') ? (
                     <PoolProvidersWrapper>
                       <div className="flex flex-1 relative w-full lg:w-fit">
-                        <div className="flex w-full lg:w-fit flex-col gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] md:mt-[56px]">
+                        <div className="flex w-full lg:w-fit flex-col gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] sm:mt-10 md:mt-[56px]">
                           <Component {...pageProps} />
                         </div>
                       </div>
