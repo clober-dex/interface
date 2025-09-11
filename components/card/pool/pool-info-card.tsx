@@ -19,7 +19,6 @@ export const PoolInfoCard = ({
   quoteCurrency,
   apy,
   lpPriceUSD,
-  lpTotalSupply,
   dailyVolume,
   liquidityUsd,
 }: {
@@ -28,7 +27,6 @@ export const PoolInfoCard = ({
   quoteCurrency: Currency
   apy: number
   lpPriceUSD: number
-  lpTotalSupply: number
   dailyVolume: number
   liquidityUsd: number
 }) => {

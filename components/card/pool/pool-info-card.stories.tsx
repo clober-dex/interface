@@ -38,7 +38,6 @@ export const Default: Story = {
     },
     lpPriceUSD: 100000,
     apy: 12.34,
-    lpTotalSupply: 200000,
     liquidityUsd: 300000,
     dailyVolume: 400000,
   },

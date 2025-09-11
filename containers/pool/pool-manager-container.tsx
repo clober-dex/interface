@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useWalletClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -46,7 +45,6 @@ export const PoolManagerContainer = ({
   const [tab, setTab] = React.useState<'add-liquidity' | 'remove-liquidity'>(
     'add-liquidity',
   )
-  const router = useRouter()
   const { data: walletClient } = useWalletClient()
   const { selectedChain } = useChainContext()
   const { balances, prices, getAllowance } = useCurrencyContext()
@@ -242,19 +240,8 @@ export const PoolManagerContainer = ({
     [prices, pool],
   )
 
-  //   <PoolInfoCard
-  // chain={selectedChain}
-  // baseCurrency={pool.currencyB}
-  // quoteCurrency={pool.currencyA}
-  // apy={pool.apy}
-  // lpPriceUSD={pool.lpPriceUSD}
-  // lpTotalSupply={Number(pool.totalSupply.value)}
-  // dailyVolume={Number(poolSnapshot.volumeUSD24h)}
-  // liquidityUsd={Number(poolSnapshot.totalTvlUSD)}
-  // />
-
   return (
-    <div className="flex flex-col w-full md:w-fit mb-4 md:mb-6 items-center gap-[17px]">
+    <div className="flex flex-col w-full md:w-fit mb-6 items-center gap-[17px]">
       <div className="flex flex-col w-full lg:flex-row gap-4 justify-center">
         <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-fit">
           <PoolInfoCard
@@ -263,13 +250,12 @@ export const PoolManagerContainer = ({
             quoteCurrency={pool.currencyA}
             apy={pool.apy}
             lpPriceUSD={pool.lpPriceUSD}
-            lpTotalSupply={Number(pool.totalSupply.value)}
             dailyVolume={Number(poolSnapshot.volumeUSD24h)}
             liquidityUsd={Number(poolSnapshot.totalTvlUSD)}
           />
 
           <div className="flex flex-col w-full items-start gap-5 md:gap-8">
-            <div className="flex flex-col item-st gap-3 md:gap-4 self-stretch">
+            <div className="flex flex-col items-center gap-3 md:gap-4 self-stretch">
               <div className="self-stretch px-2.5 py-4 sm:p-4 bg-[#17181e] rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-3.5 lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
                 <div className="self-stretch w-full h-full inline-flex justify-start items-center gap-1">
                   <div
@@ -344,7 +330,7 @@ export const PoolManagerContainer = ({
             </div>
             <div className="flex sm:hidden flex-col item-st gap-3 md:gap-4 self-stretch">
               <div className="flex flex-row gap-2">
-                <div className="text-white text-sm md:text-base font-bold">
+                <div className="text-white text-sm md:text-base font-semibold">
                   Relative Price Index(RPI)
                 </div>
                 <div className="flex mr-auto justify-center items-center">
@@ -361,7 +347,7 @@ export const PoolManagerContainer = ({
                   />
                 </div>
               </div>
-              <div className="text-sm font-semibold flex h-14 px-8 py-4 bg-gray-800 rounded-xl justify-center items-center gap-8 md:gap-12">
+              <div className="text-sm font-semibold flex h-11 px-8 py-4 bg-[#17181e] rounded-xl justify-center items-center gap-8 md:gap-12">
                 {(showRPI
                   ? (performanceHistories?.[performanceHistories.length - 1]
                       ?.rpi ?? 0)
@@ -371,7 +357,7 @@ export const PoolManagerContainer = ({
               </div>
             </div>
 
-            <div className="flex-col items-start gap-3 md:gap-4 self-stretch hidden sm:flex w-full p-4 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930]">
+            <div className="flex-col items-start gap-3 md:gap-4 self-stretch hidden sm:flex w-full md:max-w-[567px] p-4 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930]">
               <div className="flex flex-col gap-0.5">
                 <div className="text-white text-sm md:text-base font-semibold flex flex-row gap-1 items-center justify-center">
                   <button onClick={() => setShowRPI(!showRPI)}>
@@ -440,7 +426,7 @@ export const PoolManagerContainer = ({
           </div>
         </div>
 
-        <div className="hidden md:flex flex-col w-full lg:w-[420px] h-[571px]">
+        <div className="flex flex-col w-full lg:w-[420px] h-full lg:h-[571px] gap-4">
           <div className="w-full sm:h-14 p-1.5 sm:px-2 rounded-xl md:rounded-2xl border-2 border-slate-400 border-solid justify-center items-center inline-flex">
             <button
               disabled={tab === 'add-liquidity'}
