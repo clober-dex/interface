@@ -208,7 +208,7 @@ export const PoolContainer = () => {
                 </div>
               </div>
               <div className="w-[130px] text-gray-400 text-sm font-semibold">
-                Total Liquidity
+                TVL
               </div>
               <div className="w-[140px] text-gray-400 text-sm font-semibold">
                 24h Volume

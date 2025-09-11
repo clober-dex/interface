@@ -215,7 +215,7 @@ export const PoolDailySnapshotCard = ({
           </div>
 
           <div className="flex flex-1 w-full flex-col justify-center items-center gap-1.5">
-            <div className="text-gray-500 text-xs">Total Liquidity</div>
+            <div className="text-gray-500 text-xs">TVL</div>
             <div className="flex flex-row gap-0.5 text-white text-sm font-medium">
               <span className="text-[#8d94a1]">$</span>
               {formatWithCommas(tvl.toFixed(0))}
