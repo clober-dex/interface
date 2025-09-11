@@ -270,7 +270,7 @@ export const PoolManagerContainer = ({
 
           <div className="flex flex-col w-full items-start gap-5 md:gap-8">
             <div className="flex flex-col item-st gap-3 md:gap-4 self-stretch">
-              <div className="self-stretch px-2.5 py-4 sm:p-4 bg-[#171b24] rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-3.5">
+              <div className="self-stretch px-2.5 py-4 sm:p-4 bg-[#17181e] rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-3.5 lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
                 <div className="self-stretch w-full h-full inline-flex justify-start items-center gap-1">
                   <div
                     style={{
@@ -295,14 +295,14 @@ export const PoolManagerContainer = ({
                         className="w-5 h-5 md:w-6 md:h-6 rounded-full"
                       />
                     </div>
-                    <div className="text-blue-500 text-sm md:text-lg font-bold flex flex-col text-left items-center h-full">
+                    <div className="gap-0.5 md:gap-1 text-blue-500 text-sm md:text-[15px] font-medium flex flex-col text-left items-center h-full">
                       {formatWithCommas(
                         formatPreciseAmountString(
                           pool.liquidityA.total.value.toString(),
                           prices[pool.currencyA.address],
                         ),
                       )}
-                      <span className="text-gray-400 font-medium text-sm">
+                      <span className="text-gray-400 font-medium text-xs">
                         ($
                         {formatWithCommas(
                           new BigNumber(pool.liquidityA.total.value)
@@ -321,14 +321,14 @@ export const PoolManagerContainer = ({
                         className="w-5 h-5 md:w-6 md:h-6 rounded-full"
                       />
                     </div>
-                    <div className="text-cyan-400 text-sm md:text-lg font-bold flex flex-col text-left items-center h-full">
+                    <div className="gap-0.5 md:gap-1 text-cyan-400 text-sm md:text-[15px] font-medium flex flex-col text-left items-center h-full">
                       {formatWithCommas(
                         formatPreciseAmountString(
                           pool.liquidityB.total.value.toString(),
                           prices[pool.currencyB.address],
                         ),
                       )}
-                      <span className="text-gray-400 font-medium text-sm">
+                      <span className="text-gray-400 font-medium text-xs">
                         ($
                         {formatWithCommas(
                           new BigNumber(pool.liquidityB.total.value)
@@ -371,9 +371,9 @@ export const PoolManagerContainer = ({
               </div>
             </div>
 
-            <div className="flex-col items-start gap-3 md:gap-4 self-stretch hidden sm:flex rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930]">
+            <div className="flex-col items-start gap-3 md:gap-4 self-stretch hidden sm:flex w-full p-4 rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930]">
               <div className="flex flex-col gap-0.5">
-                <div className="text-white text-sm md:text-base font-bold flex flex-row gap-1 items-center justify-center">
+                <div className="text-white text-sm md:text-base font-semibold flex flex-row gap-1 items-center justify-center">
                   <button onClick={() => setShowRPI(!showRPI)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
