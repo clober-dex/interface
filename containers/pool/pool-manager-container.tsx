@@ -271,7 +271,7 @@ export const PoolManagerContainer = ({
             liquidityUsd={Number(poolSnapshot.totalTvlUSD)}
           />
 
-          <div className="flex flex-col w-full items-start gap-5 md:gap-8">
+          <div className="flex flex-col w-full items-start gap-5">
             <div className="flex flex-col items-center gap-3 md:gap-4 self-stretch">
               <div className="self-stretch px-2.5 py-4 sm:p-4 bg-[#17181e] rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-3.5 lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
                 <div className="self-stretch w-full h-full inline-flex justify-start items-center gap-1">
@@ -461,186 +461,161 @@ export const PoolManagerContainer = ({
             </button>
           </div>
 
-          {/*<div className="w-full sm:h-14 p-1.5 sm:px-2 rounded-xl md:rounded-2xl border-2 border-slate-400 border-solid justify-center items-center inline-flex">*/}
-          {/*  <button*/}
-          {/*    disabled={tab === 'add-liquidity'}*/}
-          {/*    onClick={() => setTab('add-liquidity')}*/}
-          {/*    className="whitespace-nowrap flex-1 h-8 sm:h-10 px-4 sm:px-6 py-1.5 sm:py-4 disabled:bg-slate-700 rounded-xl justify-center items-center gap-1 sm:gap-2 flex"*/}
-          {/*  >*/}
-          {/*    <div className="opacity-90 text-center text-gray-400 text-sm md:text-base font-bold">*/}
-          {/*      Add Liquidity*/}
-          {/*    </div>*/}
-          {/*  </button>*/}
-          {/*  <button*/}
-          {/*    disabled={tab === 'remove-liquidity'}*/}
-          {/*    onClick={() => setTab('remove-liquidity')}*/}
-          {/*    className="whitespace-nowrap flex-1 h-8 sm:h-10 px-4 sm:px-6 py-1.5 sm:py-4 disabled:bg-slate-700 rounded-xl justify-center items-center gap-1 sm:gap-2 flex"*/}
-          {/*  >*/}
-          {/*    <div className="opacity-90 text-center text-gray-400 text-sm md:text-base font-bold">*/}
-          {/*      Remove Liquidity*/}
-          {/*    </div>*/}
-          {/*  </button>*/}
-          {/*</div>*/}
-
-          <div className="p-6 bg-gray-900 rounded-2xl border flex-col justify-start items-start gap-6 md:gap-8 flex w-full">
-            {tab === 'add-liquidity' ? (
-              <AddLiquidityForm
-                chain={selectedChain}
-                pool={pool}
-                prices={prices}
-                currency0Amount={currency0Amount}
-                setCurrency0Amount={setCurrency0Amount}
-                availableCurrency0Balance={balances[pool.currencyA.address]}
-                currency1Amount={currency1Amount}
-                setCurrency1Amount={setCurrency1Amount}
-                availableCurrency1Balance={balances[pool.currencyB.address]}
-                disableSwap={disableSwap}
-                setDisableSwap={setDisableSwap}
-                disableDisableSwap={isNoLiquidity}
-                slippageInput={slippageInput}
-                setSlippageInput={setSlippageInput}
-                receiveLpCurrencyAmount={receiveLpAmount}
-                isCalculatingReceiveLpAmount={
+          {tab === 'add-liquidity' ? (
+            <AddLiquidityForm
+              chain={selectedChain}
+              pool={pool}
+              prices={prices}
+              currency0Amount={currency0Amount}
+              setCurrency0Amount={setCurrency0Amount}
+              availableCurrency0Balance={balances[pool.currencyA.address]}
+              currency1Amount={currency1Amount}
+              setCurrency1Amount={setCurrency1Amount}
+              availableCurrency1Balance={balances[pool.currencyB.address]}
+              disableSwap={disableSwap}
+              setDisableSwap={setDisableSwap}
+              disableDisableSwap={isNoLiquidity}
+              slippageInput={slippageInput}
+              setSlippageInput={setSlippageInput}
+              receiveLpCurrencyAmount={receiveLpAmount}
+              isCalculatingReceiveLpAmount={
+                (disableSwap &&
+                  Number(currency0Amount) > 0 &&
+                  Number(currency1Amount) > 0 &&
+                  receiveLpAmount === 0n) ||
+                (!disableSwap &&
+                  Number(currency0Amount) + Number(currency1Amount) > 0 &&
+                  receiveLpAmount === 0n)
+              }
+              actionButtonProps={{
+                disabled:
+                  !walletClient ||
+                  (Number(currency0Amount) === 0 &&
+                    Number(currency1Amount) === 0) ||
+                  parseUnits(currency0Amount, pool.currencyA.decimals) >
+                    balances[pool.currencyA.address] ||
+                  parseUnits(currency1Amount, pool.currencyB.decimals) >
+                    balances[pool.currencyB.address] ||
                   (disableSwap &&
-                    Number(currency0Amount) > 0 &&
-                    Number(currency1Amount) > 0 &&
-                    receiveLpAmount === 0n) ||
-                  (!disableSwap &&
-                    Number(currency0Amount) + Number(currency1Amount) > 0 &&
-                    receiveLpAmount === 0n)
-                }
-                actionButtonProps={{
-                  disabled:
-                    !walletClient ||
-                    (Number(currency0Amount) === 0 &&
-                      Number(currency1Amount) === 0) ||
-                    parseUnits(currency0Amount, pool.currencyA.decimals) >
-                      balances[pool.currencyA.address] ||
-                    parseUnits(currency1Amount, pool.currencyB.decimals) >
-                      balances[pool.currencyB.address] ||
-                    (disableSwap &&
-                      (Number(currency0Amount) === 0 ||
-                        Number(currency1Amount) === 0)),
-                  onClick: async () => {
-                    await mint(
-                      pool.currencyA,
-                      pool.currencyB,
-                      pool.salt,
-                      currency0Amount,
-                      currency1Amount,
-                      !isNoLiquidity ? disableSwap : true,
-                      Number(slippageInput),
-                    )
-                  },
-                  text: !walletClient
-                    ? 'Connect wallet'
-                    : Number(currency0Amount) === 0 &&
-                        Number(currency1Amount) === 0
-                      ? 'Enter amount'
+                    (Number(currency0Amount) === 0 ||
+                      Number(currency1Amount) === 0)),
+                onClick: async () => {
+                  await mint(
+                    pool.currencyA,
+                    pool.currencyB,
+                    pool.salt,
+                    currency0Amount,
+                    currency1Amount,
+                    !isNoLiquidity ? disableSwap : true,
+                    Number(slippageInput),
+                  )
+                },
+                text: !walletClient
+                  ? 'Connect wallet'
+                  : Number(currency0Amount) === 0 &&
+                      Number(currency1Amount) === 0
+                    ? 'Enter amount'
+                    : parseUnits(currency0Amount, pool.currencyA.decimals) >
+                        balances[pool.currencyA.address]
+                      ? `Insufficient ${pool.currencyA.symbol} balance`
                       : parseUnits(currency0Amount, pool.currencyA.decimals) >
-                          balances[pool.currencyA.address]
-                        ? `Insufficient ${pool.currencyA.symbol} balance`
-                        : parseUnits(currency0Amount, pool.currencyA.decimals) >
-                            getAllowance(
-                              getContractAddresses({
-                                chainId: selectedChain.id,
-                              }).Minter,
-                              pool.currencyA,
-                            )
-                          ? `Max Approve ${pool.currencyA.symbol}`
+                          getAllowance(
+                            getContractAddresses({
+                              chainId: selectedChain.id,
+                            }).Minter,
+                            pool.currencyA,
+                          )
+                        ? `Max Approve ${pool.currencyA.symbol}`
+                        : parseUnits(currency1Amount, pool.currencyB.decimals) >
+                            balances[pool.currencyB.address]
+                          ? `Insufficient ${pool.currencyB.symbol} balance`
                           : parseUnits(
                                 currency1Amount,
                                 pool.currencyB.decimals,
-                              ) > balances[pool.currencyB.address]
-                            ? `Insufficient ${pool.currencyB.symbol} balance`
-                            : parseUnits(
-                                  currency1Amount,
-                                  pool.currencyB.decimals,
-                                ) >
-                                getAllowance(
-                                  getContractAddresses({
-                                    chainId: selectedChain.id,
-                                  }).Minter,
-                                  pool.currencyB,
-                                )
-                              ? `Max Approve ${pool.currencyB.symbol}`
-                              : disableSwap &&
-                                  (Number(currency0Amount) === 0 ||
-                                    Number(currency1Amount) === 0)
-                                ? `Enter amount`
-                                : `Add Liquidity`,
-                }}
-              />
-            ) : (
-              <RemoveLiquidityForm
-                chain={selectedChain}
-                pool={pool}
-                prices={{
-                  ...prices,
-                  [pool.lpCurrency.address]: pool.lpPriceUSD,
-                }}
-                lpCurrencyAmount={lpCurrencyAmount}
-                setLpCurrencyAmount={setLpCurrencyAmount}
-                availableLpCurrencyBalance={lpBalances[pool.key]}
-                receiveCurrencies={
-                  receiveCurrencies.length === 2
-                    ? [
-                        {
-                          currency: receiveCurrencies[0].currency,
-                          amount: parseUnits(
-                            receiveCurrencies[0].amount,
-                            receiveCurrencies[0].currency.decimals,
-                          ),
-                        },
-                        {
-                          currency: receiveCurrencies[1].currency,
-                          amount: parseUnits(
-                            receiveCurrencies[1].amount,
-                            receiveCurrencies[1].currency.decimals,
-                          ),
-                        },
-                      ]
-                    : [
-                        {
-                          currency: pool.currencyA,
-                          amount: 0n,
-                        },
-                        {
-                          currency: pool.currencyB,
-                          amount: 0n,
-                        },
-                      ]
-                }
-                slippageInput={slippageInput}
-                setSlippageInput={setSlippageInput}
-                isCalculatingReceiveCurrencies={
-                  Number(lpCurrencyAmount) > 0 && receiveCurrencies.length === 0
-                }
-                actionButtonProps={{
-                  disabled:
-                    !walletClient ||
-                    Number(lpCurrencyAmount) === 0 ||
-                    parseUnits(lpCurrencyAmount, 18) > lpBalances[pool.key],
-                  onClick: async () => {
-                    await burn(
-                      pool.currencyA,
-                      pool.currencyB,
-                      pool.salt,
-                      lpCurrencyAmount,
-                      slippageInput,
-                    )
-                  },
-                  text: !walletClient
-                    ? 'Connect wallet'
-                    : Number(lpCurrencyAmount) === 0
-                      ? 'Enter amount'
-                      : parseUnits(lpCurrencyAmount, 18) > lpBalances[pool.key]
-                        ? `Insufficient ${pool.lpCurrency.symbol} balance`
-                        : `Remove Liquidity`,
-                }}
-              />
-            )}
-          </div>
+                              ) >
+                              getAllowance(
+                                getContractAddresses({
+                                  chainId: selectedChain.id,
+                                }).Minter,
+                                pool.currencyB,
+                              )
+                            ? `Max Approve ${pool.currencyB.symbol}`
+                            : disableSwap &&
+                                (Number(currency0Amount) === 0 ||
+                                  Number(currency1Amount) === 0)
+                              ? `Enter amount`
+                              : `Add Liquidity`,
+              }}
+            />
+          ) : (
+            <RemoveLiquidityForm
+              chain={selectedChain}
+              pool={pool}
+              prices={{
+                ...prices,
+                [pool.lpCurrency.address]: pool.lpPriceUSD,
+              }}
+              lpCurrencyAmount={lpCurrencyAmount}
+              setLpCurrencyAmount={setLpCurrencyAmount}
+              availableLpCurrencyBalance={lpBalances[pool.key]}
+              receiveCurrencies={
+                receiveCurrencies.length === 2
+                  ? [
+                      {
+                        currency: receiveCurrencies[0].currency,
+                        amount: parseUnits(
+                          receiveCurrencies[0].amount,
+                          receiveCurrencies[0].currency.decimals,
+                        ),
+                      },
+                      {
+                        currency: receiveCurrencies[1].currency,
+                        amount: parseUnits(
+                          receiveCurrencies[1].amount,
+                          receiveCurrencies[1].currency.decimals,
+                        ),
+                      },
+                    ]
+                  : [
+                      {
+                        currency: pool.currencyA,
+                        amount: 0n,
+                      },
+                      {
+                        currency: pool.currencyB,
+                        amount: 0n,
+                      },
+                    ]
+              }
+              slippageInput={slippageInput}
+              setSlippageInput={setSlippageInput}
+              isCalculatingReceiveCurrencies={
+                Number(lpCurrencyAmount) > 0 && receiveCurrencies.length === 0
+              }
+              actionButtonProps={{
+                disabled:
+                  !walletClient ||
+                  Number(lpCurrencyAmount) === 0 ||
+                  parseUnits(lpCurrencyAmount, 18) > lpBalances[pool.key],
+                onClick: async () => {
+                  await burn(
+                    pool.currencyA,
+                    pool.currencyB,
+                    pool.salt,
+                    lpCurrencyAmount,
+                    slippageInput,
+                  )
+                },
+                text: !walletClient
+                  ? 'Connect wallet'
+                  : Number(lpCurrencyAmount) === 0
+                    ? 'Enter amount'
+                    : parseUnits(lpCurrencyAmount, 18) > lpBalances[pool.key]
+                      ? `Insufficient ${pool.lpCurrency.symbol} balance`
+                      : `Remove Liquidity`,
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

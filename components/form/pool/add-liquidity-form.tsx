@@ -55,11 +55,11 @@ export const AddLiquidityForm = ({
   )
   return (
     <>
-      <div className="flex flex-col relative gap-4 self-stretch">
-        <div className="flex flex-row w-full text-white text-sm md:text-base font-bold">
-          <div>Enter amount you’d like to add.</div>
+      <div className="flex flex-col relative gap-4 self-stretch p-4 sm:p-5 bg-[#16181d] rounded-2xl lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+        <div className="flex flex-row w-full text-[#8d94a1] text-[13px] font-medium">
+          Enter amount you’d like to add.
         </div>
-        <div className="flex flex-col relative gap-4 self-stretch">
+        <div className="flex flex-col relative gap-3 self-stretch">
           <CurrencyAmountInput
             chain={chain}
             currency={pool.currencyA}
@@ -78,7 +78,7 @@ export const AddLiquidityForm = ({
           />
         </div>
         <div className="flex items-center gap-3 ml-auto">
-          <div className="text-white text-xs sm:text-sm font-semibold">
+          <div className="text-[#8d94a1] text-sm font-medium">
             Auto-Balance Liquidity
           </div>
           <Toggle
@@ -90,51 +90,57 @@ export const AddLiquidityForm = ({
           />
         </div>
       </div>
-      <div className="flex flex-col items-start gap-3 md:gap-4 self-stretch text-xs sm:text-sm">
-        <div className="flex items-center gap-2 self-stretch">
-          <div className="text-gray-400 font-semibold">Receive</div>
-          <div className="flex items-center gap-1 ml-auto">
-            {isCalculatingReceiveLpAmount ? (
-              <span className="w-[100px] h-6 mx-1 rounded animate-pulse bg-gray-500"></span>
-            ) : (
-              <div className="flex items-center gap-1 text-white text-sm md:text-base font-semibold">
-                <div>
-                  {formatWithCommas(
-                    formatUnits(
+
+      <div className="flex flex-col items-start gap-3 self-stretch text-xs sm:text-sm p-4 sm:p-5 bg-[#16181d] rounded-2xl lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+        <div className="flex flex-col gap-2.5 self-stretch">
+          <div className="flex items-center gap-2 self-stretch">
+            <div className="text-gray-400 text-[13px] font-semibold">
+              Receive
+            </div>
+            <div className="flex items-center gap-1 ml-auto">
+              {isCalculatingReceiveLpAmount ? (
+                <span className="w-[100px] h-6 mx-1 rounded animate-pulse bg-gray-500"></span>
+              ) : (
+                <div className="flex items-center gap-1 text-white text-sm font-semibold">
+                  <div>
+                    {formatWithCommas(
+                      formatUnits(
+                        receiveLpCurrencyAmount,
+                        pool.lpCurrency.decimals,
+                        pool.lpPriceUSD,
+                      ),
+                    )}
+                    {' LP'}
+                  </div>
+                  <div className="text-gray-400 text-[13px]">
+                    (
+                    {formatDollarValue(
                       receiveLpCurrencyAmount,
                       pool.lpCurrency.decimals,
                       pool.lpPriceUSD,
-                    ),
-                  )}
-                  {' LP'}
+                    )}
+                    )
+                  </div>
                 </div>
-                <div className="text-gray-400">
-                  (
-                  {formatDollarValue(
-                    receiveLpCurrencyAmount,
-                    pool.lpCurrency.decimals,
-                    pool.lpPriceUSD,
-                  )}
-                  )
-                </div>
-              </div>
-            )}
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-3 sm:gap-2 self-stretch flex-col sm:flex-row text-xs sm:text-sm">
+            <div className="text-gray-400 text-[13px] font-semibold flex mr-auto">
+              Max Slippage
+            </div>
+            <div className="flex items-center gap-1 ml-auto">
+              <SlippageSelector
+                slippageInput={slippageInput}
+                setSlippageInput={setSlippageInput}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="flex gap-3 sm:gap-2 self-stretch flex-col sm:flex-row text-xs sm:text-sm">
-          <div className="text-gray-400 font-semibold flex mr-auto">
-            Max Slippage
-          </div>
-          <div className="flex items-center gap-1 ml-auto">
-            <SlippageSelector
-              slippageInput={slippageInput}
-              setSlippageInput={setSlippageInput}
-            />
-          </div>
-        </div>
+        <ActionButton {...actionButtonProps} />
       </div>
-      <ActionButton {...actionButtonProps} />
     </>
   )
 }
