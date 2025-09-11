@@ -7,7 +7,7 @@ import { mainnet } from 'viem/chains'
 import { MarketDailySnapshotCard } from './market-daily-snapshot-card'
 
 export default {
-  title: 'Card/MarketCard',
+  title: 'Card/MarketDailySnapshotCard',
   component: MarketDailySnapshotCard,
   parameters: {
     layout: 'centered',
