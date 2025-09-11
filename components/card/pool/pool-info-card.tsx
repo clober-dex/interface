@@ -116,20 +116,17 @@ export const PoolInfoCard = ({
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   TVL
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
-                  {liquidityUsd > 0
-                    ? `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
-                    : '-'}
-                </div>
-              </div>
-              <div className="self-stretch justify-start items-center gap-2 flex">
-                <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
-                  24h Volume
-                </div>
-                <div className="text-white text-xs font-semibold text-right">
-                  {dailyVolume > 0
-                    ? `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
-                    : '-'}
+                <div className="text-white text-xs text-right flex flex-row gap-1">
+                  {liquidityUsd > 0 ? (
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(
+                        new BigNumber(liquidityUsd),
+                      )}
+                    </>
+                  ) : (
+                    '-'
+                  )}
                 </div>
               </div>
             </div>
@@ -137,22 +134,19 @@ export const PoolInfoCard = ({
             <div className="flex flex-col h-full w-full justify-center items-start gap-2">
               <div className="self-stretch justify-start items-center gap-2 flex">
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
-                  LP Price
+                  24h Volume
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
-                  {lpPriceUSD > 0
-                    ? `$${formatAbbreviatedNumberString(new BigNumber(lpPriceUSD))}`
-                    : '-'}
-                </div>
-              </div>
-              <div className="self-stretch justify-start items-center gap-2 flex">
-                <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
-                  LP Supply
-                </div>
-                <div className="text-white text-xs font-semibold text-right">
-                  {lpTotalSupply > 0
-                    ? `$${formatAbbreviatedNumberString(new BigNumber(lpTotalSupply))}`
-                    : '-'}
+                <div className="text-white text-xs text-right flex flex-row gap-1">
+                  {dailyVolume > 0 ? (
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(
+                        new BigNumber(dailyVolume),
+                      )}
+                    </>
+                  ) : (
+                    '-'
+                  )}
                 </div>
               </div>
             </div>
@@ -172,10 +166,15 @@ export const PoolInfoCard = ({
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 LP Price
               </div>
-              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
-                {lpPriceUSD > 0
-                  ? `$${formatAbbreviatedNumberString(new BigNumber(lpPriceUSD))}`
-                  : '-'}
+              <div className="w-[61px] text-white text-sm font-medium h-4 flex flex-row gap-1">
+                {lpPriceUSD > 0 ? (
+                  <>
+                    <span className="text-[#8d94a1]">$</span>
+                    {formatAbbreviatedNumberString(new BigNumber(lpPriceUSD))}
+                  </>
+                ) : (
+                  '-'
+                )}
               </div>
             </div>
 
@@ -183,10 +182,15 @@ export const PoolInfoCard = ({
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 24H Volume
               </div>
-              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
-                {dailyVolume > 0
-                  ? `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
-                  : '-'}
+              <div className="w-[61px] text-white text-sm font-medium h-4 flex flex-row gap-1">
+                {dailyVolume > 0 ? (
+                  <>
+                    <span className="text-[#8d94a1]">$</span>
+                    {formatAbbreviatedNumberString(new BigNumber(dailyVolume))}
+                  </>
+                ) : (
+                  '-'
+                )}
               </div>
             </div>
           </div>

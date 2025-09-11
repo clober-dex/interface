@@ -191,10 +191,15 @@ export const MarketInfoCard = ({
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   Liquidity
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
+                <div className="text-white text-xs text-right flex flex-row gap-1">
                   {!isFetchingMarketSnapshot ? (
                     liquidityUsd > 0 ? (
-                      `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
+                      <>
+                        <span className="text-[#8d94a1]">$</span>
+                        {formatAbbreviatedNumberString(
+                          new BigNumber(liquidityUsd),
+                        )}
+                      </>
                     ) : (
                       '-'
                     )
@@ -207,10 +212,15 @@ export const MarketInfoCard = ({
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   24h Volume
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
+                <div className="text-white text-xs text-right flex flex-row gap-1">
                   {!isFetchingMarketSnapshot ? (
                     dailyVolume > 0 ? (
-                      `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
+                      <>
+                        <span className="text-[#8d94a1]">$</span>
+                        {formatAbbreviatedNumberString(
+                          new BigNumber(dailyVolume),
+                        )}
+                      </>
                     ) : (
                       '-'
                     )
@@ -226,10 +236,13 @@ export const MarketInfoCard = ({
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   FDV
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
+                <div className="text-white text-xs text-right flex flex-row gap-1">
                   {!isFetchingMarketSnapshot ? (
                     fdv > 0 ? (
-                      `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+                      <>
+                        <span className="text-[#8d94a1]">$</span>
+                        {formatAbbreviatedNumberString(new BigNumber(fdv))}
+                      </>
                     ) : (
                       '-'
                     )
@@ -242,10 +255,15 @@ export const MarketInfoCard = ({
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   Market Cap
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
+                <div className="text-white text-xs text-right flex flex-row gap-1">
                   {!isFetchingMarketSnapshot ? (
                     marketCap > 0 ? (
-                      `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
+                      <>
+                        <span className="text-[#8d94a1]">$</span>
+                        {formatAbbreviatedNumberString(
+                          new BigNumber(marketCap),
+                        )}
+                      </>
                     ) : (
                       '-'
                     )
@@ -273,10 +291,15 @@ export const MarketInfoCard = ({
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 Liquidity
               </div>
-              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
+              <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
                 {!isFetchingMarketSnapshot ? (
                   liquidityUsd > 0 ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(
+                        new BigNumber(liquidityUsd),
+                      )}
+                    </>
                   ) : (
                     '-'
                   )
@@ -290,10 +313,13 @@ export const MarketInfoCard = ({
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 FDV
               </div>
-              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
+              <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
                 {!isFetchingMarketSnapshot ? (
                   fdv > 0 ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(new BigNumber(fdv))}
+                    </>
                   ) : (
                     '-'
                   )
@@ -307,10 +333,13 @@ export const MarketInfoCard = ({
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 Market Cap
               </div>
-              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
+              <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
                 {!isFetchingMarketSnapshot ? (
                   marketCap > 0 ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(new BigNumber(marketCap))}
+                    </>
                   ) : (
                     '-'
                   )
@@ -324,10 +353,15 @@ export const MarketInfoCard = ({
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 24H Volume
               </div>
-              <div className="w-[61px] text-white text-[13px] font-semibold h-4">
+              <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
                 {!isFetchingMarketSnapshot ? (
                   dailyVolume > 0 ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(
+                        new BigNumber(dailyVolume),
+                      )}
+                    </>
                   ) : (
                     '-'
                   )
