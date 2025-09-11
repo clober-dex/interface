@@ -242,7 +242,24 @@ export const PoolManagerContainer = ({
 
   return (
     <div className="flex flex-col w-full md:w-fit mb-6 items-center gap-[17px]">
-      <div className="flex flex-col w-full lg:flex-row gap-4 justify-center">
+      <div className="flex flex-col w-full lg:flex-row gap-5 lg:gap-4 justify-center items-center">
+        <div className="justify-center bg-[#191d25] rounded-[22px] py-1 w-full h-10 sm:h-12 flex lg:hidden flex-row relative text-blue-300 text-base font-semibold">
+          <button
+            disabled={tab === 'add-liquidity'}
+            onClick={() => setTab('add-liquidity')}
+            className="text-sm flex flex-1 px-[15px] py-1.5 h-8 sm:h-10 rounded-[20px] text-[#8d94a1] disabled:text-blue-300 disabled:bg-blue-500/40 justify-center items-center gap-1"
+          >
+            Add Liquidity
+          </button>
+          <button
+            disabled={tab === 'remove-liquidity'}
+            onClick={() => setTab('remove-liquidity')}
+            className="text-sm flex flex-1 px-[15px] py-1.5 h-8 sm:h-10 rounded-[20px] text-[#8d94a1] disabled:text-blue-300 disabled:bg-blue-500/40 justify-center items-center gap-1"
+          >
+            Remove Liquidity
+          </button>
+        </div>
+
         <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-fit">
           <PoolInfoCard
             chain={selectedChain}
@@ -330,7 +347,7 @@ export const PoolManagerContainer = ({
             </div>
             <div className="flex sm:hidden flex-col item-st gap-3 md:gap-4 self-stretch">
               <div className="flex flex-row gap-2">
-                <div className="text-white text-sm md:text-base font-semibold">
+                <div className="text-[#8d94a1] text-[13px] font-medium">
                   Relative Price Index(RPI)
                 </div>
                 <div className="flex mr-auto justify-center items-center">
@@ -347,7 +364,7 @@ export const PoolManagerContainer = ({
                   />
                 </div>
               </div>
-              <div className="text-sm font-semibold flex h-11 px-8 py-4 bg-[#17181e] rounded-xl justify-center items-center gap-8 md:gap-12">
+              <div className="text-sm font-medium flex h-11 px-8 py-4 bg-[#17181e] rounded-xl justify-center items-center gap-8 md:gap-12">
                 {(showRPI
                   ? (performanceHistories?.[performanceHistories.length - 1]
                       ?.rpi ?? 0)
@@ -426,57 +443,44 @@ export const PoolManagerContainer = ({
           </div>
         </div>
 
-        <div className="flex flex-col w-full lg:w-[420px] h-full lg:h-[571px] gap-4">
-          <div className="w-full sm:h-14 p-1.5 sm:px-2 rounded-xl md:rounded-2xl border-2 border-slate-400 border-solid justify-center items-center inline-flex">
+        <div className="flex flex-col w-full lg:w-[420px] h-full lg:h-[571px] gap-4 mb-auto mt-4">
+          <div className="bg-[#191d25] rounded-[22px] py-1 h-12 w-full hidden lg:flex flex-row relative text-blue-300 text-base font-semibold">
             <button
               disabled={tab === 'add-liquidity'}
               onClick={() => setTab('add-liquidity')}
-              className="whitespace-nowrap flex-1 h-8 sm:h-10 px-4 sm:px-6 py-1.5 sm:py-4 disabled:bg-slate-700 rounded-xl justify-center items-center gap-1 sm:gap-2 flex"
+              className="h-10 text-sm flex flex-1 px-[15px] py-1.5 rounded-[20px] text-[#8d94a1] disabled:text-blue-300 disabled:bg-blue-500/40 justify-center items-center gap-1"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                className="w-4 h-4 md:w-5 md:h-5"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM11 6C11 5.44772 10.5523 5 10 5C9.44772 5 9 5.44772 9 6V9H6C5.44772 9 5 9.44772 5 10C5 10.5523 5.44772 11 6 11H9V14C9 14.5523 9.44772 15 10 15C10.5523 15 11 14.5523 11 14V11H14C14.5523 11 15 10.5523 15 10C15 9.44772 14.5523 9 14 9H11V6Z"
-                  fill="white"
-                />
-              </svg>
-              <div className="opacity-90 text-center text-gray-400 text-sm md:text-base font-bold">
-                Add Liquidity
-              </div>
+              Add Liquidity
             </button>
             <button
               disabled={tab === 'remove-liquidity'}
               onClick={() => setTab('remove-liquidity')}
-              className="whitespace-nowrap flex-1 h-8 sm:h-10 px-4 sm:px-6 py-1.5 sm:py-4 disabled:bg-slate-700 rounded-xl justify-center items-center gap-1 sm:gap-2 flex"
+              className="h-10 text-sm flex flex-1 px-[15px] py-1.5 rounded-[20px] text-[#8d94a1] disabled:text-blue-300 disabled:bg-blue-500/40 justify-center items-center gap-1"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                className="w-4 h-4 md:w-5 md:h-5"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM6 9C5.44772 9 5 9.44772 5 10C5 10.5523 5.44772 11 6 11H14C14.5523 11 15 10.5523 15 10C15 9.44772 14.5523 9 14 9H6Z"
-                  fill="#9CA3AF"
-                />
-              </svg>
-              <div className="opacity-90 text-center text-gray-400 text-sm md:text-base font-bold">
-                Remove Liquidity
-              </div>
+              Remove Liquidity
             </button>
           </div>
+
+          {/*<div className="w-full sm:h-14 p-1.5 sm:px-2 rounded-xl md:rounded-2xl border-2 border-slate-400 border-solid justify-center items-center inline-flex">*/}
+          {/*  <button*/}
+          {/*    disabled={tab === 'add-liquidity'}*/}
+          {/*    onClick={() => setTab('add-liquidity')}*/}
+          {/*    className="whitespace-nowrap flex-1 h-8 sm:h-10 px-4 sm:px-6 py-1.5 sm:py-4 disabled:bg-slate-700 rounded-xl justify-center items-center gap-1 sm:gap-2 flex"*/}
+          {/*  >*/}
+          {/*    <div className="opacity-90 text-center text-gray-400 text-sm md:text-base font-bold">*/}
+          {/*      Add Liquidity*/}
+          {/*    </div>*/}
+          {/*  </button>*/}
+          {/*  <button*/}
+          {/*    disabled={tab === 'remove-liquidity'}*/}
+          {/*    onClick={() => setTab('remove-liquidity')}*/}
+          {/*    className="whitespace-nowrap flex-1 h-8 sm:h-10 px-4 sm:px-6 py-1.5 sm:py-4 disabled:bg-slate-700 rounded-xl justify-center items-center gap-1 sm:gap-2 flex"*/}
+          {/*  >*/}
+          {/*    <div className="opacity-90 text-center text-gray-400 text-sm md:text-base font-bold">*/}
+          {/*      Remove Liquidity*/}
+          {/*    </div>*/}
+          {/*  </button>*/}
+          {/*</div>*/}
 
           <div className="p-6 bg-gray-900 rounded-2xl border flex-col justify-start items-start gap-6 md:gap-8 flex w-full">
             {tab === 'add-liquidity' ? (
