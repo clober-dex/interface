@@ -444,7 +444,7 @@ export const SwapForm = ({
 
             <div className="flex flex-row w-full">
               <div className="text-gray-400 flex flex-row sm:flex-col gap-3">
-                <span>Max Slippage</span>
+                Max Slippage
               </div>
               <div className="flex ml-auto">
                 <SlippageSelector

@@ -126,11 +126,11 @@ export const AddLiquidityForm = ({
             </div>
           </div>
 
-          <div className="flex gap-3 sm:gap-2 self-stretch flex-col sm:flex-row text-xs sm:text-sm">
-            <div className="text-gray-400 text-[13px] font-semibold flex mr-auto">
+          <div className="flex flex-row w-full">
+            <div className="text-gray-400 flex flex-row sm:flex-col gap-3">
               Max Slippage
             </div>
-            <div className="flex items-center gap-1 ml-auto">
+            <div className="flex ml-auto">
               <SlippageSelector
                 slippageInput={slippageInput}
                 setSlippageInput={setSlippageInput}
