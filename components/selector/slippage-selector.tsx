@@ -135,7 +135,7 @@ export const SlippageSelector = ({
       )}
 
       {Number(slippageInput) < 2 && Number(slippageInput) >= FIRST_SLIPPAGE && (
-        <div className="hidden sm:flex h-4 sm:h-5 w-1" />
+        <div className="flex h-[19.5px] w-1" />
       )}
     </div>
   )
