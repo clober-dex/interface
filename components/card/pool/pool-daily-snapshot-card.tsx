@@ -12,7 +12,7 @@ import { shortAddress } from '../../../utils/address'
 import { CopySvg } from '../../svg/copy-svg'
 import { handleCopyClipBoard } from '../../../utils/string'
 
-export const PoolSnapshotCard = ({
+export const PoolDailySnapshotCard = ({
   chain,
   poolKey,
   currencyA,

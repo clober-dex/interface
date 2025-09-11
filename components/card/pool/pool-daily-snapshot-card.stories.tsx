@@ -2,17 +2,17 @@ import '../../../styles/globals.css'
 import { Meta, StoryObj } from '@storybook/react'
 import { mainnet } from 'viem/chains'
 
-import { PoolSnapshotCard } from './pool-snapshot-card'
+import { PoolDailySnapshotCard } from './pool-daily-snapshot-card'
 
 export default {
-  title: 'Card/PoolSnapshotCard',
-  component: PoolSnapshotCard,
+  title: 'Card/PoolDailySnapshotCard',
+  component: PoolDailySnapshotCard,
   parameters: {
     layout: 'centered',
   },
-} as Meta<typeof PoolSnapshotCard>
+} as Meta<typeof PoolDailySnapshotCard>
 
-type Story = StoryObj<typeof PoolSnapshotCard>
+type Story = StoryObj<typeof PoolDailySnapshotCard>
 
 export const Default: Story = {
   args: {

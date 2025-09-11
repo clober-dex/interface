@@ -10,7 +10,7 @@ import { QuestionMarkSvg } from '../../components/svg/question-mark-svg'
 import { useCurrencyContext } from '../../contexts/currency-context'
 import { Loading } from '../../components/loading'
 import { LpPositionCard } from '../../components/card/pool/lp-position-card'
-import { PoolSnapshotCard } from '../../components/card/pool/pool-snapshot-card'
+import { PoolDailySnapshotCard } from '../../components/card/pool/pool-daily-snapshot-card'
 import { fetchPoolSnapshots } from '../../apis/pool'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { formatWithCommas } from '../../utils/bignumber'
@@ -223,7 +223,7 @@ export const PoolContainer = () => {
               <div className="relative flex justify-center w-full h-auto lg:bg-[#17181e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
                 <div className="lg:overflow-x-scroll w-full h-auto items-center flex flex-1 flex-col md:grid md:grid-cols-2 lg:flex gap-3 lg:gap-0">
                   {poolSnapshots.map((poolSnapshot) => (
-                    <PoolSnapshotCard
+                    <PoolDailySnapshotCard
                       chain={selectedChain}
                       key={`pool-snapshot-${poolSnapshot.key}`}
                       poolKey={poolSnapshot.key}
