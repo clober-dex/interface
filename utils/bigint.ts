@@ -73,8 +73,9 @@ export const formatUnits = (
   }
   const underHalfPennyDecimals =
     Math.floor(Math.max(-Math.log10(0.005 / price), 0) / 2) * 2
-  const fixed = new BigNumber(formatted).toFixed(underHalfPennyDecimals)
-  return +fixed === 0 ? formatted : fixed
+  return new BigNumber(formatted).toFixed(underHalfPennyDecimals)
+  // see if we can avoid trailing zeroes
+  // return +fixed === 0 ? formatted : fixed
 }
 
 export const applyPercent = (
