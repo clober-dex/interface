@@ -89,7 +89,7 @@ export const OpenOrderContainer = ({
   return (
     <>
       {/*pc open order card*/}
-      <div className="hidden lg:flex flex-col w-full max-w-[1176px] bg-[#17181e] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-t-[20px] rounded-b-none mb-4">
+      <div className="hidden xl:flex flex-col w-full max-w-[1176px] bg-[#17181e] border border-[#2d2d2e] outline outline-1 outline-offset-[-1px] outline-[#272930] rounded-t-[20px] rounded-b-none mb-4">
         <div className="flex flex-row w-full h-[58px]">
           <div className="w-[180px] h-full relative">
             <div className="flex flex-row gap-1.5 absolute left-[27px] top-[18px] justify-center items-center">
@@ -185,7 +185,7 @@ export const OpenOrderContainer = ({
       </div>
 
       {/*mobile open order card*/}
-      <div className="flex flex-col gap-4 lg:hidden w-full justify-center mb-28 md:mb-0 bg-[#17181e] rounded-2xl">
+      <div className="flex flex-col gap-4 xl:hidden w-full justify-center mb-28 md:mb-0 bg-[#17181e] rounded-2xl">
         <div className="flex flex-col gap-3">
           <div className="flex w-full h-[37px] relative mt-[5px]">
             <div className="relative flex-1 px-6 pt-1.5 pb-2.5 border-b-2 border-[#65a7ff] inline-flex justify-center items-center gap-2">
@@ -267,7 +267,7 @@ export const OpenOrderContainer = ({
           </div>
         </div>
 
-        <div className="flex flex-col px-3 w-full lg:w-auto h-full lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="flex flex-col px-3 w-full xl:w-auto h-full xl:grid xl:grid-cols-3 gap-4 sm:gap-6">
           {userAddress && (
             <OpenOrderCardList
               chainId={chainId}

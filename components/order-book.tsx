@@ -46,7 +46,7 @@ export default function OrderBook({
       <div className="flex items-center justify-between">
         <button
           onClick={() => setShowOrderBook(false)}
-          className="hidden lg:flex w-[140px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
+          className="hidden xl:flex w-[140px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +82,7 @@ export default function OrderBook({
       </div>
 
       {/*mobile*/}
-      <div className="flex lg:hidden text-xs overflow-hidden relative h-full">
+      <div className="flex xl:hidden text-xs overflow-hidden relative h-full">
         {market ? (
           <>
             <div className="flex flex-1 flex-col basis-0">
@@ -168,7 +168,7 @@ export default function OrderBook({
       </div>
 
       {/*pc*/}
-      <div className="hidden lg:flex flex-col w-full h-full gap-[20px] text-[13px]">
+      <div className="hidden xl:flex flex-col w-full h-full gap-[20px] text-[13px]">
         <div className="w-full h-4 justify-start items-center gap-6 flex">
           <div className="grow shrink basis-0 h-4 justify-end items-start gap-4 flex">
             <div className="flex-1 text-left text-gray-500 text-xs font-medium">

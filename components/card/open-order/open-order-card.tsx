@@ -29,7 +29,7 @@ export const OpenOrderCard = ({
   return (
     <>
       <div
-        className="relative flex lg:hidden flex-col shadow border border-solid border-gray-800 lg:w-[310px] bg-[#24272e]/50 lg:bg-gray-900 rounded-tr-xl rounded-br-xl rounded-tl-md rounded-bl-md px-4 py-3.5 lg:p-4 gap-4 lg:gap-[20px] outline outline-1 outline-offset-[-1px] outline-[#272930]"
+        className="relative flex xl:hidden flex-col shadow border border-solid border-gray-800 xl:w-[310px] bg-[#24272e]/50 xl:bg-gray-900 rounded-tr-xl rounded-br-xl rounded-tl-md rounded-bl-md px-4 py-3.5 xl:p-4 gap-4 xl:gap-[20px] outline outline-1 outline-offset-[-1px] outline-[#272930]"
         {...props}
       >
         {!openOrder.isBid ? (
@@ -132,7 +132,7 @@ export const OpenOrderCard = ({
         </div>
       </div>
 
-      <div className="h-[58px] w-full relative hidden text-white lg:flex px-4 bg-transparent justify-start items-center gap-[3px]">
+      <div className="h-[58px] w-full relative hidden text-white xl:flex px-4 bg-transparent justify-start items-center gap-[3px]">
         {!openOrder.isBid ? (
           <div className="absolute left-0 h-full bg-red-400 w-0.5 pt-1 rounded-l-xl" />
         ) : (
@@ -215,7 +215,7 @@ export const OpenOrderCard = ({
         </div>
       </div>
 
-      <div className="hidden lg:flex lg:mx-5 lg:h-0.5">
+      <div className="hidden xl:flex xl:mx-5 xl:h-0.5">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="1768"
