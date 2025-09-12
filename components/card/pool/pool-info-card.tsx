@@ -7,10 +7,7 @@ import { handleCopyClipBoard } from '../../../utils/string'
 import { ClipboardSvg } from '../../svg/clipboard-svg'
 import { Toast } from '../../toast'
 import { Chain } from '../../../model/chain'
-import {
-  formatAbbreviatedNumberString,
-  formatTinyNumber,
-} from '../../../utils/bignumber'
+import { formatAbbreviatedNumberString } from '../../../utils/bignumber'
 import { Currency } from '../../../model/currency'
 
 export const PoolInfoCard = ({
