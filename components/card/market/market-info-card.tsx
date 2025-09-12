@@ -57,25 +57,25 @@ export const MarketInfoCard = ({
         </div>
       </Toast>
 
-      <div className="flex w-full h-full lg:h-[74px] lg:w-[740px] flex-col lg:flex-row justify-start items-start px-5 lg:py-[18px] lg:bg-[#17181e] lg:rounded-2xl lg:justify-start lg:items-center gap-4 lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
-        <div className="flex flex-row w-full lg:w-fit">
+      <div className="flex w-full h-full xl:h-[74px] xl:w-[740px] flex-col xl:flex-row justify-start items-start px-5 xl:py-[18px] xl:bg-[#17181e] xl:rounded-2xl xl:justify-start xl:items-center gap-4 xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930]">
+        <div className="flex flex-row w-full xl:w-fit">
           <div className="justify-start items-center gap-2.5 flex w-full">
             <div className="justify-start items-center flex relative w-11 sm:w-14">
               <CurrencyIcon
                 chain={chain}
                 currency={baseCurrency}
-                className="rounded-full w-6 lg:w-[30px] h-6 lg:h-[30px] z-[1]"
+                className="rounded-full w-6 xl:w-[30px] h-6 xl:h-[30px] z-[1]"
               />
               <CurrencyIcon
                 chain={chain}
                 currency={quoteCurrency}
-                className="rounded-full absolute top-0 left-4 lg:left-[18px] w-6 lg:w-[30px] h-6 lg:h-[30px]"
+                className="rounded-full absolute top-0 left-4 xl:left-[18px] w-6 xl:w-[30px] h-6 xl:h-[30px]"
               />
             </div>
 
-            <div className="flex flex-col justify-center gap-0.5 lg:gap-1 w-[155px] lg:w-[170px] overflow-y-hidden">
+            <div className="flex flex-col justify-center gap-0.5 xl:gap-1 w-[155px] xl:w-[170px] overflow-y-hidden">
               <div className="flex flex-row gap-2 w-full h-full justify-start items-center">
-                <div className="text-white text-base lg:text-[16px] max-w-[180px] lg:max-w-[200px] font-semibold text-nowrap overflow-y-hidden">
+                <div className="text-white text-base xl:text-[16px] max-w-[180px] xl:max-w-[200px] font-semibold text-nowrap overflow-y-hidden">
                   <span>{baseCurrency.symbol} </span>
                   <span className="text-[#8690a5]">/</span>
                   <span> {quoteCurrency.symbol}</span>
@@ -174,7 +174,7 @@ export const MarketInfoCard = ({
             </div>
           </div>
 
-          <div className="grow shrink basis-0 flex-col justify-center gap-1 flex ml-auto w-full lg:hidden text-right">
+          <div className="grow shrink basis-0 flex-col justify-center gap-1 flex ml-auto w-full xl:hidden text-right">
             <div className="text-[#39e79f] text-xl font-semibold">
               {formatTinyNumber(price)}
             </div>
@@ -184,7 +184,7 @@ export const MarketInfoCard = ({
           </div>
         </div>
 
-        <div className="h-full w-full justify-start items-center flex lg:hidden">
+        <div className="h-full w-full justify-start items-center flex xl:hidden">
           <div className="h-full w-full flex-row justify-center items-start gap-8 flex">
             <div className="flex flex-col h-full w-full justify-center items-start gap-2">
               <div className="self-stretch justify-start items-center gap-2 flex">
@@ -276,8 +276,8 @@ export const MarketInfoCard = ({
           </div>
         </div>
 
-        <div className="hidden lg:flex h-full items-center gap-7">
-          <div className="flex-col lg:items-end gap-0.5 flex w-[100px]">
+        <div className="hidden xl:flex h-full items-center gap-7">
+          <div className="flex-col xl:items-end gap-0.5 flex w-[100px]">
             <div className="text-green-400 font-semibold">
               {formatTinyNumber(price)}
             </div>
@@ -286,7 +286,7 @@ export const MarketInfoCard = ({
             </div>
           </div>
 
-          <div className="flex flex-row gap-4 ml-auto lg:w-[310px]">
+          <div className="flex flex-row gap-4 ml-auto xl:w-[310px]">
             <div className="min-w-[60px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 Liquidity

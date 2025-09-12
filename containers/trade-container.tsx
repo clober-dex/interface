@@ -55,7 +55,7 @@ const MetaAggregatorInfo = ({
   }, [currencies])
 
   return (
-    <div className="hidden lg:block">
+    <div className="hidden xl:block">
       <div className="absolute flex justify-center w-full top-[60px] z-[2]">
         <Image
           className="rounded-xl"
@@ -702,10 +702,10 @@ export const TradeContainer = () => {
         </div>
 
         <div
-          className={`flex flex-col w-full lg:flex-row gap-4 justify-center ${tab === 'swap' ? 'md:flex-col-reverse' : ''}`}
+          className={`flex flex-col w-full xl:flex-row gap-4 justify-center ${tab === 'swap' ? 'md:flex-col-reverse' : ''}`}
         >
           {tab === 'limit' && (
-            <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[740px]">
+            <div className="flex flex-col gap-[26px] md:gap-4 w-full xl:w-[740px]">
               {baseCurrency && quoteCurrency && (
                 <MarketInfoCard
                   chain={selectedChain}
@@ -791,7 +791,7 @@ export const TradeContainer = () => {
                     }
                     setShowOrderBook={setShowOrderBook}
                     setTab={setTab}
-                    className="flex flex-col px-0.5 lg:px-4 pb-4 pt-2 md:pb-6 bg-[#16181d] rounded-b-xl md:rounded-2xl gap-[20px] h-[300px] lg:h-[481px] w-full lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] overflow-y-hidden"
+                    className="flex flex-col px-0.5 xl:px-4 pb-4 pt-2 md:pb-6 bg-[#16181d] rounded-b-xl md:rounded-2xl gap-[20px] h-[300px] xl:h-[481px] w-full xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930] overflow-y-hidden"
                   />
                 ) : (
                   <></>
@@ -801,8 +801,8 @@ export const TradeContainer = () => {
           )}
 
           {tab === 'swap' && (
-            <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-[620px]">
-              <div className="relative hidden md:flex flex-col lg:h-[572px] rounded-xl md:rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d]">
+            <div className="flex flex-col gap-[26px] md:gap-4 w-full xl:w-[620px]">
+              <div className="relative hidden md:flex flex-col xl:h-[572px] rounded-xl md:rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d]">
                 {showMetaInfo ? (
                   <MetaAggregatorInfo
                     chain={selectedChain}
@@ -829,11 +829,11 @@ export const TradeContainer = () => {
 
           {/*only tablet or pc*/}
           {tab === 'limit' ? (
-            <div className="hidden md:flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 w-[480px] lg:w-[420px] h-[571px]">
+            <div className="hidden md:flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 w-[480px] xl:w-[420px] h-[571px]">
               <LimitForm {...limitFormProps} />
             </div>
           ) : (
-            <div className="hidden md:flex flex-col w-[480px] lg:w-[420px] h-fit">
+            <div className="hidden md:flex flex-col w-[480px] xl:w-[420px] h-fit">
               <SwapForm
                 {...swapFormProps}
                 actionButtonProps={swapActionButtonProps}
@@ -848,7 +848,7 @@ export const TradeContainer = () => {
             selectedMarket={selectedMarket}
           />
         ) : (
-          <div className="hidden md:flex mb-28 lg:mb-2" />
+          <div className="hidden md:flex mb-28 xl:mb-2" />
         )}
       </div>
 
