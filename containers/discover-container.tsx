@@ -373,7 +373,7 @@ export const DiscoverContainer = () => {
 
   return (
     <>
-      <div className="absolute top-0 left-0 w-full lg:flex hidden justify-center items-center h-[60px] text-white z-[1000]">
+      <div className="fixed top-0 left-0 w-full lg:flex hidden justify-center items-center h-[60px] text-white z-[1000]">
         <div className="z-[1000] w-[360px] flex flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b]">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center p-3">
             <div className="relative h-4 w-4">
