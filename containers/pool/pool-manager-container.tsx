@@ -242,8 +242,8 @@ export const PoolManagerContainer = ({
 
   return (
     <div className="flex flex-col w-full md:w-fit mb-6 items-center gap-[17px]">
-      <div className="flex flex-col w-full lg:flex-row gap-5 lg:gap-4 justify-center items-center">
-        <div className="justify-center bg-[#191d25] rounded-[22px] py-1 w-full h-10 sm:h-12 flex lg:hidden flex-row relative text-blue-300 text-base font-semibold">
+      <div className="flex flex-col w-full xl:flex-row gap-5 xl:gap-4 justify-center items-center">
+        <div className="justify-center bg-[#191d25] rounded-[22px] py-1 w-full h-10 sm:h-12 flex xl:hidden flex-row relative text-blue-300 text-base font-semibold">
           <button
             disabled={tab === 'add-liquidity'}
             onClick={() => setTab('add-liquidity')}
@@ -260,7 +260,7 @@ export const PoolManagerContainer = ({
           </button>
         </div>
 
-        <div className="flex flex-col gap-[26px] md:gap-4 w-full lg:w-fit">
+        <div className="flex flex-col gap-[26px] md:gap-4 w-full xl:w-fit">
           <PoolInfoCard
             chain={selectedChain}
             baseCurrency={pool.currencyB}
@@ -273,7 +273,7 @@ export const PoolManagerContainer = ({
 
           <div className="flex flex-col w-full items-start gap-5">
             <div className="flex flex-col items-center gap-3 md:gap-4 self-stretch">
-              <div className="self-stretch px-2.5 py-4 sm:p-4 bg-[#17181e] rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-3.5 lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+              <div className="self-stretch px-2.5 py-4 sm:p-4 bg-[#17181e] rounded-xl flex flex-col justify-center items-center gap-3 sm:gap-3.5 xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930]">
                 <div className="self-stretch w-full h-full inline-flex justify-start items-center gap-1">
                   <div
                     style={{
@@ -443,8 +443,8 @@ export const PoolManagerContainer = ({
           </div>
         </div>
 
-        <div className="flex flex-col w-full lg:w-[420px] h-full lg:h-[571px] gap-4 mb-auto mt-4">
-          <div className="bg-[#191d25] rounded-[22px] py-1 h-12 w-full hidden lg:flex flex-row relative text-blue-300 text-base font-semibold">
+        <div className="flex flex-col w-full xl:w-[420px] h-full xl:h-[571px] gap-4 mb-auto mt-4">
+          <div className="bg-[#191d25] rounded-[22px] py-1 h-12 w-full hidden xl:flex flex-row relative text-blue-300 text-base font-semibold">
             <button
               disabled={tab === 'add-liquidity'}
               onClick={() => setTab('add-liquidity')}
