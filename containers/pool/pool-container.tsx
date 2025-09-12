@@ -79,7 +79,7 @@ export const PoolContainer = () => {
   }, [lpBalances, userAddress, balances])
 
   return (
-    <div className="w-full flex flex-col text-white mb-4 pr-4 pl-4 md:pl-0 gap-5 lg:gap-[40px] lg:items-center">
+    <div className="w-full lg:w-[1200px] flex flex-col text-white mb-4 pr-4 pl-4 md:pl-0 gap-5 lg:gap-[40px] lg:items-center">
       <Toast
         isCopyToast={isCopyToast}
         setIsCopyToast={setIsCopyToast}
