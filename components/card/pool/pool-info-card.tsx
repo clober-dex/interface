@@ -102,7 +102,7 @@ export const PoolInfoCard = ({
           <div className="grow shrink basis-0 flex-col justify-center gap-1 flex ml-auto w-full lg:hidden text-right">
             <div className="text-[#e1ebff]/50 text-xs font-semibold">APY</div>
             <div className="text-[#39e79f] text-xl font-semibold">
-              {formatTinyNumber(apy)}%
+              {apy.toFixed(2)}%
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ export const PoolInfoCard = ({
           <div className="flex-col lg:items-end gap-0.5 flex w-[100px] mt-1.5">
             <div className="text-[#8690a5] text-xs whitespace-nowrap">APY</div>
             <div className="text-green-400 font-semibold">
-              {formatTinyNumber(apy)}%
+              {apy.toFixed(2)}%
             </div>
           </div>
 
