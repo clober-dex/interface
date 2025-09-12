@@ -30,7 +30,7 @@ export const SwapRouteCard = ({
         setSelectedQuote ? () => setSelectedQuote(quote ?? null) : undefined
       }
       disabled={!setSelectedQuote}
-      className={`hover:bg-[#e5eaff]/10 h-full lg:h-[74px] text-white w-full self-stretch px-3.5 sm:px-4 py-3 bg-[#e5eaff]/5 rounded-xl flex flex-col justify-start items-start gap-1.5 ${isSelected ? 'outline outline-[1.20px] outline-offset-[-1.20px] outline-blue-400/80' : ''}`}
+      className={`hover:bg-[#e5eaff]/10 h-full xl:h-[74px] text-white w-full self-stretch px-3.5 sm:px-4 py-3 bg-[#e5eaff]/5 rounded-xl flex flex-col justify-start items-start gap-1.5 ${isSelected ? 'outline outline-[1.20px] outline-offset-[-1.20px] outline-blue-400/80' : ''}`}
     >
       <div className="self-stretch flex justify-start items-start">
         <div className="self-stretch inline-flex justify-start items-center gap-1.5">
@@ -66,7 +66,7 @@ export const SwapRouteCard = ({
           )}
         </div>
       </div>
-      <div className="self-stretch flex flex-col lg:flex-row justify-center sm:justify-start items-start gap-2 lg:gap-3">
+      <div className="self-stretch flex flex-col xl:flex-row justify-center sm:justify-start items-start gap-2 xl:gap-3">
         <div className="flex justify-start items-center gap-1.5 text-nowrap">
           {quote ? (
             <div className="justify-start text-[#838b99] text-xs sm:text-sm font-medium">
