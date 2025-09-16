@@ -71,7 +71,7 @@ export const LeaderBoard = ({
         } flex rounded-lg justify-center items-center gap-1.5 sm:text-sm text-xs`}
         key={`vault-liquidity-point-rank-${address}-${rank}`}
       >
-        <div className="w-16 flex justify-start items-center gap-2.5 font-bold">
+        <div className="w-16 flex justify-start items-center gap-2.5 font-semibold">
           {rank}
         </div>
         <div className="flex w-full">
@@ -86,7 +86,7 @@ export const LeaderBoard = ({
               <OutlinkSvg className="w-2 h-2 sm:w-3 sm:h-3 flex items-center" />
             </a>
           </div>
-          <div className="flex flex-1 justify-start items-center font-semibold">
+          <div className="flex flex-1 justify-start items-center font-medium">
             {value}
           </div>
         </div>
@@ -98,7 +98,7 @@ export const LeaderBoard = ({
     <div className="self-stretch w-full flex flex-col justify-start items-start gap-1 sm:gap-2">
       {myValue && (
         <div className="self-stretch px-4 sm:px-8 min-h-10 bg-[#75b3ff]/20 flex rounded-lg justify-center items-center gap-1.5 sm:text-sm text-xs">
-          <div className="w-16 flex justify-start items-center gap-2.5 text-white font-bold">
+          <div className="w-16 flex justify-start items-center gap-2.5 text-white font-semibold">
             {myValue.rank > 0 ? myValue.rank : '-'}
           </div>
           <div className="flex w-full">
@@ -115,7 +115,7 @@ export const LeaderBoard = ({
                 <OutlinkSvg className="w-2 h-2 sm:w-3 sm:h-3 flex items-center" />
               </a>
             </div>
-            <div className="flex flex-1 justify-start items-center text-white font-semibold">
+            <div className="flex flex-1 justify-start items-center text-white font-medium">
               {myValue.value}
             </div>
           </div>
