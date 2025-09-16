@@ -28,7 +28,7 @@ export const LeaderBoard = ({
   const width = useWindowWidth()
   const isMobile = width < 640
 
-  const ITEM_HEIGHT = isMobile ? 52 : 48
+  const ITEM_HEIGHT = 40
   const ITEM_GAP = isMobile ? 4 : 8
 
   const sortedValues = useMemo(
@@ -67,14 +67,14 @@ export const LeaderBoard = ({
               ? 'bg-[#d0d6ec]/35 text-[#e4e5f5]'
               : rank === 3
                 ? 'bg-[#ffc581]/35 text-[#ffc038]'
-                : 'bg-gray-900 text-white'
-        } flex rounded-lg justify-center items-center gap-1.5 sm:text-sm text-xs`}
+                : 'bg-neutral-900 text-white'
+        } flex rounded-lg justify-center items-center gap-1.5`}
         key={`vault-liquidity-point-rank-${address}-${rank}`}
       >
-        <div className="w-16 flex justify-start items-center gap-2.5 font-semibold">
+        <div className="w-16 flex justify-start items-center gap-2.5 font-semibold sm:text-sm text-xs">
           {rank}
         </div>
-        <div className="flex w-full">
+        <div className="flex w-full sm:text-sm text-xs">
           <div className="flex flex-1 justify-start items-center gap-1">
             <span className="flex sm:hidden">{shortAddress(address, 2)}</span>
             <span className="hidden sm:flex">{shortAddress(address, 8)}</span>
