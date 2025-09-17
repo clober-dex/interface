@@ -11,6 +11,12 @@ export const giwaSepolia = defineChain({
       http: ['https://sepolia-rpc.giwa.io'],
     },
   },
+  blockExplorers: {
+    default: {
+      name: 'Giwa Sepolia explorer',
+      url: 'https://sepolia-explorer.giwa.io',
+    },
+  },
   contracts: {
     multicall3: {
       address: '0xcA11bde05977b3631167028862bE2a173976CA11',
