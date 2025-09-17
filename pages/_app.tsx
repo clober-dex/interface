@@ -130,8 +130,12 @@ const SidebarWrapper = ({ children }: React.PropsWithChildren) => {
   return <Sidebar router={router}>{children}</Sidebar>
 }
 
-function App({ Component, pageProps }: AppProps) {
+const FooterWrapper = () => {
   const { lastIndexedBlockNumber } = useTransactionContext()
+  return <BlockNumberWidget latestBlockNumber={lastIndexedBlockNumber} />
+}
+
+function App({ Component, pageProps }: AppProps) {
   const [open, setOpen] = useState(false)
   const [history, setHistory] = useState<string[]>([])
   const router = useRouter()
@@ -288,9 +292,7 @@ function App({ Component, pageProps }: AppProps) {
                     </TradeProvidersWrapper>
                   )}
 
-                  <BlockNumberWidget
-                    latestBlockNumber={lastIndexedBlockNumber}
-                  />
+                  <FooterWrapper />
                 </div>
               </CurrencyProvider>
             </TransactionProvider>
