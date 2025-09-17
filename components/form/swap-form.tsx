@@ -217,7 +217,7 @@ export const SwapForm = ({
         </div>
       </Toast>
 
-      <div className="flex flex-col gap-0 md:gap-2.5 self-stretch w-full rounded-2xl md:rounded-none bg-[#171b24] md:bg-transparent">
+      <div className="flex flex-col gap-0 md:gap-2.5 self-stretch w-full rounded-2xl md:rounded-none bg-[#17181e] md:bg-transparent">
         <div className="p-5 flex flex-col gap-4 self-stretch md:bg-[#16181d] md:rounded-2xl md:outline md:outline-1 md:outline-offset-[-1px] md:outline-[#272930]">
           <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-[13px] sm:text-sm font-semibold">
             <div className="flex flex-row gap-1 justify-start text-white text-[13px] font-semibold">

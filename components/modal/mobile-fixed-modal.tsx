@@ -43,7 +43,7 @@ export const MobileFixedModal = ({
           } w-full h-full fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm`}
           onClick={() => setShowMobileModal(false)}
         />
-        <div className="w-full h-full top-0 absolute bg-[#171b24] shadow rounded-tl-2xl rounded-tr-2xl border" />
+        <div className="w-full h-full top-0 absolute bg-[#17181e] shadow rounded-tl-2xl rounded-tr-2xl border" />
         <div
           className={`z-[10000] w-full flex flex-col ${
             showMobileModal ? '' : 'px-5 sm:px-5 pt-3'

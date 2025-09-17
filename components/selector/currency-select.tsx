@@ -179,7 +179,7 @@ const CurrencySelect = ({
             </span>
           </div>
         </div>
-        <div className="flex flex-col h-full overflow-y-auto custom-scrollbar bg-gray-[#171b24] rounded-b-xl sm:rounded-b-3xl">
+        <div className="flex flex-col h-full overflow-y-auto custom-scrollbar bg-gray-[#17181e] rounded-b-xl sm:rounded-b-3xl">
           {deduplicateCurrencies(
             customizedCurrencies
               ? [...currencies, ...customizedCurrencies]

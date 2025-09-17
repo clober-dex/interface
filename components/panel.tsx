@@ -39,7 +39,7 @@ const Panel = ({
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto max-w-md">
-                  <div className="flex h-full flex-col bg-[#171B24] shadow-xl">
+                  <div className="flex h-full flex-col bg-[#17181e] shadow-xl">
                     <div className="flex items-center px-4 h-12 justify-end pt-4">
                       <button
                         type="button"

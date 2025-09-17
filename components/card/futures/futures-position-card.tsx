@@ -36,7 +36,7 @@ export const FuturesPositionCard = ({
   }, [position.asset.currency.symbol])
 
   return (
-    <div className="flex w-full pb-4 flex-col items-center gap-3 shrink-0 bg-[#171b24] rounded-xl">
+    <div className="flex w-full pb-4 flex-col items-center gap-3 shrink-0 bg-[#17181e] rounded-xl">
       <div className="flex p-4 items-center self-stretch">
         <div className="flex items-center gap-3 flex-grow shrink-0 basis-0">
           <CurrencyIcon

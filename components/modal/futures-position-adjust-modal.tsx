@@ -46,7 +46,7 @@ export const FuturesPositionAdjustModal = ({
         {disableSlider ? 'Close Position' : 'Adjust Position'}
       </h1>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col bg-[#171b24]">
+        <div className="flex flex-col bg-[#17181e]">
           <div className="flex justify-between flex-col relative rounded-lg sm:py-10">
             <div className="sm:px-6 sm:mb-2 my-8 sm:my-0">
               <Slider

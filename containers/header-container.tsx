@@ -223,7 +223,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                       transition={{ duration: 0.25 }}
                       onMouseEnter={() => setHoveredTx(transaction.txHash)}
                       onMouseLeave={() => setHoveredTx(null)}
-                      className="relative flex flex-col w-full bg-[#171b24] px-4 pb-2.5 rounded-2xl border border-white border-opacity-10 hover:border-opacity-20 border-solid cursor-pointer transition-all duration-200"
+                      className="relative flex flex-col w-full bg-[#17181e] px-4 pb-2.5 rounded-2xl border border-white border-opacity-10 hover:border-opacity-20 border-solid cursor-pointer transition-all duration-200"
                     >
                       {hoveredTx === transaction.txHash && (
                         <button

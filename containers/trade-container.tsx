@@ -821,7 +821,7 @@ export const TradeContainer = () => {
                 )}
               </div>
 
-              <div className="flex mb-16 md:mb-0 max-h-[560px] md:hidden w-full justify-center md:rounded-2xl md:bg-[#171b24] md:p-5">
+              <div className="flex mb-16 md:mb-0 max-h-[560px] md:hidden w-full justify-center md:rounded-2xl md:bg-[#17181e] md:p-5">
                 <SwapForm {...swapFormProps} />
               </div>
             </div>

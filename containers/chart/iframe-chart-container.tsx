@@ -484,10 +484,10 @@ export const IframeChartContainer = ({
   return (
     <>
       {fullscreen && (
-        <div className="flex flex-col rounded-2xl bg-[#171b24] overflow-hidden min-h-[280px] w-full md:w-[480px] xl:w-[740px] xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930]" />
+        <div className="flex flex-col rounded-2xl bg-[#17181e] overflow-hidden min-h-[280px] w-full md:w-[480px] xl:w-[740px] xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930]" />
       )}
       <div
-        className={`xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930] flex flex-col bg-[#171b24] overflow-hidden ${
+        className={`xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930] flex flex-col bg-[#17181e] overflow-hidden ${
           fullscreen
             ? 'w-full fixed left-0 top-0 right-0 bottom-0 z-10'
             : 'rounded-2xl min-h-[280px] h-[481px] xl:h-full w-full md:w-[480px] xl:w-[740px] z-[0]'
