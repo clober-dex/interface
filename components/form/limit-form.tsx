@@ -297,7 +297,7 @@ export const LimitForm = ({
                         selectedMarket &&
                         inputCurrency &&
                         outputCurrency &&
-                        minimumDecimalPlaces &&
+                        minimumDecimalPlaces !== undefined &&
                         !new BigNumber(priceInput).isNaN()
                       ) {
                         if (new BigNumber(priceInput).gte(maximumPrice)) {
@@ -367,7 +367,7 @@ export const LimitForm = ({
                         selectedMarket &&
                         inputCurrency &&
                         outputCurrency &&
-                        minimumDecimalPlaces &&
+                        minimumDecimalPlaces !== undefined &&
                         !new BigNumber(priceInput).isNaN()
                       ) {
                         if (new BigNumber(priceInput).gte(maximumPrice)) {
