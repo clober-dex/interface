@@ -1,4 +1,3 @@
-import { monadTestnet } from 'viem/chains'
 import { connectorsForWallets } from '@rainbow-me/rainbowkit'
 import { getAddress, http, zeroAddress } from 'viem'
 import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
@@ -14,31 +13,31 @@ import { socialAccountWallet } from '../utils/web3auth'
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
 import { WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES } from './pool'
+import { giwaSepolia } from './giwa-sepolia'
 
 const CHAIN = {
-  ...monadTestnet,
-  icon: '/chain-logo-images/monad.png',
+  ...giwaSepolia,
+  icon: '/chain-logo-images/giwa-sepolia.jpg',
 }
 export const CHAIN_CONFIG: ChainConfig = {
   CHAIN,
   TITLE: 'Fully On-chain Order Book',
   DEX_NAME: 'Clober',
   COLOR: colors.blue,
-  URL: 'https://alpha.clober.io',
-  LANDING_PAGE_URL: 'https://clober.io',
+  URL: 'https://giwadex.io',
+  LANDING_PAGE_URL: 'https://giwadex.io',
   TWITTER_HANDLE: '@CloberDEX',
   GITHIB_URL: 'https://github.com/clober-dex/',
-  ASSETS_GITHUB_REPO: 'clober-dex/assets',
+  ASSETS_GITHUB_REPO: null,
   DISCORD_URL: 'https://discord.gg/clober-dex',
   DOCS_URL: 'https://docs.clober.io/',
-  HIDE_ORDERBOOK: true,
+  HIDE_ORDERBOOK: false,
   WEB3_AUTH_CLIENT_ID:
     'BH8RNo9NNVaFUjXjf0x96jiVLuYpFhTJkotoNF9sVLnVYu5kV4yADw4bjH7ngElE0EXG_eDD1YOa0yhu4YbEg6I',
   WALLET_CONNECT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',
   GOOGLE_ANALYTICS_TRACKING_ID: 'G-TE8CSB6JP2',
   IS_SWAP_DEFAULT: true,
-  RPC_URL:
-    'https://proud-tiniest-flower.monad-testnet.quiknode.pro/a4ebe00fca2e7bf01201f3b0f7fe2f0077c52a36',
+  RPC_URL: 'https://giwa-sepolia.nodit.io/M94yyNJXVqR2Y9d9ztC5y27EdPeDjikn',
   PYTH_HERMES_ENDPOINT: 'https://hermes-beta.pyth.network',
   ANALYTICS_VOLUME_BLACKLIST: [
     { timestamp: 1743638400, address: zeroAddress },
@@ -59,27 +58,13 @@ export const CHAIN_CONFIG: ChainConfig = {
       '0xfD845859628946B317A78A9250DA251114FbD846',
     ),
   },
-  BLACKLISTED_USERS: [
-    '0x5F79EE8f8fA862E98201120d83c4eC39D9468D49',
-    '0xCcd0964F534c4583C35e07E47AbE8984A6bB1534',
-  ],
-  ROUTER_MAP: {
-    ['0x1e538356D3Cfe7fA04696A92515adD4A895ECB65']: 'MadHouse',
-    ['0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701']: `W${monadTestnet.nativeCurrency.symbol.toUpperCase()}`,
-    ['0x6352a56caadC4F1E25CD6c75970Fa768A3304e64']: 'OpenOcean',
-    ['0x11133460F102c5dE431F7749c8Bc2b7c172568E1']: 'Monorail',
-    ['0x0f3Cfe8869d6fFdA410Ae6a7B78e7168780e22C3']: 'EisenFinance',
-    ['0x08feDaACe14EB141E51282441b05182519D853D1']: 'Clober',
-  },
+  BLACKLISTED_USERS: [],
+  ROUTER_MAP: {},
   EXTERNAL_SUBGRAPH_ENDPOINTS: {
-    FUTURES_MARKET:
-      'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/clober-futures-subgraph-monad-testnet/latest/gn',
-    TRADING_COMPETITION_SEASON1:
-      'https://subgraph.satsuma-prod.com/f6a8c4889b7b/clober/clober-futures-subgraph-monad-testnet/api',
-    TRADING_COMPETITION_SEASON2:
-      'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/clober-futures-subgraph-monad-testnet/latest/gn',
-    LIQUIDITY_VAULT_POINT:
-      'https://api.goldsky.com/api/public/project_clsljw95chutg01w45cio46j0/subgraphs/liquidity-vault-point-monad-testnet/latest/gn',
+    FUTURES_MARKET: 'https://',
+    TRADING_COMPETITION_SEASON1: 'https://',
+    TRADING_COMPETITION_SEASON2: 'https://',
+    LIQUIDITY_VAULT_POINT: 'https://',
   },
   WHITELISTED_POOL_KEYS: WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.map(
     ({ poolKey }) => poolKey,
@@ -87,16 +72,16 @@ export const CHAIN_CONFIG: ChainConfig = {
   REFERENCE_CURRENCY: getReferenceCurrency({ chainId: CHAIN.id }),
   DEFAULT_INPUT_CURRENCY: getNativeCurrency({ chainId: CHAIN.id }),
   DEFAULT_OUTPUT_CURRENCY: {
-    address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-    name: 'USD Coin',
-    symbol: 'USDC',
+    address: '0x5C91A02B8B5D10597fc6cA23faF56F9718D1feD0',
+    name: 'GiwaDex USD',
+    symbol: 'GUSD',
     decimals: 6,
     icon: '/asset-icon/USDC.webp',
   },
   DEFAULT_STABLE_COIN_CURRENCY: {
-    address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-    name: 'USD Coin',
-    symbol: 'USDC',
+    address: '0x5C91A02B8B5D10597fc6cA23faF56F9718D1feD0',
+    name: 'GiwaDex USD',
+    symbol: 'GUSD',
     decimals: 6,
     icon: '/asset-icon/USDC.webp',
   },
