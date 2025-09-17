@@ -198,7 +198,7 @@ export const LimitContractProvider = ({
               roundingDownMakeAsk: true,
               roundingDownTakenBid: false,
               roundingUpTakenAsk: false,
-              postOnly: true,
+              // postOnly: true,
             },
           }
           const { transaction, result } = await limitOrder(args)
