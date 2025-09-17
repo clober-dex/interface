@@ -7,6 +7,7 @@ import { createConfig, injected } from 'wagmi'
 import {
   coinbaseWallet,
   walletConnectWallet,
+  bitgetWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 
 import { socialAccountWallet } from '../utils/web3auth'
@@ -128,7 +129,12 @@ export const getClientConfig = () => {
         [
           {
             groupName: 'Recommended',
-            wallets: [socialAccountWallet, coinbaseWallet, walletConnectWallet],
+            wallets: [
+              socialAccountWallet,
+              bitgetWallet,
+              coinbaseWallet,
+              walletConnectWallet,
+            ],
           },
         ],
         {
