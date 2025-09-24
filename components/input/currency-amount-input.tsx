@@ -45,8 +45,8 @@ const CurrencyAmountInput = ({
   }, [availableAmount, currency?.decimals, onValueChange])
 
   return (
-    <div className="text-nowrap h-[77px] sm:h-[92px] w-full group hover:ring-1 hover:ring-gray-700 flex flex-row bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] gap-2.5 pl-4 pr-3 py-3 sm:pl-4 sm:pr-5 sm:py-4">
-      <div className="flex flex-col justify-center items-start gap-1.5 w-full">
+    <div className="text-nowrap h-[77px] sm:h-[92px] w-full group hover:ring-1 hover:ring-gray-700 flex flex-col bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] gap-2 pl-4 pr-3 py-3 sm:pl-4 sm:pr-5 sm:py-4">
+      <div className="flex flex-row justify-start items-start gap-1.5 w-full">
         {onCurrencyClick ? (
           currency ? (
             <button
@@ -96,6 +96,16 @@ const CurrencyAmountInput = ({
           <></>
         )}
 
+        <NumberInput
+          className="text-xl w-full sm:text-[28px] font-medium bg-transparent placeholder-gray-500 text-white outline-none text-right"
+          value={value}
+          onValueChange={onValueChange}
+          placeholder="0.0000"
+          {...props}
+        />
+      </div>
+
+      <div className="flex flex-row items-center gap-2.5 w-full">
         <div className="h-full flex items-center">
           {!props.disabled && currency ? (
             <div className="flex items-center text-xs sm:text-sm gap-1 sm:gap-2">
@@ -116,17 +126,8 @@ const CurrencyAmountInput = ({
             <></>
           )}
         </div>
-      </div>
 
-      <div className="flex flex-col items-end gap-2 w-full">
-        <NumberInput
-          className="text-xl w-full sm:text-[28px] font-medium bg-transparent placeholder-gray-500 text-white outline-none text-right"
-          value={value}
-          onValueChange={onValueChange}
-          placeholder="0.0000"
-          {...props}
-        />
-        <div className="text-right text-gray-400 text-[13px] font-medium">
+        <div className="flex w-full justify-end text-gray-400 text-[13px] font-medium">
           {price ? (
             <div className="flex flex-row gap-0.5 sm:gap-1">
               ~{formatDollarValue(parseUnits(value, decimals), decimals, price)}
