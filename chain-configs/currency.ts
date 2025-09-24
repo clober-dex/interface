@@ -18,10 +18,17 @@ export const WHITELISTED_CURRENCIES: Currency[] = [
     icon: '/asset-icon/weth.jpg',
   },
   {
-    address: '0x5C91A02B8B5D10597fc6cA23faF56F9718D1feD0',
+    address: '0x0Cd2C356be90864F4a5e0551E79dd039b246FaCA',
     name: 'GiwaDex USD',
-    symbol: 'GUSD',
+    symbol: 'USDG',
     decimals: 6,
-    icon: '/asset-icon/USDC.webp',
+    icon: '/asset-icon/USD.svg',
+  },
+  {
+    address: '0xD031A3C56eD35EFE5F7e5269B088F8C3a2c9d463',
+    name: 'GiwaDex KRW',
+    symbol: 'KRWG',
+    decimals: 6,
+    icon: '/asset-icon/KRW.svg',
   },
 ]
