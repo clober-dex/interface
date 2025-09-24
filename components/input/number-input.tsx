@@ -4,7 +4,7 @@ const NumberInput = ({
   value,
   onValueChange,
   supportNegative = false,
-  maxLength = 15,
+  maxLength = 10,
   ...props
 }: {
   value: string
