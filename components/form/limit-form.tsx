@@ -224,7 +224,10 @@ export const LimitForm = ({
       <div className="flex flex-col gap-4 self-stretch w-full px-5">
         <div className="flex items-start gap-4 self-stretch">
           <div className="flex flex-row gap-1 text-[#8d94a1] text-[13px] font-medium h-full justify-start">
-            Pay {inputCurrency?.symbol} at rate
+            <span className={`${isBid ? 'text-green-400' : 'text-red-400'}`}>
+              {isBid ? 'Buy' : 'Sell'}
+            </span>{' '}
+            {isBid ? outputCurrency?.symbol : inputCurrency?.symbol} at rate
             {onChainPrice > 0 && priceDeviationPercent >= 10000 ? (
               <div className="text-green-400 text-[13px] font-medium">
                 (&gt;10000%)
