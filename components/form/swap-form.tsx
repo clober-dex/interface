@@ -386,7 +386,11 @@ export const SwapForm = ({
                       <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
                     ) : (
                       <div className="text-[13px] sm:text-sm text-white flex flex-row gap-1 items-center">
-                        {formatSignificantString(Number(minimumReceivedAmount))}{' '}
+                        {formatWithCommas(
+                          formatSignificantString(
+                            Number(minimumReceivedAmount),
+                          ),
+                        )}{' '}
                         {quoteCurrency?.symbol ?? ''}
                       </div>
                     )}
