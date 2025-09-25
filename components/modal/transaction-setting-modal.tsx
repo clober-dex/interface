@@ -143,7 +143,7 @@ export const TransactionSettingModal = ({
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row w-full gap-3">
+        <div className="flex flex-col w-full gap-3">
           <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-medium text-nowrap">
             Gas Price (Gwei)
             <div className="flex mr-auto mt-[5.3px]">
@@ -164,7 +164,7 @@ export const TransactionSettingModal = ({
           </div>
           <div className="w-full flex ml-auto">
             <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
-              <div className="sm:mt-4 h-12 bg-gray-600 text-white rounded-[22px] py-0.5 w-full flex flex-row relative text-xs">
+              <div className="h-full bg-gray-600 text-white rounded-[22px] py-0.5 w-full flex flex-row relative text-xs">
                 <button
                   disabled={Number(gasPriceMultiplier) === NORMAL_MULTIPLIER}
                   onClick={() => {
