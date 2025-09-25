@@ -1,6 +1,10 @@
 import { connectorsForWallets } from '@rainbow-me/rainbowkit'
-import { getAddress, http, zeroAddress } from 'viem'
-import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
+import { http, zeroAddress } from 'viem'
+import {
+  getContractAddresses,
+  getNativeCurrency,
+  getReferenceCurrency,
+} from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
 import { createConfig, injected } from 'wagmi'
 import {
@@ -39,24 +43,15 @@ export const CHAIN_CONFIG: ChainConfig = {
   IS_SWAP_DEFAULT: true,
   RPC_URL: 'https://giwa-sepolia.nodit.io/M94yyNJXVqR2Y9d9ztC5y27EdPeDjikn',
   PYTH_HERMES_ENDPOINT: 'https://hermes-beta.pyth.network',
-  ANALYTICS_VOLUME_BLACKLIST: [
-    { timestamp: 1743638400, address: zeroAddress },
-    {
-      timestamp: 1743638400,
-      address: getAddress('0xb2f82D0f38dc453D596Ad40A37799446Cc89274A'),
-    },
-  ],
+  ANALYTICS_VOLUME_BLACKLIST: [],
   MAX_SWAP_FEE: 0.1,
   SWAP_FEE_PERCENT: 30,
   EXTERNAL_CONTRACT_ADDRESSES: {
-    FuturesMarket: getAddress('0x56b88CFe40d592Ec4d4234043e039d7CA807f110'),
-    PythOracle: getAddress('0xad2B52D2af1a9bD5c561894Cdd84f7505e1CD0B5'),
-    TradingCompetitionRegistration: getAddress(
-      '0xfE5771C5b651dfa9f8db95140efcC75d59CE0c88',
-    ),
-    AggregatorRouterGateway: getAddress(
-      '0xfD845859628946B317A78A9250DA251114FbD846',
-    ),
+    FuturesMarket: zeroAddress,
+    PythOracle: zeroAddress,
+    TradingCompetitionRegistration: zeroAddress,
+    AggregatorRouterGateway: getContractAddresses({ chainId: CHAIN.id })!
+      .Controller,
   },
   BLACKLISTED_USERS: [],
   ROUTER_MAP: {},

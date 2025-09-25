@@ -4,6 +4,14 @@ export const WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES: {
   poolKey: `0x${string}`
   wrappedLpCurrency?: Currency
 }[] = [
+  {
+    poolKey:
+      '0xbefcb6199263bb8ee90ba07f950dca90f0fc343d09ea4835b2b86fc8d7ba0dbb',
+  }, // ETH-USDG
+  {
+    poolKey:
+      '0xe04b236bd04757be3f1f96a9ce8d13e2f1e71a58ec7efd4d825b4f135e5df037',
+  }, // USDG-KRWG
   // {
   //   poolKey:
   //     '0xad46920833ad7a1ba8e74cc241faf9ae4fd3dc4616ad9648b13160f8453e444f',
