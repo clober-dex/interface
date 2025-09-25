@@ -6,6 +6,7 @@ import { TriangleDownSvg } from '../svg/triangle-down-svg'
 import { formatDollarValue, formatUnits } from '../../utils/bigint'
 import { Chain } from '../../model/chain'
 import { LpCurrencyIcon } from '../icon/lp-currency-icon'
+import { formatWithCommas } from '../../utils/bignumber'
 
 import NumberInput from './number-input'
 
@@ -113,7 +114,9 @@ const LpCurrencyAmountInput = ({
                 Available:
               </div>
               <div className="text-white text-[13px] font-medium">
-                {formatUnits(availableAmount, decimals, price)}
+                {formatWithCommas(
+                  formatUnits(availableAmount, decimals, price),
+                )}
               </div>
               <button
                 className="px-1.5 py-[1px] bg-[#367fff]/25 rounded-xl inline-flex justify-center items-center text-center text-[#86c0ff] text-[11px] font-medium"

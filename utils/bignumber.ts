@@ -143,15 +143,27 @@ export const formatPreciseAmountString = (
  *          If the number has decimals, they are preserved.
  */
 export const formatWithCommas = (number: BigNumber.Value): string => {
-  const parts = number.toString().split('.')
-  const integer = parts[0]
-  const decimal = parts[1]
-  const formattedInteger =
-    (integer.startsWith('-') ? '-' : '') +
-    integer.replace('-', '').replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  return decimal ? `${formattedInteger}.${decimal}` : formattedInteger
-}
+  if (number === null || number === undefined) {
+    return ''
+  }
 
+  const str = number.toString()
+
+  if (str.endsWith('.')) {
+    const int = str.slice(0, -1)
+    const formattedInt = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return `${formattedInt}.`
+  }
+
+  const [int, dec] = str.split('.')
+  const negative = int.startsWith('-')
+  const digits = negative ? int.slice(1) : int
+
+  const formattedInt = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  const withSign = negative ? `-${formattedInt}` : formattedInt
+
+  return dec !== undefined ? `${withSign}.${dec}` : withSign
+}
 /**
  * Formats a number into a compact string using K/M/B/T suffixes for thousands/millions/etc.
  *
