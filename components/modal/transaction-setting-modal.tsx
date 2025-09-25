@@ -162,7 +162,7 @@ export const TransactionSettingModal = ({
               />
             </div>
           </div>
-          <div className="w-full sm:w-fit flex ml-auto">
+          <div className="w-full flex ml-auto">
             <div className="flex h-full w-full flex-col gap-2 text-xs sm:text-sm text-white">
               <div className="sm:mt-4 h-12 bg-gray-600 text-white rounded-[22px] py-0.5 w-full flex flex-row relative text-xs">
                 <button
@@ -175,9 +175,11 @@ export const TransactionSettingModal = ({
                 >
                   Normal
                   <span className="text-nowrap font-semibold">
-                    {new BigNumber(
-                      formatTinyNumber(calculateGasPrice(NORMAL_MULTIPLIER)),
-                    ).toFixed(1)}
+                    {formatTinyNumber(
+                      new BigNumber(
+                        formatTinyNumber(calculateGasPrice(NORMAL_MULTIPLIER)),
+                      ),
+                    )}
                   </span>
                 </button>
 
@@ -191,9 +193,11 @@ export const TransactionSettingModal = ({
                 >
                   Fast
                   <span className="text-nowrap font-semibold">
-                    {new BigNumber(
-                      formatTinyNumber(calculateGasPrice(FAST_MULTIPLIER)),
-                    ).toFixed(1)}
+                    {formatTinyNumber(
+                      new BigNumber(
+                        formatTinyNumber(calculateGasPrice(FAST_MULTIPLIER)),
+                      ),
+                    )}
                   </span>
                 </button>
 
@@ -207,9 +211,11 @@ export const TransactionSettingModal = ({
                 >
                   Instant
                   <span className="text-nowrap font-semibold">
-                    {new BigNumber(
-                      formatTinyNumber(calculateGasPrice(INSTANT_MULTIPLIER)),
-                    ).toFixed(1)}
+                    {formatTinyNumber(
+                      new BigNumber(
+                        formatTinyNumber(calculateGasPrice(INSTANT_MULTIPLIER)),
+                      ),
+                    )}
                   </span>
                 </button>
 
