@@ -8,6 +8,7 @@ import { Currency, LpCurrency } from '../model/currency'
 import { Chain } from '../model/chain'
 import { TransactionType } from '../model/transaction-type'
 import { applyPercent } from '../utils/bigint'
+import { CHAIN_CONFIG } from '../chain-configs'
 
 import { useChainContext } from './chain-context'
 
@@ -99,11 +100,13 @@ export const TransactionProvider = ({
   >(null)
   const setSelectedExecutorName = useCallback(
     (executor: string | null) => {
-      _setSelectedExecutorName(executor)
-      localStorage.setItem(
-        LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain.id),
-        executor ?? '',
-      )
+      if (CHAIN_CONFIG.USE_MEV_PROTECTION) {
+        _setSelectedExecutorName(executor)
+        localStorage.setItem(
+          LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain.id),
+          executor ?? '',
+        )
+      }
     },
     [selectedChain.id],
   )
@@ -115,15 +118,16 @@ export const TransactionProvider = ({
     if (multiplier) {
       _setGasPriceMultiplier(multiplier)
     }
-
-    const storedExecutorName = localStorage.getItem(
-      LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain.id),
-    )
-    _setSelectedExecutorName(
-      storedExecutorName && storedExecutorName.length > 0
-        ? storedExecutorName
-        : null,
-    )
+    if (CHAIN_CONFIG.USE_MEV_PROTECTION) {
+      const storedExecutorName = localStorage.getItem(
+        LOCAL_STORAGE_SELECTED_EXECUTOR_KEY(selectedChain.id),
+      )
+      _setSelectedExecutorName(
+        storedExecutorName && storedExecutorName.length > 0
+          ? storedExecutorName
+          : null,
+      )
+    }
   }, [selectedChain.id])
 
   useEffect(() => {

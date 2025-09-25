@@ -48,4 +48,5 @@ export type ChainConfig = {
   DEFAULT_STABLE_COIN_CURRENCY: Currency
   WHITELISTED_CURRENCIES: Currency[]
   HIDE_ORDERBOOK: boolean
+  USE_MEV_PROTECTION: boolean
 }
