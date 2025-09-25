@@ -10,6 +10,7 @@ import { QuestionMarkSvg } from '../svg/question-mark-svg'
 import useDropdown from '../../hooks/useDropdown'
 import { executors } from '../../chain-configs/executors'
 import { DownBracketAngleSvg } from '../svg/down-bracket-angle-svg'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 const NORMAL_MULTIPLIER = 1.05
 const FAST_MULTIPLIER = 1.3
@@ -56,38 +57,40 @@ export const TransactionSettingModal = ({
         Settings
       </h1>
       <div className="flex flex-col gap-4 sm:gap-7 mt-4">
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-medium">
-            MEV Protection
-          </div>
+        {CHAIN_CONFIG.USE_MEV_PROTECTION && (
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-row gap-1 self-stretch justify-start text-[#7b8394] text-sm font-medium">
+              MEV Protection
+            </div>
 
-          <div className="h-9 sm:h-10 w-full items-center justify-center flex bg-gray-700 rounded-[22px] flex-row relative text-gray-400 text-base font-semibold">
-            <button
-              disabled={!useMevProtection}
-              onClick={() => {
-                setUseMevProtection(false)
-                setSelectedExecutorName(null)
-              }}
-              className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
-            >
-              Disable
-            </button>
-            <button
-              disabled={useMevProtection}
-              onClick={() => {
-                setUseMevProtection(true)
-                if (selectedExecutorName === null) {
-                  setSelectedExecutorName(
-                    executors[0].name, // Default to the first executor
-                  )
-                }
-              }}
-              className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
-            >
-              Enable
-            </button>
+            <div className="h-9 sm:h-10 w-full items-center justify-center flex bg-gray-700 rounded-[22px] flex-row relative text-gray-400 text-base font-semibold">
+              <button
+                disabled={!useMevProtection}
+                onClick={() => {
+                  setUseMevProtection(false)
+                  setSelectedExecutorName(null)
+                }}
+                className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
+              >
+                Disable
+              </button>
+              <button
+                disabled={useMevProtection}
+                onClick={() => {
+                  setUseMevProtection(true)
+                  if (selectedExecutorName === null) {
+                    setSelectedExecutorName(
+                      executors[0].name, // Default to the first executor
+                    )
+                  }
+                }}
+                className="text-xs sm:text-sm flex flex-1 px-6 py-2 rounded-[18px] text-gray-400 disabled:text-white disabled:bg-blue-500 justify-center items-center gap-1"
+              >
+                Enable
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {useMevProtection && (
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-3">
