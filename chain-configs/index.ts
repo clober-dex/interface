@@ -27,7 +27,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   CHAIN,
   TITLE: 'Fully On-chain Order Book',
   DEX_NAME: 'GiwaDex',
-  COLOR: colors.blue,
+  COLOR: colors.rose,
   URL: 'https://giwadex.io',
   LANDING_PAGE_URL: 'https://giwadex.io',
   TWITTER_HANDLE: '@',
