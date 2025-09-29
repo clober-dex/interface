@@ -283,7 +283,7 @@ export const LimitForm = ({
                           setDebouncedPriceInput('')
                           await setMarketRateAction.action()
                         }}
-                        className="px-2 py-1 bg-[#367fff]/25 rounded-xl inline-flex justify-center items-center gap-2.5 text-center text-[#86c0ff] text-[11px] sm:text-xs font-medium"
+                        className="px-2 py-1 bg-blue-400/25 rounded-xl inline-flex justify-center items-center gap-2.5 text-center text-[#86c0ff] text-[11px] sm:text-xs font-medium"
                       >
                         Set to market rate
                       </button>
