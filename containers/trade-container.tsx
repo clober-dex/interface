@@ -59,7 +59,7 @@ const MetaAggregatorInfo = ({
       <div className="absolute flex justify-center w-full top-[60px] z-[2]">
         <Image
           className="rounded-xl"
-          src="/chain-configs/meta-aggregator-logo.svg"
+          src="/chain-configs/meta-aggregator-logo.png"
           alt="Meta Aggregator"
           width={94}
           height={94}
