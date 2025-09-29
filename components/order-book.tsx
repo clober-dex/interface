@@ -1,6 +1,7 @@
 import React from 'react'
 import BigNumber from 'bignumber.js'
 import { Market } from '@clober/v2-sdk'
+import { motion } from 'framer-motion'
 
 import { formatSignificantString, formatWithCommas } from '../utils/bignumber'
 
@@ -112,14 +113,19 @@ export default function OrderBook({
                       <div className="text-green-500">
                         {formatWithCommas(price)}
                       </div>
-                      <div
+                      <motion.div
+                        key={`bid-bar-${price}-${size}`}
                         className="absolute h-full right-0 bg-[#39e79f]/10"
-                        style={{
+                        initial={{ backgroundColor: '#39e79f40', scaleY: 1 }}
+                        animate={{
                           width: `${new BigNumber(size)
                             .div(biggestDepth)
                             .multipliedBy(100)
                             .toNumber()}%`,
+                          backgroundColor: ['#39e79f80', '#39e79f20'],
+                          scaleY: [1, 1.05, 1],
                         }}
+                        transition={{ duration: 0.6, ease: 'easeInOut' }}
                       />
                     </button>
                   )
@@ -152,14 +158,19 @@ export default function OrderBook({
                       <div className="text-gray-200">
                         {formatWithCommas(formatSignificantString(size))}
                       </div>
-                      <div
+                      <motion.div
+                        key={`ask-bar-${price}-${size}`}
                         className="absolute h-full left-0 bg-red-500/10"
-                        style={{
+                        initial={{ backgroundColor: '#ff000040', scaleY: 1 }}
+                        animate={{
                           width: `${new BigNumber(size)
                             .div(biggestDepth)
                             .multipliedBy(100)
                             .toNumber()}%`,
+                          backgroundColor: ['#ff000080', '#ff000020'],
+                          scaleY: [1, 1.05, 1],
                         }}
+                        transition={{ duration: 0.6, ease: 'easeInOut' }}
                       />
                     </button>
                   )
@@ -217,14 +228,19 @@ export default function OrderBook({
                         <div className="text-right text-green-500">
                           {formatWithCommas(price)}
                         </div>
-                        <div
+                        <motion.div
+                          key={`bid-bar-${price}-${size}`}
                           className="absolute h-full right-0 bg-[#39e79f]/10"
-                          style={{
+                          initial={{ backgroundColor: '#39e79f40', scaleY: 1 }}
+                          animate={{
                             width: `${new BigNumber(size)
                               .div(biggestDepth)
                               .multipliedBy(100)
                               .toNumber()}%`,
+                            backgroundColor: ['#39e79f80', '#39e79f20'],
+                            scaleY: [1, 1.05, 1],
                           }}
+                          transition={{ duration: 0.6, ease: 'easeInOut' }}
                         />
                       </button>
                     )
@@ -252,14 +268,19 @@ export default function OrderBook({
                         <div className="flex-1 text-right text-gray-200">
                           {formatWithCommas(formatSignificantString(size))}
                         </div>
-                        <div
+                        <motion.div
+                          key={`ask-bar-${price}-${size}`}
                           className="absolute h-full left-0 bg-red-500/10"
-                          style={{
+                          initial={{ backgroundColor: '#ff000040', scaleY: 1 }}
+                          animate={{
                             width: `${new BigNumber(size)
                               .div(biggestDepth)
                               .multipliedBy(100)
                               .toNumber()}%`,
+                            backgroundColor: ['#ff000080', '#ff000020'],
+                            scaleY: [1, 1.05, 1],
                           }}
+                          transition={{ duration: 0.6, ease: 'easeInOut' }}
                         />
                       </button>
                     )
