@@ -11,7 +11,7 @@ export const ArrowRightSvg = (props: SVGProps<SVGSVGElement>) => (
   >
     <path
       d="M15 5L1 5M15 5L11 1M15 5L11 9"
-      stroke="#3B82F6"
+      className="stroke-blue-400"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

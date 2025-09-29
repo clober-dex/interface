@@ -18,7 +18,7 @@ export const CheckSelectedSvg = (props: SVGProps<SVGSVGElement>) => (
       height="16"
       rx="1"
       fill="#3B82F6"
-      stroke="#3B82F6"
+      className="stroke-blue-400"
       strokeWidth="3"
       mask="url(#path-1-inside-1_182_716)"
     />

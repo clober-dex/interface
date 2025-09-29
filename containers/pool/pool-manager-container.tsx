@@ -388,7 +388,7 @@ export const PoolManagerContainer = ({
                       <g clipPath="url(#clip0_164_5640)">
                         <path
                           d="M10.6304 8.5H1.63037M10.6304 8.5L9.13037 10M10.6304 8.5L9.13037 7M3.13037 5L1.63037 3.5M1.63037 3.5L3.13037 2M1.63037 3.5H10.6304"
-                          stroke="#3B82F6"
+                          className="stroke-blue-400"
                           strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
