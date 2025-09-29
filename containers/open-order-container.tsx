@@ -93,7 +93,7 @@ export const OpenOrderContainer = ({
         <div className="flex flex-row w-full h-[58px]">
           <div className="w-[180px] h-full relative">
             <div className="flex flex-row gap-1.5 absolute left-[27px] top-[18px] justify-center items-center">
-              <div className="text-[#65a7ff] text-base font-medium">
+              <div className="text-blue-400 text-base font-medium">
                 Open Orders
               </div>
               <div className="px-2 py-[3px] bg-blue-500/25 rounded-[17.02px] flex flex-col text-blue-400 text-sm font-semibold">
@@ -101,7 +101,7 @@ export const OpenOrderContainer = ({
               </div>
             </div>
 
-            <div className="absolute bottom-0 w-[180px] h-0.5 bg-[#65a7ff]" />
+            <div className="absolute bottom-0 w-[180px] h-0.5 bg-blue-400" />
           </div>
 
           <div className="flex flex-row gap-4 items-center w-auto ml-auto">
@@ -188,20 +188,20 @@ export const OpenOrderContainer = ({
       <div className="flex flex-col gap-4 xl:hidden w-full justify-center mb-28 md:mb-0 bg-[#17181e] rounded-2xl">
         <div className="flex flex-col gap-3">
           <div className="flex w-full h-[37px] relative mt-[5px]">
-            <div className="relative flex-1 px-6 pt-1.5 pb-2.5 border-b-2 border-[#65a7ff] inline-flex justify-center items-center gap-2">
-              <div className="justify-start text-[#65a7ff] text-[13px] font-semibold leading-tight">
+            <div className="relative flex-1 px-6 pt-1.5 pb-2.5 border-b-2 border-blue-400 inline-flex justify-center items-center gap-2">
+              <div className="justify-start text-blue-400 text-[13px] font-semibold leading-tight">
                 Open Order
               </div>
               <div className="px-2 py-0.5 bg-blue-500/25 rounded-[17.02px] inline-flex flex-col justify-center items-center">
-                <div className="flex text-[#65a7ff] text-[13px] font-medium">
+                <div className="flex text-blue-400 text-[13px] font-medium">
                   {filteredOpenOrders.length}
                 </div>
               </div>
 
-              <div className="absolute w-full left-0 -bottom-0.5 h-0.5 bg-[#65a7ff]" />
+              <div className="absolute w-full left-0 -bottom-0.5 h-0.5 bg-blue-400" />
             </div>
 
-            <div className="relative flex-1 px-6 pt-1.5 pb-2.5 border-b-2 border-[#65a7ff] inline-flex justify-center items-center gap-2" />
+            <div className="relative flex-1 px-6 pt-1.5 pb-2.5 border-b-2 border-blue-400 inline-flex justify-center items-center gap-2" />
           </div>
 
           <div className="flex px-3 items-center justify-end gap-2 w-full">

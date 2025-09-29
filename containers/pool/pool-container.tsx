@@ -170,7 +170,7 @@ export const PoolContainer = () => {
               <button
                 onClick={() => setTab('pool')}
                 disabled={tab === 'pool'}
-                className="w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-[#65a7ff] disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-[#65a7ff]"
+                className="w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-blue-400 disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-blue-400"
               >
                 {CHAIN_CONFIG.DEX_NAME.slice(0, 1)}LV
               </button>
@@ -179,7 +179,7 @@ export const PoolContainer = () => {
                   userAddress && hasLpBalance && setTab('my-liquidity')
                 }
                 disabled={tab === 'my-liquidity'}
-                className={`w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-[#65a7ff] disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-[#65a7ff] ${hasLpBalance ? '' : 'cursor-not-allowed'}`}
+                className={`w-40 justify-start text-[#8d94a1] text-base font-semibold leading-tight relative disabled:text-blue-400 disabled:after:absolute disabled:after:-bottom-4 disabled:after:left-0 disabled:after:w-full disabled:after:h-0.5 disabled:after:bg-blue-400 ${hasLpBalance ? '' : 'cursor-not-allowed'}`}
               >
                 My Vaults
               </button>
