@@ -201,13 +201,13 @@ export const OpenOrderCard = ({
           <div className="h-full ml-auto justify-center items-center gap-3 flex">
             <ActionButton
               {...claimActionButtonProps}
-              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-semibold leading-tight"
+              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-blue-400/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-blue-300 text-sm font-semibold leading-tight"
             >
               Claim
             </ActionButton>
             <ActionButton
               {...cancelActionButtonProps}
-              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-[#367fff]/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-semibold leading-tight"
+              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-blue-400/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-blue-300 text-sm font-semibold leading-tight"
             >
               Cancel
             </ActionButton>

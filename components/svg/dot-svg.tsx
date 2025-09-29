@@ -14,7 +14,7 @@ export const DotSvg = (props: React.SVGProps<SVGSVGElement>) => (
       cy="12"
       r="11"
       fill="#3b82f6"
-      stroke="#3b82f6"
+      className="stroke-blue-400"
       strokeWidth="2"
     />
   </svg>

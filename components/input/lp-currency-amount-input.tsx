@@ -119,7 +119,7 @@ const LpCurrencyAmountInput = ({
                 )}
               </div>
               <button
-                className="px-1.5 py-[1px] bg-[#367fff]/25 rounded-xl inline-flex justify-center items-center text-center text-[#86c0ff] text-[11px] font-medium"
+                className="px-1.5 py-[1px] bg-blue-400/25 rounded-xl inline-flex justify-center items-center text-center text-blue-300 text-[11px] font-medium"
                 onClick={onMaxClick}
               >
                 MAX

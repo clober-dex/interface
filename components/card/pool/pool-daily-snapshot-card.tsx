@@ -94,13 +94,13 @@ export const PoolDailySnapshotCard = ({
                   `/trade?inputCurrency=${currencyA.address}&outputCurrency=${currencyB.address}`,
                 )
               }
-              className="w-[180px] h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-semibold leading-tight"
+              className="w-[180px] h-8 px-3 py-2 bg-blue-500/20 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-blue-300 text-sm font-semibold leading-tight"
             >
               Trade
             </button>
             <button
               onClick={() => router.push(`/earn/${poolKey}`)}
-              className="w-[180px] h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-semibold leading-tight"
+              className="w-[180px] h-8 px-3 py-2 bg-blue-500/20 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-blue-300 text-sm font-semibold leading-tight"
             >
               Add Liquidity
             </button>
@@ -238,13 +238,13 @@ export const PoolDailySnapshotCard = ({
                 `/trade?inputCurrency=${currencyA.address}&outputCurrency=${currencyB.address}`,
               )
             }
-            className="flex-1 h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-[#86c0ff] text-[13px] font-semibold leading-tight"
+            className="flex-1 h-8 px-3 py-2 bg-blue-500/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-blue-300 text-[13px] font-semibold leading-tight"
           >
             Trade
           </button>
           <button
             onClick={() => router.push(`/earn/${poolKey}`)}
-            className="flex-1 h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-[#86c0ff] text-[13px] font-semibold leading-tight"
+            className="flex-1 h-8 px-3 py-2 bg-blue-500/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-blue-300 text-[13px] font-semibold leading-tight"
           >
             Add Liquidity
           </button>

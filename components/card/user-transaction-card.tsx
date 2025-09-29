@@ -44,12 +44,12 @@ const UserTransactionCard = ({
                   width="14.5"
                   height="14.5"
                   rx="7.25"
-                  stroke="#3B82F6"
+                  className="stroke-blue-400"
                   strokeWidth="1.5"
                 />
                 <path
                   d="M4 7.76923L7.2 11L12 5"
-                  stroke="#3B82F6"
+                  className="stroke-blue-400"
                   strokeWidth="1.5"
                 />
               </svg>
