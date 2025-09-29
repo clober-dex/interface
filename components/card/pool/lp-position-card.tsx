@@ -134,13 +134,13 @@ export const LpPositionCard = ({
             <div className="flex gap-4 ml-auto">
               <button
                 onClick={() => setShowWrapOrUnwrapModal(true)}
-                className="w-[180px] h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-semibold leading-tight"
+                className="w-[180px] h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-blue-300 text-sm font-semibold leading-tight"
               >
                 {isERC20 ? 'Unwrap' : 'Wrap'}
               </button>
               <button
                 onClick={() => router.push(`/earn/${poolSnapshot.key}`)}
-                className="w-[180px] h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-semibold leading-tight"
+                className="w-[180px] h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-blue-300 text-sm font-semibold leading-tight"
               >
                 Manage Position
               </button>
@@ -275,13 +275,13 @@ export const LpPositionCard = ({
           <div className="self-stretch inline-flex justify-start items-center gap-2">
             <button
               onClick={() => setShowWrapOrUnwrapModal(true)}
-              className="flex-1 h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-[#86c0ff] text-[13px] font-semibold leading-tight"
+              className="flex-1 h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-blue-300 text-[13px] font-semibold leading-tight"
             >
               {isERC20 ? 'Unwrap' : 'Wrap'}
             </button>
             <button
               onClick={() => router.push(`/earn/${poolSnapshot.key}`)}
-              className="flex-1 h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-[#86c0ff] text-[13px] font-semibold leading-tight"
+              className="flex-1 h-8 px-3 py-2 bg-[#367fff]/20 rounded-[10px] flex justify-center items-center gap-1 opacity-90 text-center text-blue-300 text-[13px] font-semibold leading-tight"
             >
               Manage Position
             </button>

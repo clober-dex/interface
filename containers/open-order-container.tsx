@@ -159,7 +159,7 @@ export const OpenOrderContainer = ({
                 await claims(claimableOpenOrders)
               }}
               text="Claim all"
-              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-blue-400/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
+              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-blue-400/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-blue-300 text-sm font-medium leading-tight"
             />
             <ActionButton
               disabled={cancellableOpenOrders.length === 0}
@@ -167,7 +167,7 @@ export const OpenOrderContainer = ({
                 await cancels(cancellableOpenOrders)
               }}
               text="Cancel all"
-              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-blue-400/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-[#86c0ff] text-sm font-medium leading-tight"
+              className="disabled:text-gray-400 disabled:bg-[#2b3544] w-[99px] h-8 px-3 py-2 bg-blue-400/25 rounded-[10px] inline-flex justify-center items-center gap-1 flex-1 opacity-90 text-center text-blue-300 text-sm font-medium leading-tight"
             />
           </div>
         </div>
