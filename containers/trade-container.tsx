@@ -780,8 +780,23 @@ export const TradeContainer = () => {
                         <MarketSelect
                           chain={selectedChain}
                           onMarketSelect={(market) => {
-                            setInputCurrency(market.quote)
-                            setOutputCurrency(market.base)
+                            if (
+                              !(
+                                inputCurrency?.address &&
+                                isAddressEqual(
+                                  market.quote.address,
+                                  inputCurrency?.address,
+                                ) &&
+                                outputCurrency?.address &&
+                                isAddressEqual(
+                                  market.base.address,
+                                  outputCurrency?.address,
+                                )
+                              )
+                            ) {
+                              setInputCurrency(market.quote)
+                              setOutputCurrency(market.base)
+                            }
                             setShowMarketSelect(false)
                           }}
                           markets={marketSnapshots}
