@@ -1,25 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import React, { useCallback, useMemo, useState } from 'react'
 import { FixedSizeGrid as Grid, FixedSizeList as List } from 'react-window'
-import {
-  getMarketSnapshots,
-  MarketSnapshot as SdkMarketSnapshot,
-} from '@clober/v2-sdk'
-import { isAddressEqual } from 'viem'
+import { MarketSnapshot as SdkMarketSnapshot } from '@clober/v2-sdk'
 
 import { MarketDailySnapshotCard } from '../components/card/market/market-daily-snapshot-card'
 import { useChainContext } from '../contexts/chain-context'
 import { TriangleDownSvg } from '../components/svg/triangle-down-svg'
-import { useTransactionContext } from '../contexts/transaction-context'
 import { Chain } from '../model/chain'
 import { Loading } from '../components/loading'
-import { CHAIN_CONFIG } from '../chain-configs'
-import { useCurrencyContext } from '../contexts/currency-context'
-import { currentTimestampInSeconds } from '../utils/date'
 import { useWindowHeight } from '../hooks/useWindowHeight'
 import { Toast } from '../components/toast'
 import { ClipboardSvg } from '../components/svg/clipboard-svg'
 import { SearchSvg } from '../components/svg/search-svg'
+import { useMarketContext } from '../contexts/trade/market-context'
 
 const MOBILE_ROW_HEIGHT = 195
 
@@ -70,9 +62,6 @@ const TriangleDown = ({
     <></>
   )
 }
-
-const LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY = (chain: Chain) =>
-  `market-snapshots-${chain.id}`
 
 const MarketSnapshotListRow = ({
   index,
@@ -164,111 +153,14 @@ const MarketSnapshotGridCell = ({
 export const DiscoverContainer = () => {
   const height = useWindowHeight()
   const { selectedChain } = useChainContext()
-  const { currencies } = useCurrencyContext()
-  const { lastIndexedBlockNumber } = useTransactionContext()
-  const prevMarketSnapshots = useRef<MarketSnapshot[]>([])
-  const prevSubgraphBlockNumber = useRef<number>(0)
+  const { marketSnapshots } = useMarketContext()
   const [isCopyToast, setIsCopyToast] = useState(false)
 
   const [searchValue, setSearchValue] = React.useState('')
   const [sortOption, setSortOption] = useState<SortOption>('none')
 
-  useEffect(() => {
-    const storedMarketSnapshots = localStorage.getItem(
-      LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY(selectedChain),
-    )
-    if (storedMarketSnapshots) {
-      const now = currentTimestampInSeconds()
-      prevMarketSnapshots.current = (
-        JSON.parse(storedMarketSnapshots) as MarketSnapshot[]
-      ).map((marketSnapshot) => ({
-        ...marketSnapshot,
-        askBookUpdatedAt: now,
-        bidBookUpdatedAt: now,
-        isBidTaken: false,
-        isAskTaken: false,
-        verified: false,
-      }))
-    }
-  }, [selectedChain])
-
-  const isVerifiedMarket = useCallback(
-    (marketSnapshot: SdkMarketSnapshot) => {
-      return !!(
-        currencies.find((currency) =>
-          isAddressEqual(currency.address, marketSnapshot.base.address),
-        ) &&
-        currencies.find((currency) =>
-          isAddressEqual(currency.address, marketSnapshot.quote.address),
-        )
-      )
-    },
-    [currencies],
-  )
-
-  const { data: marketSnapshots } = useQuery({
-    queryKey: ['market-snapshots', selectedChain.id],
-    queryFn: async () => {
-      if (lastIndexedBlockNumber === 0) {
-        return [] as MarketSnapshot[]
-      }
-      if (prevSubgraphBlockNumber.current !== lastIndexedBlockNumber) {
-        const marketSnapshots = await getMarketSnapshots({
-          chainId: selectedChain.id,
-          options: {
-            rpcUrl: CHAIN_CONFIG.RPC_URL,
-          },
-        })
-        const newMarketSnapshots: MarketSnapshot[] = marketSnapshots.map(
-          (marketSnapshot) => {
-            const prevMarketSnapshot = prevMarketSnapshots.current.find(
-              (snapshot) =>
-                isAddressEqual(
-                  snapshot.base.address,
-                  marketSnapshot.base.address,
-                ) &&
-                isAddressEqual(
-                  snapshot.quote.address,
-                  marketSnapshot.quote.address,
-                ),
-            )
-            return {
-              ...marketSnapshot,
-              isBidTaken:
-                (prevMarketSnapshot &&
-                  prevMarketSnapshot.bidBookUpdatedAt <
-                    marketSnapshot.bidBookUpdatedAt) ||
-                false,
-              isAskTaken:
-                (prevMarketSnapshot &&
-                  prevMarketSnapshot.askBookUpdatedAt <
-                    marketSnapshot.askBookUpdatedAt) ||
-                false,
-              verified: isVerifiedMarket(marketSnapshot),
-            }
-          },
-        )
-        prevMarketSnapshots.current = marketSnapshots.map((marketSnapshot) => ({
-          ...marketSnapshot,
-          isBidTaken: false,
-          isAskTaken: false,
-          verified: isVerifiedMarket(marketSnapshot),
-        }))
-        prevSubgraphBlockNumber.current = lastIndexedBlockNumber
-        localStorage.setItem(
-          LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY(selectedChain),
-          JSON.stringify(marketSnapshots),
-        )
-        return newMarketSnapshots
-      }
-      return prevMarketSnapshots.current
-    },
-    refetchInterval: 1000, // checked
-    refetchIntervalInBackground: true,
-  })
-
   const filteredMarketSnapshots = useMemo(() => {
-    return (marketSnapshots ?? prevMarketSnapshots.current ?? [])
+    return marketSnapshots
       .filter(
         (marketSnapshot) =>
           marketSnapshot.base.symbol

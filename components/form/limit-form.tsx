@@ -250,7 +250,7 @@ export const LimitForm = ({
           </div>
           {closeLimitFormAction && (
             <button
-              className="flex sm:hidden w-5 h-5 ml-auto"
+              className="flex sm:hidden w-3 sm:w-4 h-3 sm:h-3 ml-auto"
               onClick={closeLimitFormAction}
             >
               <CloseSvg />

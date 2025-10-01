@@ -31,6 +31,7 @@ import { formatTinyNumber } from '../utils/bignumber'
 import { CurrencyIcon } from '../components/icon/currency-icon'
 import { convertShortTimeAgo } from '../utils/time'
 import { Chain } from '../model/chain'
+import MarketSelect from '../components/selector/market-select'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
@@ -220,6 +221,7 @@ export const TradeContainer = () => {
     priceDeviationPercent,
     quoteCurrency,
     baseCurrency,
+    marketSnapshots,
   } = useMarketContext()
   const { limit } = useLimitContractContext()
   const { swap } = useSwapContractContext()
@@ -262,8 +264,10 @@ export const TradeContainer = () => {
     useCurrencyContext()
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
-
+  const [showMarketSelect, setShowMarketSelect] = useState<boolean>(false)
   const [showMetaInfo, setShowMetaInfo] = useState(false)
+
+  // Remove marketSelectRef and outside click logic (no longer needed)
 
   const amountIn = useMemo(
     () => parseUnits(inputCurrencyAmount, inputCurrency?.decimals ?? 18),
@@ -705,62 +709,88 @@ export const TradeContainer = () => {
           className={`flex flex-col w-full xl:flex-row gap-4 justify-center ${tab === 'swap' ? 'md:flex-col-reverse' : ''}`}
         >
           {tab === 'limit' && (
-            <div className="flex flex-col gap-[26px] md:gap-4 w-full xl:w-[740px]">
+            <div className="relative flex flex-col gap-[26px] md:gap-4 w-full xl:w-[740px]">
               {baseCurrency && quoteCurrency && (
-                <MarketInfoCard
-                  chain={selectedChain}
-                  baseCurrency={
-                    {
-                      ...baseCurrency,
-                      icon: currencies.find((c) =>
-                        isAddressEqual(c.address, baseCurrency.address),
-                      )?.icon,
-                    } as Currency
-                  }
-                  quoteCurrency={
-                    {
-                      ...quoteCurrency,
-                      icon: currencies.find((c) =>
-                        isAddressEqual(c.address, quoteCurrency.address),
-                      )?.icon,
-                    } as Currency
-                  }
-                  price={
-                    selectedTokenInfo?.price ||
-                    selectedMarketSnapshot?.price ||
-                    0
-                  }
-                  dollarValue={
-                    selectedTokenInfo?.priceUsd ||
-                    selectedMarketSnapshot?.priceUSD ||
-                    0
-                  }
-                  fdv={
-                    selectedTokenInfo?.fdv || selectedMarketSnapshot?.fdv || 0
-                  }
-                  marketCap={
-                    selectedTokenInfo?.marketCap ||
-                    selectedMarketSnapshot?.fdv ||
-                    0
-                  }
-                  dailyVolume={
-                    selectedTokenInfo?.volume24hUSD ||
-                    selectedMarketSnapshot?.volume24hUSD ||
-                    0
-                  }
-                  liquidityUsd={
-                    selectedTokenInfo?.totalValueLockedUSD ||
-                    selectedMarketSnapshot?.totalValueLockedUSD ||
-                    0
-                  }
-                  websiteUrl={selectedTokenInfo?.website ?? ''}
-                  twitterUrl={selectedTokenInfo?.twitter ?? ''}
-                  telegramUrl={selectedTokenInfo?.telegram ?? ''}
-                  isFetchingMarketSnapshot={
-                    selectedMarketSnapshot === undefined ||
-                    selectedTokenInfo === undefined
-                  }
-                />
+                <>
+                  <MarketInfoCard
+                    chain={selectedChain}
+                    baseCurrency={
+                      {
+                        ...baseCurrency,
+                        icon: currencies.find((c) =>
+                          isAddressEqual(c.address, baseCurrency.address),
+                        )?.icon,
+                      } as Currency
+                    }
+                    quoteCurrency={
+                      {
+                        ...quoteCurrency,
+                        icon: currencies.find((c) =>
+                          isAddressEqual(c.address, quoteCurrency.address),
+                        )?.icon,
+                      } as Currency
+                    }
+                    price={
+                      selectedTokenInfo?.price ||
+                      selectedMarketSnapshot?.price ||
+                      0
+                    }
+                    dollarValue={
+                      selectedTokenInfo?.priceUsd ||
+                      selectedMarketSnapshot?.priceUSD ||
+                      0
+                    }
+                    fdv={
+                      selectedTokenInfo?.fdv || selectedMarketSnapshot?.fdv || 0
+                    }
+                    marketCap={
+                      selectedTokenInfo?.marketCap ||
+                      selectedMarketSnapshot?.fdv ||
+                      0
+                    }
+                    dailyVolume={
+                      selectedTokenInfo?.volume24hUSD ||
+                      selectedMarketSnapshot?.volume24hUSD ||
+                      0
+                    }
+                    liquidityUsd={
+                      selectedTokenInfo?.totalValueLockedUSD ||
+                      selectedMarketSnapshot?.totalValueLockedUSD ||
+                      0
+                    }
+                    websiteUrl={selectedTokenInfo?.website ?? ''}
+                    twitterUrl={selectedTokenInfo?.twitter ?? ''}
+                    telegramUrl={selectedTokenInfo?.telegram ?? ''}
+                    isFetchingMarketSnapshot={
+                      selectedMarketSnapshot === undefined ||
+                      selectedTokenInfo === undefined
+                    }
+                    showMarketSelect={showMarketSelect}
+                    setShowMarketSelect={setShowMarketSelect}
+                  />
+
+                  {showMarketSelect ? (
+                    <>
+                      <div
+                        className="fixed inset-0 z-0"
+                        onClick={() => setShowMarketSelect(false)}
+                      />
+                      <div className="z-[10000] bg-[#191d25] rounded-t-2xl border border-[#272930] overflow-y-auto sm:absolute sm:top-[66px] sm:left-0 sm:w-[382px] sm:h-[481px] fixed bottom-0 left-0 w-full h-[70%] sm:rounded-2xl">
+                        <MarketSelect
+                          chain={selectedChain}
+                          onMarketSelect={(market) => {
+                            setInputCurrency(market.quote)
+                            setOutputCurrency(market.base)
+                            setShowMarketSelect(false)
+                          }}
+                          markets={marketSnapshots}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </>
               )}
 
               <div className="flex flex-col h-full rounded-xl md:rounded-2xl">

@@ -13,6 +13,7 @@ import {
   formatTinyNumber,
 } from '../../../utils/bignumber'
 import { Currency } from '../../../model/currency'
+import { DownBracketAngleSvg } from '../../svg/down-bracket-angle-svg'
 
 export const MarketInfoCard = ({
   chain,
@@ -28,6 +29,8 @@ export const MarketInfoCard = ({
   twitterUrl,
   telegramUrl,
   isFetchingMarketSnapshot,
+  showMarketSelect,
+  setShowMarketSelect,
 }: {
   chain: Chain
   baseCurrency: Currency
@@ -42,6 +45,8 @@ export const MarketInfoCard = ({
   twitterUrl: string
   telegramUrl: string
   isFetchingMarketSnapshot: boolean
+  showMarketSelect: boolean
+  setShowMarketSelect: (value: (prevState: boolean) => boolean) => void
 }) => {
   const [isCopyToast, setIsCopyToast] = useState(false)
   return (
@@ -80,6 +85,12 @@ export const MarketInfoCard = ({
                   <span className="text-[#8690a5]">/</span>
                   <span> {quoteCurrency.symbol}</span>
                 </div>
+
+                <button onClick={() => setShowMarketSelect((prev) => !prev)}>
+                  <DownBracketAngleSvg
+                    className={`flex w-3 h-3 min-w-3 min-h-3 sm:w-4 sm:h-4 sm:min-w-4 sm:min-h-4 text-gray-400 items-center transition-transform duration-200 ${showMarketSelect ? 'rotate-180' : ''}`}
+                  />
+                </button>
               </div>
 
               <div className="flex items-center gap-1.5">
