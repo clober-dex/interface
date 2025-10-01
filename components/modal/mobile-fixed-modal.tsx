@@ -61,7 +61,7 @@ export const MobileFixedModal = ({
                 <span className="text-[#8690a5]">&#8594; </span>
                 {outputCurrency?.symbol ?? ''}
                 <button
-                  className="flex md:hidden w-5 h-5 ml-auto"
+                  className="flex sm:hidden w-3 sm:w-4 h-3 sm:h-3 ml-auto"
                   onClick={() => setShowMobileModal(false)}
                 >
                   <CloseSvg />
