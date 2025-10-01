@@ -3,9 +3,10 @@ import {
   getMarket,
   getMarketId,
   getMarketSnapshot,
+  getMarketSnapshots,
   getQuoteToken,
   Market,
-  MarketSnapshot,
+  MarketSnapshot as SdkMarketSnapshot,
 } from '@clober/v2-sdk'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
@@ -26,8 +27,17 @@ import { Currency } from '../../model/currency'
 import { fetchTokenInfo } from '../../apis/token'
 import { TokenInfo } from '../../model/token-info'
 import { useCurrencyContext } from '../currency-context'
+import { currentTimestampInSeconds } from '../../utils/date'
+import { Chain } from '../../model/chain'
+import { useTransactionContext } from '../transaction-context'
 
 import { useTradeContext } from './trade-context'
+
+export type MarketSnapshot = SdkMarketSnapshot & {
+  isBidTaken: boolean
+  isAskTaken: boolean
+  verified: boolean
+}
 
 type MarketContext = {
   selectedMarket?: Market
@@ -64,6 +74,7 @@ type MarketContext = {
   priceDeviationPercent: number
   quoteCurrency: Currency | undefined
   baseCurrency: Currency | undefined
+  marketSnapshots: MarketSnapshot[]
 }
 
 const Context = React.createContext<MarketContext>({
@@ -85,12 +96,17 @@ const Context = React.createContext<MarketContext>({
   priceDeviationPercent: 0,
   quoteCurrency: undefined,
   baseCurrency: undefined,
+  marketSnapshots: [],
 })
+
+const LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY = (chain: Chain) =>
+  `market-snapshots-${chain.id}`
 
 export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
-  const { prices } = useCurrencyContext()
+  const { prices, currencies } = useCurrencyContext()
+  const { lastIndexedBlockNumber } = useTransactionContext()
   const queryClient = useQueryClient()
   const {
     isBid,
@@ -100,7 +116,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     outputCurrency,
     setIsFetchingOnChainPrice,
   } = useTradeContext()
-
+  const prevMarketSnapshots = useRef<MarketSnapshot[]>([])
+  const prevSubgraphBlockNumber = useRef<number>(0)
   const previousValue = useRef({
     inputCurrencyAddress: inputCurrency?.address,
     outputCurrencyAddress: outputCurrency?.address,
@@ -209,6 +226,67 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     refetchIntervalInBackground: true,
   })
 
+  const { data: marketSnapshots } = useQuery({
+    queryKey: ['market-snapshots', selectedChain.id],
+    queryFn: async () => {
+      if (lastIndexedBlockNumber === 0) {
+        return [] as MarketSnapshot[]
+      }
+      if (prevSubgraphBlockNumber.current !== lastIndexedBlockNumber) {
+        const marketSnapshots = await getMarketSnapshots({
+          chainId: selectedChain.id,
+          options: {
+            rpcUrl: CHAIN_CONFIG.RPC_URL,
+          },
+        })
+        const newMarketSnapshots: MarketSnapshot[] = marketSnapshots.map(
+          (marketSnapshot) => {
+            const prevMarketSnapshot = prevMarketSnapshots.current.find(
+              (snapshot) =>
+                isAddressEqual(
+                  snapshot.base.address,
+                  marketSnapshot.base.address,
+                ) &&
+                isAddressEqual(
+                  snapshot.quote.address,
+                  marketSnapshot.quote.address,
+                ),
+            )
+            return {
+              ...marketSnapshot,
+              isBidTaken:
+                (prevMarketSnapshot &&
+                  prevMarketSnapshot.bidBookUpdatedAt <
+                    marketSnapshot.bidBookUpdatedAt) ||
+                false,
+              isAskTaken:
+                (prevMarketSnapshot &&
+                  prevMarketSnapshot.askBookUpdatedAt <
+                    marketSnapshot.askBookUpdatedAt) ||
+                false,
+              verified: isVerifiedMarket(marketSnapshot),
+            }
+          },
+        )
+        prevMarketSnapshots.current = marketSnapshots.map((marketSnapshot) => ({
+          ...marketSnapshot,
+          isBidTaken: false,
+          isAskTaken: false,
+          verified: isVerifiedMarket(marketSnapshot),
+        }))
+        prevSubgraphBlockNumber.current = lastIndexedBlockNumber
+        localStorage.setItem(
+          LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY(selectedChain),
+          JSON.stringify(marketSnapshots),
+        )
+        return newMarketSnapshots
+      }
+      return prevMarketSnapshots.current
+    },
+    refetchInterval: 1000, // checked
+    refetchIntervalInBackground: true,
+  })
+
   const availableDecimalPlacesGroups = useMemo(
     () => {
       return selectedMarket &&
@@ -311,6 +389,20 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setPriceInput,
   ])
 
+  const isVerifiedMarket = useCallback(
+    (marketSnapshot: SdkMarketSnapshot) => {
+      return !!(
+        currencies.find((currency) =>
+          isAddressEqual(currency.address, marketSnapshot.base.address),
+        ) &&
+        currencies.find((currency) =>
+          isAddressEqual(currency.address, marketSnapshot.quote.address),
+        )
+      )
+    },
+    [currencies],
+  )
+
   // update selectedMarket and selectedMarketSnapshot when market data changes
   useEffect(() => {
     if (!data?.market) {
@@ -321,8 +413,13 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     } else if (!isMarketEqual(selectedMarket, data.market)) {
       setSelectedDecimalPlaces(undefined)
       setSelectedMarket(data.market)
-      if (data.marketSnapshot !== undefined) {
-        setSelectedMarketSnapshot(data.marketSnapshot)
+      if (data.marketSnapshot) {
+        setSelectedMarketSnapshot({
+          ...data.marketSnapshot,
+          isBidTaken: false,
+          isAskTaken: false,
+          verified: isVerifiedMarket(data.marketSnapshot),
+        } as MarketSnapshot)
       }
       if (data.tokenInfo !== undefined) {
         setSelectedTokenInfo(data.tokenInfo)
@@ -336,13 +433,18 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     ) {
       setSelectedMarket(data.market)
       if (data.marketSnapshot) {
-        setSelectedMarketSnapshot(data.marketSnapshot)
+        setSelectedMarketSnapshot({
+          ...data.marketSnapshot,
+          isBidTaken: false,
+          isAskTaken: false,
+          verified: isVerifiedMarket(data.marketSnapshot),
+        } as MarketSnapshot)
       }
       if (data.tokenInfo) {
         setSelectedTokenInfo(data.tokenInfo)
       }
     }
-  }, [data, selectedMarket])
+  }, [data, isVerifiedMarket, selectedMarket])
 
   // once
   // on initial load or currency change, fetch the current market price and initialize price input
@@ -443,6 +545,26 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setPriceInput,
   ])
 
+  // once
+  useEffect(() => {
+    const storedMarketSnapshots = localStorage.getItem(
+      LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY(selectedChain),
+    )
+    if (storedMarketSnapshots) {
+      const now = currentTimestampInSeconds()
+      prevMarketSnapshots.current = (
+        JSON.parse(storedMarketSnapshots) as MarketSnapshot[]
+      ).map((marketSnapshot) => ({
+        ...marketSnapshot,
+        askBookUpdatedAt: now,
+        bidBookUpdatedAt: now,
+        isBidTaken: false,
+        isAskTaken: false,
+        verified: false,
+      }))
+    }
+  }, [selectedChain])
+
   return (
     <Context.Provider
       value={{
@@ -462,6 +584,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         priceDeviationPercent,
         quoteCurrency,
         baseCurrency,
+        marketSnapshots: marketSnapshots ?? prevMarketSnapshots.current ?? [],
       }}
     >
       {children}
