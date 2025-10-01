@@ -6,6 +6,7 @@ import { SearchSvg } from '../svg/search-svg'
 import { useWindowWidth } from '../../hooks/useWindowWidth'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { Chain } from '../../model/chain'
+import { formatTinyNumber } from '../../utils/bignumber'
 
 const MarketSelect = ({
   chain,
@@ -91,11 +92,11 @@ const MarketSelect = ({
               Market
             </div>
 
-            <div className="flex w-full ml-4 sm:ml-6">
+            <div className="flex w-full ml-3 sm:ml-4">
               <div className="flex w-full justify-start text-[#8d94a1] text-xs font-medium">
                 Price
               </div>
-              <div className="flex w-full justify-start text-[#8d94a1] text-xs font-medium">
+              <div className="flex justify-start text-[#8d94a1] text-xs font-medium text-center">
                 Change
               </div>
             </div>
@@ -106,7 +107,7 @@ const MarketSelect = ({
           {filteredMarkets.map((market) => (
             <button
               key={market.marketId}
-              className="flex flex-1 w-full px-6 py-3 justify-start items-center gap-1"
+              className="flex flex-1 w-full pl-6 py-3 justify-start items-center gap-1"
               onClick={() => {
                 onMarketSelect(market)
               }}
@@ -136,10 +137,17 @@ const MarketSelect = ({
                 </span>
               </div>
 
-              <div className="flex w-full ml-4 sm:ml-6">
-                <div className="flex flex-1 w-full">2</div>
+              <div className="flex w-full ml-3 sm:ml-4">
+                <div className="flex flex-1 w-full text-white text-sm font-medium">
+                  ${formatTinyNumber(market.priceUSD)}
+                </div>
 
-                <div className="flex flex-1 w-full">3</div>
+                <div
+                  className={`flex-1 text-center text-sm font-medium ${market.priceChange24h > 0 ? 'text-[#39e79f]' : market.priceChange24h < 0 ? 'text-[#f85149]' : 'text-white'}`}
+                >
+                  {market.priceChange24h > 0 ? '+' : ''}
+                  {(market.priceChange24h * 100).toFixed(2)}%
+                </div>
               </div>
             </button>
           ))}

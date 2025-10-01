@@ -765,6 +765,7 @@ export const TradeContainer = () => {
                       selectedMarketSnapshot === undefined ||
                       selectedTokenInfo === undefined
                     }
+                    showMarketSelect={showMarketSelect}
                     setShowMarketSelect={setShowMarketSelect}
                   />
 

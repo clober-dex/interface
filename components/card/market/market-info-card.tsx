@@ -29,6 +29,7 @@ export const MarketInfoCard = ({
   twitterUrl,
   telegramUrl,
   isFetchingMarketSnapshot,
+  showMarketSelect,
   setShowMarketSelect,
 }: {
   chain: Chain
@@ -44,6 +45,7 @@ export const MarketInfoCard = ({
   twitterUrl: string
   telegramUrl: string
   isFetchingMarketSnapshot: boolean
+  showMarketSelect: boolean
   setShowMarketSelect: (value: (prevState: boolean) => boolean) => void
 }) => {
   const [isCopyToast, setIsCopyToast] = useState(false)
@@ -85,7 +87,9 @@ export const MarketInfoCard = ({
                 </div>
 
                 <button onClick={() => setShowMarketSelect((prev) => !prev)}>
-                  <DownBracketAngleSvg className="flex w-3 h-3 min-w-3 min-h-3 sm:w-4 sm:h-4 sm:min-w-4 sm:min-h-4 text-gray-400 items-center" />
+                  <DownBracketAngleSvg
+                    className={`flex w-3 h-3 min-w-3 min-h-3 sm:w-4 sm:h-4 sm:min-w-4 sm:min-h-4 text-gray-400 items-center transition-transform duration-200 ${showMarketSelect ? 'rotate-180' : ''}`}
+                  />
                 </button>
               </div>
 
