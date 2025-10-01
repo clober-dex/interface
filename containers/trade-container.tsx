@@ -735,6 +735,7 @@ export const TradeContainer = () => {
                       selectedMarketSnapshot?.price ||
                       0
                     }
+                    priceChange24h={selectedMarketSnapshot?.priceChange24h || 0}
                     dollarValue={
                       selectedTokenInfo?.priceUsd ||
                       selectedMarketSnapshot?.priceUSD ||

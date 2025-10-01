@@ -20,6 +20,7 @@ export const MarketInfoCard = ({
   baseCurrency,
   quoteCurrency,
   price,
+  priceChange24h,
   dollarValue,
   fdv,
   marketCap,
@@ -36,6 +37,7 @@ export const MarketInfoCard = ({
   baseCurrency: Currency
   quoteCurrency: Currency
   price: number
+  priceChange24h: number
   dollarValue: number
   fdv: number
   marketCap: number
@@ -186,7 +188,9 @@ export const MarketInfoCard = ({
           </div>
 
           <div className="grow shrink basis-0 flex-col justify-center gap-1 flex ml-auto w-full xl:hidden text-right">
-            <div className="text-[#39e79f] text-xl font-semibold">
+            <div
+              className={`font-semibold ${priceChange24h > 0 ? 'text-[#39e79f]' : priceChange24h < 0 ? 'text-[#f85149]' : 'text-white'}`}
+            >
               {formatTinyNumber(price)}
             </div>
             <div className="text-white text-xs">
@@ -289,7 +293,9 @@ export const MarketInfoCard = ({
 
         <div className="hidden xl:flex h-full items-center gap-7">
           <div className="flex-col xl:items-end gap-0.5 flex w-[100px]">
-            <div className="text-green-400 font-semibold">
+            <div
+              className={`font-semibold ${priceChange24h > 0 ? 'text-[#39e79f]' : priceChange24h < 0 ? 'text-[#f85149]' : 'text-white'}`}
+            >
               {formatTinyNumber(price)}
             </div>
             <div className="text-white text-xs font-semibold">
