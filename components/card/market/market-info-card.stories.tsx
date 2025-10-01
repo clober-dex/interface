@@ -46,6 +46,9 @@ export const Default: Story = {
     twitterUrl: '',
     telegramUrl: '',
     isFetchingMarketSnapshot: false,
+    setShowMarketSelect: (market: any) => {
+      console.log('Selected market:', market)
+    },
   },
 }
 
@@ -74,6 +77,9 @@ export const Social: Story = {
     twitterUrl: 'https://www.google.com',
     telegramUrl: 'https://www.google.com',
     isFetchingMarketSnapshot: false,
+    setShowMarketSelect: (market: any) => {
+      console.log('Selected market:', market)
+    },
   },
 }
 
@@ -102,6 +108,9 @@ export const Loading: Story = {
     twitterUrl: '',
     telegramUrl: '',
     isFetchingMarketSnapshot: true,
+    setShowMarketSelect: (market: any) => {
+      console.log('Selected market:', market)
+    },
   },
 }
 
