@@ -1,29 +1,26 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import BigNumber from 'bignumber.js'
-import { isAddressEqual } from 'viem'
-import { NextRouter } from 'next/router'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
 import { shortAddress } from '../../../utils/address'
 import { handleCopyClipBoard } from '../../../utils/string'
 import { ClipboardSvg } from '../../svg/clipboard-svg'
 import { Toast } from '../../toast'
-import { ActionButton } from '../../button/action-button'
 import { Chain } from '../../../model/chain'
-import { WHITELISTED_FUTURES_ASSETS } from '../../../constants/futures'
 import {
   formatAbbreviatedNumberString,
   formatTinyNumber,
 } from '../../../utils/bignumber'
 import { Currency } from '../../../model/currency'
+import { DownBracketAngleSvg } from '../../svg/down-bracket-angle-svg'
 
 export const MarketInfoCard = ({
   chain,
-  router,
   baseCurrency,
   quoteCurrency,
   price,
+  priceChange24h,
   dollarValue,
   fdv,
   marketCap,
@@ -33,12 +30,14 @@ export const MarketInfoCard = ({
   twitterUrl,
   telegramUrl,
   isFetchingMarketSnapshot,
+  showMarketSelect,
+  setShowMarketSelect,
 }: {
   chain: Chain
-  router: NextRouter
   baseCurrency: Currency
   quoteCurrency: Currency
   price: number
+  priceChange24h: number
   dollarValue: number
   fdv: number
   marketCap: number
@@ -48,6 +47,8 @@ export const MarketInfoCard = ({
   twitterUrl: string
   telegramUrl: string
   isFetchingMarketSnapshot: boolean
+  showMarketSelect: boolean
+  setShowMarketSelect: (value: (prevState: boolean) => boolean) => void
 }) => {
   const [isCopyToast, setIsCopyToast] = useState(false)
   return (
@@ -63,29 +64,35 @@ export const MarketInfoCard = ({
         </div>
       </Toast>
 
-      <div className="flex w-full h-full lg:h-[74px] lg:w-[740px] flex-col lg:flex-row justify-start items-start px-4 lg:px-0 lg:pl-5 lg:pr-4 lg:py-3 lg:bg-[#171b24] lg:rounded-2xl lg:justify-start lg:items-center gap-4">
-        <div className="flex flex-row w-full lg:w-fit">
+      <div className="flex w-full h-full xl:h-[74px] xl:w-[740px] flex-col xl:flex-row justify-start items-start px-5 xl:py-[18px] xl:bg-[#17181e] xl:rounded-2xl xl:justify-start xl:items-center gap-4 xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930]">
+        <div className="flex flex-row w-full xl:w-fit">
           <div className="justify-start items-center gap-2.5 flex w-full">
-            <div className="justify-start items-center flex relative w-14">
+            <div className="justify-start items-center flex relative w-11 sm:w-14">
               <CurrencyIcon
                 chain={chain}
                 currency={baseCurrency}
-                className="rounded-full w-6 lg:w-[30px] h-6 lg:h-[30px] z-[1]"
+                className="rounded-full w-6 xl:w-[30px] h-6 xl:h-[30px] z-[1]"
               />
               <CurrencyIcon
                 chain={chain}
                 currency={quoteCurrency}
-                className="rounded-full absolute top-0 left-4 lg:left-[18px] w-6 lg:w-[30px] h-6 lg:h-[30px]"
+                className="rounded-full absolute top-0 left-4 xl:left-[18px] w-6 xl:w-[30px] h-6 xl:h-[30px]"
               />
             </div>
 
-            <div className="flex flex-col justify-center gap-0.5 lg:gap-1 w-[165px] lg:w-[180px] overflow-y-hidden">
+            <div className="flex flex-col justify-center gap-0.5 xl:gap-1 w-[155px] xl:w-[170px] overflow-y-hidden">
               <div className="flex flex-row gap-2 w-full h-full justify-start items-center">
-                <div className="text-white text-base lg:text-lg max-w-[180px] lg:max-w-[200px] font-semibold text-nowrap overflow-y-hidden">
+                <div className="text-white text-base xl:text-[16px] max-w-[180px] xl:max-w-[200px] font-semibold text-nowrap overflow-y-hidden">
                   <span>{baseCurrency.symbol} </span>
                   <span className="text-[#8690a5]">/</span>
                   <span> {quoteCurrency.symbol}</span>
                 </div>
+
+                <button onClick={() => setShowMarketSelect((prev) => !prev)}>
+                  <DownBracketAngleSvg
+                    className={`flex w-3 h-3 min-w-3 min-h-3 sm:w-4 sm:h-4 sm:min-w-4 sm:min-h-4 text-gray-400 items-center transition-transform duration-200 ${showMarketSelect ? 'rotate-180' : ''}`}
+                  />
+                </button>
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -94,7 +101,7 @@ export const MarketInfoCard = ({
                     await handleCopyClipBoard(baseCurrency.address)
                     setIsCopyToast(true)
                   }}
-                  className="cursor-pointer h-5 px-1.5 py-0.5 bg-gray-800 rounded-md justify-center items-center gap-0.5 flex"
+                  className="cursor-pointer h-4 rounded-md justify-center items-center gap-0.5 flex"
                 >
                   <div className="text-gray-400 text-xs leading-none">
                     {shortAddress(baseCurrency.address)}
@@ -176,63 +183,14 @@ export const MarketInfoCard = ({
                 ) : (
                   <></>
                 )}
-
-                {twitterUrl.length + telegramUrl.length + websiteUrl.length ===
-                0 ? (
-                  <>
-                    {isAddressEqual(
-                      baseCurrency.address,
-                      '0x836047a99e11f376522b447bffb6e3495dd0637c',
-                    ) && (
-                      <ActionButton
-                        disabled={false}
-                        onClick={async () => {
-                          window.open(
-                            `https://testnet.orbiter.finance/en?src_chain=11155111&tgt_chain=10143&src_token=ETH`,
-                            '_blank',
-                          )
-                        }}
-                        text="Bridge"
-                        className="disabled:text-gray-400 text-white text-xs font-semibold px-2 py-0.5 bg-blue-500 rounded justify-center items-center flex"
-                      />
-                    )}
-
-                    {isAddressEqual(
-                      baseCurrency.address,
-                      '0xA296f47E8Ff895Ed7A092b4a9498bb13C46ac768',
-                    ) && (
-                      <ActionButton
-                        disabled={false}
-                        onClick={async () => {
-                          window.open(`https://www.monadbridge.com/`, '_blank')
-                        }}
-                        text="Bridge"
-                        className="disabled:text-gray-400 text-white text-xs font-semibold px-2 py-0.5 bg-blue-500 rounded justify-center items-center flex"
-                      />
-                    )}
-
-                    {WHITELISTED_FUTURES_ASSETS.some(({ address }) =>
-                      isAddressEqual(baseCurrency.address, address),
-                    ) && (
-                      <ActionButton
-                        disabled={false}
-                        onClick={() => {
-                          router.push(`/futures/mint/${baseCurrency.address}`)
-                        }}
-                        text="Mint"
-                        className="disabled:text-gray-400 text-white text-xs font-semibold px-2 py-0.5 bg-blue-500 rounded justify-center items-center flex"
-                      />
-                    )}
-                  </>
-                ) : (
-                  <></>
-                )}
               </div>
             </div>
           </div>
 
-          <div className="grow shrink basis-0 flex-col justify-center gap-1 flex ml-auto w-full lg:hidden text-right">
-            <div className="text-[#39e79f] text-xl font-semibold">
+          <div className="grow shrink basis-0 flex-col justify-center gap-1 flex ml-auto w-full xl:hidden text-right">
+            <div
+              className={`font-semibold ${priceChange24h > 0 ? 'text-[#39e79f]' : priceChange24h < 0 ? 'text-[#f85149]' : 'text-white'}`}
+            >
               {formatTinyNumber(price)}
             </div>
             <div className="text-white text-xs">
@@ -241,17 +199,22 @@ export const MarketInfoCard = ({
           </div>
         </div>
 
-        <div className="h-full w-full justify-start items-center flex lg:hidden">
+        <div className="h-full w-full justify-start items-center flex xl:hidden">
           <div className="h-full w-full flex-row justify-center items-start gap-8 flex">
             <div className="flex flex-col h-full w-full justify-center items-start gap-2">
               <div className="self-stretch justify-start items-center gap-2 flex">
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   Liquidity
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
+                <div className="text-white text-xs text-right flex flex-row gap-1">
                   {!isFetchingMarketSnapshot ? (
                     liquidityUsd > 0 ? (
-                      `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
+                      <>
+                        <span className="text-[#8d94a1]">$</span>
+                        {formatAbbreviatedNumberString(
+                          new BigNumber(liquidityUsd),
+                        )}
+                      </>
                     ) : (
                       '-'
                     )
@@ -264,10 +227,15 @@ export const MarketInfoCard = ({
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   24h Volume
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
+                <div className="text-white text-xs text-right flex flex-row gap-1">
                   {!isFetchingMarketSnapshot ? (
                     dailyVolume > 0 ? (
-                      `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
+                      <>
+                        <span className="text-[#8d94a1]">$</span>
+                        {formatAbbreviatedNumberString(
+                          new BigNumber(dailyVolume),
+                        )}
+                      </>
                     ) : (
                       '-'
                     )
@@ -283,10 +251,13 @@ export const MarketInfoCard = ({
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   FDV
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
+                <div className="text-white text-xs text-right flex flex-row gap-1">
                   {!isFetchingMarketSnapshot ? (
                     fdv > 0 ? (
-                      `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+                      <>
+                        <span className="text-[#8d94a1]">$</span>
+                        {formatAbbreviatedNumberString(new BigNumber(fdv))}
+                      </>
                     ) : (
                       '-'
                     )
@@ -299,10 +270,15 @@ export const MarketInfoCard = ({
                 <div className="grow shrink basis-0 text-[#e1ebff]/50 text-xs font-semibold">
                   Market Cap
                 </div>
-                <div className="text-white text-xs font-semibold text-right">
+                <div className="text-white text-xs text-right flex flex-row gap-1">
                   {!isFetchingMarketSnapshot ? (
                     marketCap > 0 ? (
-                      `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
+                      <>
+                        <span className="text-[#8d94a1]">$</span>
+                        {formatAbbreviatedNumberString(
+                          new BigNumber(marketCap),
+                        )}
+                      </>
                     ) : (
                       '-'
                     )
@@ -315,25 +291,32 @@ export const MarketInfoCard = ({
           </div>
         </div>
 
-        <div className="hidden lg:flex h-full ml-auto items-center gap-7">
-          <div className="flex-col lg:items-end gap-0.5 flex w-[100px]">
-            <div className="text-[#38e69f] text-[17px] font-bold">
+        <div className="hidden xl:flex h-full items-center gap-7">
+          <div className="flex-col xl:items-end gap-0.5 flex w-[100px]">
+            <div
+              className={`font-semibold ${priceChange24h > 0 ? 'text-[#39e79f]' : priceChange24h < 0 ? 'text-[#f85149]' : 'text-white'}`}
+            >
               {formatTinyNumber(price)}
             </div>
-            <div className="text-white text-xs font-bold">
+            <div className="text-white text-xs font-semibold">
               ${formatTinyNumber(dollarValue)}
             </div>
           </div>
 
-          <div className="flex flex-row gap-4 ml-auto lg:w-[310px]">
-            <div className="min-w-[60px] flex-1 flex-col justify-center items-start gap-1 flex">
+          <div className="flex flex-row gap-4 ml-auto xl:w-[310px]">
+            <div className="min-w-[60px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 Liquidity
               </div>
-              <div className="w-[61px] text-white text-[13px] font-bold">
+              <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
                 {!isFetchingMarketSnapshot ? (
                   liquidityUsd > 0 ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(liquidityUsd))}`
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(
+                        new BigNumber(liquidityUsd),
+                      )}
+                    </>
                   ) : (
                     '-'
                   )
@@ -343,14 +326,17 @@ export const MarketInfoCard = ({
               </div>
             </div>
 
-            <div className="min-w-[55px] flex-1 flex-col justify-center items-start gap-1 flex">
+            <div className="min-w-[55px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 FDV
               </div>
-              <div className="w-[61px] text-white text-[13px] font-bold">
+              <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
                 {!isFetchingMarketSnapshot ? (
                   fdv > 0 ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(fdv))}`
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(new BigNumber(fdv))}
+                    </>
                   ) : (
                     '-'
                   )
@@ -360,14 +346,17 @@ export const MarketInfoCard = ({
               </div>
             </div>
 
-            <div className="min-w-[70px] flex-1 flex-col justify-center items-start gap-1 flex">
+            <div className="min-w-[70px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 Market Cap
               </div>
-              <div className="w-[61px] text-white text-[13px] font-bold">
+              <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
                 {!isFetchingMarketSnapshot ? (
                   marketCap > 0 ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(marketCap))}`
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(new BigNumber(marketCap))}
+                    </>
                   ) : (
                     '-'
                   )
@@ -377,14 +366,19 @@ export const MarketInfoCard = ({
               </div>
             </div>
 
-            <div className="min-w-[70px] flex-1 flex-col justify-center items-start gap-1 flex">
+            <div className="min-w-[70px] flex-1 flex-col justify-center items-start gap-1 flex h-[38px]">
               <div className="text-[#8690a5] text-xs whitespace-nowrap">
                 24H Volume
               </div>
-              <div className="w-[61px] text-white text-[13px] font-bold">
+              <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
                 {!isFetchingMarketSnapshot ? (
                   dailyVolume > 0 ? (
-                    `$${formatAbbreviatedNumberString(new BigNumber(dailyVolume))}`
+                    <>
+                      <span className="text-[#8d94a1]">$</span>
+                      {formatAbbreviatedNumberString(
+                        new BigNumber(dailyVolume),
+                      )}
+                    </>
                   ) : (
                     '-'
                   )

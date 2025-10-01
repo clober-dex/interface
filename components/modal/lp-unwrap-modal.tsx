@@ -28,7 +28,7 @@ export const LpUnwrapModal = ({
     <Modal show onClose={onClose}>
       <div className="flex flex-col w-full h-full">
         <div className="flex flex-col h-full max-h-[460px] sm:max-h-[576px]">
-          <h1 className="flex font-bold mb-6 sm:text-xl items-center justify-center w-full">
+          <h1 className="flex font-semibold mb-6 sm:text-xl items-center justify-center w-full">
             Unwrap LP Token
           </h1>
 

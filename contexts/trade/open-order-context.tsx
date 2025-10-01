@@ -21,13 +21,16 @@ export const OpenOrderProvider = ({
 
   const { data: openOrders } = useQuery({
     queryKey: ['open-orders', selectedChain.id, userAddress],
-    queryFn: () =>
-      userAddress
-        ? getOpenOrders({
-            chainId: selectedChain.id,
-            userAddress,
-          })
-        : [],
+    queryFn: async () => {
+      if (!userAddress) {
+        return []
+      }
+      const openOrders = await getOpenOrders({
+        chainId: selectedChain.id,
+        userAddress,
+      })
+      return openOrders.sort((a, b) => Number(b.createdAt - a.createdAt))
+    },
     refetchIntervalInBackground: true,
     refetchInterval: 2 * 1000, // checked
     initialData: [],

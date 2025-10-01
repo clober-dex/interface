@@ -32,6 +32,8 @@ export const CHAIN_CONFIG: ChainConfig = {
   ASSETS_GITHUB_REPO: 'clober-dex/assets',
   DISCORD_URL: 'https://discord.gg/clober-dex',
   DOCS_URL: 'https://docs.clober.io/',
+  HIDE_ORDERBOOK: true,
+  USE_MEV_PROTECTION: true,
   WEB3_AUTH_CLIENT_ID:
     'BH8RNo9NNVaFUjXjf0x96jiVLuYpFhTJkotoNF9sVLnVYu5kV4yADw4bjH7ngElE0EXG_eDD1YOa0yhu4YbEg6I',
   WALLET_CONNECT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',

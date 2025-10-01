@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
-import { useRouter } from 'next/router'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -8,18 +7,12 @@ import Image from 'next/image'
 
 import { useChainContext } from '../contexts/chain-context'
 import MenuSvg from '../components/svg/menu-svg'
-import { PageButton } from '../components/button/page-button'
 import { ConnectButton } from '../components/button/connect-button'
 import { UserButton } from '../components/button/user-button'
 import { UserWalletModal } from '../components/modal/user-wallet-modal'
 import { useTransactionContext } from '../contexts/transaction-context'
-import ChainIcon from '../components/icon/chain-icon'
-import { textStyles } from '../constants/text-styles'
 import { fetchEnsName } from '../apis/ens'
 import { CHAIN_CONFIG } from '../chain-configs'
-import { PAGE_BUTTONS } from '../chain-configs/page-button'
-import useDropdown from '../hooks/useDropdown'
-import { PageSelector } from '../components/selector/page-selector'
 import { web3AuthInstance } from '../utils/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
 import { useCurrencyContext } from '../contexts/currency-context'
@@ -33,63 +26,7 @@ const WrongNetwork = ({
   return <>{openChainModal && openChainModal()}</>
 }
 
-const PageButtons = () => {
-  const router = useRouter()
-  const { showDropdown, setShowDropdown } = useDropdown()
-  const isMoreSelected = PAGE_BUTTONS.filter((page) => page.isHiddenMenu).some(
-    (page) => router.pathname.includes(page.path),
-  )
-
-  return (
-    <>
-      {PAGE_BUTTONS.filter((page) => !page.isHiddenMenu).map((page) => (
-        <div key={page.path}>
-          <PageButton
-            disabled={router.pathname.includes(page.path)}
-            onClick={() => router.push(page.path)}
-          >
-            {page.icon}
-            {page.label}
-          </PageButton>
-        </div>
-      ))}
-
-      {PAGE_BUTTONS.filter((page) => page.isHiddenMenu).length > 0 && (
-        <button
-          className="flex flex-row gap-2 items-center text-gray-500 font-semibold disabled:text-white stroke-gray-500 fill-gray-500 disabled:stroke-blue-500 disabled:fill-blue-500"
-          disabled={false}
-          onClick={() => {
-            setShowDropdown((prev) => !prev)
-          }}
-        >
-          <span className={isMoreSelected ? 'text-white' : ''}>More</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="10"
-            height="6"
-            viewBox="0 0 10 6"
-            fill="none"
-            className="rotate-180"
-          >
-            <path
-              d="M9 5L5 1L1 5"
-              stroke={isMoreSelected ? '#60A5FA' : '#9CA3AF'}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <div className="relative">
-            {showDropdown ? <PageSelector /> : <></>}
-          </div>
-        </button>
-      )}
-    </>
-  )
-}
-
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
-  const router = useRouter()
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
   const { currencies, setCurrencies, balances, prices, transfer } =
@@ -167,62 +104,37 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
         />
       )}
 
-      <div className="flex items-center bg-gray-800 bg-opacity-50 justify-between h-[46px] md:h-[60px] py-0 px-4">
-        <div className="flex items-center gap-2.5 md:gap-12">
-          {router.pathname.includes('/futures') ? (
-            <a
-              className="flex gap-2 items-center"
-              target="_blank"
-              href={`${CHAIN_CONFIG.URL}/futures`}
-              rel="noopener noreferrer"
-            >
-              <img className="h-7 sm:h-9" src="/futures-logo.svg" alt="logo" />
-            </a>
-          ) : (
-            <>
-              <a
-                className="hidden md:flex gap-2 items-center h-7"
-                target="_blank"
-                href={CHAIN_CONFIG.LANDING_PAGE_URL}
-                rel="noopener noreferrer"
-              >
-                <Image
-                  width={123}
-                  height={28}
-                  src="/chain-configs/logo.svg"
-                  alt="logo"
-                />
-              </a>
-              <a
-                className="flex md:hidden gap-2 items-center h-5"
-                target="_blank"
-                href={CHAIN_CONFIG.LANDING_PAGE_URL}
-                rel="noopener noreferrer"
-              >
-                <Image
-                  width={88}
-                  height={20}
-                  src="/chain-configs/logo.svg"
-                  alt="logo"
-                />
-              </a>
-            </>
-          )}
-          <div className="hidden xl:flex py-1 justify-start items-center gap-8">
-            <PageButtons />
-          </div>
+      <div className="fixed top-0 left-0 w-full z-[2] flex items-center bg-[#151517] backdrop-blur-blur sm:bg-[#151517] sm:border-b sm:border-[#2d2d2e] sm:border-solid justify-between h-12 sm:h-[60px] py-2 sm:py-0 p-4 sm:pl-4 sm:pr-5">
+        <div className="flex items-center gap-2.5 sm:gap-12">
+          <a
+            className="hidden sm:flex gap-2 items-center h-7"
+            target="_blank"
+            href={CHAIN_CONFIG.LANDING_PAGE_URL}
+            rel="noopener noreferrer"
+          >
+            <Image
+              width={114}
+              height={25}
+              src="/chain-configs/logo.svg"
+              alt="logo"
+            />
+          </a>
+          <a
+            className="flex sm:hidden gap-2 items-center h-5"
+            target="_blank"
+            href={CHAIN_CONFIG.LANDING_PAGE_URL}
+            rel="noopener noreferrer"
+          >
+            <Image
+              width={88}
+              height={20}
+              src="/chain-configs/logo.svg"
+              alt="logo"
+            />
+          </a>
         </div>
-        <div className="flex gap-2 w-auto md:gap-3 ml-auto">
-          <div className="flex relative justify-center items-center gap-2">
-            <div className="flex items-center justify-center lg:justify-start h-8 w-8 lg:w-auto p-0 lg:px-4 lg:gap-2 rounded bg-gray-800 text-white">
-              <ChainIcon className="w-4 h-4" chain={selectedChain} />
-              <p className={`hidden lg:block ${textStyles.body3Bold}`}>
-                {selectedChain.name}
-              </p>
-            </div>
-          </div>
-
-          <div className="relative flex items-center flex-row gap-0.5 sm:gap-1">
+        <div className="flex gap-1 w-auto sm:gap-2 ml-auto h-[30px] sm:h-9">
+          <div className="relative flex items-center flex-row gap-1 sm:gap-2">
             {status === 'disconnected' || status === 'connecting' ? (
               <ConnectButton openConnectModal={openConnectModal} />
             ) : address && connector && chainId ? (
@@ -243,7 +155,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             ) : (
               <button
                 disabled={true}
-                className="flex items-center h-8 py-0 px-3 md:px-4 rounded bg-blue-500 hover:bg-blue-600 disabled:bg-gray-800 text-white disabled:text-green-500 text-xs sm:text-sm"
+                className="flex items-center h-8 py-0 px-3 sm:px-4 rounded bg-blue-500 hover:bg-blue-600 disabled:bg-gray-800 text-white disabled:text-green-500 text-xs sm:text-sm"
               >
                 {status}
               </button>
@@ -251,20 +163,26 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
 
             <button
               onClick={() => setOpenTransactionSettingModal(true)}
-              className="w-8 h-8 p-2 bg-gray-800 rounded sm:rounded-lg flex items-center justify-center hover:bg-gray-700 cursor-pointer"
+              className="w-[30px] h-[30px] sm:w-9 sm:h-9 p-1.5 sm:p-2.5 bg-[#2b2c30] rounded sm:rounded-[10px] flex items-center justify-center hover:bg-gray-700 cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
                 fill="none"
-                className="w-full h-full"
               >
-                <path
-                  d="M8.3253 2.31736C8.75129 0.561368 11.2489 0.561368 11.6749 2.31736C11.7388 2.58102 11.8647 2.82608 12.0411 3.0322C12.2175 3.23825 12.4399 3.40005 12.6905 3.50388C12.9412 3.60773 13.213 3.65078 13.4835 3.62986C13.7541 3.60888 14.0164 3.52409 14.2481 3.38279C15.7911 2.44304 17.558 4.209 16.6183 5.75291C16.4772 5.98453 16.3921 6.24618 16.3712 6.51658C16.3503 6.78701 16.3934 7.05894 16.4972 7.30955C16.6009 7.56013 16.7629 7.78251 16.9689 7.95896C17.1748 8.13536 17.4193 8.26107 17.6827 8.32517C19.4387 8.75117 19.4387 11.2488 17.6827 11.6748C17.419 11.7387 17.174 11.8646 16.9679 12.041C16.7618 12.2174 16.6 12.4398 16.4962 12.6904C16.3923 12.9411 16.3493 13.2129 16.3702 13.4834C16.3912 13.754 16.476 14.0163 16.6173 14.248C17.557 15.7909 15.791 17.5578 14.2472 16.6181C14.0156 16.4771 13.7539 16.392 13.4835 16.3711C13.2131 16.3501 12.9411 16.3933 12.6905 16.497C12.4399 16.6008 12.2176 16.7627 12.0411 16.9687C11.8647 17.1747 11.739 17.4191 11.6749 17.6826C11.2489 19.4386 8.75129 19.4386 8.3253 17.6826C8.26136 17.4189 8.13552 17.1739 7.95908 16.9678C7.78267 16.7617 7.56027 16.5999 7.30967 16.4961C7.05904 16.3922 6.78718 16.3492 6.5167 16.3701C6.24608 16.3911 5.9838 16.4759 5.75205 16.6172C4.20914 17.557 2.44219 15.791 3.38194 14.247C3.523 14.0155 3.60805 13.7537 3.62901 13.4834C3.64994 13.213 3.60678 12.941 3.50303 12.6904C3.39927 12.4398 3.2373 12.2175 3.03135 12.041C2.82546 11.8646 2.58091 11.7389 2.31748 11.6748C0.56149 11.2488 0.56149 8.75117 2.31748 8.32517C2.58116 8.26123 2.82619 8.13538 3.03233 7.95896C3.23837 7.78255 3.40016 7.56013 3.50401 7.30955C3.60784 7.05892 3.65089 6.78706 3.62998 6.51658C3.609 6.24596 3.52421 5.98368 3.38291 5.75193C2.44304 4.20898 4.20908 2.44195 5.75303 3.38181C6.75293 3.98975 8.04913 3.45213 8.3253 2.31736ZM10.0001 6.99998C8.34325 6.99998 7.0001 8.34313 7.0001 9.99998C7.00013 11.6568 8.34327 13 10.0001 13C11.6569 12.9999 13.0001 11.6568 13.0001 9.99998C13.0001 8.34315 11.6569 7.00001 10.0001 6.99998Z"
-                  fill="white"
-                />
+                <g clipPath="url(#clip0_1_4844)">
+                  <path
+                    d="M6.66028 1.8536C7.00108 0.448804 8.99917 0.448804 9.33997 1.8536C9.39112 2.06458 9.49081 2.26093 9.63196 2.42586C9.77316 2.59084 9.95186 2.7197 10.1525 2.80282C10.3531 2.88591 10.5708 2.92019 10.7872 2.9034C11.0036 2.88657 11.2133 2.81912 11.3986 2.70614C12.6329 1.95452 14.046 3.36752 13.2941 4.60262C13.1814 4.78778 13.1136 4.99686 13.0968 5.21297C13.0801 5.42932 13.1144 5.64725 13.1974 5.84774C13.2804 6.04816 13.4106 6.22613 13.5753 6.36727C13.74 6.50828 13.9359 6.609 14.1466 6.66024C15.5509 7.00132 15.5509 8.99894 14.1466 9.33993C13.9357 9.39103 13.7393 9.49086 13.5743 9.63192C13.4094 9.77311 13.2795 9.95182 13.1964 10.1524C13.1134 10.353 13.0791 10.5708 13.0958 10.7872C13.1127 11.0036 13.1801 11.2132 13.2931 11.3985C14.045 12.6329 12.6328 14.046 11.3976 13.294C11.2123 13.1811 11.0026 13.1135 10.7863 13.0968C10.5701 13.0801 10.3528 13.1144 10.1525 13.1973C9.95199 13.2804 9.77412 13.4105 9.63294 13.5753C9.49182 13.74 9.39123 13.9358 9.33997 14.1466C8.99899 15.5509 7.00136 15.5508 6.66028 14.1466C6.60916 13.9356 6.50848 13.7393 6.36732 13.5743C6.22617 13.4094 6.04831 13.2795 5.84778 13.1964C5.64723 13.1133 5.42946 13.079 5.21302 13.0958C4.99664 13.1126 4.78702 13.1801 4.60169 13.2931C3.36737 14.045 1.95351 12.6327 2.70521 11.3975C2.81809 11.2122 2.88573 11.0026 2.90247 10.7862C2.91919 10.57 2.88485 10.3528 2.80189 10.1524C2.7189 9.95201 2.58965 9.77405 2.42493 9.6329C2.26018 9.49175 2.06444 9.39121 1.85364 9.33993C0.44885 8.99913 0.44885 7.00104 1.85364 6.66024C2.06467 6.6091 2.26094 6.50845 2.42591 6.36727C2.59067 6.2262 2.71978 6.0481 2.80286 5.84774C2.88596 5.64717 2.92021 5.42943 2.90345 5.21297C2.88667 4.99651 2.81919 4.78702 2.70618 4.60165C1.95419 3.36725 3.36747 1.95316 4.60267 2.70516C5.40263 3.19141 6.43948 2.76151 6.66028 1.8536ZM8.00013 5.59969C6.67465 5.59969 5.59974 6.67461 5.59974 8.00008C5.59987 9.32545 6.67473 10.3995 8.00013 10.3995C9.32541 10.3994 10.3994 9.32536 10.3995 8.00008C10.3995 6.67469 9.32549 5.59983 8.00013 5.59969Z"
+                    fill="#8D94A1"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_1_4844">
+                    <rect width="16" height="16" fill="white" />
+                  </clipPath>
+                </defs>
               </svg>
             </button>
 
@@ -305,7 +223,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                       transition={{ duration: 0.25 }}
                       onMouseEnter={() => setHoveredTx(transaction.txHash)}
                       onMouseLeave={() => setHoveredTx(null)}
-                      className="relative flex flex-col w-full bg-[#171b24] px-4 py-1 rounded-2xl border border-white border-opacity-10 hover:border-opacity-20 border-solid cursor-pointer transition-all duration-200"
+                      className="relative flex flex-col w-full bg-[#17181e] px-4 pb-2.5 rounded-2xl border border-white border-opacity-10 hover:border-opacity-20 border-solid cursor-pointer transition-all duration-200"
                     >
                       {hoveredTx === transaction.txHash && (
                         <button
@@ -330,7 +248,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </div>
           </div>
           <button
-            className="w-8 h-8 hover:bg-gray-700 rounded sm:rounded-lg flex items-center justify-center"
+            className="flex md:hidden sm:w-9 sm:h-9 p-1.5 sm:p-2.5 rounded sm:rounded-[10px] items-center justify-center hover:bg-gray-700 cursor-pointer"
             onClick={onMenuClick}
           >
             <MenuSvg />

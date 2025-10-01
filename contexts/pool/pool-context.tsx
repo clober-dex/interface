@@ -32,7 +32,7 @@ const Context = React.createContext<PoolContext>({
   setCurrency1Amount: () => {},
   disableSwap: false,
   setDisableSwap: () => {},
-  slippageInput: '0.99',
+  slippageInput: '0.5',
   setSlippageInput: () => {},
   lpBalances: {},
 })
@@ -45,7 +45,7 @@ export const PoolProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [currency0Amount, setCurrency0Amount] = React.useState('')
   const [currency1Amount, setCurrency1Amount] = React.useState('')
   const [disableSwap, setDisableSwap] = React.useState(false)
-  const [slippageInput, setSlippageInput] = React.useState('0.99')
+  const [slippageInput, setSlippageInput] = React.useState('0.5')
   const publicClient = useMemo(() => {
     return createPublicClient({
       chain: selectedChain,

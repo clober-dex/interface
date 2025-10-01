@@ -84,32 +84,32 @@ export const WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES: {
     },
   },
   // futures
-  {
-    poolKey:
-      '0xd2853e69b50a0e58bfcc62e54e5e206a2e994e7671ff606829dc0d33b783dd19',
-  }, // US30Y
-  {
-    poolKey:
-      '0x058038cd3b5d6ceedf3ee5f81d42338fd8a26831130abcabd1077b473cdd5650',
-  }, // EUR
-  {
-    poolKey:
-      '0x3a9ef5c24df6829cba45c34c8f59fafaf525dbba114f5d1f2cd0d48763315721',
-  }, // S&P500
-  {
-    poolKey:
-      '0x045ea7b6fb91e7bf32ca5d8bc34325a2fd70e33b6174229c05ab209221195f15',
-  }, // XAU
-  {
-    poolKey:
-      '0xf4c7b58425fdcdc201391c1ef4b7042b05586da10c5b59497cb5805f7ee3106e',
-  }, // ETHBTC
-  {
-    poolKey:
-      '0x8889f39dd8e24149e60682eec0b1e2b4185f2530d8f6b8b974018c225b9d1682',
-  }, // BTC
-  {
-    poolKey:
-      '0xd16f03f88b950ba9dbd0de0d71ed998a48db96fcca8ffb3e0a262ad098c8999b',
-  }, // USOIL
+  // {
+  //   poolKey:
+  //     '0xd2853e69b50a0e58bfcc62e54e5e206a2e994e7671ff606829dc0d33b783dd19',
+  // }, // US30Y
+  // {
+  //   poolKey:
+  //     '0x058038cd3b5d6ceedf3ee5f81d42338fd8a26831130abcabd1077b473cdd5650',
+  // }, // EUR
+  // {
+  //   poolKey:
+  //     '0x3a9ef5c24df6829cba45c34c8f59fafaf525dbba114f5d1f2cd0d48763315721',
+  // }, // S&P500
+  // {
+  //   poolKey:
+  //     '0x045ea7b6fb91e7bf32ca5d8bc34325a2fd70e33b6174229c05ab209221195f15',
+  // }, // XAU
+  // {
+  //   poolKey:
+  //     '0xf4c7b58425fdcdc201391c1ef4b7042b05586da10c5b59497cb5805f7ee3106e',
+  // }, // ETHBTC
+  // {
+  //   poolKey:
+  //     '0x8889f39dd8e24149e60682eec0b1e2b4185f2530d8f6b8b974018c225b9d1682',
+  // }, // BTC
+  // {
+  //   poolKey:
+  //     '0xd16f03f88b950ba9dbd0de0d71ed998a48db96fcca8ffb3e0a262ad098c8999b',
+  // }, // USOIL
 ]

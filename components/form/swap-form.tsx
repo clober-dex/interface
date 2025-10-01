@@ -15,12 +15,11 @@ import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
 import { ExchangeSvg } from '../svg/exchange-svg'
-import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
 import { handleCopyClipBoard } from '../../utils/string'
 import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
-import { SlippageToggle } from '../toggle/slippage-toggle'
+import { SlippageSelector } from '../selector/slippage-selector'
 import { QuestionMarkSvg } from '../svg/question-mark-svg'
 
 export type SwapFormProps = {
@@ -55,7 +54,6 @@ export type SwapFormProps = {
   selectedExecutorName: string | null
   isRefreshing: boolean
   refreshQuotesAction: () => void
-  closeSwapFormAction?: () => void
   actionButtonProps?: ActionButtonProps
 }
 
@@ -87,7 +85,6 @@ export const SwapForm = ({
   selectedExecutorName,
   isRefreshing,
   refreshQuotesAction,
-  closeSwapFormAction,
   actionButtonProps,
 }: SwapFormProps) => {
   const isLoadingResults = useMemo(() => {
@@ -136,144 +133,139 @@ export const SwapForm = ({
   }, [inputCurrency, inputCurrencyAmount, outputCurrencyAmount, quoteCurrency])
 
   return showInputCurrencySelect ? (
-    <CurrencySelect
-      chain={chain}
-      explorerUrl={explorerUrl}
-      currencies={
-        outputCurrency
-          ? currencies.filter(
-              (currency) =>
-                !isAddressEqual(currency.address, outputCurrency.address),
-            )
-          : currencies
-      }
-      balances={balances}
-      prices={prices}
-      onBack={() =>
-        setShowInputCurrencySelect
-          ? setShowInputCurrencySelect(false)
-          : undefined
-      }
-      onCurrencySelect={(currency) => {
-        if (setShowInputCurrencySelect) {
-          setCurrencies(
-            !currencies.find((c) => isAddressEqual(c.address, currency.address))
-              ? [...currencies, currency]
-              : currencies,
-          )
-          setInputCurrency(currency)
-          setShowInputCurrencySelect(false)
+    <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 max-h-full sm:h-[572px] sm:max-h-[572px]">
+      <CurrencySelect
+        chain={chain}
+        explorerUrl={explorerUrl}
+        currencies={
+          outputCurrency
+            ? currencies.filter(
+                (currency) =>
+                  !isAddressEqual(currency.address, outputCurrency.address),
+              )
+            : currencies
         }
-      }}
-      defaultBlacklistedCurrency={outputCurrency}
-    />
+        balances={balances}
+        prices={prices}
+        onBack={() =>
+          setShowInputCurrencySelect
+            ? setShowInputCurrencySelect(false)
+            : undefined
+        }
+        onCurrencySelect={(currency) => {
+          if (setShowInputCurrencySelect) {
+            setCurrencies(
+              !currencies.find((c) =>
+                isAddressEqual(c.address, currency.address),
+              )
+                ? [...currencies, currency]
+                : currencies,
+            )
+            setInputCurrency(currency)
+            setShowInputCurrencySelect(false)
+          }
+        }}
+        defaultBlacklistedCurrency={outputCurrency}
+      />
+    </div>
   ) : showOutputCurrencySelect ? (
-    <CurrencySelect
-      chain={chain}
-      explorerUrl={explorerUrl}
-      currencies={
-        inputCurrency
-          ? currencies.filter(
-              (currency) =>
-                !isAddressEqual(currency.address, inputCurrency.address),
-            )
-          : currencies
-      }
-      balances={balances}
-      prices={prices}
-      onBack={() =>
-        setShowOutputCurrencySelect
-          ? setShowOutputCurrencySelect(false)
-          : undefined
-      }
-      onCurrencySelect={(currency) => {
-        if (setShowOutputCurrencySelect) {
-          setCurrencies(
-            !currencies.find((c) => isAddressEqual(c.address, currency.address))
-              ? [...currencies, currency]
-              : currencies,
-          )
-          setOutputCurrency(currency)
-          setShowOutputCurrencySelect(false)
+    <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 max-h-full sm:h-[572px] sm:max-h-[572px]">
+      <CurrencySelect
+        chain={chain}
+        explorerUrl={explorerUrl}
+        currencies={
+          inputCurrency
+            ? currencies.filter(
+                (currency) =>
+                  !isAddressEqual(currency.address, inputCurrency.address),
+              )
+            : currencies
         }
-      }}
-      defaultBlacklistedCurrency={inputCurrency}
-    />
+        balances={balances}
+        prices={prices}
+        onBack={() =>
+          setShowOutputCurrencySelect
+            ? setShowOutputCurrencySelect(false)
+            : undefined
+        }
+        onCurrencySelect={(currency) => {
+          if (setShowOutputCurrencySelect) {
+            setCurrencies(
+              !currencies.find((c) =>
+                isAddressEqual(c.address, currency.address),
+              )
+                ? [...currencies, currency]
+                : currencies,
+            )
+            setOutputCurrency(currency)
+            setShowOutputCurrencySelect(false)
+          }
+        }}
+        defaultBlacklistedCurrency={inputCurrency}
+      />
+    </div>
   ) : (
-    <div className="flex flex-col gap-5 h-full w-full">
+    <div className="flex flex-col gap-2.5 h-full w-full">
       <Toast
         isCopyToast={isCopyToast}
         setIsCopyToast={setIsCopyToast}
         durationInMs={1300}
       >
-        <div className="w-[240px] items-center justify-center flex flex-row gap-1.5 text-white text-sm font-semibold">
+        <div className="w-[240px] items-center justify-center flex flex-row gap-1.5 text-white text-[13px] sm:text-sm font-semibold">
           <ClipboardSvg />
           Swap URL copied to clipboard
         </div>
       </Toast>
 
-      <div className="flex items-start gap-4 self-stretch">
-        <div className="flex flex-row gap-1 items-center h-6 opacity-90 text-white text-base font-semibold">
-          Swap {inputCurrency?.symbol ?? ''} &#8594;{' '}
-          {outputCurrency?.symbol ?? ''}
-          {inputCurrency && outputCurrency ? (
-            <button
-              onClick={async () => {
-                await handleCopyClipBoard(
-                  `${window.location.origin}/trade?inputCurrency=${inputCurrency?.address}&outputCurrency=${outputCurrency?.address}`,
-                )
-                setIsCopyToast(true)
-              }}
-              className="cursor-pointer p-0.5 bg-gray-800 rounded-md justify-center items-center gap-0.5 flex"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
+      <div className="flex flex-col gap-0 md:gap-2.5 self-stretch w-full rounded-2xl md:rounded-none bg-[#17181e] md:bg-transparent">
+        <div className="p-5 flex flex-col gap-4 self-stretch md:bg-[#16181d] md:rounded-2xl md:outline md:outline-1 md:outline-offset-[-1px] md:outline-[#272930]">
+          <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-[13px] sm:text-sm font-semibold">
+            <div className="flex flex-row gap-1 justify-start text-white text-[13px] font-semibold">
+              Swap {inputCurrency?.symbol ?? ''}{' '}
+              <span className="text-[#8690a5]">&#8594; </span>
+              {outputCurrency?.symbol ?? ''}
+              <button
+                onClick={async () => {
+                  await handleCopyClipBoard(
+                    `${window.location.origin}/trade?inputCurrency=${inputCurrency?.address}&outputCurrency=${outputCurrency?.address}`,
+                  )
+                  setIsCopyToast(true)
+                }}
+                className="cursor-pointer rounded-md gap-0.5 flex items-center"
               >
-                <path
-                  d="M13.3334 6.66665V4.99998C13.3334 4.55795 13.1578 4.13403 12.8452 3.82147C12.5327 3.50891 12.1087 3.33331 11.6667 3.33331H5.00004C4.55801 3.33331 4.13409 3.50891 3.82153 3.82147C3.50897 4.13403 3.33337 4.55795 3.33337 4.99998V11.6666C3.33337 12.1087 3.50897 12.5326 3.82153 12.8452C4.13409 13.1577 4.55801 13.3333 5.00004 13.3333H6.66671M6.66671 8.33331C6.66671 7.89129 6.8423 7.46736 7.15486 7.1548C7.46742 6.84224 7.89135 6.66665 8.33337 6.66665H15C15.4421 6.66665 15.866 6.84224 16.1786 7.1548C16.4911 7.46736 16.6667 7.89129 16.6667 8.33331V15C16.6667 15.442 16.4911 15.8659 16.1786 16.1785C15.866 16.4911 15.4421 16.6666 15 16.6666H8.33337C7.89135 16.6666 7.46742 16.4911 7.15486 16.1785C6.8423 15.8659 6.66671 15.442 6.66671 15V8.33331Z"
-                  stroke="#6B7280"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  className="h-4 w-4"
+                >
+                  <path
+                    d="M13.3334 6.66665V4.99998C13.3334 4.55795 13.1578 4.13403 12.8452 3.82147C12.5327 3.50891 12.1087 3.33331 11.6667 3.33331H5.00004C4.55801 3.33331 4.13409 3.50891 3.82153 3.82147C3.50897 4.13403 3.33337 4.55795 3.33337 4.99998V11.6666C3.33337 12.1087 3.50897 12.5326 3.82153 12.8452C4.13409 13.1577 4.55801 13.3333 5.00004 13.3333H6.66671M6.66671 8.33331C6.66671 7.89129 6.8423 7.46736 7.15486 7.1548C7.46742 6.84224 7.89135 6.66665 8.33337 6.66665H15C15.4421 6.66665 15.866 6.84224 16.1786 7.1548C16.4911 7.46736 16.6667 7.89129 16.6667 8.33331V15C16.6667 15.442 16.4911 15.8659 16.1786 16.1785C15.866 16.4911 15.4421 16.6666 15 16.6666H8.33337C7.89135 16.6666 7.46742 16.4911 7.15486 16.1785C6.8423 15.8659 6.66671 15.442 6.66671 15V8.33331Z"
+                    stroke="#6B7280"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="flex ml-auto mr-2">
+              <button
+                onClick={refreshQuotesAction}
+                disabled={isRefreshing}
+                className="flex w-4 h-4 sm:w-5 sm:h-5"
+              >
+                <ExchangeSvg
+                  className={`w-full h-full ${!isRefreshing ? 'hover:animate-spin' : ''}`}
                 />
-              </svg>
-            </button>
-          ) : (
-            <></>
-          )}
-        </div>
-        {closeSwapFormAction && (
-          <button
-            className="flex sm:hidden w-5 h-5 ml-auto"
-            onClick={closeSwapFormAction}
-          >
-            <CloseSvg />
-          </button>
-        )}
-      </div>
+              </button>
+            </div>
+          </div>
 
-      <div className="flex flex-col gap-5 self-stretch w-full">
-        <div className="flex flex-col gap-5 self-stretch">
-          <div className="flex flex-col w-full relative gap-5 self-stretch">
+          <div className="flex flex-col w-full relative gap-10 self-stretch">
             <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-              <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-semibold">
-                Pay
-                <div className="flex ml-auto mr-2">
-                  <button
-                    onClick={refreshQuotesAction}
-                    disabled={isRefreshing}
-                    className="flex w-4 h-4 sm:w-6 sm:h-6"
-                  >
-                    <ExchangeSvg
-                      className={`w-full h-full ${!isRefreshing ? 'hover:animate-spin' : ''}`}
-                    />
-                  </button>
-                </div>
-              </div>
               <CurrencyAmountInput
                 chain={chain}
                 currency={inputCurrency}
@@ -292,9 +284,6 @@ export const SwapForm = ({
             </div>
 
             <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-              <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-semibold">
-                Receive
-              </div>
               <CurrencyAmountInput
                 chain={chain}
                 currency={outputCurrency}
@@ -312,7 +301,7 @@ export const SwapForm = ({
                 disabled={true}
               >
                 <div
-                  className={`text-xs sm:text-sm ${priceImpact < -5 ? 'text-yellow-500' : 'text-gray-500'} flex flex-row gap-0.5 items-center`}
+                  className={`text-[13px] sm:text-sm ${priceImpact < -5 ? 'text-yellow-400' : 'text-gray-400'} flex flex-row gap-0.5 items-center`}
                 >
                   {Number.isNaN(priceImpact)
                     ? ''
@@ -332,22 +321,23 @@ export const SwapForm = ({
               </CurrencyAmountInput>
             </div>
 
-            <div className="absolute flex items-center justify-center top-[56%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 p-1 sm:p-1.5">
+            <div className="absolute flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full">
               <button
-                className="flex items-center justify-center p-0 bg-gray-700 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
+                className="flex items-center justify-center p-0 w-full h-full rounded-full transform hover:rotate-180 transition duration-300"
                 onClick={swapCurrencies}
               >
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
                   fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
+                  <circle cx="12" cy="12" r="12" fill="#24272E" />
                   <path
-                    d="M4.08335 12.25L4.08335 1.75M4.08335 12.25L2.33335 10.5M4.08335 12.25L5.83335 10.5M8.16669 3.5L9.91669 1.75M9.91669 1.75L11.6667 3.5M9.91669 1.75L9.91669 12.25"
-                    stroke="white"
-                    strokeWidth="1.4"
+                    d="M9.5 16.5L9.5 7.5M9.5 16.5L8 15M9.5 16.5L11 15M13 9L14.5 7.5M14.5 7.5L16 9M14.5 7.5L14.5 16.5"
+                    stroke="#8D94A1"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -357,27 +347,24 @@ export const SwapForm = ({
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 text-[13px] sm:text-sm font-medium">
-          <div className="flex flex-col items-start gap-2 md:gap-3 self-stretch justify-end text-white text-[13px] sm:text-sm">
+        <div className="relative px-5 md:py-5 md:bg-[#16181d] md:rounded-2xl flex flex-col gap-3 text-[13px] font-medium md:outline md:outline-1 md:outline-offset-[-1px] md:outline-[#272930] mb-5 md:mb-0">
+          <div className="flex flex-col items-start gap-2 md:gap-2.5 self-stretch justify-end text-white">
             <div className="flex items-center gap-2 self-stretch">
               <div className="text-gray-400">Gas Fee</div>
               <div className="flex ml-auto">
                 {!Number.isNaN(gasEstimateValue) ? (
-                  <div className="flex relative h-full sm:h-[20px] items-center text-xs sm:text-sm text-white ml-auto">
+                  <div className="flex relative h-full sm:h-[20px] items-center text-[13px] sm:text-sm text-white ml-auto">
                     {isLoadingResults ? (
                       <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
                     ) : (
-                      <div className="text-xs sm:text-sm text-gray-400 flex flex-row gap-1 items-center">
-                        <span className="text-white">
+                      <div className="text-gray-400 flex flex-row gap-1 items-center">
+                        <span className="text-white text-[13px] sm:text-sm font-medium">
                           ${formatSignificantString(gasEstimateValue)}
                         </span>
                         {aggregatorName.length > 0 ? (
-                          <>
-                            via
-                            <div className="text-gray-400">
-                              {aggregatorName}
-                            </div>
-                          </>
+                          <span className="text-[#8d94a1] text-[13px] sm:text-sm font-medium">
+                            via {aggregatorName}
+                          </span>
                         ) : (
                           <></>
                         )}
@@ -394,17 +381,17 @@ export const SwapForm = ({
               <div className="text-gray-400">Minimum Received</div>
               <div className="flex ml-auto">
                 {!Number.isNaN(minimumReceivedAmount) ? (
-                  <div className="flex relative h-full sm:h-[20px] items-center text-xs sm:text-sm text-white ml-auto">
+                  <div className="flex relative h-full sm:h-[20px] items-center text-[13px] sm:text-sm text-white ml-auto">
                     {isLoadingResults ? (
                       <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
                     ) : (
-                      <div className="text-xs sm:text-sm text-gray-400 flex flex-row gap-1 items-center">
-                        <span className="text-white">
-                          {formatSignificantString(
+                      <div className="text-[13px] sm:text-sm text-white flex flex-row gap-1 items-center">
+                        {formatWithCommas(
+                          formatSignificantString(
                             Number(minimumReceivedAmount),
-                          )}{' '}
-                          {quoteCurrency?.symbol ?? ''}
-                        </span>
+                          ),
+                        )}{' '}
+                        {quoteCurrency?.symbol ?? ''}
                       </div>
                     )}
                   </div>
@@ -435,11 +422,11 @@ export const SwapForm = ({
               </div>
               <div className="flex ml-auto">
                 {baseCurrency && quoteCurrency ? (
-                  <div className="flex relative h-full sm:h-[20px] items-center text-xs sm:text-sm text-white ml-auto">
+                  <div className="flex relative h-full sm:h-[20px] items-center text-[13px] sm:text-sm text-white ml-auto">
                     {isLoadingResults ? (
                       <span className="w-[50px] h-full mx-1 rounded animate-pulse bg-gray-500" />
                     ) : (
-                      <div className="text-xs sm:text-sm text-gray-400 flex flex-row gap-1 items-center">
+                      <div className="text-[13px] sm:text-sm text-gray-400 flex flex-row gap-1 items-center">
                         <span className="text-white">
                           1 {baseCurrency.symbol}
                         </span>
@@ -459,31 +446,30 @@ export const SwapForm = ({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 self-stretch">
+            <div className="flex flex-row w-full">
               <div className="text-gray-400 flex flex-row sm:flex-col gap-3">
-                <span>Max Slippage</span>
-                {selectedExecutorName && (
-                  <div className="flex ml-auto font-semibold text-blue-500">
-                    Mev Protected
-                  </div>
-                )}
+                Max Slippage
               </div>
               <div className="flex ml-auto">
-                <SlippageToggle
+                <SlippageSelector
                   slippageInput={slippageInput}
                   setSlippageInput={setSlippageInput}
                 />
               </div>
             </div>
+
+            <div className="absolute flex text-blue-500 font-semibold">
+              {selectedExecutorName && 'Mev Protected'}
+            </div>
           </div>
+
+          {actionButtonProps && (
+            <div className="flex mt-auto">
+              <ActionButton {...actionButtonProps} />
+            </div>
+          )}
         </div>
       </div>
-
-      {actionButtonProps && (
-        <div className="flex mt-auto">
-          <ActionButton {...actionButtonProps} />
-        </div>
-      )}
     </div>
   )
 }

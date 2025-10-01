@@ -13,7 +13,7 @@ const UserTransactionCard = ({
   const explorerUrl = transaction.chain?.blockExplorers?.default.url ?? ''
   return (
     <button
-      className="self-stretch py-2 flex flex-col w-full justify-start items-start gap-3 cursor-pointer"
+      className="self-stretch pt-2 flex flex-col w-full justify-start items-start gap-3 cursor-pointer"
       onClick={() =>
         explorerUrl &&
         window.open(`${explorerUrl}/tx/${transaction.txHash}`, '_blank')
@@ -27,7 +27,7 @@ const UserTransactionCard = ({
           <div className="flex flex-row gap-2 items-center">
             {isPending ? (
               <div
-                className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-green-500 border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-blue-500 border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"
                 role="status"
               />
             ) : transaction.success ? (
@@ -44,12 +44,12 @@ const UserTransactionCard = ({
                   width="14.5"
                   height="14.5"
                   rx="7.25"
-                  stroke="#3B82F6"
+                  className="stroke-blue-400"
                   strokeWidth="1.5"
                 />
                 <path
                   d="M4 7.76923L7.2 11L12 5"
-                  stroke="#3B82F6"
+                  className="stroke-blue-400"
                   strokeWidth="1.5"
                 />
               </svg>

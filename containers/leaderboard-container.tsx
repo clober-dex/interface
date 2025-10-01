@@ -167,7 +167,7 @@ function Heatmap({ userDailyVolumes, monthLabels }: HeatmapProps) {
   return (
     <div ref={containerRef} className="relative w-full">
       <div ref={scrollRef} className="overflow-x-auto overflow-y-hidden">
-        <div className="min-w-[800px] sm:min-w-[964px] max-w-[964px] h-[158px] sm:h-[227px] relative bg-[#18212f] rounded-3xl p-4 sm:p-6 mx-auto">
+        <div className="min-w-[800px] sm:min-w-[964px] max-w-[964px] h-[158px] sm:h-[227px] relative bg-neutral-900 rounded-3xl p-4 sm:p-6 mx-auto lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
           <div className="absolute top-0 left-0 w-full h-full rounded-3xl pointer-events-none" />
 
           <div className="flex gap-[3px] sm:gap-[5px] mt-[24px] sm:mt-[32px]">
@@ -272,9 +272,9 @@ function Heatmap({ userDailyVolumes, monthLabels }: HeatmapProps) {
 }
 
 export const LeaderboardContainer = () => {
-  const [tab, setTab] = useState<'vault' | 'volume' | 'competition-season1'>(
-    'volume',
-  )
+  const [tab, setTab] = useState<
+    'vault' | 'volume' | 'competition-season1' | 'competition-season2'
+  >('volume')
   const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
   const tradingCompetitionSeason1 = new TradingCompetition({
@@ -287,6 +287,13 @@ export const LeaderboardContainer = () => {
       '0x605fCbDCba6C99b70A0028593a61CA9205e93739',
       '0x255EC4A7dfefeed4889DbEB03d7aC06ADcCc2D24',
     ],
+  })
+
+  const tradingCompetitionSeason2 = new TradingCompetition({
+    subgraphEndpoint:
+      CHAIN_CONFIG.EXTERNAL_SUBGRAPH_ENDPOINTS.TRADING_COMPETITION_SEASON2,
+    seasonEndTimestamp: 1756684800,
+    blacklistedUserAddresses: ['0x5F79EE8f8fA862E98201120d83c4eC39D9468D49'],
   })
 
   // user data
@@ -363,6 +370,23 @@ export const LeaderboardContainer = () => {
     initialData: null,
   })
 
+  const { data: myTradingCompetitionSeason2PnL } = useQuery({
+    queryKey: [
+      'trading-competition-season2-user-pnl',
+      selectedChain.id,
+      userAddress,
+    ],
+    queryFn: async () => {
+      if (!userAddress) {
+        return null
+      }
+      return tradingCompetitionSeason2.getUserPnL({
+        userAddress,
+      })
+    },
+    initialData: null,
+  })
+
   // leaderboards
   const { data: allUserNativeVolume } = useQuery({
     queryKey: ['native-volume-leaderboard', selectedChain.id],
@@ -392,6 +416,15 @@ export const LeaderboardContainer = () => {
     queryKey: ['trading-competition-season1-leader-board', selectedChain.id],
     queryFn: async () => {
       return tradingCompetitionSeason1.getTradingCompetitionLeaderboard({
+        maxUsers: 1000,
+      })
+    },
+  })
+
+  const { data: allUserTradingCompetitionSeason2PnL } = useQuery({
+    queryKey: ['trading-competition-season2-leader-board', selectedChain.id],
+    queryFn: async () => {
+      return tradingCompetitionSeason2.getTradingCompetitionLeaderboard({
         maxUsers: 1000,
       })
     },
@@ -428,20 +461,30 @@ export const LeaderboardContainer = () => {
     return 0
   }, [allUserTradingCompetitionSeason1PnL, userAddress])
 
+  const myTradingCompetitionSeason2Rank = useMemo(() => {
+    if (allUserTradingCompetitionSeason2PnL && userAddress) {
+      const index = Object.keys(allUserTradingCompetitionSeason2PnL).findIndex(
+        (address) => isAddressEqual(getAddress(address), userAddress),
+      )
+      return index + 1
+    }
+    return 0
+  }, [allUserTradingCompetitionSeason2PnL, userAddress])
+
   const countUpFormatter = useCallback((value: number): string => {
     return formatWithCommas(value.toFixed(2))
   }, [])
 
   return (
-    <div className="w-full flex items-center flex-col text-white px-4 gap-8">
+    <div className="w-full flex items-center flex-col text-white px-4 gap-8 mt-16 md:mt-12">
       <div className="w-full lg:w-[960px] flex flex-col sm:gap-12 items-center">
         {userAddress && (
-          <div className="flex w-full h-20 mt-6 sm:mt-0 sm:h-28 px-4 justify-start items-center gap-3 sm:gap-4">
-            <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">
-              <div className="text-center text-gray-400 text-sm sm:text-base font-semibold text-nowrap">
+          <div className="flex w-full h-20 mt-14 sm:mt-0 sm:h-28 px-4 justify-start items-center gap-3 sm:gap-4">
+            <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-neutral-900 rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+              <div className="text-center text-gray-400 text-xs sm:text-sm font-medium text-nowrap">
                 Volume Point
               </div>
-              <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">
+              <div className="self-stretch text-center text-white text-base sm:text-xl font-semibold">
                 <CountUp
                   end={myNativeVolume / 10}
                   formattingFn={countUpFormatter}
@@ -452,11 +495,11 @@ export const LeaderboardContainer = () => {
               </div>
             </div>
 
-            <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-[rgba(96,165,250,0.10)] rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex bg-gray-800">
-              <div className="text-center text-gray-400 text-sm sm:text-base font-semibold text-nowrap">
+            <div className="grow shrink basis-0 h-full px-6 py-4 sm:px-8 sm:py-6 bg-neutral-900 rounded-xl sm:rounded-2xl flex-col justify-center items-center gap-3 inline-flex lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
+              <div className="text-center text-gray-400 text-xs sm:text-sm font-medium text-nowrap">
                 Vault Point
               </div>
-              <div className="self-stretch text-center text-white text-lg sm:text-2xl font-bold">
+              <div className="self-stretch text-center text-white text-base sm:text-xl font-semibold">
                 <CountUp
                   end={myVaultPoint}
                   formattingFn={countUpFormatter}
@@ -474,29 +517,36 @@ export const LeaderboardContainer = () => {
 
       <div className="w-full md:flex md:justify-center relative">
         <div className="flex flex-col items-center gap-3 sm:gap-4 mt-12 mb-4 md:w-[616px]">
-          <div className="w-full flex flex-col gap-4 sm:gap-0 sm:flex-row text-white text-sm sm:text-lg font-bold">
+          <div className="w-full flex flex-col gap-4 sm:gap-0 sm:flex-row text-white text-sm sm:text-base font-semibold">
             <span className="text-center sm:text-left">Leaderboard</span>
             <div className="flex ml-auto gap-1">
               <button
                 onClick={() => setTab('volume')}
                 disabled={tab === 'volume'}
-                className="flex text-sm font-semibold w-full items-center justify-center px-4 sm:px-5 py-1.5 disabled:bg-blue-500/30 rounded-[10px]"
+                className="flex text-xs sm:text-sm font-medium w-full items-center justify-center px-4 sm:px-5 py-1.5 disabled:bg-blue-500/30 rounded-[10px]"
               >
                 Volume
               </button>
               <button
                 onClick={() => setTab('vault')}
                 disabled={tab === 'vault'}
-                className="flex text-sm font-semibold w-full items-center justify-center px-4 sm:px-5 py-1.5 disabled:bg-blue-500/30 rounded-[10px]"
+                className="flex text-xs sm:text-sm font-medium w-full items-center justify-center px-4 sm:px-5 py-1.5 disabled:bg-blue-500/30 rounded-[10px]"
               >
                 Vault
               </button>
               <button
                 onClick={() => setTab('competition-season1')}
                 disabled={tab === 'competition-season1'}
-                className="flex text-sm font-semibold w-full items-center justify-center px-4 sm:px-5 py-1.5 disabled:bg-blue-500/30 rounded-[10px]"
+                className="flex text-xs sm:text-sm font-medium w-full items-center justify-center px-4 sm:px-5 py-1.5 disabled:bg-blue-500/30 rounded-[10px]"
               >
                 Season1
+              </button>
+              <button
+                onClick={() => setTab('competition-season2')}
+                disabled={tab === 'competition-season2'}
+                className="flex text-sm font-medium w-full items-center justify-center px-4 sm:px-5 py-1.5 disabled:bg-blue-500/30 rounded-[10px]"
+              >
+                Season2
               </button>
             </div>
           </div>
@@ -516,7 +566,7 @@ export const LeaderboardContainer = () => {
                       ? `Total ${CHAIN_CONFIG.CHAIN.nativeCurrency.symbol} Volume`
                       : tab === 'vault'
                         ? 'Lp Balance'
-                        : 'Season1 PnL'}
+                        : 'PnL'}
                   </div>
                 </div>
               </div>
@@ -595,6 +645,35 @@ export const LeaderboardContainer = () => {
                   }
                   values={Object.entries(
                     allUserTradingCompetitionSeason1PnL,
+                  ).map(([address, { totalPnl }], index) => ({
+                    address: getAddress(address),
+                    value: `${formatWithCommas(totalPnl.toFixed(4))}`,
+                    rank: index + 1,
+                  }))}
+                  maxDisplayRank={1000}
+                />
+              ) : (
+                <Loading />
+              )}
+            </>
+          )}
+
+          {tab === 'competition-season2' && (
+            <>
+              {allUserTradingCompetitionSeason2PnL ? (
+                <LeaderBoard
+                  explorerUrl={selectedChain.blockExplorers?.default.url ?? ''}
+                  myValue={
+                    userAddress
+                      ? {
+                          address: userAddress,
+                          rank: myTradingCompetitionSeason2Rank,
+                          value: `${formatWithCommas((myTradingCompetitionSeason2PnL?.totalPnl ?? 0).toFixed(4))}`,
+                        }
+                      : undefined
+                  }
+                  values={Object.entries(
+                    allUserTradingCompetitionSeason2PnL,
                   ).map(([address, { totalPnl }], index) => ({
                     address: getAddress(address),
                     value: `${formatWithCommas(totalPnl.toFixed(4))}`,

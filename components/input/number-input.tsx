@@ -1,10 +1,12 @@
 import React, { useCallback } from 'react'
 
+import { formatWithCommas } from '../../utils/bignumber'
+
 const NumberInput = ({
   value,
   onValueChange,
   supportNegative = false,
-  maxLength = 15,
+  maxLength = 10,
   ...props
 }: {
   value: string
@@ -28,7 +30,9 @@ const NumberInput = ({
     },
     [maxLength, onValueChange, supportNegative],
   )
-  return <input value={value} onChange={handleChange} {...props} />
+  return (
+    <input value={formatWithCommas(value)} onChange={handleChange} {...props} />
+  )
 }
 
 export default NumberInput

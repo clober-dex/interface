@@ -10,6 +10,7 @@ import {
 import CloberDatafeed from '../model/datafeed/clober-datafeed'
 import { SUPPORTED_INTERVALS } from '../utils/chart'
 import { Currency } from '../model/currency'
+import { CHAIN_CONFIG } from '../chain-configs'
 
 function getLanguageFromURL(): LanguageCode | null {
   const regex = new RegExp('[\\?&]lang=([^&#]*)')
@@ -75,18 +76,16 @@ export const TradingViewChartContainer = ({
       timezone: Intl.DateTimeFormat().resolvedOptions()
         .timeZone as CustomTimezones,
       autosize: true,
-      toolbar_bg: '#111827',
+      toolbar_bg: '#17181e',
       loading_screen: {
-        backgroundColor: '#111827',
-        foregroundColor: '#111827',
+        backgroundColor: '#17181e',
+        foregroundColor: '#17181e',
       },
-    })
-
-    tvWidget.onChartReady(() => {
-      tvWidget.applyOverrides({
-        'paneProperties.backgroundGradientStartColor': '#111827',
-        'paneProperties.backgroundGradientEndColor': '#111827',
-      })
+      overrides: {
+        'paneProperties.background': '#17181e',
+        'paneProperties.backgroundGradientStartColor': '#17181e',
+        'paneProperties.backgroundGradientEndColor': '#17181e',
+      },
     })
 
     return () => {
@@ -97,20 +96,20 @@ export const TradingViewChartContainer = ({
   return (
     <>
       {fullscreen && (
-        <div className="flex flex-col rounded-2xl bg-[#171b24] overflow-hidden min-h-[280px] w-full md:w-[480px] lg:w-[740px]" />
+        <div className="flex flex-col rounded-2xl bg-[#17181e] overflow-hidden min-h-[280px] w-full md:w-[480px] xl:w-[740px] xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930]" />
       )}
       <div
-        className={`flex flex-col bg-[#171b24] overflow-hidden ${
+        className={`xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930] flex flex-col bg-[#17181e] overflow-hidden ${
           fullscreen
             ? 'w-full fixed left-0 top-0 right-0 bottom-0 z-10'
-            : 'rounded-2xl min-h-[280px] h-[300px] lg:h-full w-full md:w-[480px] lg:w-[740px] z-[0]'
+            : 'rounded-2xl min-h-[280px] h-[481px] xl:h-full w-full md:w-[480px] xl:w-[740px] z-[0]'
         }`}
       >
         <div className="left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 px-4 py-2">
-          {setShowOrderBook && (
+          {!CHAIN_CONFIG.HIDE_ORDERBOOK && setShowOrderBook && (
             <button
               onClick={() => setShowOrderBook(true)}
-              className="hidden lg:flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
+              className="hidden xl:flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -122,10 +121,10 @@ export const TradingViewChartContainer = ({
                 <g clipPath="url(#clip0_164_5640)">
                   <path
                     d="M10.6304 8.5H1.63037M10.6304 8.5L9.13037 10M10.6304 8.5L9.13037 7M3.13037 5L1.63037 3.5M1.63037 3.5L3.13037 2M1.63037 3.5H10.6304"
-                    stroke="#3B82F6"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    className="stroke-blue-400"
                   />
                 </g>
                 <defs>
@@ -139,7 +138,7 @@ export const TradingViewChartContainer = ({
                   </clipPath>
                 </defs>
               </svg>
-              <div className="text-center text-blue-400 text-[13px] font-semibold">
+              <div className="text-center text-blue-400 text-[13px] font-medium">
                 View OrderBook
               </div>
             </button>

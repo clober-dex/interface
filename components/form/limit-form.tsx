@@ -221,21 +221,15 @@ export const LimitForm = ({
     />
   ) : (
     <div className="flex flex-col gap-5 h-full w-full">
-      <div className="flex flex-col gap-6 self-stretch w-full">
+      <div className="flex flex-col gap-4 self-stretch w-full px-5">
         <div className="flex items-start gap-4 self-stretch">
-          <div className="flex flex-row gap-2 items-center h-6 opacity-90 text-white text-base font-semibold">
-            {isBid ? (
-              <div className="px-1.5 sm:px-2 py-0.5 bg-green-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-green-500 text-xs sm:text-sm">
-                Bid
-              </div>
-            ) : (
-              <div className="px-1.5 sm:px-2 py-0.5 bg-red-500/25 rounded-sm sm:rounded-lg justify-center items-center flex text-center text-red-500 text-xs sm:text-sm">
-                Ask
-              </div>
-            )}{' '}
-            {selectedMarket?.base?.symbol} at rate
+          <div className="flex flex-row gap-1 text-[#8d94a1] text-[13px] font-medium h-full justify-start">
+            <span className={`${isBid ? 'text-green-400' : 'text-red-400'}`}>
+              {isBid ? 'Buy' : 'Sell'}
+            </span>{' '}
+            {isBid ? outputCurrency?.symbol : inputCurrency?.symbol} at rate
             {onChainPrice > 0 && priceDeviationPercent >= 10000 ? (
-              <div className="text-xs sm:text-sm font-semibold text-green-400">
+              <div className="text-green-400 text-[13px] font-medium">
                 (&gt;10000%)
               </div>
             ) : priceDeviationPercent === -100 ? (
@@ -246,7 +240,7 @@ export const LimitForm = ({
               <div
                 className={`text-gray-200 ${
                   priceDeviationPercent >= 0 ? 'text-green-400' : 'text-red-400'
-                } sm:text-sm font-semibold`}
+                }`}
               >
                 ({priceDeviationPercent.toFixed(2)}%)
               </div>
@@ -256,7 +250,7 @@ export const LimitForm = ({
           </div>
           {closeLimitFormAction && (
             <button
-              className="flex sm:hidden w-5 h-5 ml-auto"
+              className="flex sm:hidden w-3 sm:w-4 h-3 sm:h-3 ml-auto"
               onClick={closeLimitFormAction}
             >
               <CloseSvg />
@@ -267,10 +261,10 @@ export const LimitForm = ({
         <div className="flex flex-col gap-5 self-stretch w-full">
           <div className="flex flex-col gap-5 self-stretch">
             <div className="flex flex-col gap-3 self-stretch">
-              <div className="h-[92px] sm:h-[104px] items-center hover:ring-1 hover:ring-gray-700 flex rounded-xl border-solid border-2 border-gray-700 p-4">
-                <div className="flex flex-col flex-1 gap-2">
+              <div className="hover:ring-1 hover:ring-gray-700 self-stretch p-4 bg-[#24272e] rounded-xl outline outline-1 outline-offset-[-1px] outline-[#39393b] flex justify-center items-start gap-[14px]">
+                <div className="flex flex-col flex-1 gap-2 w-full items-end">
                   {setMarketRateAction && setMarketRateAction.isLoading ? (
-                    <span className="flex justify-start items-start w-[235px] sm:w-[340px] h-[28px] sm:h-[36px] rounded animate-pulse bg-gray-500" />
+                    <span className="flex w-full h-[28px] sm:h-[33px] rounded animate-pulse bg-gray-500" />
                   ) : (
                     <NumberInput
                       value={priceInput}
@@ -278,10 +272,10 @@ export const LimitForm = ({
                         setDebouncedPriceInput(value)
                         setPriceInput(value)
                       }}
-                      className="text-xl w-full sm:text-3xl bg-transparent placeholder-gray-500 text-white outline-none"
+                      className="text-xl w-full sm:text-[28px] font-medium bg-transparent placeholder-gray-500 text-white outline-none text-right"
                     />
                   )}
-                  <div className="h-6 justify-start items-start gap-1 sm:gap-1.5 flex">
+                  <div className="h-[22px] justify-start items-start gap-1 sm:gap-1.5 flex">
                     {setMarketRateAction ? (
                       <button
                         disabled={false}
@@ -289,7 +283,7 @@ export const LimitForm = ({
                           setDebouncedPriceInput('')
                           await setMarketRateAction.action()
                         }}
-                        className="text-center text-blue-400 text-xs font-semibold px-1.5 py-[5px] sm:px-2 sm:py-[5px] bg-blue-500/25 rounded-xl justify-center items-center gap-2.5 flex"
+                        className="px-2 py-1 bg-blue-400/25 rounded-xl inline-flex justify-center items-center gap-2.5 text-center text-blue-300 text-[11px] sm:text-xs font-medium"
                       >
                         Set to market rate
                       </button>
@@ -306,7 +300,7 @@ export const LimitForm = ({
                         selectedMarket &&
                         inputCurrency &&
                         outputCurrency &&
-                        minimumDecimalPlaces &&
+                        minimumDecimalPlaces !== undefined &&
                         !new BigNumber(priceInput).isNaN()
                       ) {
                         if (new BigNumber(priceInput).gte(maximumPrice)) {
@@ -351,17 +345,19 @@ export const LimitForm = ({
                         }
                       }
                     }}
-                    className="cursor-pointer group group-hover:ring-1 group-hover:ring-gray-700 flex w-full h-full bg-gray-800 rounded flex-col items-center justify-center gap-1"
+                    className="cursor-pointer group group-hover:ring-1 group-hover:ring-gray-700 flex w-full h-full bg-[#3e3e41] rounded flex-col items-center justify-center gap-1 px-4 py-2.5"
                   >
                     <svg
-                      className="group-hover:stroke-white stroke-[#9CA3AF] w-[12px] h-[7px] sm:w-[14px] sm:h-[8px]"
                       xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 12 7"
+                      width="12"
+                      height="8"
+                      viewBox="0 0 12 8"
                       fill="none"
                     >
                       <path
-                        d="M11 6L6 1L1 6"
-                        strokeWidth="1.5"
+                        d="M11 6.5L6 1.5L1 6.5"
+                        stroke="#8D94A1"
+                        strokeWidth="1.8"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
@@ -374,7 +370,7 @@ export const LimitForm = ({
                         selectedMarket &&
                         inputCurrency &&
                         outputCurrency &&
-                        minimumDecimalPlaces &&
+                        minimumDecimalPlaces !== undefined &&
                         !new BigNumber(priceInput).isNaN()
                       ) {
                         if (new BigNumber(priceInput).gte(maximumPrice)) {
@@ -419,17 +415,19 @@ export const LimitForm = ({
                         }
                       }
                     }}
-                    className="cursor-pointer group group-hover:ring-1 group-hover:ring-gray-700 flex w-full h-full bg-gray-800 rounded flex-col items-center justify-center gap-1"
+                    className="cursor-pointer group group-hover:ring-1 group-hover:ring-gray-700 flex w-full h-full bg-[#3e3e41] rounded flex-col items-center justify-center gap-1 px-4 py-2.5"
                   >
                     <svg
-                      className="group-hover:stroke-white stroke-[#9CA3AF] w-[12px] h-[7px] sm:w-[14px] sm:h-[8px]"
                       xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 12 7"
+                      width="12"
+                      height="8"
+                      viewBox="0 0 12 8"
                       fill="none"
                     >
                       <path
-                        d="M1 1L6 6L11 1"
-                        strokeWidth="1.5"
+                        d="M1 1.5L6 6.5L11 1.5"
+                        stroke="#8D94A1"
+                        strokeWidth="1.8"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
@@ -439,11 +437,11 @@ export const LimitForm = ({
               </div>
             </div>
 
-            <div className="flex flex-col w-full relative gap-5 self-stretch">
-              <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-                <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-semibold">
+            <div className="flex flex-col w-full relative gap-4 self-stretch">
+              <div className="flex flex-col w-full gap-2.5 sm:gap-4 self-stretch items-start">
+                <span className="text-[#8d94a1] text-[13px] font-medium">
                   Pay
-                </div>
+                </span>
                 <CurrencyAmountInput
                   chain={chain}
                   currency={inputCurrency}
@@ -461,10 +459,10 @@ export const LimitForm = ({
                 />
               </div>
 
-              <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-                <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-semibold">
+              <div className="flex flex-col w-full gap-2.5 sm:gap-4 self-stretch items-start">
+                <span className="text-[#8d94a1] text-[13px] font-medium">
                   Receive
-                </div>
+                </span>
                 <CurrencyAmountInput
                   chain={chain}
                   currency={outputCurrency}
@@ -507,7 +505,7 @@ export const LimitForm = ({
             </div>
           </div>
 
-          <div className="flex justify-end text-white text-[13px] sm:text-sm h-5">
+          <div className="flex sm:hidden justify-end text-white text-[13px] sm:text-sm h-1 sm:h-0">
             {/*<CheckIcon*/}
             {/*  checked={isPostOnly}*/}
             {/*  onCheck={() => setIsPostOnly((prevState) => !prevState)}*/}
@@ -518,7 +516,7 @@ export const LimitForm = ({
       </div>
 
       {actionButtonProps && (
-        <div className="flex mt-auto">
+        <div className="flex mt-auto px-5">
           <ActionButton {...actionButtonProps} />
         </div>
       )}

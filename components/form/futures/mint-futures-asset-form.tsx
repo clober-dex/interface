@@ -39,7 +39,7 @@ export const MintFuturesAssetForm = ({
 } & React.PropsWithChildren) => {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 bg-[#171b24] rounded-xl sm:rounded-3xl p-4 sm:p-6 sm:pb-8 w-full sm:w-[480px]">
+      <div className="flex flex-col gap-4 bg-[#17181e] rounded-xl sm:rounded-3xl p-4 sm:p-6 sm:pb-8 w-full sm:w-[480px]">
         <div className="flex flex-col gap-4">
           <div className="font-bold text-sm sm:text-lg">
             How much collateral would you like to add?
@@ -69,7 +69,7 @@ export const MintFuturesAssetForm = ({
           />
         </div>
       </div>
-      <div className="flex flex-col gap-6 bg-[#171b24] rounded-xl sm:rounded-3xl p-4 sm:p-6 w-full sm:w-[480px]">
+      <div className="flex flex-col gap-6 bg-[#17181e] rounded-xl sm:rounded-3xl p-4 sm:p-6 w-full sm:w-[480px]">
         <div className="flex flex-col items-start gap-6 self-stretch">
           <div className="font-bold text-sm sm:text-lg">
             Transaction Overview

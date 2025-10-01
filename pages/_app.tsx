@@ -26,7 +26,6 @@ import { LimitContractProvider } from '../contexts/trade/limit-contract-context'
 import Panel from '../components/panel'
 import ErrorBoundary from '../components/error-boundary'
 import { CurrencyProvider } from '../contexts/currency-context'
-import Footer from '../components/footer'
 import { TradeProvider } from '../contexts/trade/trade-context'
 import { SwapContractProvider } from '../contexts/trade/swap-contract-context'
 import { PoolProvider } from '../contexts/pool/pool-context'
@@ -34,6 +33,8 @@ import { PoolContractProvider } from '../contexts/pool/pool-contract-context'
 import { FuturesProvider } from '../contexts/futures/futures-context'
 import { FuturesContractProvider } from '../contexts/futures/futures-contract-context'
 import { CHAIN_CONFIG, getClientConfig } from '../chain-configs'
+import Sidebar from '../components/sidebar'
+import { BlockNumberWidget } from '../components/block-number-widget'
 
 const CacheProvider = ({ children }: React.PropsWithChildren) => {
   const queryClient = useQueryClient()
@@ -124,9 +125,14 @@ const PanelWrapper = ({
   )
 }
 
+const SidebarWrapper = ({ children }: React.PropsWithChildren) => {
+  const router = useRouter()
+  return <Sidebar router={router}>{children}</Sidebar>
+}
+
 const FooterWrapper = () => {
   const { lastIndexedBlockNumber } = useTransactionContext()
-  return <Footer lastIndexedBlockNumber={lastIndexedBlockNumber} />
+  return <BlockNumberWidget latestBlockNumber={lastIndexedBlockNumber} />
 }
 
 function App({ Component, pageProps }: AppProps) {
@@ -150,24 +156,6 @@ function App({ Component, pageProps }: AppProps) {
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [handlePopState])
-
-  const getBackground = (pathname: string) => {
-    if (pathname.includes('/trade')) {
-      return "lg:bg-[url('../public/chain-configs/background/trade-background.png')] lg:bg-top"
-    } else if (pathname.includes('/earn')) {
-      return "bg-[url('../public/chain-configs/background/base-background.png')] bg-top"
-    } else if (pathname.includes('/futures')) {
-      return "bg-[url('../public/chain-configs/background/base-background.png')] bg-top"
-    } else if (pathname.includes('/discover')) {
-      return "lg:bg-[url('../public/chain-configs/background/base-background.png')] bg-top"
-    } else if (pathname.includes('/point')) {
-      return "sm:bg-[url('../public/chain-configs/background/base-background.png')] bg-top"
-    } else if (pathname.includes('/trading-competition')) {
-      return "sm:bg-[url('../public/chain-configs/background/trading-competition-background.png')] bg-top"
-    } else if (pathname.includes('/leaderboard')) {
-      return "sm:bg-[url('../public/chain-configs/background/trading-competition-background.png')] bg-top"
-    }
-  }
 
   useEffect(() => {
     const sendPageView = (pathname: string, search: string) => {
@@ -249,26 +237,39 @@ function App({ Component, pageProps }: AppProps) {
           <ChainProvider>
             <TransactionProvider>
               <CurrencyProvider>
-                <div
-                  className={`flex flex-col w-[100vw] min-h-[100vh] bg-[#0F1013] text-white ${getBackground(
-                    router.pathname,
-                  )} bg-right bg-no-repeat`}
-                >
+                <div className="relative flex flex-col w-[100vw] min-h-[100vh] bg-[#0F1013] text-white bg-right bg-no-repeat">
                   <PanelWrapper open={open} setOpen={setOpen} />
+                  <SidebarWrapper />
                   <HeaderContainer onMenuClick={() => setOpen(true)} />
 
-                  {router.pathname.includes('/trade') ? (
+                  {router.pathname.includes('/discover') ? (
                     <TradeProvidersWrapper>
-                      <div className="flex flex-1 relative justify-center">
-                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[20px] md:mt-[56px]">
+                      <div className="flex flex-1 relative xl:w-full xl:justify-center">
+                        <div className="flex w-full flex-col xl:items-center gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] md:mt-[56px]">
                           <Component {...pageProps} />
                         </div>
                       </div>
                     </TradeProvidersWrapper>
-                  ) : router.pathname.includes('/earn') ? (
+                  ) : router.pathname.includes('/trade') ? (
+                    <TradeProvidersWrapper>
+                      <div className="flex flex-1 relative justify-center">
+                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[108px]">
+                          <Component {...pageProps} />
+                        </div>
+                      </div>
+                    </TradeProvidersWrapper>
+                  ) : router.pathname.includes('/earn/[poolKey]') ? (
                     <PoolProvidersWrapper>
                       <div className="flex flex-1 relative justify-center">
-                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0">
+                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[112px]">
+                          <Component {...pageProps} />
+                        </div>
+                      </div>
+                    </PoolProvidersWrapper>
+                  ) : router.pathname.includes('/earn') ? (
+                    <PoolProvidersWrapper>
+                      <div className="flex flex-1 relative xl:w-full xl:justify-center">
+                        <div className="flex w-full flex-col xl:items-center gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] sm:mt-10 md:mt-[56px]">
                           <Component {...pageProps} />
                         </div>
                       </div>

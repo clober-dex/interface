@@ -1,8 +1,9 @@
 import React from 'react'
 import BigNumber from 'bignumber.js'
 import { Market } from '@clober/v2-sdk'
+import { motion } from 'framer-motion'
 
-import { formatSignificantString } from '../utils/bignumber'
+import { formatSignificantString, formatWithCommas } from '../utils/bignumber'
 
 import { Loading } from './loading'
 
@@ -46,7 +47,7 @@ export default function OrderBook({
       <div className="flex items-center justify-between">
         <button
           onClick={() => setShowOrderBook(false)}
-          className="hidden lg:flex w-[140px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
+          className="hidden xl:flex w-[140px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +59,7 @@ export default function OrderBook({
             <g clipPath="url(#clip0_164_5640)">
               <path
                 d="M10.6304 8.5H1.63037M10.6304 8.5L9.13037 10M10.6304 8.5L9.13037 7M3.13037 5L1.63037 3.5M1.63037 3.5L3.13037 2M1.63037 3.5H10.6304"
-                stroke="#3B82F6"
+                className="stroke-blue-400"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -75,14 +76,14 @@ export default function OrderBook({
               </clipPath>
             </defs>
           </svg>
-          <div className="text-center text-blue-400 text-[13px] font-semibold">
+          <div className="text-center text-blue-400 text-[13px] font-medium">
             View Chart
           </div>
         </button>
       </div>
 
       {/*mobile*/}
-      <div className="flex lg:hidden text-xs overflow-hidden relative h-full">
+      <div className="flex xl:hidden text-xs overflow-hidden relative h-full">
         {market ? (
           <>
             <div className="flex flex-1 flex-col basis-0">
@@ -107,17 +108,24 @@ export default function OrderBook({
                       }}
                     >
                       <div className="text-gray-200">
-                        {formatSignificantString(size)}
+                        {formatWithCommas(formatSignificantString(size))}
                       </div>
-                      <div className="text-green-500">{price}</div>
-                      <div
+                      <div className="text-green-500">
+                        {formatWithCommas(price)}
+                      </div>
+                      <motion.div
+                        key={`bid-bar-${price}-${size}`}
                         className="absolute h-full right-0 bg-[#39e79f]/10"
-                        style={{
+                        initial={{ backgroundColor: '#39e79f40', scaleY: 1 }}
+                        animate={{
                           width: `${new BigNumber(size)
                             .div(biggestDepth)
                             .multipliedBy(100)
                             .toNumber()}%`,
+                          backgroundColor: ['#39e79f80', '#39e79f20'],
+                          scaleY: [1, 1.05, 1],
                         }}
+                        transition={{ duration: 0.6, ease: 'easeInOut' }}
                       />
                     </button>
                   )
@@ -144,18 +152,25 @@ export default function OrderBook({
                         setTab('limit')
                       }}
                     >
-                      <div className="text-red-500">{price}</div>
-                      <div className="text-gray-200">
-                        {formatSignificantString(size)}
+                      <div className="text-red-500">
+                        {formatWithCommas(price)}
                       </div>
-                      <div
+                      <div className="text-gray-200">
+                        {formatWithCommas(formatSignificantString(size))}
+                      </div>
+                      <motion.div
+                        key={`ask-bar-${price}-${size}`}
                         className="absolute h-full left-0 bg-red-500/10"
-                        style={{
+                        initial={{ backgroundColor: '#ff000040', scaleY: 1 }}
+                        animate={{
                           width: `${new BigNumber(size)
                             .div(biggestDepth)
                             .multipliedBy(100)
                             .toNumber()}%`,
+                          backgroundColor: ['#ff000080', '#ff000020'],
+                          scaleY: [1, 1.05, 1],
                         }}
+                        transition={{ duration: 0.6, ease: 'easeInOut' }}
                       />
                     </button>
                   )
@@ -168,7 +183,7 @@ export default function OrderBook({
       </div>
 
       {/*pc*/}
-      <div className="hidden lg:flex flex-col w-full h-full gap-[20px] text-[13px]">
+      <div className="hidden xl:flex flex-col w-full h-full gap-[20px] text-[13px]">
         <div className="w-full h-4 justify-start items-center gap-6 flex">
           <div className="grow shrink basis-0 h-4 justify-end items-start gap-4 flex">
             <div className="flex-1 text-left text-gray-500 text-xs font-medium">
@@ -208,17 +223,24 @@ export default function OrderBook({
                         }}
                       >
                         <div className="flex-1 text-left text-gray-200">
-                          {formatSignificantString(size)}
+                          {formatWithCommas(formatSignificantString(size))}
                         </div>
-                        <div className="text-right text-green-500">{price}</div>
-                        <div
+                        <div className="text-right text-green-500">
+                          {formatWithCommas(price)}
+                        </div>
+                        <motion.div
+                          key={`bid-bar-${price}-${size}`}
                           className="absolute h-full right-0 bg-[#39e79f]/10"
-                          style={{
+                          initial={{ backgroundColor: '#39e79f40', scaleY: 1 }}
+                          animate={{
                             width: `${new BigNumber(size)
                               .div(biggestDepth)
                               .multipliedBy(100)
                               .toNumber()}%`,
+                            backgroundColor: ['#39e79f80', '#39e79f20'],
+                            scaleY: [1, 1.05, 1],
                           }}
+                          transition={{ duration: 0.6, ease: 'easeInOut' }}
                         />
                       </button>
                     )
@@ -240,18 +262,25 @@ export default function OrderBook({
                           setTab('limit')
                         }}
                       >
-                        <div className="text-left text-red-500">{price}</div>
-                        <div className="flex-1 text-right text-gray-200">
-                          {formatSignificantString(size)}
+                        <div className="text-left text-red-500">
+                          {formatWithCommas(price)}
                         </div>
-                        <div
+                        <div className="flex-1 text-right text-gray-200">
+                          {formatWithCommas(formatSignificantString(size))}
+                        </div>
+                        <motion.div
+                          key={`ask-bar-${price}-${size}`}
                           className="absolute h-full left-0 bg-red-500/10"
-                          style={{
+                          initial={{ backgroundColor: '#ff000040', scaleY: 1 }}
+                          animate={{
                             width: `${new BigNumber(size)
                               .div(biggestDepth)
                               .multipliedBy(100)
                               .toNumber()}%`,
+                            backgroundColor: ['#ff000080', '#ff000020'],
+                            scaleY: [1, 1.05, 1],
                           }}
+                          transition={{ duration: 0.6, ease: 'easeInOut' }}
                         />
                       </button>
                     )

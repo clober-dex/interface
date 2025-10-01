@@ -35,7 +35,7 @@ export const SwapRouteList = ({
     [quotes],
   )
   return (
-    <div className="flex flex-col sm:p-4 gap-4 md:gap-2.5 sm:gap-3">
+    <div className="flex flex-col md:p-7 gap-2.5 sm:gap-3">
       <AnimatePresence initial={false}>
         {bestQuote && quotes.length > 0 ? (
           [bestQuote, ...quotesWithoutBestQuote]
@@ -93,8 +93,8 @@ export const SwapRouteList = ({
             />
           ))
         ) : (
-          <div className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 w-full">
-            <div className="flex flex-col gap-1 lg:gap-2 text-base font-bold text-center w-full justify-center items-center">
+          <div className="xl:absolute xl:top-1/2 xl:left-1/2 xl:-translate-x-1/2 xl:-translate-y-1/2 w-full">
+            <div className="flex flex-col gap-1 xl:gap-2 text-base font-bold text-center w-full justify-center items-center">
               No quotes available for this swap
             </div>
           </div>

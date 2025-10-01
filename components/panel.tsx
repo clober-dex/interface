@@ -39,34 +39,33 @@ const Panel = ({
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto max-w-md">
-                  <div className="flex h-full flex-col bg-[#171B24] shadow-xl">
-                    <div className="flex items-center px-4 h-12 justify-end">
-                      <div className="flex items-start">
-                        <div className="flex items-center">
-                          <button
-                            type="button"
-                            className="relative rounded-md text-gray-400 hover:text-gray-500 outline-none"
-                            onClick={() => setOpen(false)}
-                          >
-                            <span className="absolute -inset-2.5" />
-                            <span className="sr-only">Close panel</span>
-                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                          </button>
-                        </div>
-                      </div>
+                  <div className="flex h-full flex-col bg-[#17181e] shadow-xl">
+                    <div className="flex items-center px-4 h-12 justify-end pt-4">
+                      <button
+                        type="button"
+                        className="relative rounded-md text-gray-400 hover:text-gray-500 outline-none"
+                        onClick={() => setOpen(false)}
+                      >
+                        <span className="absolute -inset-2.5" />
+                        <span className="sr-only">Close panel</span>
+                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                      </button>
                     </div>
-                    <div className="flex flex-col text-white text-base font-bold relative mb-6 flex-1 pl-8 pr-16 gap-[40px]">
-                      <div className="flex flex-col gap-8 items-start">
+                    <div className="flex flex-col text-white text-base font-bold relative mb-6 flex-1 pl-6 pr-16 gap-8">
+                      <div className="flex flex-col gap-4 items-start">
                         {PAGE_BUTTONS.map((button, index) => (
                           <div key={index}>
                             <PageButton
+                              className="!bg-transparent"
                               disabled={router.pathname.includes(button.path)}
                               onClick={() => {
                                 router.push(button.path)
                                 setOpen(false)
                               }}
                             >
-                              {button.icon}
+                              <div className="flex items-center w-4 h-4">
+                                {button.icon}
+                              </div>
                               {button.label}
                             </PageButton>
                           </div>
@@ -86,7 +85,7 @@ const Panel = ({
                           className="stroke-gray-600"
                         />
                       </svg>
-                      <div className="flex flex-col gap-8">
+                      <div className="flex flex-col gap-6">
                         {CHAIN_CONFIG.GITHIB_URL && (
                           <a
                             className="link"

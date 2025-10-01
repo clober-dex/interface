@@ -8,7 +8,6 @@ import {
 } from '@clober/v2-sdk'
 
 import { Currency } from '../../model/currency'
-import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
 import { SearchSvg } from '../svg/search-svg'
 import { formatDollarValue, formatUnits } from '../../utils/bigint'
 import { CurrencyIcon } from '../icon/currency-icon'
@@ -110,62 +109,77 @@ const CurrencySelect = ({
         setInspectingCurrency={setInspectingCurrency}
         explorerUrl={explorerUrl}
       />
-      <div className="flex flex-col gap-4 w-full h-full">
-        <div className="flex items-center justify-center">
-          <div
-            className="w-6 h-6 cursor-pointer flex items-center justify-center shrink-0"
-            onClick={onBack}
-          >
-            <LeftBracketAngleSvg />
-          </div>
-          <div className="flex flex-1 items-center justify-center text-base sm:text-xl font-bold text-white flex-grow">
-            Select a token
-          </div>
-          <div className="w-6 h-6 shrink-0"></div>
-        </div>
-        <div className="flex flex-col gap-2.5">
-          <div className="flex flex-col relative rounded shadow-sm">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <div className="relative h-4 w-4">
-                <SearchSvg />
-              </div>
-            </div>
-            <div className="inline-block">
-              <div className="invisible h-0 mx-[29px]" aria-hidden="true">
-                Search by token name, symbol, or address
-              </div>
-              <input
-                ref={inputRef}
-                type="search"
-                name="token-search"
-                id="search"
-                autoComplete="off"
-                className="focus:ring-2 inline w-full rounded-md border-0 pl-10 py-3 text-gray-500 bg-gray-800 placeholder:text-gray-500 text-xs sm:text-sm"
-                placeholder="Search by token name, symbol, or address"
-                value={value}
-                onChange={(event) => setValue(event.target.value)}
-              />
-            </div>
-          </div>
-          <span className="relative self-stretch justify-start text-gray-400 text-[13px] font-medium">
-            Trade any ERC-20 token permissionlessly. Just paste the token
-            address to get started.
-            {CHAIN_CONFIG.ASSETS_GITHUB_REPO !== null && (
-              <button
-                onClick={() => {
-                  window.open(
-                    `https://github.com/${CHAIN_CONFIG.ASSETS_GITHUB_REPO}`,
-                    '_blank',
-                  )
-                }}
-                className="flex ml-auto sm:bottom-0 sm:absolute sm:right-4 text-blue-500 text-[13px] font-semibold"
+      <div className="flex flex-col w-full h-full py-1">
+        <div className="flex flex-col gap-6 mb-4 w-full px-6">
+          <div className="flex justify-start items-center h-full relative">
+            <button
+              className="flex h-5 w-5 sm:w-6 sm:h-6 cursor-pointer items-center justify-center shrink-0 z-[1]"
+              onClick={onBack}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
               >
-                Add your token to the list ➔
-              </button>
-            )}
-          </span>
+                <path
+                  d="M14.9998 19.5L7.49976 12L14.9998 4.5"
+                  stroke="#8D94A1"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <div className="w-full self-stretch text-center justify-start text-white text-base font-semibold absolute left-0 right-0 top-1/2 -translate-y-1/2">
+              Select a token
+            </div>
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b]">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center p-3">
+                <div className="relative h-4 w-4">
+                  <SearchSvg />
+                </div>
+              </div>
+              <div className="inline-block">
+                <div className="invisible h-0 mx-[29px]" aria-hidden="true">
+                  Search by token name, symbol, or address
+                </div>
+                <input
+                  ref={inputRef}
+                  type="search"
+                  name="token-search"
+                  id="search"
+                  autoComplete="off"
+                  className="focus:outline-none focus-visible:outline-none focus:ring-1 focus:rounded-[10px] focus:ring-gray-400 inline w-full rounded-md border-0 pl-9 py-3 bg-[#2a2b2f] placeholder:text-gray-500 text-xs sm:text-sm text-white"
+                  placeholder="Search by token name, symbol, or address"
+                  value={value}
+                  onChange={(event) => setValue(event.target.value)}
+                />
+              </div>
+            </div>
+            <span className="relative self-stretch justify-start text-[#8d94a1] text-[13px] font-medium leading-4">
+              Trade any ERC-20 token permissionlessly. Just paste the token
+              address to get started.
+              {CHAIN_CONFIG.ASSETS_GITHUB_REPO !== null && (
+                <button
+                  onClick={() => {
+                    window.open(
+                      `https://github.com/${CHAIN_CONFIG.ASSETS_GITHUB_REPO}`,
+                      '_blank',
+                    )
+                  }}
+                  className="flex ml-auto md:bottom-0 md:absolute md:right-4 text-blue-500 text-[13px] font-medium hover:underline"
+                >
+                  Add your token to the list ➔
+                </button>
+              )}
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col h-full overflow-y-auto custom-scrollbar bg-gray-[#171b24] rounded-b-xl sm:rounded-b-3xl">
+        <div className="flex flex-col h-full overflow-y-auto custom-scrollbar bg-gray-[#17181e] rounded-b-xl sm:rounded-b-3xl">
           {deduplicateCurrencies(
             customizedCurrencies
               ? [...currencies, ...customizedCurrencies]
@@ -226,7 +240,7 @@ const CurrencySelect = ({
             .map((currency) => (
               <button
                 key={currency.address}
-                className="flex w-full px-4 py-2 items-center justify-between text-start hover:bg-gray-700 rounded-lg shrink-0"
+                className="flex w-full sm:h-16 px-6 py-3 items-center justify-between text-start hover:bg-gray-700 rounded-lg shrink-0"
                 onClick={() => {
                   if (currency.isVerified) {
                     onCurrencySelect(currency)
@@ -241,7 +255,7 @@ const CurrencySelect = ({
                     currency={currency}
                     className="w-6 h-6 sm:w-8 sm:h-8 rounded-full"
                   />
-                  <div className="flex-col justify-center items-start gap-[2px]">
+                  <div className="flex-col justify-center items-start">
                     <div className="flex items-center gap-1">
                       <div className="text-sm sm:text-base font-bold text-white">
                         {currency.symbol}
@@ -276,7 +290,7 @@ const CurrencySelect = ({
                         <></>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
                       {currency.name}
                     </div>
                   </div>

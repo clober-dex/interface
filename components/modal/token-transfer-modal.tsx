@@ -57,7 +57,7 @@ export const TokenTransferModal = ({
 
   return (
     <Modal show onClose={onClose}>
-      <div className="flex flex-col w-fit h-[460px] sm:h-[576px] max-h-[460px] sm:max-h-[576px]">
+      <div className="flex flex-col w-full h-full sm:h-[460px]">
         {showCurrencySelect ? (
           <CurrencySelect
             chain={chain}
@@ -94,7 +94,7 @@ export const TokenTransferModal = ({
             defaultBlacklistedCurrency={selectedCurrency}
           />
         ) : (
-          <div className="flex flex-col h-full max-h-[460px] sm:max-h-[576px]">
+          <div className="flex flex-col h-full max-h-[480px] sm:max-h-[576px]">
             <div className="absolute w-7 h-7">
               <button
                 className="flex items-center justify-center w-full h-full"
@@ -103,13 +103,13 @@ export const TokenTransferModal = ({
                 <LeftBracketAngleSvg />
               </button>
             </div>
-            <h1 className="flex font-bold mb-6 sm:text-xl items-center justify-center w-full">
+            <h1 className="flex font-semibold mb-6 sm:text-xl items-center justify-center w-full">
               Send {selectedCurrency?.symbol || 'Token'}
             </h1>
 
-            <div className="flex flex-col justify-start items-end gap-8">
-              <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-                <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-semibold">
+            <div className="flex flex-col justify-start items-end gap-4">
+              <div className="flex flex-col w-full gap-2 self-stretch items-start">
+                <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-medium">
                   Send
                 </div>
                 <CurrencyAmountInput
@@ -133,12 +133,12 @@ export const TokenTransferModal = ({
                 />
               </div>
 
-              <div className="flex flex-col w-full gap-2.5 sm:gap-3 self-stretch items-start">
-                <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-semibold">
+              <div className="flex flex-col w-full gap-2 self-stretch items-start">
+                <div className="flex items-center w-full gap-3 self-stretch text-gray-500 text-xs sm:text-sm font-medium">
                   To
                 </div>
                 <input
-                  className="self-stretch px-4 py-3.5 rounded-[10px] bg-gray-800 text-white placeholder:text-gray-500 outline-none ring-1 ring-transparent hover:ring-gray-700 focus:ring-2 focus:ring-gray-700 transition duration-150 ease-in-out text-sm font-semibold"
+                  className="self-stretch px-4 py-3.5 rounded-[10px] bg-gray-800 text-white placeholder:text-gray-500 outline-none ring-1 ring-transparent hover:ring-gray-700 focus:ring-2 focus:ring-gray-700 transition duration-150 ease-in-out text-sm font-medium"
                   placeholder="enter recipient address"
                   value={recipient}
                   onChange={(e) => setRecipient(e.target.value)}
@@ -146,11 +146,11 @@ export const TokenTransferModal = ({
               </div>
             </div>
 
-            <div className="flex flex-col gap-9 mt-auto">
-              <div className="w-[432px] p-4 bg-gray-800 rounded-xl inline-flex flex-col justify-start items-start gap-2">
+            <div className="flex flex-col gap-7 sm:gap-9 mt-7 sm:mt-auto">
+              <div className="w-full px-4 py-[14px] bg-gray-800 rounded-xl inline-flex flex-col justify-start items-start gap-2">
                 <div className="self-stretch inline-flex justify-start items-start">
                   <div className="flex-1 flex justify-start items-center gap-0.5">
-                    <div className="justify-start text-white text-sm font-semibold">
+                    <div className="text-[#8d94a1] justify-start text-sm font-medium">
                       Network Fee
                     </div>
                   </div>

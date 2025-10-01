@@ -38,6 +38,7 @@ export const Default: Story = {
     },
     dollarValue: 100000,
     price: 100000,
+    priceChange24h: 5.23,
     fdv: 100000,
     marketCap: 100000,
     liquidityUsd: 100000,
@@ -46,6 +47,9 @@ export const Default: Story = {
     twitterUrl: '',
     telegramUrl: '',
     isFetchingMarketSnapshot: false,
+    setShowMarketSelect: (market: any) => {
+      console.log('Selected market:', market)
+    },
   },
 }
 
@@ -66,6 +70,7 @@ export const Social: Story = {
     },
     dollarValue: 100000,
     price: 100000,
+    priceChange24h: 5.23,
     fdv: 100000,
     marketCap: 100000,
     liquidityUsd: 100000,
@@ -74,6 +79,9 @@ export const Social: Story = {
     twitterUrl: 'https://www.google.com',
     telegramUrl: 'https://www.google.com',
     isFetchingMarketSnapshot: false,
+    setShowMarketSelect: (market: any) => {
+      console.log('Selected market:', market)
+    },
   },
 }
 
@@ -94,6 +102,7 @@ export const Loading: Story = {
     },
     dollarValue: 0,
     price: 0,
+    priceChange24h: 5.23,
     fdv: 0,
     marketCap: 0,
     liquidityUsd: 0,
@@ -102,6 +111,9 @@ export const Loading: Story = {
     twitterUrl: '',
     telegramUrl: '',
     isFetchingMarketSnapshot: true,
+    setShowMarketSelect: (market: any) => {
+      console.log('Selected market:', market)
+    },
   },
 }
 
