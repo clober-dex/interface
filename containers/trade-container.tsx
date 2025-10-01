@@ -779,7 +779,9 @@ export const TradeContainer = () => {
                         <MarketSelect
                           chain={selectedChain}
                           onMarketSelect={(market) => {
-                            alert('todo')
+                            setInputCurrency(market.quote)
+                            setOutputCurrency(market.base)
+                            setShowMarketSelect(false)
                           }}
                           markets={marketSnapshots}
                         />

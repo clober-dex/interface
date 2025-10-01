@@ -107,7 +107,7 @@ const MarketSelect = ({
           {filteredMarkets.map((market) => (
             <button
               key={market.marketId}
-              className="flex flex-1 w-full pl-6 py-3 justify-start items-center gap-1"
+              className="flex flex-1 w-full px-6 py-3 justify-start items-center gap-1"
               onClick={() => {
                 onMarketSelect(market)
               }}
@@ -143,7 +143,7 @@ const MarketSelect = ({
                 </div>
 
                 <div
-                  className={`flex-1 text-center text-sm font-medium ${market.priceChange24h > 0 ? 'text-[#39e79f]' : market.priceChange24h < 0 ? 'text-[#f85149]' : 'text-white'}`}
+                  className={`flex-1 text-right text-sm font-medium ${market.priceChange24h > 0 ? 'text-[#39e79f]' : market.priceChange24h < 0 ? 'text-[#f85149]' : 'text-white'}`}
                 >
                   {market.priceChange24h > 0 ? '+' : ''}
                   {(market.priceChange24h * 100).toFixed(2)}%
