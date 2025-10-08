@@ -8,7 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { LimitForm, LimitFormProps } from '../components/form/limit-form'
-import OrderBook from '../components/order-book'
+import SpotOrderBook from '../components/spot-order-book'
 import { useChainContext } from '../contexts/chain-context'
 import { useMarketContext } from '../contexts/trade/market-context'
 import { useLimitContractContext } from '../contexts/trade/limit-contract-context'
@@ -828,7 +828,7 @@ export const TradeContainer = () => {
                 )}
 
                 {showOrderBook ? (
-                  <OrderBook
+                  <SpotOrderBook
                     market={selectedMarket}
                     bids={bids}
                     asks={asks}

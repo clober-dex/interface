@@ -3,21 +3,21 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import '../styles/globals.css'
 
-import OrderBook from './order-book'
+import SpotOrderBook from './spot-order-book'
 export default {
-  title: 'Common/OrderBook',
-  component: OrderBook,
+  title: 'Common/SpotOrderBook',
+  component: SpotOrderBook,
   parameters: {
     layout: 'centered',
   },
   render: ({ ...args }) => (
     <div className="w-[740px] h-[570px]">
-      <OrderBook {...args} />
+      <SpotOrderBook {...args} />
     </div>
   ),
-} as Meta<typeof OrderBook>
+} as Meta<typeof SpotOrderBook>
 
-type Story = StoryObj<typeof OrderBook>
+type Story = StoryObj<typeof SpotOrderBook>
 
 export const Default: Story = {
   args: {

@@ -106,7 +106,7 @@ export const TradingViewChartContainer = ({
         }`}
       >
         <div className="left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 px-4 py-2">
-          {!CHAIN_CONFIG.HIDE_ORDERBOOK && setShowOrderBook && (
+          {!CHAIN_CONFIG.HIDE_SPOT_ORDER_BOOK && setShowOrderBook && (
             <button
               onClick={() => setShowOrderBook(true)}
               className="hidden xl:flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"

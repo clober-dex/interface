@@ -9,7 +9,7 @@ import { Loading } from './loading'
 
 const MAX_N = 18
 
-export default function OrderBook({
+export default function SpotOrderBook({
   market,
   bids,
   asks,
