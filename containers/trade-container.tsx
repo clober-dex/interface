@@ -24,7 +24,6 @@ import { SwapForm, SwapFormProps } from '../components/form/swap-form'
 import { useSwapContractContext } from '../contexts/trade/swap-contract-context'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { SwapRouteList } from '../components/swap-router-list'
-import { MobileFixedModal } from '../components/modal/mobile-fixed-modal'
 import { useTransactionContext } from '../contexts/transaction-context'
 import { executors } from '../chain-configs/executors'
 import { formatTinyNumber } from '../utils/bignumber'
@@ -32,6 +31,8 @@ import { CurrencyIcon } from '../components/icon/currency-icon'
 import { convertShortTimeAgo } from '../utils/time'
 import { Chain } from '../model/chain'
 import MarketSelect from '../components/selector/market-select'
+import CloseSvg from '../components/svg/close-svg'
+import { ActionButton } from '../components/button/action-button'
 
 import { IframeChartContainer } from './chart/iframe-chart-container'
 import { NativeChartContainer } from './chart/native-chart-container'
@@ -898,19 +899,70 @@ export const TradeContainer = () => {
         )}
       </div>
 
-      <MobileFixedModal
-        tab={tab}
-        disabled={tab === 'swap' && amountIn === 0n}
-        quotes={quotes}
-        inputCurrency={inputCurrency}
-        outputCurrency={outputCurrency}
-        showMobileModal={showMobileModal}
-        setShowMobileModal={setShowMobileModal}
-        selectedQuote={selectedQuote}
-        setSelectedQuote={setSelectedQuote}
-        limitFormProps={limitFormProps}
-        swapActionButtonProps={swapActionButtonProps}
-      />
+      {/*mobile modal*/}
+      <div className="fixed flex w-full overflow-y-scroll md:hidden bottom-0 z-[1000]">
+        <div
+          className={`${
+            showMobileModal ? 'flex' : 'hidden'
+          } w-full h-full fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm`}
+          onClick={() => setShowMobileModal(false)}
+        />
+        <div className="w-full h-full top-0 absolute bg-[#17181e] shadow rounded-tl-2xl rounded-tr-2xl border" />
+        <div
+          className={`z-[10000] w-full flex flex-col ${
+            showMobileModal ? '' : 'px-5 sm:px-5 pt-3'
+          }`}
+        >
+          <div
+            className={`${
+              showMobileModal ? 'flex max-h-[560px] mt-5' : 'hidden'
+            } flex-col mb-5`}
+          >
+            {tab === 'limit' ? (
+              <LimitForm {...limitFormProps} />
+            ) : (
+              <div className="flex md:hidden flex-col gap-4 px-5">
+                <div className="flex flex-row gap-1 justify-start text-white text-[13px] font-semibold">
+                  Swap {inputCurrency?.symbol ?? ''}{' '}
+                  <span className="text-[#8690a5]">&#8594; </span>
+                  {outputCurrency?.symbol ?? ''}
+                  <button
+                    className="flex sm:hidden w-3 sm:w-4 h-3 sm:h-3 ml-auto"
+                    onClick={() => setShowMobileModal(false)}
+                  >
+                    <CloseSvg />
+                  </button>
+                </div>
+
+                <div className="flex flex-col w-full mb-4 max-h-[400px] sm:mb-4 overflow-y-auto">
+                  <SwapRouteList
+                    quotes={quotes.all}
+                    bestQuote={quotes.best}
+                    outputCurrency={outputCurrency}
+                    aggregatorNames={aggregators.map((a) => a.name)}
+                    selectedQuote={selectedQuote}
+                    setSelectedQuote={setSelectedQuote}
+                  />
+                </div>
+
+                <ActionButton {...swapActionButtonProps} />
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => setShowMobileModal(true)}
+            disabled={tab === 'swap' && amountIn === 0n}
+            className={`disabled:bg-[#2b3544] disabled:text-gray-400 text-white w-full ${
+              showMobileModal ? 'hidden' : 'flex'
+            } h-12 sm:h-14 bg-blue-500 rounded-xl justify-center items-center mb-5`}
+          >
+            <div className="grow shrink basis-0 opacity-90 text-center text-base font-bold">
+              {tab === 'limit' ? 'Make order' : 'Quotes'}
+            </div>
+          </button>
+        </div>
+      </div>
     </>
   )
 }
