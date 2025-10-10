@@ -23,6 +23,19 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { TradingCompetition } from '../apis/trading-competition'
 import { formatWithCommas } from '../utils/bignumber'
 
+const BONUS_ADDRESSES = [
+  '0xDE9638F6297053B90f0Fe13A022ADe5bE7F8d813',
+  '0xb9dae0ccf36d2ab2f76ef2d361c89b44015a69a2',
+  '0xa032d9816b83cf9ca5f90a26da65fd571a3c7416',
+  '0xb30e2fBcfc78eD6dd67B8b15AD7d150809087805',
+  '0x0b41789436edcc1796c9b95e16a0d6047f5bf88c',
+  '0xc79f35f1c9fb8472347026e1c6f38d6f810312f6',
+  '0xa3250a7c0d8babcc423d6746ce667aa2a01a20a1',
+  '0x8D2A950b4DC57Aa9D2Fd014ca45D935c6C6D72Ad',
+  '0x5ee7d599a01874c98b85747736dc545d3159faab',
+  '0xbE6737f7fDd835aC2BD545e1936b81e0b9CBAB35',
+]
+
 type HeatmapProps = {
   userDailyVolumes: UserVolumeSnapshot[]
   monthLabels?: string[]
@@ -394,12 +407,25 @@ export const LeaderboardContainer = () => {
       const topUsers = await getTopUsersByNativeVolume({
         chainId: selectedChain.id,
       })
-      return topUsers.filter(
-        ({ address }) =>
-          !CHAIN_CONFIG.BLACKLISTED_USERS.some((blacklist) =>
-            isAddressEqual(blacklist, getAddress(address)),
-          ),
-      )
+
+      return topUsers
+        .filter(
+          ({ address }) =>
+            !CHAIN_CONFIG.BLACKLISTED_USERS.some((blacklist) =>
+              isAddressEqual(blacklist, getAddress(address)),
+            ),
+        )
+        .map((user) => {
+          const hasBonus = BONUS_ADDRESSES.some((a) =>
+            isAddressEqual(getAddress(a), getAddress(user.address)),
+          )
+          return {
+            ...user,
+            nativeVolume: hasBonus
+              ? user.nativeVolume + 1000
+              : user.nativeVolume,
+          }
+        })
     },
     initialData: [],
   })
