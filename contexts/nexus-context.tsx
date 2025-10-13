@@ -46,6 +46,7 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
         const instance = new NexusSDK({
           network: CHAIN_CONFIG.CHAIN.testnet ? 'testnet' : 'mainnet',
           debug: true,
+          // @ts-ignore
           provider: window.ethereum,
         })
         sdkRef.current = instance
