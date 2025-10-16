@@ -43,6 +43,7 @@ type CurrencyContext = {
   setCurrencies: (currencies: Currency[]) => void
   prices: Prices
   balances: Balances
+  remoteChainBalances: RemoteChainBalances
   getAllowance: (spender: `0x${string}`, currency: Currency) => bigint
   isOpenOrderApproved: boolean
   transfer: (
@@ -58,6 +59,7 @@ const Context = React.createContext<CurrencyContext>({
   setCurrencies: () => {},
   prices: {},
   balances: {},
+  remoteChainBalances: {},
   getAllowance: () => 0n,
   isOpenOrderApproved: false,
   transfer: () => Promise.resolve(),
@@ -225,7 +227,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setCurrencies(whitelistCurrencies)
   }, [setCurrencies, whitelistCurrencies])
 
-  const { data: balanceState } = useQuery({
+  const { data: balances } = useQuery({
     queryKey: [
       'balances',
       selectedChain.id,
@@ -234,11 +236,10 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         .map((c) => c.address)
         .sort()
         .join(''),
-      nexusSDK !== null,
     ],
     queryFn: async () => {
-      if (!userAddress || !nexusSDK || currencies.length === 0) {
-        return { balances: {}, remoteChainBalances: {} }
+      if (!userAddress || currencies.length === 0) {
+        return {}
       }
       const uniqueCurrencies = deduplicateCurrencies(currencies).filter(
         (currency) => !isAddressEqual(currency.address, zeroAddress),
@@ -257,7 +258,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           address: userAddress,
         }),
       ])
-      const balances: Balances = results.reduce(
+      return results.reduce(
         (acc: {}, { result }, index: number) => {
           const currency = uniqueCurrencies[index]
           return {
@@ -270,17 +271,39 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           [zeroAddress]: balance ?? 0n,
         },
       )
-      const unifiedBalances = await nexusSDK.getUnifiedBalances()
-      const remoteChainBalances = parseRemoteChainBalances(
-        balances,
-        unifiedBalances,
-      )
-      return { balances, remoteChainBalances }
     },
     refetchInterval: 5 * 1000, // checked
     refetchIntervalInBackground: true,
   }) as {
-    data: { balances: Balances; remoteChainBalances: RemoteChainBalances }
+    data: Balances
+  }
+
+  const { data: remoteChainBalances } = useQuery({
+    queryKey: [
+      'remote-chain-balances',
+      selectedChain.id,
+      userAddress,
+      Object.entries(balances ?? {})
+        .sort(([k1], [k2]) => k1.localeCompare(k2))
+        .map(([k, v]) => `${k}:${v}`)
+        .join(','),
+      nexusSDK !== null,
+    ],
+    queryFn: async () => {
+      if (
+        !userAddress ||
+        !nexusSDK ||
+        Object.keys(balances ?? {}).length === 0
+      ) {
+        return {}
+      }
+      const unifiedBalances = await nexusSDK.getUnifiedBalances()
+      return parseRemoteChainBalances(balances, unifiedBalances)
+    },
+    refetchInterval: 5 * 1000, // checked
+    refetchIntervalInBackground: true,
+  }) as {
+    data: RemoteChainBalances
   }
 
   const { data: prices } = useQuery({
@@ -513,9 +536,13 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           get: (target, prop: `0x${string}`) =>
             target[prop as keyof typeof target] ?? 0,
         }),
-        balances: new Proxy(balanceState?.balances ?? {}, {
+        balances: new Proxy(balances ?? {}, {
           get: (target, prop: `0x${string}`) =>
             target[prop as keyof typeof target] ?? 0n,
+        }),
+        remoteChainBalances: new Proxy(remoteChainBalances ?? {}, {
+          get: (target, prop: `0x${string}`) =>
+            target[prop as keyof typeof target] ?? { total: 0n, breakdown: [] },
         }),
         getAllowance,
         isOpenOrderApproved: allowanceState?.isOpenOrderApproved ?? false,
