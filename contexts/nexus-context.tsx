@@ -77,6 +77,9 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
   }, [nexusSDK])
 
   useEffect(() => {
+    if (!CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES) {
+      return
+    }
     ;(async () => {
       if (status === 'disconnected') {
         await cleanupSDK()
