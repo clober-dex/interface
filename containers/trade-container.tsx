@@ -261,8 +261,14 @@ export const TradeContainer = () => {
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
-  const { balances, getAllowance, prices, currencies, setCurrencies } =
-    useCurrencyContext()
+  const {
+    balances,
+    remoteChainBalances,
+    getAllowance,
+    prices,
+    currencies,
+    setCurrencies,
+  } = useCurrencyContext()
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [showMarketSelect, setShowMarketSelect] = useState<boolean>(false)
@@ -579,6 +585,7 @@ export const TradeContainer = () => {
         currencies,
         setCurrencies,
         balances,
+        remoteChainBalances,
         prices,
         showInputCurrencySelect,
         setShowInputCurrencySelect,
@@ -587,7 +594,10 @@ export const TradeContainer = () => {
         inputCurrencyAmount,
         setInputCurrencyAmount,
         availableInputCurrencyBalance: inputCurrency
-          ? balances[inputCurrency.address]
+          ? balances[inputCurrency.address] +
+            (CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+              ? remoteChainBalances[inputCurrency.address].total
+              : 0n)
           : 0n,
         showOutputCurrencySelect,
         setShowOutputCurrencySelect,
