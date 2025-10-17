@@ -5,103 +5,102 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
-  useRef,
   useState,
 } from 'react'
 import { useAccount } from 'wagmi'
 import type {
+  EthereumProvider,
   NexusSDK,
   OnAllowanceHookData,
-  OnIntentHookData,
 } from '@avail-project/nexus-core'
 
-import useInitNexus from '../hooks/useInitNexus'
 import { CHAIN_CONFIG } from '../chain-configs'
 
 interface NexusContextType {
   nexusSDK: NexusSDK | null
-  intentRefCallback: React.RefObject<OnIntentHookData | null>
-  allowanceRefCallback: React.RefObject<OnAllowanceHookData | null>
-  handleInit: () => Promise<void>
+  isInitialized: boolean
+  cleanupSDK: () => void
 }
 
 const NexusContext = createContext<NexusContextType | null>(null)
 
 const NexusProvider = ({ children }: { children: React.ReactNode }) => {
-  const { status } = useAccount()
+  const { status, connector } = useAccount()
 
   const [nexusSDK, setNexusSDK] = useState<NexusSDK | null>(null)
-  const [sdkReady, setSdkReady] = useState(false)
-  const sdkRef = useRef<NexusSDK | null>(null)
+  const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
-    ;(async () => {
+  const initializeSDK = useCallback(async () => {
+    if (status === 'connected' && !nexusSDK && connector) {
       try {
+        // Get the EIP-1193 provider from the connector
+        // For ConnectKit/wagmi, we need to get the provider from the connector
+        const provider = (await connector.getProvider()) as EthereumProvider
+
+        if (!provider) {
+          throw new Error('No EIP-1193 provider available')
+        }
+
         const mod = await import('@avail-project/nexus-core')
         const { NexusSDK } = mod
-        const instance = new NexusSDK({
+        const sdk = new NexusSDK({
           network: CHAIN_CONFIG.CHAIN.testnet ? 'testnet' : 'mainnet',
           debug: true,
-          // @ts-ignore
-          provider: window.ethereum,
         })
-        sdkRef.current = instance
-        setNexusSDK(instance)
-        setSdkReady(true)
-      } catch (err) {
-        console.error('[Nexus] Failed to load SDK:', err)
+
+        await sdk.initialize(provider)
+        setNexusSDK(sdk)
+
+        setIsInitialized(true)
+
+        sdk.setOnAllowanceHook(async (data: OnAllowanceHookData) => {
+          // This is a hook for the dev to show user the allowances that need to be setup for the current tx to happen
+          // where,
+          // sources: an array of objects with minAllowance, chainID, token symbol, etc.
+          // allow(allowances): continues the transaction flow with the specified allowances; `allowances` is an array with the chosen allowance for each of the requirements (allowances.length === sources.length), either 'min', 'max', a bigint or a string
+          // deny(): stops the flow
+          console.log('OnAllowanceHook data:', data)
+        })
+      } catch (error) {
+        console.error('Failed to initialize NexusSDK:', error)
+        setIsInitialized(false)
       }
-    })()
-  }, [])
-
-  const {
-    initializeNexus,
-    deinitializeNexus,
-    attachEventHooks,
-    intentRefCallback,
-    allowanceRefCallback,
-  } = useInitNexus(nexusSDK as NexusSDK)
-
-  const handleInit = useCallback(async () => {
-    const sdk = sdkRef.current
-    if (!sdk || !sdkReady) {
-      console.warn('[Nexus] SDK not ready yet')
-      return
     }
-    if (sdk.isInitialized()) {
-      console.log('[Nexus] already initialized')
-      return
+  }, [connector, nexusSDK, status])
+
+  const cleanupSDK = useCallback(async () => {
+    if (nexusSDK) {
+      await nexusSDK.deinit()
+      setNexusSDK(null)
+      setIsInitialized(false)
     }
-    await initializeNexus()
-    attachEventHooks()
-  }, [sdkReady, attachEventHooks, initializeNexus])
+  }, [nexusSDK])
 
   useEffect(() => {
-    if (!sdkReady) {
-      return
-    }
-    if (status === 'connected') {
-      handleInit()
-    } else if (status === 'disconnected') {
-      deinitializeNexus()
-    }
-  }, [status, sdkReady, handleInit, deinitializeNexus])
+    ;(async () => {
+      if (status === 'disconnected') {
+        await cleanupSDK()
+      } else if (status === 'connected') {
+        await initializeSDK()
+      }
 
-  const value = useMemo(
-    () => ({
-      nexusSDK,
-      intentRefCallback,
-      allowanceRefCallback,
-      handleInit,
-    }),
-    [nexusSDK, intentRefCallback, allowanceRefCallback, handleInit],
+      return async () => {
+        await cleanupSDK()
+      }
+    })()
+  }, [cleanupSDK, initializeSDK, status])
+
+  return (
+    <NexusContext.Provider
+      value={{
+        nexusSDK,
+        isInitialized,
+        cleanupSDK,
+      }}
+    >
+      {children}
+    </NexusContext.Provider>
   )
-
-  return <NexusContext.Provider value={value}>{children}</NexusContext.Provider>
 }
 
 export function useNexus() {

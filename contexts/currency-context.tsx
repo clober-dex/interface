@@ -300,6 +300,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       const unifiedBalances = await nexusSDK.getUnifiedBalances()
       return parseRemoteChainBalances(balances, unifiedBalances)
     },
+    initialData: {},
     refetchInterval: 5 * 1000, // checked
     refetchIntervalInBackground: true,
   }) as {
