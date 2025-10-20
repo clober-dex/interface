@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Transaction, Transaction as SdkTransaction } from '@clober/v2-sdk'
 
 import { Currency } from '../../model/currency'
-import { formatUnits } from '../../utils/bigint'
+import { formatUnits, min } from '../../utils/bigint'
 import { Confirmation, useTransactionContext } from '../transaction-context'
 import { sendTransaction } from '../../utils/transaction'
 import { useCurrencyContext } from '../currency-context'
@@ -49,7 +49,8 @@ export const SwapContractProvider = ({
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { getAllowance, prices } = useCurrencyContext()
+  const { getAllowance, prices, balances, remoteChainBalances, bridge } =
+    useCurrencyContext()
 
   const swap = useCallback(
     async (
@@ -65,6 +66,13 @@ export const SwapContractProvider = ({
       }
 
       try {
+        // bridge
+        const bridgeAmount = min(
+          amountIn - balances[inputCurrency.address],
+          remoteChainBalances[inputCurrency.address].total,
+        )
+        await bridge(inputCurrency, bridgeAmount)
+
         setConfirmation({
           title: 'Swap',
           body: 'Please confirm in your wallet.',

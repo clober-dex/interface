@@ -487,7 +487,11 @@ export const TradeContainer = () => {
         !inputCurrency ||
         !outputCurrency ||
         amountIn === 0n ||
-        amountIn > balances[inputCurrency.address],
+        amountIn >
+          balances[inputCurrency.address] +
+            (CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+              ? remoteChainBalances[inputCurrency.address].total
+              : 0n),
       onClick: async () => {
         if (!userAddress && openConnectModal) {
           openConnectModal()
@@ -528,7 +532,11 @@ export const TradeContainer = () => {
                 ? 'Select output currency'
                 : amountIn === 0n
                   ? 'Enter amount'
-                  : amountIn > balances[inputCurrency.address]
+                  : amountIn >
+                      balances[inputCurrency.address] +
+                        (CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+                          ? remoteChainBalances[inputCurrency.address].total
+                          : 0n)
                     ? 'Insufficient balance'
                     : amountIn >
                         getAllowance(

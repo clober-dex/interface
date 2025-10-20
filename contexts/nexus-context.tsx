@@ -59,7 +59,7 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
           // sources: an array of objects with minAllowance, chainID, token symbol, etc.
           // allow(allowances): continues the transaction flow with the specified allowances; `allowances` is an array with the chosen allowance for each of the requirements (allowances.length === sources.length), either 'min', 'max', a bigint or a string
           // deny(): stops the flow
-          console.log('OnAllowanceHook data:', data)
+          data.allow(data.sources.map(() => 'min'))
         })
       } catch (error) {
         console.error('Failed to initialize NexusSDK:', error)

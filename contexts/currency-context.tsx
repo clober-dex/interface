@@ -14,7 +14,11 @@ import {
 } from 'viem'
 import { getContractAddresses } from '@clober/v2-sdk'
 import { Transaction as SdkTransaction } from '@clober/v2-sdk/dist/types/types/transaction'
-import { UserAssetDatum } from '@avail-project/nexus-core'
+import {
+  BridgeParams,
+  BridgeResult,
+  UserAssetDatum,
+} from '@avail-project/nexus-core'
 
 import { Currency } from '../model/currency'
 import { Prices } from '../model/prices'
@@ -49,6 +53,7 @@ type CurrencyContext = {
   isOpenOrderApproved: boolean
   useRemoteChainBalances: boolean
   setUseRemoteChainBalances: (value: boolean) => void
+  bridge: (currency: Currency, amount: bigint) => Promise<void>
   transfer: (
     currency: Currency,
     amount: bigint,
@@ -67,6 +72,7 @@ const Context = React.createContext<CurrencyContext>({
   isOpenOrderApproved: false,
   useRemoteChainBalances: false,
   setUseRemoteChainBalances: () => {},
+  bridge: () => Promise.resolve(),
   transfer: () => Promise.resolve(),
 })
 
@@ -199,10 +205,12 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           if (breakdownList.length > 0) {
             remoteChainBalances[localAddress] = {
               total,
+              key: symbol,
               breakdown: breakdownList,
             }
             remoteChainBalances[localAddress.toLowerCase() as `0x${string}`] = {
               total,
+              key: symbol,
               breakdown: breakdownList,
             }
           }
@@ -510,6 +518,24 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     ],
   )
 
+  const bridge = useCallback(
+    async (currency: Currency, amount: bigint) => {
+      if (!nexusSDK || amount <= 0n) {
+        return
+      }
+      const result: BridgeResult = await nexusSDK.bridge({
+        token: remoteChainBalances[currency.address].key,
+        amount: formatUnits(amount, currency.decimals),
+        chainId: CHAIN_CONFIG.CHAIN.id,
+        sourceChains: remoteChainBalances[currency.address].breakdown.map(
+          (b) => b.chainId,
+        ),
+      } as BridgeParams)
+      console.log('Bridge result:', result)
+    },
+    [nexusSDK, remoteChainBalances],
+  )
+
   const getAllowance = useCallback(
     (spender: `0x${string}`, currency: Currency) => {
       if (isAddressEqual(currency.address, zeroAddress)) {
@@ -545,6 +571,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         setCurrencies,
         useRemoteChainBalances,
         setUseRemoteChainBalances,
+        bridge,
         transfer,
       }}
     >
