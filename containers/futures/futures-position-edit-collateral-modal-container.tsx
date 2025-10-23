@@ -106,14 +106,21 @@ export const FuturesPositionEditCollateralModalContainer = ({
           setValue('')
           onClose()
         },
-        text:
-          amount === 0n
-            ? 'Enter collateral amount'
-            : !isWithdrawCollateral && amount > availableCollateralAmount
-              ? `Insufficient ${userPosition.asset.collateral.symbol} balance`
-              : isWithdrawCollateral && amount > availableCollateralAmount
-                ? 'Not enough collateral'
-                : 'Edit Collateral',
+        text: (() => {
+          if (amount === 0n) {
+            return 'Enter collateral amount'
+          }
+
+          if (!isWithdrawCollateral && amount > availableCollateralAmount) {
+            return `Insufficient ${userPosition.asset.collateral.symbol} balance`
+          }
+
+          if (isWithdrawCollateral && amount > availableCollateralAmount) {
+            return 'Not enough collateral'
+          }
+
+          return 'Edit Collateral'
+        })(),
       }}
       collateralPrice={prices[userPosition.asset.collateral.address]}
     />

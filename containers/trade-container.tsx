@@ -349,24 +349,35 @@ export const TradeContainer = () => {
           selectedMarket,
         )
       },
-      text: !walletClient
-        ? 'Connect wallet'
-        : !inputCurrency
-          ? 'Select input currency'
-          : !outputCurrency
-            ? 'Select output currency'
-            : amountIn === 0n
-              ? 'Enter amount'
-              : amountIn > balances[inputCurrency.address]
-                ? 'Insufficient balance'
-                : amountIn >
-                    getAllowance(
-                      getContractAddresses({ chainId: selectedChain.id })
-                        .Controller,
-                      inputCurrency,
-                    )
-                  ? `Max Approve ${inputCurrency.symbol}`
-                  : `Place Order`,
+      text: (() => {
+        if (!walletClient) {
+          return 'Connect wallet'
+        }
+        if (!inputCurrency) {
+          return 'Select input currency'
+        }
+        if (!outputCurrency) {
+          return 'Select output currency'
+        }
+        if (amountIn === 0n) {
+          return 'Enter amount'
+        }
+
+        const balance = balances[inputCurrency.address] ?? 0n
+        if (amountIn > balance) {
+          return 'Insufficient balance'
+        }
+
+        const controller = getContractAddresses({
+          chainId: selectedChain.id,
+        }).Controller
+        const allowance = getAllowance(controller, inputCurrency)
+        if (amountIn > allowance) {
+          return `Max Approve ${inputCurrency.symbol}`
+        }
+
+        return 'Place Order'
+      })(),
     }),
     [
       getAllowance,
@@ -510,49 +521,60 @@ export const TradeContainer = () => {
           selectedQuote.transaction,
         )
       },
-      text:
-        Number(inputCurrencyAmount) > 0 &&
-        (selectedQuote?.amountOut ?? 0n) === 0n
-          ? 'Fetching...'
-          : !walletClient
-            ? 'Connect wallet'
-            : !inputCurrency
-              ? 'Select input currency'
-              : !outputCurrency
-                ? 'Select output currency'
-                : amountIn === 0n
-                  ? 'Enter amount'
-                  : amountIn > balances[inputCurrency.address]
-                    ? 'Insufficient balance'
-                    : amountIn >
-                        getAllowance(
-                          selectedExecutorName
-                            ? getAddress(
-                                executors.find(
-                                  (executor) =>
-                                    executor.name === selectedExecutorName,
-                                )?.contract ||
-                                  CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
-                                    .AggregatorRouterGateway,
-                              )
-                            : CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
-                                .AggregatorRouterGateway,
-                          inputCurrency,
-                        )
-                      ? `Max Approve ${inputCurrency.symbol}`
-                      : isAddressEqual(inputCurrency.address, zeroAddress) &&
-                          isAddressEqual(
-                            outputCurrency.address,
-                            CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-                          )
-                        ? 'Wrap'
-                        : isAddressEqual(
-                              inputCurrency.address,
-                              CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-                            ) &&
-                            isAddressEqual(outputCurrency.address, zeroAddress)
-                          ? 'Unwrap'
-                          : `Swap`,
+      text: (() => {
+        if (
+          Number(inputCurrencyAmount) > 0 &&
+          (selectedQuote?.amountOut ?? 0n) === 0n
+        ) {
+          return 'Fetching...'
+        }
+
+        if (!walletClient) {
+          return 'Connect wallet'
+        }
+        if (!inputCurrency) {
+          return 'Select input currency'
+        }
+        if (!outputCurrency) {
+          return 'Select output currency'
+        }
+        if (amountIn === 0n) {
+          return 'Enter amount'
+        }
+
+        const balance = balances[inputCurrency.address] ?? 0n
+        if (amountIn > balance) {
+          return 'Insufficient balance'
+        }
+
+        const allowanceTarget = selectedExecutorName
+          ? getAddress(
+              executors.find((e) => e.name === selectedExecutorName)
+                ?.contract ||
+                CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
+                  .AggregatorRouterGateway,
+            )
+          : CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway
+
+        const allowance = getAllowance(allowanceTarget, inputCurrency)
+        if (amountIn > allowance) {
+          return `Max Approve ${inputCurrency.symbol}`
+        }
+
+        const ref = CHAIN_CONFIG.REFERENCE_CURRENCY.address
+        const input = inputCurrency.address
+        const output = outputCurrency.address
+
+        if (isAddressEqual(input, zeroAddress) && isAddressEqual(output, ref)) {
+          return 'Wrap'
+        }
+
+        if (isAddressEqual(input, ref) && isAddressEqual(output, zeroAddress)) {
+          return 'Unwrap'
+        }
+
+        return 'Swap'
+      })(),
     }),
     [
       selectedExecutorName,
