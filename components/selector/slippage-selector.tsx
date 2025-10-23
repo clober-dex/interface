@@ -3,9 +3,9 @@ import React, { useEffect, useRef } from 'react'
 import NumberInput from '../input/number-input'
 
 const UNLIMITED_SLIPPAGE = 50
-const FIRST_SLIPPAGE = 1.5
-const SECOND_SLIPPAGE = 3.0
-const WARNING_SLIPPAGE_THRESHOLD = 5.0
+const FIRST_SLIPPAGE = 2.0
+const SECOND_SLIPPAGE = 4.0
+const WARNING_SLIPPAGE_THRESHOLD = 10.0
 
 export const SlippageSelector = ({
   slippageInput,
