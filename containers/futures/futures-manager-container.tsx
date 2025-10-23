@@ -135,29 +135,43 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
             await router.replace('/futures')
           }
         },
-        text:
-          collateralAmount === 0n
-            ? 'Enter collateral amount'
-            : debtAmount === 0n
-              ? 'Enter loan amount'
-              : collateralAmount > collateralUserBalance
-                ? `Insufficient ${asset.collateral.symbol} balance`
-                : debtAmount > maxBorrowAmount
-                  ? 'Not enough collateral'
-                  : isDeptSizeLessThanMinDebtSize
-                    ? `Remaining debt must be ≥ ${formatUnits(
-                        asset.minDebt,
-                        asset.currency.decimals,
-                        prices[asset.currency.address],
-                      )} ${asset.currency.symbol.split('-')[0]}`
-                    : collateralAmount >
-                        getAllowance(
-                          CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES
-                            .FuturesMarket,
-                          asset.collateral,
-                        )
-                      ? `Max Approve ${asset.collateral.symbol}`
-                      : 'Mint',
+        text: (() => {
+          if (collateralAmount === 0n) {
+            return 'Enter collateral amount'
+          }
+          if (debtAmount === 0n) {
+            return 'Enter loan amount'
+          }
+
+          if (collateralAmount > collateralUserBalance) {
+            return `Insufficient ${asset.collateral.symbol} balance`
+          }
+
+          if (debtAmount > maxBorrowAmount) {
+            return 'Not enough collateral'
+          }
+
+          if (isDeptSizeLessThanMinDebtSize) {
+            const minDebtReadable = formatUnits(
+              asset.minDebt,
+              asset.currency.decimals,
+              prices[asset.currency.address],
+            )
+            const symbol = asset.currency.symbol.split('-')[0]
+            return `Remaining debt must be ≥ ${minDebtReadable} ${symbol}`
+          }
+
+          const allowance = getAllowance(
+            CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket,
+            asset.collateral,
+          )
+
+          if (collateralAmount > allowance) {
+            return `Max Approve ${asset.collateral.symbol}`
+          }
+
+          return 'Mint'
+        })(),
       }}
     />
   )

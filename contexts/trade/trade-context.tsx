@@ -277,20 +277,21 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         tab === 'swap'
       ) {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
-        const insufficientFunds = balances[inputCurrency.address] < amountIn
-        const insufficientAllowance =
-          (!selectedExecutorName &&
-            getAllowance(
-              CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
-              inputCurrency,
-            ) < amountIn) ||
-          (selectedExecutorName &&
-            getAllowance(
-              executors.find(
-                (executor) => executor.name === selectedExecutorName,
-              )?.contract!,
-              inputCurrency,
-            ) < amountIn)
+        const userBalance = balances[inputCurrency.address] ?? 0n
+        const insufficientFunds = userBalance < amountIn
+
+        const getExecutorAddress = () =>
+          selectedExecutorName
+            ? executors.find((e) => e.name === selectedExecutorName)?.contract
+            : CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway
+
+        const allowanceTarget = getExecutorAddress()
+        const currentAllowance = getAllowance(allowanceTarget!, inputCurrency)
+        const insufficientAllowance = currentAllowance < amountIn
+
+        const shouldSkipUser = insufficientFunds || insufficientAllowance
+        const isDefaultExecutor = selectedExecutorName === null
+
         await fetchQuotesLive(
           aggregators,
           inputCurrency,
@@ -299,8 +300,8 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
           parseFloat(slippageInput),
           gasPrice,
           prices,
-          insufficientFunds || insufficientAllowance ? undefined : userAddress,
-          selectedExecutorName === null,
+          shouldSkipUser ? undefined : userAddress,
+          isDefaultExecutor,
           setQuotes,
         )
       }
