@@ -3,8 +3,9 @@ import React, { useEffect, useRef } from 'react'
 import NumberInput from '../input/number-input'
 
 const UNLIMITED_SLIPPAGE = 50
-const FIRST_SLIPPAGE = 0.5
-const SECOND_SLIPPAGE = 1.0
+const FIRST_SLIPPAGE = 1.5
+const SECOND_SLIPPAGE = 3.0
+const WARNING_SLIPPAGE_THRESHOLD = 5.0
 
 export const SlippageSelector = ({
   slippageInput,
@@ -68,7 +69,7 @@ export const SlippageSelector = ({
         </button>
 
         <div
-          className={`flex flex-row items-center pr-2 ${customValue.length > 0 && (Number(slippageInput) >= 2 || Number(slippageInput) <= 0.05) ? 'text-yellow-500' : 'text-white'} ${customValue.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
+          className={`flex flex-row items-center pr-2 ${customValue.length > 0 && (Number(slippageInput) >= WARNING_SLIPPAGE_THRESHOLD || Number(slippageInput) <= 0.05) ? 'text-yellow-500' : 'text-white'} ${customValue.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
         >
           <NumberInput
             placeholder="Custom"
@@ -95,7 +96,7 @@ export const SlippageSelector = ({
         </div>
       </div>
 
-      {Number(slippageInput) >= 2 ? (
+      {Number(slippageInput) >= WARNING_SLIPPAGE_THRESHOLD ? (
         <div className="flex w-full">
           <div className="flex flex-row items-center gap-1 ml-auto text-[13px] font-medium text-yellow-500">
             <svg
@@ -134,9 +135,10 @@ export const SlippageSelector = ({
         <></>
       )}
 
-      {Number(slippageInput) < 2 && Number(slippageInput) >= FIRST_SLIPPAGE && (
-        <div className="flex h-[19.5px] w-1" />
-      )}
+      {Number(slippageInput) < WARNING_SLIPPAGE_THRESHOLD &&
+        Number(slippageInput) >= FIRST_SLIPPAGE && (
+          <div className="flex h-[19.5px] w-1" />
+        )}
     </div>
   )
 }
