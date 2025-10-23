@@ -510,41 +510,57 @@ export const PoolManagerContainer = ({
                     Number(slippageInput),
                   )
                 },
-                text: !walletClient
-                  ? 'Connect wallet'
-                  : Number(currency0Amount) === 0 &&
-                      Number(currency1Amount) === 0
-                    ? 'Enter amount'
-                    : parseUnits(currency0Amount, pool.currencyA.decimals) >
-                        balances[pool.currencyA.address]
-                      ? `Insufficient ${pool.currencyA.symbol} balance`
-                      : parseUnits(currency0Amount, pool.currencyA.decimals) >
-                          getAllowance(
-                            getContractAddresses({
-                              chainId: selectedChain.id,
-                            }).Minter,
-                            pool.currencyA,
-                          )
-                        ? `Max Approve ${pool.currencyA.symbol}`
-                        : parseUnits(currency1Amount, pool.currencyB.decimals) >
-                            balances[pool.currencyB.address]
-                          ? `Insufficient ${pool.currencyB.symbol} balance`
-                          : parseUnits(
-                                currency1Amount,
-                                pool.currencyB.decimals,
-                              ) >
-                              getAllowance(
-                                getContractAddresses({
-                                  chainId: selectedChain.id,
-                                }).Minter,
-                                pool.currencyB,
-                              )
-                            ? `Max Approve ${pool.currencyB.symbol}`
-                            : disableSwap &&
-                                (Number(currency0Amount) === 0 ||
-                                  Number(currency1Amount) === 0)
-                              ? `Enter amount`
-                              : `Add Liquidity`,
+                text: (() => {
+                  if (!walletClient) {
+                    return 'Connect wallet'
+                  }
+
+                  const amount0 = Number(currency0Amount)
+                  const amount1 = Number(currency1Amount)
+                  const minter = getContractAddresses({
+                    chainId: selectedChain.id,
+                  }).Minter
+
+                  if (amount0 === 0 && amount1 === 0) {
+                    return 'Enter amount'
+                  }
+
+                  const amount0Units = parseUnits(
+                    currency0Amount,
+                    pool.currencyA.decimals,
+                  )
+                  const amount1Units = parseUnits(
+                    currency1Amount,
+                    pool.currencyB.decimals,
+                  )
+
+                  const balanceA = balances[pool.currencyA.address] ?? 0n
+                  const balanceB = balances[pool.currencyB.address] ?? 0n
+
+                  if (amount0Units > balanceA) {
+                    return `Insufficient ${pool.currencyA.symbol} balance`
+                  }
+
+                  const allowanceA = getAllowance(minter, pool.currencyA)
+                  if (amount0Units > allowanceA) {
+                    return `Max Approve ${pool.currencyA.symbol}`
+                  }
+
+                  if (amount1Units > balanceB) {
+                    return `Insufficient ${pool.currencyB.symbol} balance`
+                  }
+
+                  const allowanceB = getAllowance(minter, pool.currencyB)
+                  if (amount1Units > allowanceB) {
+                    return `Max Approve ${pool.currencyB.symbol}`
+                  }
+
+                  if (disableSwap && (amount0 === 0 || amount1 === 0)) {
+                    return 'Enter amount'
+                  }
+
+                  return 'Add Liquidity'
+                })(),
               }}
             />
           ) : (
@@ -606,13 +622,25 @@ export const PoolManagerContainer = ({
                     slippageInput,
                   )
                 },
-                text: !walletClient
-                  ? 'Connect wallet'
-                  : Number(lpCurrencyAmount) === 0
-                    ? 'Enter amount'
-                    : parseUnits(lpCurrencyAmount, 18) > lpBalances[pool.key]
-                      ? `Insufficient ${pool.lpCurrency.symbol} balance`
-                      : `Remove Liquidity`,
+                text: (() => {
+                  if (!walletClient) {
+                    return 'Connect wallet'
+                  }
+
+                  const amount = Number(lpCurrencyAmount)
+                  if (amount === 0) {
+                    return 'Enter amount'
+                  }
+
+                  const amountUnits = parseUnits(lpCurrencyAmount, 18)
+                  const balance = lpBalances[pool.key] ?? 0n
+
+                  if (amountUnits > balance) {
+                    return `Insufficient ${pool.lpCurrency.symbol} balance`
+                  }
+
+                  return 'Remove Liquidity'
+                })(),
               }}
             />
           )}

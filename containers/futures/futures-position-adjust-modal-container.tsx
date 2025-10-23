@@ -127,25 +127,37 @@ export const FuturesPositionAdjustModalContainer = ({
             balances[userPosition.asset.currency.address] < -debtAmountDelta) ||
           (userPosition.asset.minDebt > expectedDebtAmount &&
             expectedDebtAmount > 0n),
-        text:
-          newLTV > ltv && expectedDebtAmount > maxLoanableAmount
-            ? 'Not enough collateral'
-            : userPosition.asset.minDebt > expectedDebtAmount &&
-                expectedDebtAmount > 0n
-              ? `Remaining debt must be ≥ ${formatUnits(
-                  userPosition.asset.minDebt,
-                  userPosition.asset.currency.decimals,
-                  prices[userPosition.asset.currency.address],
-                )} ${userPosition.asset.currency.symbol.split('-')[0]}`
-              : debtAmountDelta < 0n &&
-                  balances[userPosition.asset.currency.address] <
-                    -debtAmountDelta
-                ? 'Not enough futures balance'
-                : newLTV === 0
-                  ? 'Close Position'
-                  : ltv < newLTV
-                    ? 'Borrow'
-                    : 'Repay',
+        text: (() => {
+          if (newLTV > ltv && expectedDebtAmount > maxLoanableAmount) {
+            return 'Not enough collateral'
+          }
+
+          if (
+            userPosition.asset.minDebt > expectedDebtAmount &&
+            expectedDebtAmount > 0n
+          ) {
+            return `Remaining debt must be ≥ ${formatUnits(
+              userPosition.asset.minDebt,
+              userPosition.asset.currency.decimals,
+              prices[userPosition.asset.currency.address],
+            )} ${userPosition.asset.currency.symbol.split('-')[0]}`
+          }
+
+          if (
+            debtAmountDelta < 0n &&
+            balances[userPosition.asset.currency.address] < -debtAmountDelta
+          ) {
+            return 'Not enough futures balance'
+          }
+
+          if (newLTV === 0) {
+            return 'Close Position'
+          }
+          if (ltv < newLTV) {
+            return 'Borrow'
+          }
+          return 'Repay'
+        })(),
       }}
     />
   )
