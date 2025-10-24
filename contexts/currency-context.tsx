@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount, useDisconnect, useWalletClient } from 'wagmi'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import BigNumber from 'bignumber.js'
 import {
   createPublicClient,
   erc20Abi,
@@ -525,7 +526,9 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
       const result: BridgeResult = await nexusSDK.bridge({
         token: remoteChainBalances[currency.address].key,
-        amount: formatUnits(amount, currency.decimals),
+        amount: new BigNumber(amount)
+          .div(new BigNumber(10).pow(currency.decimals))
+          .toString(),
         chainId: CHAIN_CONFIG.CHAIN.id,
         sourceChains: remoteChainBalances[currency.address].breakdown.map(
           (b) => b.chainId,
