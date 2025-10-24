@@ -5,7 +5,6 @@ import { SwapPageSvg } from '../components/svg/swap-page-svg'
 import { EarnPageSvg } from '../components/svg/earn-page-svg'
 import { LimitPageSvg } from '../components/svg/limit-page-svg'
 import { TradingCompetitionPageSvg } from '../components/svg/trading-competition-page-svg'
-import { AnalyticsPageSvg } from '../components/svg/AnalyticsPageSvg'
 
 type PageButton = {
   path: string
@@ -37,12 +36,6 @@ export const PAGE_BUTTONS: PageButton[] = [
     path: '/futures',
     label: 'Futures',
     icon: <LimitPageSvg className="w-6 h-6" />,
-    isHiddenMenu: true,
-  },
-  {
-    path: '/analytics',
-    label: 'Analytics',
-    icon: <AnalyticsPageSvg className="w-6 h-6" />,
     isHiddenMenu: true,
   },
   {
