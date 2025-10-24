@@ -498,7 +498,11 @@ export const TradeContainer = () => {
         !inputCurrency ||
         !outputCurrency ||
         amountIn === 0n ||
-        amountIn > balances[inputCurrency.address],
+        amountIn >
+          balances[inputCurrency.address] +
+            (CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+              ? remoteChainBalances[inputCurrency.address].total
+              : 0n),
       onClick: async () => {
         if (!userAddress && openConnectModal) {
           openConnectModal()
@@ -548,7 +552,11 @@ export const TradeContainer = () => {
           return 'Enter amount'
         }
 
-        const balance = balances[inputCurrency.address] ?? 0n
+        const balance =
+          balances[inputCurrency.address] +
+          (CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+            ? remoteChainBalances[inputCurrency.address].total
+            : 0n)
         if (amountIn > balance) {
           return 'Insufficient balance'
         }
