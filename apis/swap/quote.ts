@@ -234,6 +234,17 @@ export async function fetchQuotesLive(
     best: null,
     all: [],
   }))
+  const isWrapOrUnwrap =
+    (isAddressEqual(inputCurrency.address, zeroAddress) &&
+      isAddressEqual(
+        outputCurrency.address,
+        CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+      )) ||
+    (isAddressEqual(
+      inputCurrency.address,
+      CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+    ) &&
+      isAddressEqual(outputCurrency.address, zeroAddress))
 
   await Promise.all(
     aggregators.map(async (aggregator) => {
@@ -357,6 +368,9 @@ export async function fetchQuotesLive(
                       ),
                     }
                   : null
+            if (isWrapOrUnwrap && adjustBestQuote) {
+              adjustBestQuote.fee = 0n
+            }
             const adjustFee = adjustBestQuote?.fee ?? 0n
             return {
               best: adjustBestQuote,
