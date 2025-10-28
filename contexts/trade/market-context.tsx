@@ -209,6 +209,9 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
             chainId: selectedChain.id,
             token0: getAddress(baseCurrency.address),
             token1: getAddress(quoteCurrency.address),
+            options: {
+              rpcUrl: CHAIN_CONFIG.RPC_URL,
+            },
           }),
           fetchTokenInfo({
             chain: selectedChain,
