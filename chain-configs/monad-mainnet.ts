@@ -20,6 +20,7 @@ export const monad = /*#__PURE__*/ defineChain({
       url: 'https://mainnet-beta.monvision.io',
     },
   },
+  // TODO: Review chain configuration
   testnet: true,
   contracts: {
     multicall3: {
