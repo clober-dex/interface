@@ -547,6 +547,18 @@ export const TradeContainer = () => {
           return 'Insufficient balance'
         }
 
+        const ref = CHAIN_CONFIG.REFERENCE_CURRENCY.address
+        const input = inputCurrency.address
+        const output = outputCurrency.address
+
+        if (isAddressEqual(input, zeroAddress) && isAddressEqual(output, ref)) {
+          return 'Wrap'
+        }
+
+        if (isAddressEqual(input, ref) && isAddressEqual(output, zeroAddress)) {
+          return 'Unwrap'
+        }
+
         const allowanceTarget = selectedExecutorName
           ? getAddress(
               executors.find((e) => e.name === selectedExecutorName)
@@ -559,18 +571,6 @@ export const TradeContainer = () => {
         const allowance = getAllowance(allowanceTarget, inputCurrency)
         if (amountIn > allowance) {
           return `Max Approve ${inputCurrency.symbol}`
-        }
-
-        const ref = CHAIN_CONFIG.REFERENCE_CURRENCY.address
-        const input = inputCurrency.address
-        const output = outputCurrency.address
-
-        if (isAddressEqual(input, zeroAddress) && isAddressEqual(output, ref)) {
-          return 'Wrap'
-        }
-
-        if (isAddressEqual(input, ref) && isAddressEqual(output, zeroAddress)) {
-          return 'Unwrap'
         }
 
         return 'Swap'
