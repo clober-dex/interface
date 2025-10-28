@@ -34,8 +34,6 @@ export const Bid: Story = {
       user: zeroAddress,
       inputCurrency: dummyCurrencies[0],
       outputCurrency: dummyCurrencies[1],
-      txHash:
-        '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
       createdAt: 1630000000000,
       price: '1600',
       amount: {
@@ -73,8 +71,6 @@ export const Ask: Story = {
       user: zeroAddress,
       inputCurrency: dummyCurrencies[1],
       outputCurrency: dummyCurrencies[0],
-      txHash:
-        '0x6d91975935196522e7da9911412a1c2c2e509b13f19f215f7aaef820f7125734',
       createdAt: 1630000000000,
       price: '1600',
       amount: {
