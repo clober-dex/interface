@@ -52,7 +52,6 @@ export const LimitContractProvider = ({
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutorName,
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
