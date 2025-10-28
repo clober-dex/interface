@@ -131,12 +131,14 @@ export const getClientConfig = () => {
         [
           {
             groupName: 'Recommended',
-            wallets: [
-              socialAccountWallet,
-              bitgetWallet,
-              coinbaseWallet,
-              walletConnectWallet,
-            ],
+            wallets: CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID
+              ? [
+                  socialAccountWallet,
+                  bitgetWallet,
+                  coinbaseWallet,
+                  walletConnectWallet,
+                ]
+              : [bitgetWallet, coinbaseWallet, walletConnectWallet],
           },
         ],
         {

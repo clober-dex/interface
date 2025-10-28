@@ -25,7 +25,7 @@ export type ChainConfig = {
   ASSETS_GITHUB_REPO: string | null
   DISCORD_URL: string | null
   DOCS_URL: string | null
-  WEB3_AUTH_CLIENT_ID: string
+  WEB3_AUTH_CLIENT_ID: string | null
   WALLET_CONNECT_PROJECT_ID: string
   GOOGLE_ANALYTICS_TRACKING_ID: string
   IS_SWAP_DEFAULT: boolean

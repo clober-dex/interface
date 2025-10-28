@@ -31,7 +31,7 @@ export default function Web3AuthConnectorInstance() {
   }
 
   web3AuthInstance = new Web3Auth({
-    clientId: CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID,
+    clientId: CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID!,
     privateKeyProvider,
     web3AuthNetwork: CHAIN_CONFIG.CHAIN.testnet
       ? WEB3AUTH_NETWORK.SAPPHIRE_DEVNET
