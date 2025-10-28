@@ -646,7 +646,7 @@ export const TradingCompetitionContainer = () => {
                     onClick={() =>
                       isLong
                         ? router.push(
-                            `/trade?inputCurrency=0xf817257fed379853cDe0fa4F97AB987181B1E5Ea&outputCurrency=${currency.address}`,
+                            `/trade?inputCurrency=${CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.address}&outputCurrency=${currency.address}`,
                           )
                         : router.push(`/futures/mint/${currency.address}`)
                     }

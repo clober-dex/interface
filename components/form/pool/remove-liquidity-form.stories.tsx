@@ -3,6 +3,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import '../../../styles/globals.css'
 import { mainnet } from 'viem/chains'
 
+import { CHAIN_CONFIG } from '../../../chain-configs'
+
 import { RemoveLiquidityForm } from './remove-liquidity-form'
 
 export default {
@@ -28,77 +30,37 @@ export const Default: Story = {
       key: '0x',
       liquidityA: {
         total: {
-          currency: {
-            address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-          },
+          currency: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
           value: '74472.065381',
         },
         reserve: {
-          currency: {
-            address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-          },
+          currency: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
           value: '20852.178307',
         },
         cancelable: {
-          currency: {
-            address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-          },
+          currency: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
           value: '53619.887074',
         },
         claimable: {
-          currency: {
-            address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-          },
+          currency: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
           value: '0',
         },
       },
       liquidityB: {
         total: {
-          currency: {
-            address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-          },
+          currency: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
           value: '74472.065381',
         },
         reserve: {
-          currency: {
-            address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-          },
+          currency: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
           value: '20852.178307',
         },
         cancelable: {
-          currency: {
-            address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-          },
+          currency: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
           value: '53619.887074',
         },
         claimable: {
-          currency: {
-            address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-          },
+          currency: CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
           value: '0',
         },
       },
