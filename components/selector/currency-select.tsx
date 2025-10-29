@@ -22,6 +22,7 @@ import InspectCurrencyModal from '../modal/inspect-currency-modal'
 import { Chain } from '../../model/chain'
 import { useWindowWidth } from '../../hooks/useWindowWidth'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { formatWithCommas } from '../../utils/bignumber'
 
 const CurrencySelect = ({
   chain,
@@ -297,10 +298,12 @@ const CurrencySelect = ({
                 </div>
                 <div className="flex-1 text-sm text-end text-white">
                   <div>
-                    {formatUnits(
-                      balances[currency.address],
-                      currency.decimals,
-                      prices[currency.address],
+                    {formatWithCommas(
+                      formatUnits(
+                        balances[currency.address],
+                        currency.decimals,
+                        prices[currency.address],
+                      ),
                     )}
                   </div>
                   {prices[currency.address] ? (
