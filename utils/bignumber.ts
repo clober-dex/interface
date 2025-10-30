@@ -89,7 +89,6 @@ export const findFirstNonZeroDecimalIndex = (
  * @param number - A number or string compatible with BigNumber.
  * @param places - Number of decimal places to show (default: 4).
  * @param roundingMode - Rounding mode from BigNumber (default: ROUND_FLOOR).
- * @param formatter - (Optional) A custom formatter function to format the final string.
  * @returns A formatted string with either the specified decimal places or
  *          dynamically extended precision if the number is near zero.
  */
@@ -97,18 +96,16 @@ export const formatSignificantString = (
   number: BigNumber.Value,
   places: number = 4,
   roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_FLOOR,
-  formatter?: (value: BigNumber.Value) => string,
 ): string => {
   const result = new BigNumber(number).toFixed(places, roundingMode)
   if (new BigNumber(result).isZero()) {
     const index = findFirstNonZeroDecimalIndex(number)
-    const base = new BigNumber(number).toFixed(
+    return new BigNumber(number).toFixed(
       index + POLLY_FILL_DECIMALS,
       roundingMode,
     )
-    return formatter ? formatter(base) : base
   } else {
-    return formatter ? formatter(result) : result
+    return result
   }
 }
 
