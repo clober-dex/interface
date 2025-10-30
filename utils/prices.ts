@@ -25,7 +25,7 @@ export const getPriceDecimals = (price: number) => {
   return i
 }
 
-export const formatToCloberPriceString = (
+export const toCloberPriceString = (
   chainId: CHAIN_IDS,
   price: string,
   currency0: Currency,

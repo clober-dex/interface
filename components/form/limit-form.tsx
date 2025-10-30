@@ -13,7 +13,7 @@ import { Prices } from '../../model/prices'
 import { toSignificantString } from '../../utils/bignumber'
 import {
   toTickPriceString,
-  formatToCloberPriceString,
+  toCloberPriceString,
   getPriceDecimals,
 } from '../../utils/prices'
 import CloseSvg from '../svg/close-svg'
@@ -130,7 +130,7 @@ export const LimitForm = ({
         !new BigNumber(debouncedPriceInput).isNaN()
       ) {
         setPriceInput(
-          formatToCloberPriceString(
+          toCloberPriceString(
             chain.id,
             debouncedPriceInput,
             inputCurrency,

@@ -15,7 +15,7 @@ import { useGasPrice } from 'wagmi'
 
 import { isMarketEqual } from '../../utils/market'
 import { isOrderBookEqual, parseDepth } from '../../utils/order-book'
-import { formatToCloberPriceString, getPriceDecimals } from '../../utils/prices'
+import { toCloberPriceString, getPriceDecimals } from '../../utils/prices'
 import {
   Decimals,
   DEFAULT_DECIMAL_PLACE_GROUP_LENGTH,
@@ -362,7 +362,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         }
         setOnChainPrice(price.toNumber())
         setPriceInput(
-          formatToCloberPriceString(
+          toCloberPriceString(
             selectedChain.id,
             price.toString(),
             inputCurrency,
@@ -479,7 +479,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
             }
             setOnChainPrice(price.toNumber())
             setPriceInput(
-              formatToCloberPriceString(
+              toCloberPriceString(
                 selectedChain.id,
                 price.toString(),
                 inputCurrency,
