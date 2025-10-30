@@ -68,7 +68,7 @@ const Context = React.createContext<CurrencyContext>({
 
 export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const queryClient = useQueryClient()
-  const { nexusSDK, useRemoteChainBalances } = useNexus()
+  const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
 
   const { address: userAddress } = useAccount()
@@ -161,8 +161,11 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           try {
             const parsed = parseUnits(balance, entry.decimals)
             breakdownList.push({
-              chainId: chain.id,
-              chainName: chain.name,
+              chain: {
+                id: chain.id,
+                logo: chain.logo,
+                name: chain.name,
+              },
               balance: parsed,
             })
             total += parsed
