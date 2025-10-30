@@ -7,10 +7,7 @@ import { Tooltip } from 'react-tooltip'
 import CurrencyAmountInput from '../input/currency-amount-input'
 import { Currency } from '../../model/currency'
 import CurrencySelect from '../selector/currency-select'
-import {
-  formatSignificantString,
-  formatWithCommas,
-} from '../../utils/bignumber'
+import { toSignificantString, formatWithCommas } from '../../utils/bignumber'
 import { ActionButton, ActionButtonProps } from '../button/action-button'
 import { Prices } from '../../model/prices'
 import { Balances } from '../../model/balances'
@@ -359,7 +356,7 @@ export const SwapForm = ({
                     ) : (
                       <div className="text-gray-400 flex flex-row gap-1 items-center">
                         <span className="text-white text-[13px] sm:text-sm font-medium">
-                          ${formatSignificantString(gasEstimateValue)}
+                          ${toSignificantString(gasEstimateValue)}
                         </span>
                         {aggregatorName.length > 0 ? (
                           <span className="text-[#8d94a1] text-[13px] sm:text-sm font-medium">
@@ -387,9 +384,7 @@ export const SwapForm = ({
                     ) : (
                       <div className="text-[13px] sm:text-sm text-white flex flex-row gap-1 items-center">
                         {formatWithCommas(
-                          formatSignificantString(
-                            Number(minimumReceivedAmount),
-                          ),
+                          toSignificantString(Number(minimumReceivedAmount)),
                         )}{' '}
                         {quoteCurrency?.symbol ?? ''}
                       </div>
@@ -432,9 +427,7 @@ export const SwapForm = ({
                         </span>
                         =
                         <span className="text-white">
-                          {formatWithCommas(
-                            formatSignificantString(exchangeRate),
-                          )}{' '}
+                          {formatWithCommas(toSignificantString(exchangeRate))}{' '}
                           {quoteCurrency.symbol}
                         </span>
                       </div>

@@ -24,7 +24,7 @@ import {
 } from '../../utils/approve6909'
 import {
   formatPreciseAmountString,
-  formatSignificantString,
+  toSignificantString,
   formatWithCommas,
 } from '../../utils/bignumber'
 import { sendTransaction } from '../../utils/transaction'
@@ -293,9 +293,7 @@ export const PoolContractProvider = ({
                 ? {
                     label: 'Swap Rate',
                     value: `${formatWithCommas(
-                      formatSignificantString(
-                        result.quoteResponse.exchangeRate,
-                      ),
+                      toSignificantString(result.quoteResponse.exchangeRate),
                     )}`,
                   }
                 : undefined,
@@ -307,7 +305,7 @@ export const PoolContractProvider = ({
                 ? {
                     label: 'Market Rate',
                     value: `${formatWithCommas(
-                      formatSignificantString(
+                      toSignificantString(
                         prices[baseCurrency.address] /
                           prices[quoteCurrency.address],
                       ),

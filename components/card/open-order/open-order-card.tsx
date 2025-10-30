@@ -4,10 +4,7 @@ import { NextRouter } from 'next/router'
 
 import { OutlinkSvg } from '../../svg/outlink-svg'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
-import {
-  formatSignificantString,
-  formatWithCommas,
-} from '../../../utils/bignumber'
+import { toSignificantString, formatWithCommas } from '../../../utils/bignumber'
 import { formatTickPriceString } from '../../../utils/prices'
 
 export const OpenOrderCard = ({
@@ -79,7 +76,7 @@ export const OpenOrderCard = ({
                 </label>
                 <p className="flex gap-1 text-white text-xs sm:text-sm  font-medium">
                   {formatWithCommas(
-                    formatSignificantString(openOrder.amount.value),
+                    toSignificantString(openOrder.amount.value),
                   )}{' '}
                   <span className="text-[#8690a5]">
                     {openOrder.amount.currency.symbol}
@@ -112,7 +109,7 @@ export const OpenOrderCard = ({
                 </label>
                 <p className="flex gap-1 text-white text-xs sm:text-sm  font-medium">
                   {formatWithCommas(
-                    formatSignificantString(openOrder.claimable.value),
+                    toSignificantString(openOrder.claimable.value),
                   )}{' '}
                   <span className="text-[#8690a5]">
                     {openOrder.claimable.currency.symbol}
@@ -174,9 +171,7 @@ export const OpenOrderCard = ({
 
           <div className="w-[180px] max-w-[180px] overflow-x-scroll h-full justify-start items-center flex text-white text-sm font-medium">
             <p className="flex gap-1 text-white">
-              {formatWithCommas(
-                formatSignificantString(openOrder.amount.value),
-              )}{' '}
+              {formatWithCommas(toSignificantString(openOrder.amount.value))}{' '}
               <span className="text-[#8690a5]">
                 {openOrder.amount.currency.symbol}
               </span>
@@ -189,9 +184,7 @@ export const OpenOrderCard = ({
 
           <div className="w-[180px] max-w-[180px] overflow-x-scroll h-full justify-start items-center flex text-white text-sm font-medium">
             <p className="flex gap-1 text-white">
-              {formatWithCommas(
-                formatSignificantString(openOrder.claimable.value),
-              )}{' '}
+              {formatWithCommas(toSignificantString(openOrder.claimable.value))}{' '}
               <span className="text-[#8690a5]">
                 {openOrder.claimable.currency.symbol}
               </span>

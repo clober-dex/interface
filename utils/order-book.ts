@@ -3,7 +3,7 @@ import { CHAIN_IDS, Depth, Market } from '@clober/v2-sdk'
 
 import { Decimals } from '../model/decimals'
 
-import { formatSignificantString } from './bignumber'
+import { toSignificantString } from './bignumber'
 import { formatTickPriceString } from './prices'
 
 export function calculateInputCurrencyAmountString(
@@ -15,7 +15,7 @@ export function calculateInputCurrencyAmountString(
   const inputCurrencyAmount = isBid
     ? new BigNumber(outputCurrencyAmount).times(priceInput)
     : new BigNumber(outputCurrencyAmount).div(priceInput)
-  return formatSignificantString(
+  return toSignificantString(
     inputCurrencyAmount.isNaN() || !inputCurrencyAmount.isFinite()
       ? new BigNumber(0)
       : inputCurrencyAmount,
@@ -32,7 +32,7 @@ export function calculateOutputCurrencyAmountString(
   const outputCurrencyAmount = isBid
     ? new BigNumber(inputCurrencyAmount).div(priceInput)
     : new BigNumber(inputCurrencyAmount).times(priceInput)
-  return formatSignificantString(
+  return toSignificantString(
     outputCurrencyAmount.isNaN() || !outputCurrencyAmount.isFinite()
       ? new BigNumber(0)
       : outputCurrencyAmount,
@@ -101,7 +101,7 @@ export function parseDepth(
   ).map((x) => {
     return {
       price: x.price,
-      size: formatSignificantString(x.size, market.base.decimals),
+      size: toSignificantString(x.size, market.base.decimals),
     }
   })
 }

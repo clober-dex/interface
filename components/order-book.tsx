@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import { Market } from '@clober/v2-sdk'
 import { motion } from 'framer-motion'
 
-import { formatSignificantString, formatWithCommas } from '../utils/bignumber'
+import { toSignificantString, formatWithCommas } from '../utils/bignumber'
 
 import { Loading } from './loading'
 
@@ -108,7 +108,7 @@ export default function OrderBook({
                       }}
                     >
                       <div className="text-gray-200">
-                        {formatWithCommas(formatSignificantString(size))}
+                        {formatWithCommas(toSignificantString(size))}
                       </div>
                       <div className="text-green-500">
                         {formatWithCommas(price)}
@@ -156,7 +156,7 @@ export default function OrderBook({
                         {formatWithCommas(price)}
                       </div>
                       <div className="text-gray-200">
-                        {formatWithCommas(formatSignificantString(size))}
+                        {formatWithCommas(toSignificantString(size))}
                       </div>
                       <motion.div
                         key={`ask-bar-${price}-${size}`}
@@ -223,7 +223,7 @@ export default function OrderBook({
                         }}
                       >
                         <div className="flex-1 text-left text-gray-200">
-                          {formatWithCommas(formatSignificantString(size))}
+                          {formatWithCommas(toSignificantString(size))}
                         </div>
                         <div className="text-right text-green-500">
                           {formatWithCommas(price)}
@@ -266,7 +266,7 @@ export default function OrderBook({
                           {formatWithCommas(price)}
                         </div>
                         <div className="flex-1 text-right text-gray-200">
-                          {formatWithCommas(formatSignificantString(size))}
+                          {formatWithCommas(toSignificantString(size))}
                         </div>
                         <motion.div
                           key={`ask-bar-${price}-${size}`}

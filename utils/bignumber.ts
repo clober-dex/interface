@@ -92,7 +92,7 @@ export const findFirstNonZeroDecimalIndex = (
  * @returns A formatted string with either the specified decimal places or
  *          dynamically extended precision if the number is near zero.
  */
-export const formatSignificantString = (
+export const toSignificantString = (
   number: BigNumber.Value,
   places: number = 4,
   roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_FLOOR,

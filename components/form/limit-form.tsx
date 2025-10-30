@@ -10,7 +10,7 @@ import { ActionButton, ActionButtonProps } from '../button/action-button'
 import CurrencySelect from '../selector/currency-select'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
-import { formatSignificantString } from '../../utils/bignumber'
+import { toSignificantString } from '../../utils/bignumber'
 import {
   formatTickPriceString,
   formatToCloberPriceString,
@@ -103,12 +103,12 @@ export const LimitForm = ({
       : getPriceDecimals(Number(priceInput))
 
   const [debouncedPriceInput, setDebouncedPriceInput] = useState('')
-  const minimumPrice = formatSignificantString(
+  const minimumPrice = toSignificantString(
     new BigNumber(0.1).pow(minimumDecimalPlaces).toString(),
     minimumDecimalPlaces,
     BigNumber.ROUND_DOWN,
   )
-  const maximumPrice = formatSignificantString(
+  const maximumPrice = toSignificantString(
     '8662020672688495886265',
     minimumDecimalPlaces,
     BigNumber.ROUND_DOWN,

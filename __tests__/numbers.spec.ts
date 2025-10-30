@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import {
   findFirstNonZeroDecimalIndex,
   formatAbbreviatedNumberString,
-  formatSignificantString,
+  toSignificantString,
   formatTinyNumber,
 } from '../utils/bignumber'
 
@@ -20,17 +20,15 @@ describe('Numbers', () => {
   })
 
   it('toPlacesString', () => {
-    expect(formatSignificantString(1111.1023123)).toBe('1111.1023')
-    expect(formatSignificantString(0.00000000001023123)).toBe(
-      '0.000000000010231',
-    )
-    expect(formatSignificantString(1110.000001023123)).toBe('1110.0000')
-    expect(formatSignificantString(0.1023123)).toBe('0.1023')
-    expect(formatSignificantString(0.01023123)).toBe('0.0102')
-    expect(formatSignificantString(0)).toBe('0.0000')
-    expect(formatSignificantString(1000000)).toBe('1000000.0000')
-    expect(formatSignificantString(123)).toBe('123.0000')
-    expect(formatSignificantString(123.000000123)).toBe('123.0000')
+    expect(toSignificantString(1111.1023123)).toBe('1111.1023')
+    expect(toSignificantString(0.00000000001023123)).toBe('0.000000000010231')
+    expect(toSignificantString(1110.000001023123)).toBe('1110.0000')
+    expect(toSignificantString(0.1023123)).toBe('0.1023')
+    expect(toSignificantString(0.01023123)).toBe('0.0102')
+    expect(toSignificantString(0)).toBe('0.0000')
+    expect(toSignificantString(1000000)).toBe('1000000.0000')
+    expect(toSignificantString(123)).toBe('123.0000')
+    expect(toSignificantString(123.000000123)).toBe('123.0000')
   })
 
   it('toShortNumber', () => {
