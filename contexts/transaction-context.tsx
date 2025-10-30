@@ -21,6 +21,7 @@ export type Confirmation = {
     currency?: Currency | LpCurrency
     label: string
     primaryText: string
+    secondaryText?: string
   }[]
 }
 
