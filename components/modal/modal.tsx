@@ -8,13 +8,11 @@ const Modal = ({
   onClose,
   children,
   onModalClick,
-  onButtonClick,
   width = '480px',
 }: {
   show: boolean
   onClose: () => void
   onModalClick?: () => void
-  onButtonClick?: () => void
   width?: string
 } & React.PropsWithChildren) => {
   if (!show) {
@@ -34,9 +32,12 @@ const Modal = ({
           e.stopPropagation()
         }}
       >
-        <div className="absolute right-4 sm:right-6">
-          <button onClick={onButtonClick ? onButtonClick : onClose}>
-            <CloseSvg />
+        <div className="group absolute right-3 sm:right-5 top-3 sm:top-5">
+          <button
+            onClick={onClose}
+            className="group-hover:bg-gray-700 p-1 rounded-full"
+          >
+            <CloseSvg className="w-4 h-4 sm:w-4 sm:h-4" />
           </button>
         </div>
         {children}

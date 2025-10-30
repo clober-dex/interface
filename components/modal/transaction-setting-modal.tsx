@@ -55,7 +55,7 @@ export const TransactionSettingModal = ({
   )
 
   return (
-    <Modal show onClose={onClose} onButtonClick={onClose}>
+    <Modal show onClose={onClose}>
       <h1 className="flex font-semibold text-xl mb-2 justify-center items-center">
         Settings
       </h1>

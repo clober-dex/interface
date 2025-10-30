@@ -68,11 +68,7 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
   )
 
   return displayMarketClosedModal ? (
-    <Modal
-      show
-      onClose={() => {}}
-      onButtonClick={() => setDisplayMarketClosedModal(false)}
-    >
+    <Modal show onClose={() => setDisplayMarketClosedModal(false)}>
       <h1 className="flex font-bold text-xl mb-2">Notice</h1>
       <div className="text-sm">
         our price feeds follow the traditional market hours of each asset

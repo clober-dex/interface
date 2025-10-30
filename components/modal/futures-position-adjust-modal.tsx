@@ -41,7 +41,7 @@ export const FuturesPositionAdjustModal = ({
 }) => {
   const maxLTV = (Number(asset.maxLTV) * 100) / Number(asset.ltvPrecision)
   return (
-    <Modal show onClose={() => {}} onButtonClick={onClose}>
+    <Modal show onClose={onClose}>
       <h1 className="flex font-bold text-xl mb-2">
         {disableSlider ? 'Close Position' : 'Adjust Position'}
       </h1>
