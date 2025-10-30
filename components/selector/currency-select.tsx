@@ -40,7 +40,7 @@ const CurrencySelect = ({
   explorerUrl: string
   currencies: Currency[]
   balances: Balances
-  remoteChainBalances: RemoteChainBalances
+  remoteChainBalances?: RemoteChainBalances
   prices: Prices
   onBack: () => void
   onCurrencySelect: (currency: Currency) => void
