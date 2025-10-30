@@ -1,7 +1,7 @@
 import React from 'react'
 import '../../styles/globals.css'
 import { Meta, StoryObj } from '@storybook/react'
-import { mainnet } from 'viem/chains'
+import { mainnet, polygon } from 'viem/chains'
 
 import ConfirmationModal from './confirmation-modal'
 
@@ -36,6 +36,7 @@ export const Default: Story = {
           },
           label: 'Field 1',
           primaryText: 'Value 1',
+          secondaryText: 'Value 2',
         },
         {
           currency: {
@@ -46,6 +47,7 @@ export const Default: Story = {
           },
           label: 'Field 1',
           primaryText: 'Value 1',
+          secondaryText: 'Value 2',
         },
       ],
     },
@@ -69,6 +71,7 @@ export const DefaultWithDirection: Story = {
           },
           label: 'Field 1',
           primaryText: 'Value 1',
+          secondaryText: 'Value 2',
         },
         {
           direction: 'out',
@@ -80,6 +83,7 @@ export const DefaultWithDirection: Story = {
           },
           label: 'Field 1',
           primaryText: 'Value 1',
+          secondaryText: 'Value 2',
         },
         {
           direction: 'out',
@@ -91,6 +95,45 @@ export const DefaultWithDirection: Story = {
           },
           label: 'Field 1',
           primaryText: 'Value 1',
+          secondaryText: 'Value 2',
+        },
+      ],
+    },
+  },
+}
+
+export const DefaultWithChainAndDirection: Story = {
+  args: {
+    confirmation: {
+      title: 'Confirm',
+      body: 'Are you sure you want to do this?',
+      chain: mainnet,
+      fields: [
+        {
+          direction: 'in',
+          currency: {
+            address: '0x0000000000000000000000000000000000000003',
+            name: 'ETH',
+            symbol: 'ETH',
+            decimals: 18,
+          },
+          chain: polygon,
+          label: 'Field 1',
+          primaryText: 'Value 1',
+          secondaryText: 'Value 2',
+        },
+        {
+          direction: 'out',
+          currency: {
+            address: '0x0000000000000000000000000000000000000003',
+            name: 'ETH',
+            symbol: 'ETH',
+            decimals: 18,
+          },
+          chain: mainnet,
+          label: 'Field 1',
+          primaryText: 'Value 1',
+          secondaryText: 'Value 2',
         },
       ],
     },

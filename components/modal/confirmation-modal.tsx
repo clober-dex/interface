@@ -90,20 +90,35 @@ const ConfirmationModal = ({
                 <div className="flex w-full items-center justify-between bg-[#24272e] px-3 py-1.5 text-sm rounded-lg">
                   <div className="flex items-center gap-2 truncate">
                     {field.currency && confirmation.chain ? (
-                      <CurrencyIcon
-                        chain={confirmation.chain}
-                        currency={field.currency}
-                        className="w-5 h-5 rounded-full"
-                      />
+                      field.chain ? (
+                        <div className="w-6 h-6 relative">
+                          <CurrencyIcon
+                            chain={confirmation.chain}
+                            currency={field.currency}
+                            className="w-5 h-5 absolute left-0 top-1 z-[1] rounded-xl bg-gray-300 aspect-square"
+                          />
+
+                          <ChainIcon
+                            chain={field.chain}
+                            className="w-3 h-3 absolute left-3 top-0 z-[2] rounded-xl aspect-square bg-white p-0.5"
+                          />
+                        </div>
+                      ) : (
+                        <CurrencyIcon
+                          chain={confirmation.chain}
+                          currency={field.currency}
+                          className="w-5 h-5 rounded-full"
+                        />
+                      )
                     ) : (
                       <></>
                     )}
                     <div>{field.label}</div>
                   </div>
-                  <div className="flex flex-col gap-0.5 text-right justify-end truncate">
+                  <div className="flex flex-col gap-0.5 text-right justify-end items-end truncate">
                     {field.primaryText}
                     {field.secondaryText && (
-                      <span className="flex text-gray-500 text-xs">
+                      <span className="block w-full text-gray-500 text-xs text-right">
                         ({field.secondaryText})
                       </span>
                     )}

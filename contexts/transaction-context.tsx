@@ -19,6 +19,7 @@ export type Confirmation = {
   fields: {
     direction?: 'in' | 'out'
     currency?: Currency | LpCurrency
+    chain?: Chain
     label: string
     primaryText: string
     secondaryText?: string
