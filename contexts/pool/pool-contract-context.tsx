@@ -257,6 +257,7 @@ export const PoolContractProvider = ({
                     value: formatPreciseAmountString(
                       result.currencyA.amount,
                       prices[result.currencyA.currency.address],
+                      formatWithCommas,
                     ),
                   },
               new BigNumber(result.currencyB.amount).isZero()
@@ -268,6 +269,7 @@ export const PoolContractProvider = ({
                     value: formatPreciseAmountString(
                       result.currencyB.amount,
                       prices[result.currencyB.currency.address],
+                      formatWithCommas,
                     ),
                   },
               new BigNumber(result.lpCurrency.amount).isZero()
@@ -282,6 +284,7 @@ export const PoolContractProvider = ({
                     value: formatPreciseAmountString(
                       result.lpCurrency.amount,
                       prices[baseCurrency.address],
+                      formatWithCommas,
                     ),
                   },
               result.quoteResponse &&
@@ -442,6 +445,7 @@ export const PoolContractProvider = ({
                   value: formatPreciseAmountString(
                     result.currencyA.amount,
                     prices[result.currencyA.currency.address],
+                    formatWithCommas,
                   ),
                 },
             new BigNumber(result.currencyB.amount).isZero()
@@ -453,6 +457,7 @@ export const PoolContractProvider = ({
                   value: formatPreciseAmountString(
                     result.currencyB.amount,
                     prices[result.currencyB.currency.address],
+                    formatWithCommas,
                   ),
                 },
             new BigNumber(result.lpCurrency.amount).isZero()
@@ -467,6 +472,7 @@ export const PoolContractProvider = ({
                   value: formatPreciseAmountString(
                     result.lpCurrency.amount,
                     prices[baseCurrency.address],
+                    formatWithCommas,
                   ),
                 },
           ].filter((field) => field !== undefined) as Confirmation['fields'],
@@ -632,7 +638,11 @@ export const PoolContractProvider = ({
                 currencyB: currency1,
               },
               label: 'LP Token',
-              value: formatPreciseAmountString(amount, lpPrice),
+              value: formatPreciseAmountString(
+                amount,
+                lpPrice,
+                formatWithCommas,
+              ),
             },
             {
               direction: 'out',
@@ -641,7 +651,11 @@ export const PoolContractProvider = ({
                 currencyB: currency1,
               },
               label: 'LP Token (ERC20)',
-              value: formatPreciseAmountString(amount, lpPrice),
+              value: formatPreciseAmountString(
+                amount,
+                lpPrice,
+                formatWithCommas,
+              ),
             },
           ] as Confirmation['fields'],
         }
@@ -751,7 +765,11 @@ export const PoolContractProvider = ({
                 currencyB: pool.currencyB,
               },
               label: 'LP Token (ERC20)',
-              value: formatPreciseAmountString(amount, lpPrice),
+              value: formatPreciseAmountString(
+                amount,
+                lpPrice,
+                formatWithCommas,
+              ),
             },
             {
               direction: 'in',
@@ -760,7 +778,11 @@ export const PoolContractProvider = ({
                 currencyB: pool.currencyB,
               },
               label: 'LP Token',
-              value: formatPreciseAmountString(amount, lpPrice),
+              value: formatPreciseAmountString(
+                amount,
+                lpPrice,
+                formatWithCommas,
+              ),
             },
           ] as Confirmation['fields'],
         }

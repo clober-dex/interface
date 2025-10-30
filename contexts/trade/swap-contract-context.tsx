@@ -13,7 +13,10 @@ import { maxApprove } from '../../utils/approve20'
 import { Aggregator } from '../../model/aggregator'
 import { useChainContext } from '../chain-context'
 import { currentTimestampInSeconds } from '../../utils/date'
-import { formatPreciseAmountString } from '../../utils/bignumber'
+import {
+  formatPreciseAmountString,
+  formatWithCommas,
+} from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { executors } from '../../chain-configs/executors'
 import Modal from '../../components/modal/modal'
@@ -132,6 +135,7 @@ export const SwapContractProvider = ({
                 value: formatPreciseAmountString(
                   formatUnits(amountIn, inputCurrency.decimals),
                   prices[inputCurrency.address],
+                  formatWithCommas,
                 ),
               },
               {
@@ -141,6 +145,7 @@ export const SwapContractProvider = ({
                 value: formatPreciseAmountString(
                   formatUnits(expectedAmountOut, outputCurrency.decimals),
                   prices[outputCurrency.address],
+                  formatWithCommas,
                 ),
               },
             ] as Confirmation['fields'],

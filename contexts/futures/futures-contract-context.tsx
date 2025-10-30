@@ -25,7 +25,10 @@ import { buildTransaction, sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { Currency } from '../../model/currency'
 import { deduplicateCurrencies } from '../../utils/currency'
-import { formatPreciseAmountString } from '../../utils/bignumber'
+import {
+  formatPreciseAmountString,
+  formatWithCommas,
+} from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { PYTH_ORACLE_ABI } from '../../abis/futures/pyth-oracle-abi'
 
@@ -229,6 +232,7 @@ export const FuturesContractProvider = ({
                 value: formatPreciseAmountString(
                   formatUnits(collateralAmount, asset.collateral.decimals),
                   prices[asset.collateral.address],
+                  formatWithCommas,
                 ),
               },
               {
@@ -238,6 +242,7 @@ export const FuturesContractProvider = ({
                 value: formatPreciseAmountString(
                   formatUnits(debtAmount, asset.currency.decimals),
                   prices[asset.currency.address],
+                  formatWithCommas,
                 ),
               },
             ].filter((field) => field.value !== '0') as any[],
@@ -398,6 +403,7 @@ export const FuturesContractProvider = ({
               value: formatPreciseAmountString(
                 formatUnits(debtAmount, asset.currency.decimals),
                 prices[asset.currency.address],
+                formatWithCommas,
               ),
             },
           ] as Confirmation['fields'],
@@ -519,6 +525,7 @@ export const FuturesContractProvider = ({
                   userPosition.asset.currency.decimals,
                 ),
                 prices[userPosition.asset.currency.address],
+                formatWithCommas,
               ),
             },
             {
@@ -531,6 +538,7 @@ export const FuturesContractProvider = ({
                   userPosition.asset.collateral.decimals,
                 ),
                 prices[userPosition.asset.collateral.address],
+                formatWithCommas,
               ),
             },
           ] as Confirmation['fields'],
@@ -795,6 +803,7 @@ export const FuturesContractProvider = ({
               value: formatPreciseAmountString(
                 formatUnits(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address],
+                formatWithCommas,
               ),
             },
           ] as Confirmation['fields'],
@@ -887,6 +896,7 @@ export const FuturesContractProvider = ({
               value: formatPreciseAmountString(
                 formatUnits(amount, asset.currency.decimals),
                 prices[asset.currency.address],
+                formatWithCommas,
               ),
             },
             {
@@ -896,6 +906,7 @@ export const FuturesContractProvider = ({
               value: formatPreciseAmountString(
                 formatUnits(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address],
+                formatWithCommas,
               ),
             },
           ] as Confirmation['fields'],
@@ -992,6 +1003,7 @@ export const FuturesContractProvider = ({
               value: formatPreciseAmountString(
                 formatUnits(amount, asset.collateral.decimals),
                 prices[asset.collateral.address],
+                formatWithCommas,
               ),
             },
           ] as Confirmation['fields'],
@@ -1096,6 +1108,7 @@ export const FuturesContractProvider = ({
               value: formatPreciseAmountString(
                 formatUnits(amount, asset.collateral.decimals),
                 prices[asset.collateral.address],
+                formatWithCommas,
               ),
             },
           ] as Confirmation['fields'],

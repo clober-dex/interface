@@ -19,7 +19,10 @@ import { Confirmation, useTransactionContext } from '../transaction-context'
 import { sendTransaction, waitTransaction } from '../../utils/transaction'
 import { useCurrencyContext } from '../currency-context'
 import { maxApprove } from '../../utils/approve20'
-import { formatPreciseAmountString } from '../../utils/bignumber'
+import {
+  formatPreciseAmountString,
+  formatWithCommas,
+} from '../../utils/bignumber'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
 
@@ -219,6 +222,7 @@ export const LimitContractProvider = ({
                   value: formatPreciseAmountString(
                     result.make.amount,
                     prices[inputCurrency.address],
+                    formatWithCommas,
                   ),
                 },
               ] as Confirmation['fields'],
@@ -267,6 +271,7 @@ export const LimitContractProvider = ({
                   value: formatPreciseAmountString(
                     Number(result.make.amount) + Number(result.spent.amount),
                     prices[inputCurrency.address],
+                    formatWithCommas,
                   ),
                 },
                 {
@@ -276,6 +281,7 @@ export const LimitContractProvider = ({
                   value: formatPreciseAmountString(
                     result.taken.amount,
                     prices[outputCurrency.address],
+                    formatWithCommas,
                   ),
                 },
               ] as Confirmation['fields'],
@@ -401,7 +407,11 @@ export const LimitContractProvider = ({
           fields: result.map(({ currency, amount, direction }) => ({
             currency,
             label: currency.symbol,
-            value: formatPreciseAmountString(amount, prices[currency.address]),
+            value: formatPreciseAmountString(
+              amount,
+              prices[currency.address],
+              formatWithCommas,
+            ),
             direction,
           })),
         }
@@ -501,7 +511,11 @@ export const LimitContractProvider = ({
           fields: result.map(({ currency, amount, direction }) => ({
             currency,
             label: currency.symbol,
-            value: formatPreciseAmountString(amount, prices[currency.address]),
+            value: formatPreciseAmountString(
+              amount,
+              prices[currency.address],
+              formatWithCommas,
+            ),
             direction,
           })),
         }

@@ -303,6 +303,7 @@ export const PoolManagerContainer = ({
                         formatPreciseAmountString(
                           pool.liquidityA.total.value.toString(),
                           prices[pool.currencyA.address],
+                          formatWithCommas,
                         ),
                       )}
                       <span className="text-gray-400 font-medium text-xs">
@@ -329,6 +330,7 @@ export const PoolManagerContainer = ({
                         formatPreciseAmountString(
                           pool.liquidityB.total.value.toString(),
                           prices[pool.currencyB.address],
+                          formatWithCommas,
                         ),
                       )}
                       <span className="text-gray-400 font-medium text-xs">
