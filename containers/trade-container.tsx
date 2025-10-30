@@ -261,8 +261,14 @@ export const TradeContainer = () => {
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
-  const { balances, getAllowance, prices, currencies, setCurrencies } =
-    useCurrencyContext()
+  const {
+    balances,
+    getAllowance,
+    prices,
+    currencies,
+    setCurrencies,
+    remoteChainBalances,
+  } = useCurrencyContext()
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [showMarketSelect, setShowMarketSelect] = useState<boolean>(false)
@@ -492,7 +498,9 @@ export const TradeContainer = () => {
         !inputCurrency ||
         !outputCurrency ||
         amountIn === 0n ||
-        amountIn > balances[inputCurrency.address],
+        amountIn >
+          balances[inputCurrency.address] +
+            (remoteChainBalances[inputCurrency.address]?.total ?? 0n),
       onClick: async () => {
         if (!userAddress && openConnectModal) {
           openConnectModal()
@@ -542,7 +550,9 @@ export const TradeContainer = () => {
           return 'Enter amount'
         }
 
-        const balance = balances[inputCurrency.address] ?? 0n
+        const balance =
+          balances[inputCurrency.address] +
+          (remoteChainBalances[inputCurrency.address]?.total ?? 0n)
         if (amountIn > balance) {
           return 'Insufficient balance'
         }
@@ -577,19 +587,20 @@ export const TradeContainer = () => {
       })(),
     }),
     [
-      selectedExecutorName,
+      inputCurrencyAmount,
+      selectedQuote,
+      inputCurrency,
+      outputCurrency,
       amountIn,
       balances,
-      getAllowance,
-      gasPrice,
-      inputCurrency,
-      inputCurrencyAmount,
-      openConnectModal,
-      outputCurrency,
-      selectedQuote,
-      swap,
+      remoteChainBalances,
       userAddress,
+      openConnectModal,
+      gasPrice,
+      swap,
       walletClient,
+      selectedExecutorName,
+      getAllowance,
     ],
   )
 
@@ -609,7 +620,8 @@ export const TradeContainer = () => {
         inputCurrencyAmount,
         setInputCurrencyAmount,
         availableInputCurrencyBalance: inputCurrency
-          ? balances[inputCurrency.address]
+          ? balances[inputCurrency.address] +
+            (remoteChainBalances[inputCurrency.address]?.total ?? 0n)
           : 0n,
         showOutputCurrencySelect,
         setShowOutputCurrencySelect,

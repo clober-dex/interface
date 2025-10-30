@@ -23,12 +23,14 @@ import { Chain } from '../../model/chain'
 import { useWindowWidth } from '../../hooks/useWindowWidth'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { formatWithCommas } from '../../utils/bignumber'
+import { RemoteChainBalances } from '../../model/remote-chain-balances'
 
 const CurrencySelect = ({
   chain,
   explorerUrl,
   currencies,
   balances,
+  remoteChainBalances,
   prices,
   onBack,
   onCurrencySelect,
@@ -38,11 +40,13 @@ const CurrencySelect = ({
   explorerUrl: string
   currencies: Currency[]
   balances: Balances
+  remoteChainBalances: RemoteChainBalances
   prices: Prices
   onBack: () => void
   onCurrencySelect: (currency: Currency) => void
   defaultBlacklistedCurrency?: Currency
 } & React.HTMLAttributes<HTMLDivElement>) => {
+  console.log('render CurrencySelect', remoteChainBalances)
   const inputRef = useRef<HTMLInputElement>(null)
   const width = useWindowWidth()
 

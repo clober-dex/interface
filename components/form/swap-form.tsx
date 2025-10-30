@@ -18,6 +18,7 @@ import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
 import { SlippageSelector } from '../selector/slippage-selector'
 import { QuestionMarkSvg } from '../svg/question-mark-svg'
+import { RemoteChainBalances } from '../../model/remote-chain-balances'
 
 export type SwapFormProps = {
   chain: Chain
@@ -25,6 +26,7 @@ export type SwapFormProps = {
   currencies: Currency[]
   setCurrencies: (currencies: Currency[]) => void
   balances: Balances
+  remoteChainBalances: RemoteChainBalances
   prices: Prices
   showInputCurrencySelect: boolean
   setShowInputCurrencySelect:
@@ -60,6 +62,7 @@ export const SwapForm = ({
   currencies,
   setCurrencies,
   balances,
+  remoteChainBalances,
   prices,
   showInputCurrencySelect,
   setShowInputCurrencySelect,
@@ -143,6 +146,7 @@ export const SwapForm = ({
             : currencies
         }
         balances={balances}
+        remoteChainBalances={remoteChainBalances}
         prices={prices}
         onBack={() =>
           setShowInputCurrencySelect
@@ -179,6 +183,7 @@ export const SwapForm = ({
             : currencies
         }
         balances={balances}
+        remoteChainBalances={remoteChainBalances}
         prices={prices}
         onBack={() =>
           setShowOutputCurrencySelect

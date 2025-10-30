@@ -4,14 +4,17 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createPublicClient,
   erc20Abi,
+  erc721Abi,
   getAddress,
   http,
   isAddress,
   isAddressEqual,
+  parseUnits,
   zeroAddress,
 } from 'viem'
 import { getContractAddresses } from '@clober/v2-sdk'
 import { Transaction as SdkTransaction } from '@clober/v2-sdk/dist/types/types/transaction'
+import { UserAssetDatum } from '@avail-project/nexus-core'
 
 import { Currency } from '../model/currency'
 import { Prices } from '../model/prices'
@@ -29,9 +32,11 @@ import { formatDollarValue, toUnitString } from '../utils/bigint'
 import { buildTransaction, sendTransaction } from '../utils/transaction'
 import { shortAddress } from '../utils/address'
 import { executors } from '../chain-configs/executors'
+import { RemoteChainBalances } from '../model/remote-chain-balances'
 
 import { Confirmation, useTransactionContext } from './transaction-context'
 import { useChainContext } from './chain-context'
+import { useNexus } from './nexus-context'
 
 type CurrencyContext = {
   whitelistCurrencies: Currency[]
@@ -39,8 +44,11 @@ type CurrencyContext = {
   setCurrencies: (currencies: Currency[]) => void
   prices: Prices
   balances: Balances
+  remoteChainBalances: RemoteChainBalances
   getAllowance: (spender: `0x${string}`, currency: Currency) => bigint
   isOpenOrderApproved: boolean
+  useRemoteChainBalances: boolean
+  setUseRemoteChainBalances: (value: boolean) => void
   transfer: (
     currency: Currency,
     amount: bigint,
@@ -54,40 +62,33 @@ const Context = React.createContext<CurrencyContext>({
   setCurrencies: () => {},
   prices: {},
   balances: {},
+  remoteChainBalances: {},
   getAllowance: () => 0n,
   isOpenOrderApproved: false,
+  useRemoteChainBalances: false,
+  setUseRemoteChainBalances: () => {},
   transfer: () => Promise.resolve(),
 })
 
-const _abi = [
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'owner',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'operator',
-        type: 'address',
-      },
-    ],
-    name: 'isApprovedForAll',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-] as const
+const USE_REMOTE_CHAIN_BALANCES_KEY = 'use-remote-chain-balances'
 
 export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const queryClient = useQueryClient()
+  const [useRemoteChainBalances, setUseRemoteChainBalances] = useState<boolean>(
+    () => {
+      if (
+        typeof window !== 'undefined' &&
+        CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+      ) {
+        const stored = localStorage.getItem(USE_REMOTE_CHAIN_BALANCES_KEY)
+        if (stored) {
+          return stored === 'true'
+        }
+      }
+      return false
+    },
+  )
+  const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
 
   const { address: userAddress } = useAccount()
@@ -136,6 +137,84 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       return [...prev, ...deduped]
     })
   }, [])
+
+  const parseRemoteChainBalances = useCallback(
+    (balances: Balances, unifiedBalances: UserAssetDatum[] | undefined) => {
+      const remoteChainBalances: RemoteChainBalances = {}
+      if (!unifiedBalances) {
+        return remoteChainBalances
+      }
+
+      const localSymbols = new Set<string>()
+      for (const tokenAddress of Object.keys(balances)) {
+        const symbol = unifiedBalances.find((u) =>
+          u.breakdown.some(
+            (b) =>
+              b.chain.id === selectedChain.id &&
+              isAddressEqual(b.contractAddress, tokenAddress as `0x${string}`),
+          ),
+        )?.symbol
+        if (symbol) {
+          localSymbols.add(symbol)
+        }
+      }
+
+      for (const asset of unifiedBalances) {
+        const { symbol, breakdown } = asset
+        if (!localSymbols.has(symbol)) {
+          continue
+        }
+
+        let total = 0n
+        const breakdownList: RemoteChainBalances[`0x${string}`]['breakdown'] =
+          []
+
+        for (const entry of breakdown) {
+          const { chain, balance } = entry
+          if (chain.id === selectedChain.id) {
+            continue
+          }
+          if (!balance || balance === '0') {
+            continue
+          }
+
+          try {
+            const parsed = parseUnits(balance, entry.decimals)
+            breakdownList.push({
+              chainId: chain.id,
+              chainName: chain.name,
+              balance: parsed,
+            })
+            total += parsed
+          } catch {
+            continue
+          }
+        }
+
+        const localEntry = breakdown.find(
+          (b) => b.chain.id === selectedChain.id,
+        )
+        if (localEntry?.contractAddress) {
+          const localAddress = getAddress(localEntry.contractAddress)
+          if (breakdownList.length > 0) {
+            remoteChainBalances[localAddress] = {
+              total,
+              key: symbol,
+              breakdown: breakdownList,
+            }
+            remoteChainBalances[localAddress.toLowerCase() as `0x${string}`] = {
+              total,
+              key: symbol,
+              breakdown: breakdownList,
+            }
+          }
+        }
+      }
+
+      return remoteChainBalances
+    },
+    [selectedChain.id],
+  )
 
   useEffect(() => {
     if (whitelistCurrencies.length === 0) {
@@ -195,6 +274,36 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     data: Balances
   }
 
+  const { data: remoteChainBalances } = useQuery({
+    queryKey: [
+      'remote-chain-balances',
+      selectedChain.id,
+      userAddress,
+      Object.entries(balances ?? {})
+        .sort(([k1], [k2]) => k1.localeCompare(k2))
+        .map(([k, v]) => `${k}:${v}`)
+        .join(','),
+      nexusSDK !== null,
+    ],
+    queryFn: async () => {
+      if (
+        !userAddress ||
+        !nexusSDK ||
+        Object.keys(balances ?? {}).length === 0 ||
+        !CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+      ) {
+        return {}
+      }
+      const unifiedBalances = await nexusSDK.getUnifiedBalances()
+      return parseRemoteChainBalances(balances, unifiedBalances)
+    },
+    initialData: {},
+    refetchInterval: 5 * 1000, // checked
+    refetchIntervalInBackground: true,
+  }) as {
+    data: RemoteChainBalances
+  }
+
   const { data: prices } = useQuery({
     queryKey: ['prices', selectedChain.id],
     queryFn: async () => {
@@ -204,7 +313,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
     refetchIntervalInBackground: true,
   })
 
-  const { data } = useQuery({
+  const { data: allowanceState } = useQuery({
     queryKey: [
       'allowances',
       selectedChain.id,
@@ -253,7 +362,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           chainId: selectedChain.id,
           address: getContractAddresses({ chainId: selectedChain.id })
             .BookManager,
-          abi: _abi,
+          abi: erc721Abi,
           functionName: 'isApprovedForAll',
           args: [
             userAddress,
@@ -417,10 +526,10 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
       const spenderAddress = getAddress(spender)
       const currencyAddress = getAddress(currency.address)
-      return (data?.allowances?.[spenderAddress]?.[currencyAddress] ??
+      return (allowanceState?.allowances?.[spenderAddress]?.[currencyAddress] ??
         0n) as bigint
     },
-    [data],
+    [allowanceState],
   )
 
   return (
@@ -435,10 +544,16 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           get: (target, prop: `0x${string}`) =>
             target[prop as keyof typeof target] ?? 0n,
         }),
+        remoteChainBalances: new Proxy(remoteChainBalances ?? {}, {
+          get: (target, prop: `0x${string}`) =>
+            target[prop as keyof typeof target] ?? { total: 0n, breakdown: [] },
+        }),
         getAllowance,
-        isOpenOrderApproved: data?.isOpenOrderApproved ?? false,
+        isOpenOrderApproved: allowanceState?.isOpenOrderApproved ?? false,
         currencies,
         setCurrencies,
+        useRemoteChainBalances,
+        setUseRemoteChainBalances,
         transfer,
       }}
     >
