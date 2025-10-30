@@ -79,38 +79,50 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [nexusSDK])
 
-  const [useRemoteChainBalances, setUseRemoteChainBalances] = useState<boolean>(
-    () => {
-      if (
-        typeof window !== 'undefined' &&
-        CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
-      ) {
-        const stored = localStorage.getItem(USE_REMOTE_CHAIN_BALANCES_KEY)
-        if (stored) {
-          return stored === 'true'
-        }
-      }
-      // todo: fix it as false
-      return true
-    },
-  )
+  const [useRemoteChainBalances, _setUseRemoteChainBalances] =
+    useState<boolean>(false)
+
+  const setUseRemoteChainBalances = useCallback((value: boolean) => {
+    _setUseRemoteChainBalances(value)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        USE_REMOTE_CHAIN_BALANCES_KEY,
+        value ? 'true' : 'false',
+      )
+    }
+  }, [])
 
   useEffect(() => {
     if (!useRemoteChainBalances) {
       return
     }
-    ;(async () => {
+
+    const run = async () => {
       if (status === 'disconnected') {
         await cleanupSDK()
       } else if (status === 'connected') {
         await initializeSDK()
       }
+    }
 
-      return async () => {
-        await cleanupSDK()
-      }
-    })()
+    run()
+
+    return () => {
+      cleanupSDK()
+    }
   }, [cleanupSDK, initializeSDK, status, useRemoteChainBalances])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    if (!CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES) {
+      return
+    }
+
+    const stored = localStorage.getItem(USE_REMOTE_CHAIN_BALANCES_KEY)
+    _setUseRemoteChainBalances(stored ? stored === 'true' : true)
+  }, [])
 
   return (
     <NexusContext.Provider
