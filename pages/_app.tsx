@@ -47,6 +47,9 @@ const CacheProvider = ({ children }: React.PropsWithChildren) => {
 }
 
 const queryClient = new QueryClient()
+const NexusProvider = dynamic(() => import('../contexts/nexus-context'), {
+  ssr: false,
+})
 const WalletProvider = ({ children }: React.PropsWithChildren) => {
   const [clientReady, setClientReady] = useState(false)
   const [clientConfig, setClientConfig] = useState<any | null>(null)
@@ -71,7 +74,9 @@ const WalletProvider = ({ children }: React.PropsWithChildren) => {
           modalSize="compact"
           theme={darkTheme()}
         >
-          <CacheProvider>{children}</CacheProvider>
+          <CacheProvider>
+            <NexusProvider>{children}</NexusProvider>
+          </CacheProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
