@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { EvmPriceServiceConnection, PriceFeed } from '@pythnetwork/pyth-evm-js'
 
 import { aggregators } from '../chain-configs/aggregators'
-import { formatUnits } from '../utils/bigint'
+import { toUnitString } from '../utils/bigint'
 import { Currency } from '../model/currency'
 import { Prices } from '../model/prices'
 import { CHAIN_CONFIG } from '../chain-configs'
@@ -48,7 +48,7 @@ export const fetchPrice = async (
       {}, // arbitrary prices
     )
     const amountOut = new BigNumber(
-      formatUnits(best?.amountOut ?? 0n, quoteCurrency.decimals),
+      toUnitString(best?.amountOut ?? 0n, quoteCurrency.decimals),
     )
     return amountOut.div(amountIn)
   } catch (e) {

@@ -13,7 +13,7 @@ import {
 
 import { Currency } from '../currency'
 import { Prices } from '../prices'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 import { Chain } from '../chain'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { fetchLeverageIndexPrices } from '../../apis/futures/leverage-index-price'
@@ -161,7 +161,7 @@ export class CloberV2Aggregator implements Aggregator {
       userAddress: userAddress!,
       inputToken: inputCurrency.address,
       outputToken: outputCurrency.address,
-      amountIn: formatUnits(amountIn, inputCurrency.decimals),
+      amountIn: toUnitString(amountIn, inputCurrency.decimals),
       options: {
         rpcUrl: CHAIN_CONFIG.RPC_URL,
         useSubgraph: false,

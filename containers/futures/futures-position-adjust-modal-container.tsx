@@ -5,7 +5,7 @@ import { FuturesPositionAdjustModal } from '../../components/modal/futures-posit
 import { FuturesPosition } from '../../model/futures/futures-position'
 import { calculateLtv, calculateMaxLoanableAmount } from '../../utils/ltv'
 import { useCurrencyContext } from '../../contexts/currency-context'
-import { applyPercent, formatUnits } from '../../utils/bigint'
+import { applyPercent, toUnitString } from '../../utils/bigint'
 import { useFuturesContractContext } from '../../contexts/futures/futures-contract-context'
 import { CHAIN_CONFIG } from '../../chain-configs'
 
@@ -136,7 +136,7 @@ export const FuturesPositionAdjustModalContainer = ({
             userPosition.asset.minDebt > expectedDebtAmount &&
             expectedDebtAmount > 0n
           ) {
-            return `Remaining debt must be ≥ ${formatUnits(
+            return `Remaining debt must be ≥ ${toUnitString(
               userPosition.asset.minDebt,
               userPosition.asset.currency.decimals,
               prices[userPosition.asset.currency.address],

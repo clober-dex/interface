@@ -20,7 +20,7 @@ import { CHAIN_CONFIG } from '../../chain-configs'
 import { Quote } from '../../model/aggregator/quote'
 import { fetchQuotesLive } from '../../apis/swap/quote'
 import { aggregators } from '../../chain-configs/aggregators'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 import {
   calculateInputCurrencyAmountString,
   calculateOutputCurrencyAmountString,
@@ -233,10 +233,10 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       prices[outputCurrency.address]
     ) {
       const amountIn = Number(
-        formatUnits(selectedQuote.amountIn, inputCurrency.decimals),
+        toUnitString(selectedQuote.amountIn, inputCurrency.decimals),
       )
       const amountOut = Number(
-        formatUnits(selectedQuote.amountOut, outputCurrency.decimals),
+        toUnitString(selectedQuote.amountOut, outputCurrency.decimals),
       )
       const inputValue = amountIn * prices[inputCurrency.address]
       const outputValue = amountOut * prices[outputCurrency.address]

@@ -10,7 +10,7 @@ import { useCurrencyContext } from '../../contexts/currency-context'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { useFuturesContext } from '../../contexts/futures/futures-context'
 import { FuturesRedeemCard } from '../../components/card/futures/futures-redeem-card'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 import { useFuturesContractContext } from '../../contexts/futures/futures-contract-context'
 import { WHITELISTED_FUTURES_ASSETS } from '../../constants/futures'
 import { useChainContext } from '../../contexts/chain-context'
@@ -55,7 +55,7 @@ export const FuturesContainer = () => {
       collateralDecimals: number,
     ) => {
       return parseUnits(
-        (Number(formatUnits(balance, currencyDecimals)) * settlePrice).toFixed(
+        (Number(toUnitString(balance, currencyDecimals)) * settlePrice).toFixed(
           18,
         ),
         collateralDecimals,

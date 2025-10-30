@@ -3,7 +3,7 @@ import { parseUnits } from 'viem'
 
 import { Currency } from '../../model/currency'
 import { TriangleDownSvg } from '../svg/triangle-down-svg'
-import { formatDollarValue, formatUnits } from '../../utils/bigint'
+import { formatDollarValue, toUnitString } from '../../utils/bigint'
 import { Chain } from '../../model/chain'
 import { LpCurrencyIcon } from '../icon/lp-currency-icon'
 import { formatWithCommas } from '../../utils/bignumber'
@@ -40,7 +40,7 @@ const LpCurrencyAmountInput = ({
   const onMaxClick = useCallback(() => {
     onValueChange(
       availableAmount
-        ? formatUnits(availableAmount, currency?.decimals ?? 18)
+        ? toUnitString(availableAmount, currency?.decimals ?? 18)
         : '',
     )
   }, [availableAmount, currency?.decimals, onValueChange])
@@ -114,7 +114,7 @@ const LpCurrencyAmountInput = ({
                 Available:
               </div>
               <div className="text-white text-[13px] font-medium">
-                {formatUnits(
+                {toUnitString(
                   availableAmount,
                   decimals,
                   price,

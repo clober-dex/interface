@@ -9,7 +9,7 @@ import {
 
 import { Currency } from '../../model/currency'
 import { SearchSvg } from '../svg/search-svg'
-import { formatDollarValue, formatUnits } from '../../utils/bigint'
+import { formatDollarValue, toUnitString } from '../../utils/bigint'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
@@ -230,10 +230,10 @@ const CurrencySelect = ({
 
               // Fallback to balance * price value for same-priority currencies
               const aValue =
-                Number(formatUnits(balances[a.address], a.decimals)) *
+                Number(toUnitString(balances[a.address], a.decimals)) *
                 (prices[a.address] ?? 1e-15)
               const bValue =
-                Number(formatUnits(balances[b.address], b.decimals)) *
+                Number(toUnitString(balances[b.address], b.decimals)) *
                 (prices[b.address] ?? 1e-15)
 
               return bValue - aValue
@@ -298,7 +298,7 @@ const CurrencySelect = ({
                 </div>
                 <div className="flex-1 text-sm text-end text-white">
                   <div>
-                    {formatUnits(
+                    {toUnitString(
                       balances[currency.address],
                       currency.decimals,
                       prices[currency.address],

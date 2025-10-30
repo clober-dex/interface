@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Quote } from '../../model/aggregator/quote'
 import { Currency } from '../../model/currency'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 import { GasSvg } from '../svg/gas-svg'
 import { formatWithCommas } from '../../utils/bignumber'
 import { TimerSvg } from '../svg/timer-svg'
@@ -36,7 +36,7 @@ export const SwapRouteCard = ({
         <div className="self-stretch inline-flex justify-start items-center gap-1.5">
           {quote && outputCurrency ? (
             <div className="justify-start text-white text-sm sm:text-base font-medium">
-              {formatUnits(
+              {toUnitString(
                 (quote?.amountOut ?? 0n) - (quote?.fee ?? 0n),
                 outputCurrency.decimals,
                 undefined,

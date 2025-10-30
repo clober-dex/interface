@@ -11,7 +11,7 @@ import { Currency } from '../../model/currency'
 import { Aggregator } from '../../model/aggregator'
 import { Quote } from '../../model/aggregator/quote'
 import { Prices } from '../../model/prices'
-import { applyPercent, formatUnits, max } from '../../utils/bigint'
+import { applyPercent, toUnitString, max } from '../../utils/bigint'
 import { ROUTER_GATEWAY_ABI } from '../../constants/router-gateway-abi'
 import { CHAIN_CONFIG } from '../../chain-configs'
 
@@ -125,9 +125,9 @@ export async function fetchAllQuotesAndSelectBestBeforeFeeAdjustment(
     const nativePrice = prices[zeroAddress]
 
     const gasUsd =
-      Number(formatUnits(quote.gasLimit * gasPrice, 18)) * nativePrice
+      Number(toUnitString(quote.gasLimit * gasPrice, 18)) * nativePrice
     const amountOutUsd =
-      Number(formatUnits(quote.amountOut, outputCurrency.decimals)) *
+      Number(toUnitString(quote.amountOut, outputCurrency.decimals)) *
       outputPrice
     const netAmountOutUsd = amountOutUsd - gasUsd
 
@@ -271,9 +271,9 @@ export async function fetchQuotesLive(
       const nativePrice = prices[zeroAddress]
 
       const gasUsd =
-        Number(formatUnits(quote.gasLimit * gasPrice, 18)) * nativePrice
+        Number(toUnitString(quote.gasLimit * gasPrice, 18)) * nativePrice
       const amountOutUsd =
-        Number(formatUnits(quote.amountOut, outputCurrency.decimals)) *
+        Number(toUnitString(quote.amountOut, outputCurrency.decimals)) *
         outputPrice
       const netAmountOutUsd = amountOutUsd - gasUsd
 

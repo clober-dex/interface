@@ -4,7 +4,7 @@ import { Prices } from '../../../model/prices'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
 import CurrencyAmountInput from '../../input/currency-amount-input'
 import { formatWithCommas } from '../../../utils/bignumber'
-import { formatDollarValue, formatUnits } from '../../../utils/bigint'
+import { formatDollarValue, toUnitString } from '../../../utils/bigint'
 import { SlippageSelector } from '../../selector/slippage-selector'
 import { Chain } from '../../../model/chain'
 import { Pool } from '../../../model/pool'
@@ -103,7 +103,7 @@ export const AddLiquidityForm = ({
               ) : (
                 <div className="flex items-center gap-1 text-white text-sm font-semibold">
                   <div>
-                    {formatUnits(
+                    {toUnitString(
                       receiveLpCurrencyAmount,
                       pool.lpCurrency.decimals,
                       pool.lpPriceUSD,

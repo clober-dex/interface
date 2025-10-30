@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Transaction, Transaction as SdkTransaction } from '@clober/v2-sdk'
 
 import { Currency } from '../../model/currency'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 import { Confirmation, useTransactionContext } from '../transaction-context'
 import { sendTransaction } from '../../utils/transaction'
 import { useCurrencyContext } from '../currency-context'
@@ -130,7 +130,7 @@ export const SwapContractProvider = ({
                 label: inputCurrency.symbol,
                 direction: 'in',
                 value: toPreciseString(
-                  formatUnits(amountIn, inputCurrency.decimals),
+                  toUnitString(amountIn, inputCurrency.decimals),
                   prices[inputCurrency.address],
                   formatWithCommas,
                 ),
@@ -140,7 +140,7 @@ export const SwapContractProvider = ({
                 label: outputCurrency.symbol,
                 direction: 'out',
                 value: toPreciseString(
-                  formatUnits(expectedAmountOut, outputCurrency.decimals),
+                  toUnitString(expectedAmountOut, outputCurrency.decimals),
                   prices[outputCurrency.address],
                   formatWithCommas,
                 ),

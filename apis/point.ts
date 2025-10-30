@@ -3,7 +3,7 @@ import { getAddress, isAddressEqual } from 'viem'
 
 import { Subgraph } from '../model/subgraph'
 import { currentTimestampInSeconds } from '../utils/date'
-import { formatUnits } from '../utils/bigint'
+import { toUnitString } from '../utils/bigint'
 import { CHAIN_CONFIG } from '../chain-configs'
 
 const CONSTANTS: {
@@ -66,7 +66,7 @@ export async function fetchLiquidVaultPoint(
         acc +
         Number(
           CONSTANTS?.[vaultBalance.pool.id]?.POINT_PER_SECOND > 0
-            ? formatUnits(BigInt(vaultBalance.amount), 18)
+            ? toUnitString(BigInt(vaultBalance.amount), 18)
             : '0',
         ),
       0,
@@ -107,6 +107,6 @@ export async function fetchLiquidVaultBalanceLeaderboard(): Promise<
     )
     .map((vaultBalance) => ({
       address: getAddress(vaultBalance.user.id),
-      balance: Number(formatUnits(BigInt(vaultBalance.amount), 18)),
+      balance: Number(toUnitString(BigInt(vaultBalance.amount), 18)),
     }))
 }

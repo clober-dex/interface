@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { NextRouter } from 'next/router'
 
 import { CurrencyIcon } from '../../icon/currency-icon'
-import { formatUnits } from '../../../utils/bigint'
+import { toUnitString } from '../../../utils/bigint'
 import { Chain } from '../../../model/chain'
 import { LpWrapModal } from '../../modal/lp-wrap-modal'
 import { PoolContractContext } from '../../../contexts/pool/pool-contract-context'
@@ -36,7 +36,7 @@ export const LpPositionCard = ({
     React.useState(false)
   const usdValue = useMemo(
     () =>
-      Number(formatUnits(amount, poolSnapshot.lpCurrency.decimals)) *
+      Number(toUnitString(amount, poolSnapshot.lpCurrency.decimals)) *
       Number(poolSnapshot.lpPriceUSD),
     [amount, poolSnapshot.lpCurrency.decimals, poolSnapshot.lpPriceUSD],
   )
@@ -114,7 +114,7 @@ export const LpPositionCard = ({
               </div>
             </div>
             <div className="w-[140px] text-white text-sm font-medium flex flex-row gap-2">
-              {formatUnits(
+              {toUnitString(
                 amount,
                 poolSnapshot.lpCurrency.decimals,
                 Number(poolSnapshot.lpPriceUSD),
@@ -244,7 +244,7 @@ export const LpPositionCard = ({
                 <div className="text-gray-500 text-xs">Balance</div>
               </div>
               <div className="self-stretch text-white text-sm font-medium">
-                {formatUnits(
+                {toUnitString(
                   amount,
                   poolSnapshot.lpCurrency.decimals,
                   Number(poolSnapshot.lpPriceUSD),

@@ -6,7 +6,7 @@ import {
   formatDate,
   getExpirationDateTextColor,
 } from '../../../utils/date'
-import { formatUnits } from '../../../utils/bigint'
+import { toUnitString } from '../../../utils/bigint'
 import { Asset } from '../../../model/futures/asset'
 import { Prices } from '../../../model/prices'
 import { ActionButtonProps } from '../../button/action-button'
@@ -74,7 +74,7 @@ export const FuturesRedeemCard = ({
             </div>
             <div className="flex gap-1">
               <div className="text-sm sm:text-base">
-                {formatUnits(
+                {toUnitString(
                   balance,
                   asset.currency.decimals,
                   prices[asset.currency.address],
@@ -99,7 +99,7 @@ export const FuturesRedeemCard = ({
               Redeemable
             </div>
             <div className="text-sm sm:text-base">
-              {formatUnits(
+              {toUnitString(
                 redeemableCollateral,
                 asset.collateral.decimals,
                 prices[asset.collateral.address],

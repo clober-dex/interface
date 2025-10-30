@@ -4,7 +4,7 @@ import { Tooltip } from 'react-tooltip'
 
 import Modal from '../../components/modal/modal'
 import NumberInput from '../input/number-input'
-import { applyPercent, formatUnits } from '../../utils/bigint'
+import { applyPercent, toUnitString } from '../../utils/bigint'
 import { formatTinyNumber } from '../../utils/bignumber'
 import { QuestionMarkSvg } from '../svg/question-mark-svg'
 import useDropdown from '../../hooks/useDropdown'
@@ -39,7 +39,10 @@ export const TransactionSettingModal = ({
   const calculateGasPrice = useCallback(
     (gasPriceMultiplier: number) =>
       Number(
-        formatUnits(applyPercent(currentGasPrice, 100 * gasPriceMultiplier), 9),
+        toUnitString(
+          applyPercent(currentGasPrice, 100 * gasPriceMultiplier),
+          9,
+        ),
       ),
     [currentGasPrice],
   )
@@ -220,7 +223,7 @@ export const TransactionSettingModal = ({
                 </button>
 
                 <div
-                  className={`w-[78px] flex flex-col gap-1 flex-1 px-6 py-1 rounded-[20px] text-center items-center ${customGasPrice.length > 0 && (Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) >= 2 || Number(customGasPrice) / Number(formatUnits(BigInt(currentGasPrice), 9)) < 1) ? 'text-yellow-500' : 'text-white'} ${customGasPrice.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
+                  className={`w-[78px] flex flex-col gap-1 flex-1 px-6 py-1 rounded-[20px] text-center items-center ${customGasPrice.length > 0 && (Number(customGasPrice) / Number(toUnitString(BigInt(currentGasPrice), 9)) >= 2 || Number(customGasPrice) / Number(toUnitString(BigInt(currentGasPrice), 9)) < 1) ? 'text-yellow-500' : 'text-white'} ${customGasPrice.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
                 >
                   <span>Custom</span>
                   <NumberInput
@@ -245,7 +248,7 @@ export const TransactionSettingModal = ({
                       }
                       const v =
                         Number(e) /
-                        Number(formatUnits(BigInt(currentGasPrice), 9))
+                        Number(toUnitString(BigInt(currentGasPrice), 9))
                       setGasPriceMultiplier(v.toString())
                       setCustomGasPrice(e)
                     }}

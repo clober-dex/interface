@@ -25,7 +25,7 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { fetchWhitelistCurrenciesFromGithub } from '../apis/token'
 import { currentTimestampInSeconds } from '../utils/date'
 import { toPreciseString, formatWithCommas } from '../utils/bignumber'
-import { formatUnits } from '../utils/bigint'
+import { toUnitString } from '../utils/bigint'
 import { buildTransaction, sendTransaction } from '../utils/transaction'
 import { shortAddress } from '../utils/address'
 import { executors } from '../chain-configs/executors'
@@ -320,7 +320,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
               label: currency.symbol,
               direction: 'in',
               value: toPreciseString(
-                formatUnits(amount, currency.decimals),
+                toUnitString(amount, currency.decimals),
                 prices[currency.address],
                 formatWithCommas,
               ),

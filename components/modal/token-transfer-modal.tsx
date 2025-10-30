@@ -15,7 +15,7 @@ import { Prices } from '../../model/prices'
 import { Chain } from '../../model/chain'
 import CurrencySelect from '../selector/currency-select'
 import { ActionButton } from '../button/action-button'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 
 import Modal from './modal'
 
@@ -161,7 +161,7 @@ export const TokenTransferModal = ({
                     <div className="text-center justify-start text-white text-sm">
                       $
                       {(
-                        Number(formatUnits(100_000n * (gasPrice ?? 0n), 18)) *
+                        Number(toUnitString(100_000n * (gasPrice ?? 0n), 18)) *
                         prices[zeroAddress]
                       ).toFixed(4)}
                     </div>

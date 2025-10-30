@@ -11,7 +11,7 @@ import {
   calculateLtv,
   calculateMaxLoanableAmount,
 } from '../../utils/ltv'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 import { useFuturesContractContext } from '../../contexts/futures/futures-contract-context'
 import Modal from '../../components/modal/modal'
 import { useChainContext } from '../../contexts/chain-context'
@@ -152,7 +152,7 @@ export const FuturesManagerContainer = ({ asset }: { asset: Asset }) => {
           }
 
           if (isDeptSizeLessThanMinDebtSize) {
-            const minDebtReadable = formatUnits(
+            const minDebtReadable = toUnitString(
               asset.minDebt,
               asset.currency.decimals,
               prices[asset.currency.address],

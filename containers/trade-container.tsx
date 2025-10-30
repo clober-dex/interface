@@ -15,7 +15,7 @@ import { useLimitContractContext } from '../contexts/trade/limit-contract-contex
 import { useCurrencyContext } from '../contexts/currency-context'
 import { isAddressesEqual, shortAddress } from '../utils/address'
 import { aggregators } from '../chain-configs/aggregators'
-import { applyPercent, formatUnits, max } from '../utils/bigint'
+import { applyPercent, toUnitString, max } from '../utils/bigint'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
@@ -615,11 +615,11 @@ export const TradeContainer = () => {
         setShowOutputCurrencySelect,
         outputCurrency,
         setOutputCurrency,
-        outputCurrencyAmount: formatUnits(
+        outputCurrencyAmount: toUnitString(
           max((selectedQuote?.amountOut ?? 0n) - (quotes.best?.fee ?? 0n), 0n),
           outputCurrency?.decimals ?? 18,
         ),
-        minimumReceivedAmount: formatUnits(
+        minimumReceivedAmount: toUnitString(
           applyPercent(
             max(
               (selectedQuote?.amountOut ?? 0n) - (quotes.best?.fee ?? 0n),

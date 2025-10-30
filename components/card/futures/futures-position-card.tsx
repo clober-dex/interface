@@ -6,7 +6,7 @@ import {
   formatDate,
   getExpirationDateTextColor,
 } from '../../../utils/date'
-import { formatUnits } from '../../../utils/bigint'
+import { toUnitString } from '../../../utils/bigint'
 import { FuturesPosition } from '../../../model/futures/futures-position'
 import { EditSvg } from '../../svg/edit-svg'
 import { Chain } from '../../../model/chain'
@@ -75,7 +75,7 @@ export const FuturesPositionCard = ({
             </div>
             <div className="flex gap-1">
               <div className="text-sm sm:text-base">
-                {formatUnits(
+                {toUnitString(
                   position.debtAmount ?? 0n,
                   position.asset.currency.decimals,
                   loanAssetPrice,

@@ -58,7 +58,7 @@ export const formatDollarValue = (
  * @param formatter - (Optional) A custom formatter function to format the final string.
  * @returns A formatted string representing the token amount.
  */
-export const formatUnits = (
+export const toUnitString = (
   value: bigint,
   decimals: number,
   price?: number,

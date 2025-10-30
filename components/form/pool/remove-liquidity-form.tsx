@@ -4,7 +4,7 @@ import { Prices } from '../../../model/prices'
 import { Currency } from '../../../model/currency'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
 import LpCurrencyAmountInput from '../../input/lp-currency-amount-input'
-import { formatDollarValue, formatUnits } from '../../../utils/bigint'
+import { formatDollarValue, toUnitString } from '../../../utils/bigint'
 import { SlippageSelector } from '../../selector/slippage-selector'
 import { Chain } from '../../../model/chain'
 import { Pool } from '../../../model/pool'
@@ -68,7 +68,7 @@ export const RemoveLiquidityForm = ({
                   <div className="flex items-center gap-1">
                     <div className="flex items-center gap-1 text-white font-semibold">
                       <div>
-                        {formatUnits(
+                        {toUnitString(
                           receiveCurrency.amount,
                           receiveCurrency.currency.decimals,
                           prices[receiveCurrency.currency.address],

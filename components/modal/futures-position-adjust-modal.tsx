@@ -2,7 +2,7 @@ import React from 'react'
 
 import Modal from '../../components/modal/modal'
 import { getLTVTextColor } from '../../utils/ltv'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 import { Asset } from '../../model/futures/asset'
 import { ArrowSvg } from '../svg/arrow-svg'
 import { ActionButton, ActionButtonProps } from '../button/action-button'
@@ -111,7 +111,7 @@ export const FuturesPositionAdjustModal = ({
               </div>
               <div className="flex ml-auto items-center gap-1.5 text-xs sm:text-sm text-white">
                 <span>
-                  {formatUnits(
+                  {toUnitString(
                     currentCollateralAmount,
                     asset.collateral.decimals,
                     collateralPrice,
@@ -122,7 +122,7 @@ export const FuturesPositionAdjustModal = ({
                   <>
                     <ArrowSvg />
                     <span>
-                      {formatUnits(
+                      {toUnitString(
                         expectedCollateralAmount,
                         asset.collateral.decimals,
                         collateralPrice,
@@ -141,7 +141,7 @@ export const FuturesPositionAdjustModal = ({
               </div>
               <div className="flex ml-auto items-center gap-1.5 text-xs sm:text-sm text-white">
                 <span>
-                  {formatUnits(
+                  {toUnitString(
                     currentDebtAmount,
                     asset.currency.decimals,
                     loanAssetPrice,
@@ -152,7 +152,7 @@ export const FuturesPositionAdjustModal = ({
                   <>
                     <ArrowSvg />
                     <span>
-                      {formatUnits(
+                      {toUnitString(
                         expectedDebtAmount,
                         asset.currency.decimals,
                         loanAssetPrice,

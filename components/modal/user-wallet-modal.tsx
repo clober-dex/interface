@@ -15,7 +15,7 @@ import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { formatTinyNumber, formatWithCommas } from '../../utils/bignumber'
-import { formatDollarValue, formatUnits } from '../../utils/bigint'
+import { formatDollarValue, toUnitString } from '../../utils/bigint'
 
 import Modal from './modal'
 import { TokenTransferModal } from './token-transfer-modal'
@@ -83,7 +83,7 @@ export const UserWalletModal = ({
   const portfolioUSD = useMemo(() => {
     return currencies.reduce((total, currency) => {
       const balance = Number(
-        formatUnits(balances[currency.address], currency.decimals),
+        toUnitString(balances[currency.address], currency.decimals),
       )
       const price = prices[currency.address]
       return total + balance * price
@@ -329,7 +329,7 @@ export const UserWalletModal = ({
                     .filter(
                       (currency) =>
                         Number(
-                          formatUnits(
+                          toUnitString(
                             balances[currency.address],
                             currency.decimals,
                           ),
@@ -341,9 +341,9 @@ export const UserWalletModal = ({
                       const priceA = prices[a.address]
                       const priceB = prices[b.address]
                       return (
-                        Number(formatUnits(balances[b.address], b.decimals)) *
+                        Number(toUnitString(balances[b.address], b.decimals)) *
                           priceB -
-                        Number(formatUnits(balances[a.address], a.decimals)) *
+                        Number(toUnitString(balances[a.address], a.decimals)) *
                           priceA
                       )
                     })
@@ -364,7 +364,7 @@ export const UserWalletModal = ({
                             </div>
                             <div className="text-center justify-start text-white text-xs font-medium flex flex-row gap-1">
                               {formatWithCommas(
-                                formatUnits(
+                                toUnitString(
                                   balances[currency.address],
                                   currency.decimals,
                                   prices[currency.address],

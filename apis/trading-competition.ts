@@ -5,7 +5,7 @@ import { Subgraph } from '../model/subgraph'
 import { TradingCompetitionPnl } from '../model/trading-competition-pnl'
 import { currentTimestampInSeconds } from '../utils/date'
 import { Prices } from '../model/prices'
-import { formatUnits } from '../utils/bigint'
+import { toUnitString } from '../utils/bigint'
 
 export class TradingCompetition {
   private readonly subgraphEndpoint: string
@@ -97,7 +97,7 @@ export class TradingCompetition {
           const userAddress = getAddress(user.id)
           const trades = user.trades.map((trade) => {
             const token = getAddress(trade.token.id)
-            const amount = formatUnits(
+            const amount = toUnitString(
               BigInt(trade.estimatedHolding),
               Number(trade.token.decimals),
             )
@@ -161,7 +161,7 @@ export class TradingCompetition {
 
     const trades = myTrades.map((trade) => {
       const token = getAddress(trade.token.id)
-      const amount = formatUnits(
+      const amount = toUnitString(
         BigInt(trade.estimatedHolding),
         Number(trade.token.decimals),
       )

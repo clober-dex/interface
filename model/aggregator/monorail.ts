@@ -5,7 +5,7 @@ import { Chain } from '../chain'
 import { Currency } from '../currency'
 import { fetchApi } from '../../apis/utils'
 import { Prices } from '../prices'
-import { formatUnits } from '../../utils/bigint'
+import { toUnitString } from '../../utils/bigint'
 
 import { Aggregator } from './index'
 
@@ -59,7 +59,7 @@ export class MonorailAggregator implements Aggregator {
     const start = performance.now()
     slippageLimitPercent = this.calculateSlippage(slippageLimitPercent)
     let params = {
-      amount: formatUnits(amountIn, inputCurrency.decimals),
+      amount: toUnitString(amountIn, inputCurrency.decimals),
       from: isAddressEqual(inputCurrency.address, this.nativeTokenAddress)
         ? this.nativeTokenAddress
         : getAddress(inputCurrency.address),
