@@ -19,6 +19,7 @@ import { Toast } from '../toast'
 import { SlippageSelector } from '../selector/slippage-selector'
 import { QuestionMarkSvg } from '../svg/question-mark-svg'
 import { RemoteChainBalances } from '../../model/remote-chain-balances'
+import BalanceSourcesModal from '../modal/balance-sources-modal'
 
 export type SwapFormProps = {
   chain: Chain
@@ -108,6 +109,8 @@ export const SwapForm = ({
     setInputCurrencyAmount,
     setOutputCurrency,
   ])
+  const [showUnifiedBalanceModal, setShowUnifiedBalanceModal] =
+    useState<boolean>(false)
   const [isCopyToast, setIsCopyToast] = useState(false)
   const [quoteCurrency, baseCurrency] = useMemo(() => {
     if (!inputCurrency || !outputCurrency) {
@@ -132,7 +135,15 @@ export const SwapForm = ({
         : rate
   }, [inputCurrency, inputCurrencyAmount, outputCurrencyAmount, quoteCurrency])
 
-  return showInputCurrencySelect ? (
+  return showUnifiedBalanceModal ? (
+    <BalanceSourcesModal
+      balances={balances}
+      remoteChainBalances={remoteChainBalances}
+      currency={inputCurrency!}
+      prices={prices}
+      onClose={() => setShowUnifiedBalanceModal(false)}
+    />
+  ) : showInputCurrencySelect ? (
     <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 max-h-full sm:h-[572px] sm:max-h-[572px]">
       <CurrencySelect
         chain={chain}
@@ -277,6 +288,12 @@ export const SwapForm = ({
                 onCurrencyClick={
                   setShowInputCurrencySelect
                     ? () => setShowInputCurrencySelect(true)
+                    : undefined
+                }
+                setShowUnifiedBalanceModal={
+                  inputCurrency &&
+                  remoteChainBalances?.[inputCurrency.address].total
+                    ? setShowUnifiedBalanceModal
                     : undefined
                 }
                 price={
