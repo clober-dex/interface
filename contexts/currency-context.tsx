@@ -47,8 +47,6 @@ type CurrencyContext = {
   remoteChainBalances: RemoteChainBalances
   getAllowance: (spender: `0x${string}`, currency: Currency) => bigint
   isOpenOrderApproved: boolean
-  useRemoteChainBalances: boolean
-  setUseRemoteChainBalances: (value: boolean) => void
   transfer: (
     currency: Currency,
     amount: bigint,
@@ -65,30 +63,12 @@ const Context = React.createContext<CurrencyContext>({
   remoteChainBalances: {},
   getAllowance: () => 0n,
   isOpenOrderApproved: false,
-  useRemoteChainBalances: false,
-  setUseRemoteChainBalances: () => {},
   transfer: () => Promise.resolve(),
 })
 
-const USE_REMOTE_CHAIN_BALANCES_KEY = 'use-remote-chain-balances'
-
 export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const queryClient = useQueryClient()
-  const [useRemoteChainBalances, setUseRemoteChainBalances] = useState<boolean>(
-    () => {
-      if (
-        typeof window !== 'undefined' &&
-        CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
-      ) {
-        const stored = localStorage.getItem(USE_REMOTE_CHAIN_BALANCES_KEY)
-        if (stored) {
-          return stored === 'true'
-        }
-      }
-      return false
-    },
-  )
-  const { nexusSDK } = useNexus()
+  const { nexusSDK, useRemoteChainBalances } = useNexus()
   const { disconnectAsync } = useDisconnect()
 
   const { address: userAddress } = useAccount()
@@ -289,8 +269,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       if (
         !userAddress ||
         !nexusSDK ||
-        Object.keys(balances ?? {}).length === 0 ||
-        !CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+        Object.keys(balances ?? {}).length === 0
       ) {
         return {}
       }
@@ -552,8 +531,6 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         isOpenOrderApproved: allowanceState?.isOpenOrderApproved ?? false,
         currencies,
         setCurrencies,
-        useRemoteChainBalances,
-        setUseRemoteChainBalances,
         transfer,
       }}
     >

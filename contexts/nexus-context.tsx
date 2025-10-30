@@ -20,8 +20,11 @@ interface NexusContextType {
   nexusSDK: NexusSDK | null
   isInitialized: boolean
   cleanupSDK: () => void
+  useRemoteChainBalances: boolean
+  setUseRemoteChainBalances: (value: boolean) => void
 }
 
+const USE_REMOTE_CHAIN_BALANCES_KEY = 'use-remote-chain-balances'
 const NexusContext = createContext<NexusContextType | null>(null)
 
 const NexusProvider = ({ children }: { children: React.ReactNode }) => {
@@ -76,8 +79,24 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [nexusSDK])
 
+  const [useRemoteChainBalances, setUseRemoteChainBalances] = useState<boolean>(
+    () => {
+      if (
+        typeof window !== 'undefined' &&
+        CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES
+      ) {
+        const stored = localStorage.getItem(USE_REMOTE_CHAIN_BALANCES_KEY)
+        if (stored) {
+          return stored === 'true'
+        }
+      }
+      // todo: fix it as false
+      return true
+    },
+  )
+
   useEffect(() => {
-    if (!CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES) {
+    if (!useRemoteChainBalances) {
       return
     }
     ;(async () => {
@@ -91,7 +110,7 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
         await cleanupSDK()
       }
     })()
-  }, [cleanupSDK, initializeSDK, status])
+  }, [cleanupSDK, initializeSDK, status, useRemoteChainBalances])
 
   return (
     <NexusContext.Provider
@@ -99,6 +118,8 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
         nexusSDK,
         isInitialized,
         cleanupSDK,
+        useRemoteChainBalances,
+        setUseRemoteChainBalances,
       }}
     >
       {children}
