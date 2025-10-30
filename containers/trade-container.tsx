@@ -612,6 +612,7 @@ export const TradeContainer = () => {
         currencies,
         setCurrencies,
         balances,
+        remoteChainBalances,
         prices,
         showInputCurrencySelect,
         setShowInputCurrencySelect,

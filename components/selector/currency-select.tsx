@@ -24,6 +24,7 @@ import { useWindowWidth } from '../../hooks/useWindowWidth'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { formatWithCommas } from '../../utils/bignumber'
 import { RemoteChainBalances } from '../../model/remote-chain-balances'
+import { DownBracketAngleSvg } from '../svg/down-bracket-angle-svg'
 
 const CurrencySelect = ({
   chain,
@@ -46,7 +47,6 @@ const CurrencySelect = ({
   onCurrencySelect: (currency: Currency) => void
   defaultBlacklistedCurrency?: Currency
 } & React.HTMLAttributes<HTMLDivElement>) => {
-  console.log('render CurrencySelect', remoteChainBalances)
   const inputRef = useRef<HTMLInputElement>(null)
   const width = useWindowWidth()
 
@@ -55,6 +55,20 @@ const CurrencySelect = ({
       inputRef.current?.focus()
     }
   }, [width])
+
+  const [showRemoteChainBalances, _setShowRemoteChainBalances] = React.useState<
+    Currency | undefined
+  >(undefined)
+  const setShowRemoteChainBalances = useCallback(
+    (currency: Currency | undefined) => {
+      _setShowRemoteChainBalances((prev) =>
+        prev && currency && isAddressEqual(prev.address, currency.address)
+          ? undefined
+          : currency,
+      )
+    },
+    [],
+  )
 
   const [customizedCurrencies, setCustomizedCurrencies] = React.useState<
     Currency[] | undefined
@@ -234,93 +248,141 @@ const CurrencySelect = ({
 
               // Fallback to balance * price value for same-priority currencies
               const aValue =
-                Number(toUnitString(balances[a.address], a.decimals)) *
-                (prices[a.address] ?? 1e-15)
+                Number(
+                  toUnitString(
+                    balances[a.address] +
+                      (remoteChainBalances?.[a.address].total ?? 0n),
+                    a.decimals,
+                  ),
+                ) * (prices[a.address] ?? 1e-15)
               const bValue =
-                Number(toUnitString(balances[b.address], b.decimals)) *
-                (prices[b.address] ?? 1e-15)
+                Number(
+                  toUnitString(
+                    balances[b.address] +
+                      (remoteChainBalances?.[b.address].total ?? 0n),
+                    b.decimals,
+                  ),
+                ) * (prices[b.address] ?? 1e-15)
 
               return bValue - aValue
             })
             .map((currency) => (
               <button
                 key={currency.address}
-                className="flex w-full sm:h-16 px-6 py-3 items-center justify-between text-start hover:bg-gray-700 rounded-lg shrink-0"
+                className="flex flex-col w-full h-fit px-6 py-3 items-center justify-between text-start hover:bg-gray-700 rounded-lg shrink-0"
                 onClick={() => {
                   if (currency.isVerified) {
-                    onCurrencySelect(currency)
+                    if (remoteChainBalances) {
+                      if (showRemoteChainBalances) {
+                        setShowRemoteChainBalances(undefined)
+                        onCurrencySelect(currency)
+                        return
+                      }
+                      setShowRemoteChainBalances(currency)
+                    } else {
+                      onCurrencySelect(currency)
+                    }
                   } else {
                     setInspectingCurrency(currency)
                   }
                 }}
               >
-                <div className="flex items-center gap-3">
-                  <CurrencyIcon
-                    chain={chain}
-                    currency={currency}
-                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-full"
-                  />
-                  <div className="flex-col justify-center items-start">
-                    <div className="flex items-center gap-1">
-                      <div className="text-sm sm:text-base font-bold text-white">
-                        {currency.symbol}
+                <div className="flex flex-row w-full items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CurrencyIcon
+                      chain={chain}
+                      currency={currency}
+                      className="w-6 h-6 sm:w-8 sm:h-8 rounded-full"
+                    />
+                    <div className="flex-col justify-center items-start">
+                      <div className="flex items-center gap-1">
+                        <div className="text-sm sm:text-base font-bold text-white">
+                          {currency.symbol}
+                        </div>
+                        {!currency.isVerified ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                          >
+                            <path
+                              d="M8.9073 4.41123C9.38356 3.55396 10.6164 3.55396 11.0927 4.41122L16.6937 14.493C17.1565 15.3261 16.5541 16.35 15.601 16.35H4.39903C3.44592 16.35 2.84346 15.3261 3.30633 14.493L8.9073 4.41123Z"
+                              stroke="#FACC15"
+                              strokeWidth="1.5"
+                            />
+                            <path
+                              d="M10 9V10.8"
+                              stroke="#FACC15"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                            />
+                            <circle
+                              cx="9.99961"
+                              cy="13.5"
+                              r="0.9"
+                              fill="#FACC15"
+                            />
+                          </svg>
+                        ) : (
+                          <></>
+                        )}
                       </div>
-                      {!currency.isVerified ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                        >
-                          <path
-                            d="M8.9073 4.41123C9.38356 3.55396 10.6164 3.55396 11.0927 4.41122L16.6937 14.493C17.1565 15.3261 16.5541 16.35 15.601 16.35H4.39903C3.44592 16.35 2.84346 15.3261 3.30633 14.493L8.9073 4.41123Z"
-                            stroke="#FACC15"
-                            strokeWidth="1.5"
-                          />
-                          <path
-                            d="M10 9V10.8"
-                            stroke="#FACC15"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                          />
-                          <circle
-                            cx="9.99961"
-                            cy="13.5"
-                            r="0.9"
-                            fill="#FACC15"
-                          />
-                        </svg>
-                      ) : (
-                        <></>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-                      {currency.name}
+                      <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+                        {currency.name}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex-1 text-sm text-end text-white">
-                  <div>
-                    {toUnitString(
-                      balances[currency.address],
-                      currency.decimals,
-                      prices[currency.address],
-                      formatWithCommas,
-                    )}
-                  </div>
-                  {prices[currency.address] ? (
-                    <div className="text-gray-500 text-xs">
-                      {formatDollarValue(
-                        balances[currency.address],
+                  <div className="flex-1 text-sm text-end text-white">
+                    <div>
+                      {toUnitString(
+                        balances[currency.address] +
+                          (remoteChainBalances?.[currency.address]?.total ??
+                            0n),
                         currency.decimals,
                         prices[currency.address],
+                        formatWithCommas,
                       )}
                     </div>
-                  ) : (
-                    <></>
+                    {prices[currency.address] ? (
+                      <div className="text-gray-500 text-xs">
+                        {formatDollarValue(
+                          balances[currency.address] +
+                            (remoteChainBalances?.[currency.address].total ??
+                              0n),
+                          currency.decimals,
+                          prices[currency.address],
+                        )}
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+
+                  {remoteChainBalances && (
+                    <div className="flex ml-1 items-center justify-center shrink-0">
+                      <DownBracketAngleSvg
+                        className={`flex w-3 h-3 min-w-3 min-h-3 sm:w-4 sm:h-4 sm:min-w-4 sm:min-h-4 text-gray-400 items-center transition-transform duration-200 ${
+                          showRemoteChainBalances?.address &&
+                          isAddressEqual(
+                            currency.address,
+                            showRemoteChainBalances.address,
+                          )
+                            ? 'rotate-180'
+                            : 'rotate-0'
+                        }`}
+                      />
+                    </div>
                   )}
                 </div>
+
+                {remoteChainBalances &&
+                  showRemoteChainBalances &&
+                  isAddressEqual(
+                    showRemoteChainBalances.address,
+                    currency.address,
+                  ) && <div>detail</div>}
               </button>
             ))}
           {loadingCurrencies ? (
