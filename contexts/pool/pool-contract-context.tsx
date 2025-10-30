@@ -24,8 +24,8 @@ import {
 } from '../../utils/approve6909'
 import {
   toPreciseString,
-  toSignificantString,
   formatWithCommas,
+  toSignificantString,
 } from '../../utils/bignumber'
 import { sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'

@@ -4,7 +4,7 @@ import { Quote } from '../../model/aggregator/quote'
 import { Currency } from '../../model/currency'
 import { toUnitString } from '../../utils/bigint'
 import { GasSvg } from '../svg/gas-svg'
-import { formatWithCommas } from '../../utils/bignumber'
+import { formatWithCommas, toPreciseString } from '../../utils/bignumber'
 import { TimerSvg } from '../svg/timer-svg'
 
 export const SwapRouteCard = ({
@@ -40,7 +40,7 @@ export const SwapRouteCard = ({
                 (quote?.amountOut ?? 0n) - (quote?.fee ?? 0n),
                 outputCurrency.decimals,
                 undefined,
-                formatWithCommas,
+                (value) => formatWithCommas(toPreciseString(value)),
               )}
             </div>
           ) : (
