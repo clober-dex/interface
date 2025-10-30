@@ -25,10 +25,7 @@ import { buildTransaction, sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { Currency } from '../../model/currency'
 import { deduplicateCurrencies } from '../../utils/currency'
-import {
-  formatPreciseAmountString,
-  formatWithCommas,
-} from '../../utils/bignumber'
+import { toPreciseString, formatWithCommas } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { PYTH_ORACLE_ABI } from '../../abis/futures/pyth-oracle-abi'
 
@@ -229,7 +226,7 @@ export const FuturesContractProvider = ({
                 currency: asset.collateral,
                 label: asset.collateral.symbol,
                 direction: 'in',
-                value: formatPreciseAmountString(
+                value: toPreciseString(
                   formatUnits(collateralAmount, asset.collateral.decimals),
                   prices[asset.collateral.address],
                   formatWithCommas,
@@ -239,7 +236,7 @@ export const FuturesContractProvider = ({
                 currency: asset.currency,
                 label: asset.currency.symbol,
                 direction: 'out',
-                value: formatPreciseAmountString(
+                value: toPreciseString(
                   formatUnits(debtAmount, asset.currency.decimals),
                   prices[asset.currency.address],
                   formatWithCommas,
@@ -400,7 +397,7 @@ export const FuturesContractProvider = ({
               currency: asset.currency,
               label: asset.currency.symbol,
               direction: 'in',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(debtAmount, asset.currency.decimals),
                 prices[asset.currency.address],
                 formatWithCommas,
@@ -519,7 +516,7 @@ export const FuturesContractProvider = ({
               currency: userPosition.asset.currency,
               label: userPosition.asset.currency.symbol,
               direction: 'in',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(
                   userPosition?.debtAmount ?? 0n,
                   userPosition.asset.currency.decimals,
@@ -532,7 +529,7 @@ export const FuturesContractProvider = ({
               currency: userPosition.asset.collateral,
               label: userPosition.asset.collateral.symbol,
               direction: 'out',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(
                   userPosition?.collateralAmount ?? 0n,
                   userPosition.asset.collateral.decimals,
@@ -800,7 +797,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
@@ -893,7 +890,7 @@ export const FuturesContractProvider = ({
               currency: asset.currency,
               label: asset.currency.symbol,
               direction: 'in',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(amount, asset.currency.decimals),
                 prices[asset.currency.address],
                 formatWithCommas,
@@ -903,7 +900,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
@@ -1000,7 +997,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'in',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(amount, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
@@ -1105,7 +1102,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(amount, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,

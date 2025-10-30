@@ -23,7 +23,7 @@ import {
   maxApprove as maxApproveERC6909,
 } from '../../utils/approve6909'
 import {
-  formatPreciseAmountString,
+  toPreciseString,
   toSignificantString,
   formatWithCommas,
 } from '../../utils/bignumber'
@@ -254,7 +254,7 @@ export const PoolContractProvider = ({
                     direction: result.currencyA.direction,
                     currency: result.currencyA.currency,
                     label: result.currencyA.currency.symbol,
-                    value: formatPreciseAmountString(
+                    value: toPreciseString(
                       result.currencyA.amount,
                       prices[result.currencyA.currency.address],
                       formatWithCommas,
@@ -266,7 +266,7 @@ export const PoolContractProvider = ({
                     direction: result.currencyB.direction,
                     currency: result.currencyB.currency,
                     label: result.currencyB.currency.symbol,
-                    value: formatPreciseAmountString(
+                    value: toPreciseString(
                       result.currencyB.amount,
                       prices[result.currencyB.currency.address],
                       formatWithCommas,
@@ -281,7 +281,7 @@ export const PoolContractProvider = ({
                       currencyB: result.currencyB.currency,
                     },
                     label: result.lpCurrency.currency.symbol,
-                    value: formatPreciseAmountString(
+                    value: toPreciseString(
                       result.lpCurrency.amount,
                       prices[baseCurrency.address],
                       formatWithCommas,
@@ -440,7 +440,7 @@ export const PoolContractProvider = ({
                   direction: result.currencyA.direction,
                   currency: result.currencyA.currency,
                   label: result.currencyA.currency.symbol,
-                  value: formatPreciseAmountString(
+                  value: toPreciseString(
                     result.currencyA.amount,
                     prices[result.currencyA.currency.address],
                     formatWithCommas,
@@ -452,7 +452,7 @@ export const PoolContractProvider = ({
                   direction: result.currencyB.direction,
                   currency: result.currencyB.currency,
                   label: result.currencyB.currency.symbol,
-                  value: formatPreciseAmountString(
+                  value: toPreciseString(
                     result.currencyB.amount,
                     prices[result.currencyB.currency.address],
                     formatWithCommas,
@@ -467,7 +467,7 @@ export const PoolContractProvider = ({
                     currencyB: result.currencyB.currency,
                   },
                   label: result.lpCurrency.currency.symbol,
-                  value: formatPreciseAmountString(
+                  value: toPreciseString(
                     result.lpCurrency.amount,
                     prices[baseCurrency.address],
                     formatWithCommas,
@@ -636,11 +636,7 @@ export const PoolContractProvider = ({
                 currencyB: currency1,
               },
               label: 'LP Token',
-              value: formatPreciseAmountString(
-                amount,
-                lpPrice,
-                formatWithCommas,
-              ),
+              value: toPreciseString(amount, lpPrice, formatWithCommas),
             },
             {
               direction: 'out',
@@ -649,11 +645,7 @@ export const PoolContractProvider = ({
                 currencyB: currency1,
               },
               label: 'LP Token (ERC20)',
-              value: formatPreciseAmountString(
-                amount,
-                lpPrice,
-                formatWithCommas,
-              ),
+              value: toPreciseString(amount, lpPrice, formatWithCommas),
             },
           ] as Confirmation['fields'],
         }
@@ -763,11 +755,7 @@ export const PoolContractProvider = ({
                 currencyB: pool.currencyB,
               },
               label: 'LP Token (ERC20)',
-              value: formatPreciseAmountString(
-                amount,
-                lpPrice,
-                formatWithCommas,
-              ),
+              value: toPreciseString(amount, lpPrice, formatWithCommas),
             },
             {
               direction: 'in',
@@ -776,11 +764,7 @@ export const PoolContractProvider = ({
                 currencyB: pool.currencyB,
               },
               label: 'LP Token',
-              value: formatPreciseAmountString(
-                amount,
-                lpPrice,
-                formatWithCommas,
-              ),
+              value: toPreciseString(amount, lpPrice, formatWithCommas),
             },
           ] as Confirmation['fields'],
         }

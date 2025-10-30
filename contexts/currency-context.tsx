@@ -24,7 +24,7 @@ import { deduplicateCurrencies } from '../utils/currency'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { fetchWhitelistCurrenciesFromGithub } from '../apis/token'
 import { currentTimestampInSeconds } from '../utils/date'
-import { formatPreciseAmountString, formatWithCommas } from '../utils/bignumber'
+import { toPreciseString, formatWithCommas } from '../utils/bignumber'
 import { formatUnits } from '../utils/bigint'
 import { buildTransaction, sendTransaction } from '../utils/transaction'
 import { shortAddress } from '../utils/address'
@@ -319,7 +319,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
               currency: currency,
               label: currency.symbol,
               direction: 'in',
-              value: formatPreciseAmountString(
+              value: toPreciseString(
                 formatUnits(amount, currency.decimals),
                 prices[currency.address],
                 formatWithCommas,

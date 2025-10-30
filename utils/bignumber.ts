@@ -120,7 +120,7 @@ export const toSignificantString = (
  * @param formatter - (Optional) A custom formatter function to format the final string.
  * @returns A formatted string with context-aware precision.
  */
-export const formatPreciseAmountString = (
+export const toPreciseString = (
   number: BigNumber.Value,
   price?: number,
   formatter?: (value: BigNumber.Value) => string,

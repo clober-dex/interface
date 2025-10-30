@@ -11,10 +11,7 @@ import { useCurrencyContext } from '../../contexts/currency-context'
 import { usePoolContractContext } from '../../contexts/pool/pool-contract-context'
 import { usePoolContext } from '../../contexts/pool/pool-context'
 import { CurrencyIcon } from '../../components/icon/currency-icon'
-import {
-  formatPreciseAmountString,
-  formatWithCommas,
-} from '../../utils/bignumber'
+import { toPreciseString, formatWithCommas } from '../../utils/bignumber'
 import { QuestionMarkSvg } from '../../components/svg/question-mark-svg'
 import { AddLiquidityForm } from '../../components/form/pool/add-liquidity-form'
 import { RemoveLiquidityForm } from '../../components/form/pool/remove-liquidity-form'
@@ -300,7 +297,7 @@ export const PoolManagerContainer = ({
                     </div>
                     <div className="gap-0.5 md:gap-1 text-blue-500 text-sm md:text-[15px] font-medium flex flex-col text-left items-center h-full">
                       {formatWithCommas(
-                        formatPreciseAmountString(
+                        toPreciseString(
                           pool.liquidityA.total.value.toString(),
                           prices[pool.currencyA.address],
                           formatWithCommas,
@@ -327,7 +324,7 @@ export const PoolManagerContainer = ({
                     </div>
                     <div className="gap-0.5 md:gap-1 text-cyan-400 text-sm md:text-[15px] font-medium flex flex-col text-left items-center h-full">
                       {formatWithCommas(
-                        formatPreciseAmountString(
+                        toPreciseString(
                           pool.liquidityB.total.value.toString(),
                           prices[pool.currencyB.address],
                           formatWithCommas,
