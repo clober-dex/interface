@@ -47,7 +47,7 @@ export const formatToCloberPriceString = (
     currency0,
     currency1,
   })
-  const base = formatTickPriceString(
+  const base = toTickPriceString(
     chainId,
     isBid ? bidTick : askTick,
     currency0,
@@ -59,7 +59,7 @@ export const formatToCloberPriceString = (
   return formatter ? formatter(base) : base
 }
 
-export const formatTickPriceString = (
+export const toTickPriceString = (
   chainId: CHAIN_IDS,
   tick: bigint,
   currency0: Currency,

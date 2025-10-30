@@ -5,7 +5,7 @@ import { NextRouter } from 'next/router'
 import { OutlinkSvg } from '../../svg/outlink-svg'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
 import { toSignificantString, formatWithCommas } from '../../../utils/bignumber'
-import { formatTickPriceString } from '../../../utils/prices'
+import { toTickPriceString } from '../../../utils/prices'
 
 export const OpenOrderCard = ({
   chainId,
@@ -59,7 +59,7 @@ export const OpenOrderCard = ({
                   Price
                 </label>
                 <p className="text-white text-xs sm:text-sm  font-medium">
-                  {formatTickPriceString(
+                  {toTickPriceString(
                     chainId,
                     BigInt(openOrder.tick),
                     openOrder.inputCurrency,
@@ -158,7 +158,7 @@ export const OpenOrderCard = ({
           </div>
 
           <div className="w-[110px] h-full justify-start items-center flex text-white text-sm font-medium">
-            {formatTickPriceString(
+            {toTickPriceString(
               chainId,
               BigInt(openOrder.tick),
               openOrder.inputCurrency,

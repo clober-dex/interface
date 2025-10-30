@@ -4,7 +4,7 @@ import { CHAIN_IDS, Depth, Market } from '@clober/v2-sdk'
 import { Decimals } from '../model/decimals'
 
 import { toSignificantString } from './bignumber'
-import { formatTickPriceString } from './prices'
+import { toTickPriceString } from './prices'
 
 export function calculateInputCurrencyAmountString(
   isBid: boolean,
@@ -65,7 +65,7 @@ export function parseDepth(
       })
       .reduce(
         (prev, curr) => {
-          const key = formatTickPriceString(
+          const key = toTickPriceString(
             chainId,
             curr.tick,
             market.quote,

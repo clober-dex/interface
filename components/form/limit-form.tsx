@@ -12,7 +12,7 @@ import { Balances } from '../../model/balances'
 import { Prices } from '../../model/prices'
 import { toSignificantString } from '../../utils/bignumber'
 import {
-  formatTickPriceString,
+  toTickPriceString,
   formatToCloberPriceString,
   getPriceDecimals,
 } from '../../utils/prices'
@@ -323,7 +323,7 @@ export const LimitForm = ({
                         let currentTick = isBid ? bidTick : askTick
                         // eslint-disable-next-line no-constant-condition
                         while (true) {
-                          const nextPrice = formatTickPriceString(
+                          const nextPrice = toTickPriceString(
                             chain.id,
                             currentTick,
                             inputCurrency,
@@ -393,7 +393,7 @@ export const LimitForm = ({
                         let currentTick = isBid ? bidTick : askTick
                         // eslint-disable-next-line no-constant-condition
                         while (true) {
-                          const nextPrice = formatTickPriceString(
+                          const nextPrice = toTickPriceString(
                             chain.id,
                             currentTick,
                             inputCurrency,
