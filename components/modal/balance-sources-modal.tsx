@@ -52,8 +52,16 @@ const BalanceSourcesModal = ({
           </div>
 
           <div className="w-full px-3 sm:p-4 bg-gray-800 rounded-xl flex-col justify-center items-start gap-2 flex">
-            {Object.entries(remoteChainBalances).map(
-              ([address, remoteChainBalance]) => {
+            {Object.entries(
+              Object.fromEntries(
+                Object.entries(remoteChainBalances).map(([addr, data]) => [
+                  addr.toLowerCase(),
+                  data,
+                ]),
+              ),
+            )
+              .filter(([addr]) => addr === currency.address.toLowerCase())
+              .map(([address, remoteChainBalance]) => {
                 if (remoteChainBalance.total === 0n) {
                   return null
                 }
@@ -88,7 +96,7 @@ const BalanceSourcesModal = ({
                             {toUnitString(
                               balanceInfo.balance,
                               currency.decimals,
-                              undefined,
+                              prices[currency.address],
                               formatWithCommas,
                             )}
                           </div>
@@ -104,8 +112,7 @@ const BalanceSourcesModal = ({
                     ))}
                   </div>
                 )
-              },
-            )}
+              })}
           </div>
         </div>
       </div>

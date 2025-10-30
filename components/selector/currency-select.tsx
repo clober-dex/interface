@@ -25,6 +25,7 @@ import { CHAIN_CONFIG } from '../../chain-configs'
 import { formatWithCommas } from '../../utils/bignumber'
 import { RemoteChainBalances } from '../../model/remote-chain-balances'
 import { DownBracketAngleSvg } from '../svg/down-bracket-angle-svg'
+import ChainIcon from '../icon/chain-icon'
 
 const CurrencySelect = ({
   chain,
@@ -56,12 +57,12 @@ const CurrencySelect = ({
     }
   }, [width])
 
-  const [showRemoteChainBalances, _setShowRemoteChainBalances] = React.useState<
+  const [showRemoteChainBalance, _setShowRemoteChainBalance] = React.useState<
     Currency | undefined
   >(undefined)
-  const setShowRemoteChainBalances = useCallback(
+  const setShowRemoteChainBalance = useCallback(
     (currency: Currency | undefined) => {
-      _setShowRemoteChainBalances((prev) =>
+      _setShowRemoteChainBalance((prev) =>
         prev && currency && isAddressEqual(prev.address, currency.address)
           ? undefined
           : currency,
@@ -269,16 +270,16 @@ const CurrencySelect = ({
             .map((currency) => (
               <button
                 key={currency.address}
-                className="flex flex-col w-full h-fit px-6 py-3 items-center justify-between text-start hover:bg-gray-700 rounded-lg shrink-0"
+                className="flex flex-col gap-4 w-full h-fit px-6 py-3 items-center justify-between text-start hover:bg-gray-700 rounded-lg shrink-0"
                 onClick={() => {
                   if (currency.isVerified) {
-                    if (remoteChainBalances) {
-                      if (showRemoteChainBalances) {
-                        setShowRemoteChainBalances(undefined)
+                    if (remoteChainBalances?.[currency.address].total) {
+                      if (showRemoteChainBalance) {
+                        setShowRemoteChainBalance(undefined)
                         onCurrencySelect(currency)
                         return
                       }
-                      setShowRemoteChainBalances(currency)
+                      setShowRemoteChainBalance(currency)
                     } else {
                       onCurrencySelect(currency)
                     }
@@ -360,14 +361,14 @@ const CurrencySelect = ({
                     )}
                   </div>
 
-                  {remoteChainBalances && (
+                  {remoteChainBalances?.[currency.address].total && (
                     <div className="flex ml-1 items-center justify-center shrink-0">
                       <DownBracketAngleSvg
                         className={`flex w-3 h-3 min-w-3 min-h-3 sm:w-4 sm:h-4 sm:min-w-4 sm:min-h-4 text-gray-400 items-center transition-transform duration-200 ${
-                          showRemoteChainBalances?.address &&
+                          showRemoteChainBalance?.address &&
                           isAddressEqual(
                             currency.address,
-                            showRemoteChainBalances.address,
+                            showRemoteChainBalance.address,
                           )
                             ? 'rotate-180'
                             : 'rotate-0'
@@ -377,12 +378,79 @@ const CurrencySelect = ({
                   )}
                 </div>
 
-                {remoteChainBalances &&
-                  showRemoteChainBalances &&
+                {remoteChainBalances?.[currency.address].total &&
+                  showRemoteChainBalance &&
                   isAddressEqual(
-                    showRemoteChainBalances.address,
+                    showRemoteChainBalance.address,
                     currency.address,
-                  ) && <div>detail</div>}
+                  ) && (
+                    <div className="w-full px-3 sm:p-4 bg-gray-800 rounded-xl flex-col justify-center items-start gap-2 flex">
+                      {Object.entries(
+                        Object.fromEntries(
+                          Object.entries(remoteChainBalances).map(
+                            ([addr, data]) => [addr.toLowerCase(), data],
+                          ),
+                        ),
+                      )
+                        .filter(
+                          ([addr]) => addr === currency.address.toLowerCase(),
+                        )
+                        .map(([address, remoteChainBalance]) => {
+                          if (remoteChainBalance.total === 0n) {
+                            return null
+                          }
+                          return (
+                            <div
+                              key={address}
+                              className="flex flex-col w-full items-start gap-2"
+                            >
+                              <div className="text-sm text-white font-semibold">
+                                {currency.symbol} on other chains
+                              </div>
+                              {remoteChainBalance.breakdown.map(
+                                (balanceInfo) => (
+                                  <div
+                                    key={balanceInfo.chain.id}
+                                    className="flex flex-row w-full justify-between items-center"
+                                  >
+                                    <div className="flex flex-row gap-2 text-white text-sm items-center">
+                                      <ChainIcon
+                                        chain={
+                                          {
+                                            id: balanceInfo.chain.id,
+                                            name: balanceInfo.chain.name,
+                                            icon: balanceInfo.chain.logo,
+                                          } as Chain
+                                        }
+                                        className="inline-block w-6 h-6"
+                                      />
+                                      {balanceInfo.chain.name}
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                      <div className="text-sm text-white font-medium">
+                                        {toUnitString(
+                                          balanceInfo.balance,
+                                          currency.decimals,
+                                          prices[currency.address],
+                                          formatWithCommas,
+                                        )}
+                                      </div>
+                                      <div className="text-gray-500 text-xs">
+                                        {formatDollarValue(
+                                          balanceInfo.balance,
+                                          currency.decimals,
+                                          prices[currency.address],
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ),
+                              )}
+                            </div>
+                          )
+                        })}
+                    </div>
+                  )}
               </button>
             ))}
           {loadingCurrencies ? (

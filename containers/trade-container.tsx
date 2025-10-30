@@ -15,7 +15,7 @@ import { useLimitContractContext } from '../contexts/trade/limit-contract-contex
 import { useCurrencyContext } from '../contexts/currency-context'
 import { isAddressesEqual, shortAddress } from '../utils/address'
 import { aggregators } from '../chain-configs/aggregators'
-import { applyPercent, toUnitString, max } from '../utils/bigint'
+import { applyPercent, max, toUnitString } from '../utils/bigint'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
@@ -652,6 +652,7 @@ export const TradeContainer = () => {
         refreshQuotesAction,
       }) as SwapFormProps,
     [
+      remoteChainBalances,
       selectedExecutorName,
       quotes.best?.fee,
       balances,
