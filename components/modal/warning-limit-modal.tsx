@@ -22,10 +22,10 @@ const WarningLimitModal = ({
       onClick={() => closeModal()}
     >
       <div
-        className="flex flex-col w-80 sm:w-[480px] h-auto bg-gray-900 text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 gap-6"
+        className="flex flex-col w-80 sm:w-[480px] h-auto bg-[#17181e] text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 gap-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col items-start gap-4 sm:gap-6 self-stretch">
+        <div className="flex flex-col items-start gap-4 self-stretch">
           <div className="flex flex-col items-start gap-2 sm:gap-4 self-stretch">
             <div className="flex items-start gap-1.5">
               <svg
@@ -55,22 +55,22 @@ const WarningLimitModal = ({
                   strokeWidth="0.2"
                 />
               </svg>
-              <div className="text-red-400 text-sm sm:text-lg font-bold leading-tight">
+              <div className="text-red-400 text-sm sm:text-lg font-semibold leading-tight">
                 Warning
               </div>
             </div>
-            <div className="text-white text-sm sm:text-base">
+            <div className="text-white text-sm">
               You’re trying to place an unfavorable order that is far from the
               market price. Are you sure you want to proceed?
             </div>
           </div>
 
-          <div className="w-full p-4 bg-[#303742] rounded-xl flex-col justify-center items-start gap-2 flex">
+          <div className="w-full p-4 bg-gray-700 rounded-xl flex-col justify-center items-start gap-2 flex">
             <div className="flex flex-row w-full items-start gap-1 self-stretch">
               <div className="text-gray-300 text-xs sm:text-sm">
                 Current market price
               </div>
-              <div className="flex ml-auto font-semibold text-xs sm:text-sm">
+              <div className="flex ml-auto font-medieum text-xs sm:text-sm">
                 {onChainPrice > 0 ? formatTinyNumber(onChainPrice) : 'Unknown'}
               </div>
             </div>
@@ -78,7 +78,7 @@ const WarningLimitModal = ({
               <div className="text-gray-300 text-xs sm:text-sm flex flex-row gap-1">
                 Your order price
                 {priceDeviationPercent >= 10000 ? (
-                  <div className="font-semibold text-green-400">
+                  <div className="font-medieum text-green-400">
                     (&gt;10000%)
                   </div>
                 ) : priceDeviationPercent === -100 ? (
@@ -89,7 +89,7 @@ const WarningLimitModal = ({
                       priceDeviationPercent >= 0
                         ? 'text-green-400'
                         : 'text-red-400'
-                    } sm:text-sm font-semibold`}
+                    } sm:text-sm font-medieum`}
                   >
                     ({priceDeviationPercent.toFixed(2)}%)
                   </div>
@@ -97,7 +97,7 @@ const WarningLimitModal = ({
                   <></>
                 )}
               </div>
-              <div className="flex ml-auto text-xs sm:text-sm font-semibold">
+              <div className="flex ml-auto text-xs sm:text-sm font-medieum">
                 {priceInput}
               </div>
             </div>
