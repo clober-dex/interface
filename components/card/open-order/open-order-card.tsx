@@ -68,6 +68,7 @@ export const OpenOrderCard = ({
                     openOrder.inputCurrency,
                     openOrder.outputCurrency,
                     openOrder.isBid,
+                    undefined,
                     formatWithCommas,
                   )}
                 </p>
@@ -166,6 +167,7 @@ export const OpenOrderCard = ({
               openOrder.inputCurrency,
               openOrder.outputCurrency,
               openOrder.isBid,
+              undefined,
               formatWithCommas,
             )}
           </div>

@@ -75,12 +75,11 @@ export const FuturesPositionCard = ({
             </div>
             <div className="flex gap-1">
               <div className="text-sm sm:text-base">
-                {formatWithCommas(
-                  formatUnits(
-                    position.debtAmount ?? 0n,
-                    position.asset.currency.decimals,
-                    loanAssetPrice,
-                  ),
+                {formatUnits(
+                  position.debtAmount ?? 0n,
+                  position.asset.currency.decimals,
+                  loanAssetPrice,
+                  formatWithCommas,
                 )}{' '}
                 {symbol}
               </div>

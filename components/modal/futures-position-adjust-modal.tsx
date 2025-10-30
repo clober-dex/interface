@@ -111,24 +111,22 @@ export const FuturesPositionAdjustModal = ({
               </div>
               <div className="flex ml-auto items-center gap-1.5 text-xs sm:text-sm text-white">
                 <span>
-                  {formatWithCommas(
-                    formatUnits(
-                      currentCollateralAmount,
-                      asset.collateral.decimals,
-                      collateralPrice,
-                    ),
+                  {formatUnits(
+                    currentCollateralAmount,
+                    asset.collateral.decimals,
+                    collateralPrice,
+                    formatWithCommas,
                   )}
                 </span>
                 {currentCollateralAmount !== expectedCollateralAmount ? (
                   <>
                     <ArrowSvg />
                     <span>
-                      {formatWithCommas(
-                        formatUnits(
-                          expectedCollateralAmount,
-                          asset.collateral.decimals,
-                          collateralPrice,
-                        ),
+                      {formatUnits(
+                        expectedCollateralAmount,
+                        asset.collateral.decimals,
+                        collateralPrice,
+                        formatWithCommas,
                       )}
                     </span>
                   </>
@@ -143,24 +141,22 @@ export const FuturesPositionAdjustModal = ({
               </div>
               <div className="flex ml-auto items-center gap-1.5 text-xs sm:text-sm text-white">
                 <span>
-                  {formatWithCommas(
-                    formatUnits(
-                      currentDebtAmount,
-                      asset.currency.decimals,
-                      loanAssetPrice,
-                    ),
+                  {formatUnits(
+                    currentDebtAmount,
+                    asset.currency.decimals,
+                    loanAssetPrice,
+                    formatWithCommas,
                   )}
                 </span>
                 {currentDebtAmount !== expectedDebtAmount ? (
                   <>
                     <ArrowSvg />
                     <span>
-                      {formatWithCommas(
-                        formatUnits(
-                          expectedDebtAmount,
-                          asset.currency.decimals,
-                          loanAssetPrice,
-                        ),
+                      {formatUnits(
+                        expectedDebtAmount,
+                        asset.currency.decimals,
+                        loanAssetPrice,
+                        formatWithCommas,
                       )}
                     </span>
                   </>

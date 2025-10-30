@@ -114,8 +114,11 @@ const LpCurrencyAmountInput = ({
                 Available:
               </div>
               <div className="text-white text-[13px] font-medium">
-                {formatWithCommas(
-                  formatUnits(availableAmount, decimals, price),
+                {formatUnits(
+                  availableAmount,
+                  decimals,
+                  price,
+                  formatWithCommas,
                 )}
               </div>
               <button

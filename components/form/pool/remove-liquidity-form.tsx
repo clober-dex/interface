@@ -68,12 +68,11 @@ export const RemoveLiquidityForm = ({
                   <div className="flex items-center gap-1">
                     <div className="flex items-center gap-1 text-white font-semibold">
                       <div>
-                        {formatWithCommas(
-                          formatUnits(
-                            receiveCurrency.amount,
-                            receiveCurrency.currency.decimals,
-                            prices[receiveCurrency.currency.address],
-                          ),
+                        {formatUnits(
+                          receiveCurrency.amount,
+                          receiveCurrency.currency.decimals,
+                          prices[receiveCurrency.currency.address],
+                          formatWithCommas,
                         )}
                       </div>
                       <div>{receiveCurrency.currency.symbol}</div>

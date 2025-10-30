@@ -114,12 +114,11 @@ export const LpPositionCard = ({
               </div>
             </div>
             <div className="w-[140px] text-white text-sm font-medium flex flex-row gap-2">
-              {formatWithCommas(
-                formatUnits(
-                  amount,
-                  poolSnapshot.lpCurrency.decimals,
-                  Number(poolSnapshot.lpPriceUSD),
-                ),
+              {formatUnits(
+                amount,
+                poolSnapshot.lpCurrency.decimals,
+                Number(poolSnapshot.lpPriceUSD),
+                formatWithCommas,
               )}
             </div>
             <div className="flex flex-row gap-1 w-[140px] text-white text-sm font-medium">
@@ -245,12 +244,11 @@ export const LpPositionCard = ({
                 <div className="text-gray-500 text-xs">Balance</div>
               </div>
               <div className="self-stretch text-white text-sm font-medium">
-                {formatWithCommas(
-                  formatUnits(
-                    amount,
-                    poolSnapshot.lpCurrency.decimals,
-                    Number(poolSnapshot.lpPriceUSD),
-                  ),
+                {formatUnits(
+                  amount,
+                  poolSnapshot.lpCurrency.decimals,
+                  Number(poolSnapshot.lpPriceUSD),
+                  formatWithCommas,
                 )}
               </div>
             </div>

@@ -74,12 +74,11 @@ export const FuturesRedeemCard = ({
             </div>
             <div className="flex gap-1">
               <div className="text-sm sm:text-base">
-                {formatWithCommas(
-                  formatUnits(
-                    balance,
-                    asset.currency.decimals,
-                    prices[asset.currency.address],
-                  ),
+                {formatUnits(
+                  balance,
+                  asset.currency.decimals,
+                  prices[asset.currency.address],
+                  formatWithCommas,
                 )}{' '}
                 {symbol}
               </div>
@@ -100,12 +99,11 @@ export const FuturesRedeemCard = ({
               Redeemable
             </div>
             <div className="text-sm sm:text-base">
-              {formatWithCommas(
-                formatUnits(
-                  redeemableCollateral,
-                  asset.collateral.decimals,
-                  prices[asset.collateral.address],
-                ),
+              {formatUnits(
+                redeemableCollateral,
+                asset.collateral.decimals,
+                prices[asset.collateral.address],
+                formatWithCommas,
               )}{' '}
               {asset.collateral.symbol}
             </div>

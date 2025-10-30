@@ -298,12 +298,11 @@ const CurrencySelect = ({
                 </div>
                 <div className="flex-1 text-sm text-end text-white">
                   <div>
-                    {formatWithCommas(
-                      formatUnits(
-                        balances[currency.address],
-                        currency.decimals,
-                        prices[currency.address],
-                      ),
+                    {formatUnits(
+                      balances[currency.address],
+                      currency.decimals,
+                      prices[currency.address],
+                      formatWithCommas,
                     )}
                   </div>
                   {prices[currency.address] ? (

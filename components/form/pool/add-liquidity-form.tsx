@@ -103,12 +103,11 @@ export const AddLiquidityForm = ({
               ) : (
                 <div className="flex items-center gap-1 text-white text-sm font-semibold">
                   <div>
-                    {formatWithCommas(
-                      formatUnits(
-                        receiveLpCurrencyAmount,
-                        pool.lpCurrency.decimals,
-                        pool.lpPriceUSD,
-                      ),
+                    {formatUnits(
+                      receiveLpCurrencyAmount,
+                      pool.lpCurrency.decimals,
+                      pool.lpPriceUSD,
+                      formatWithCommas,
                     )}
                     {' LP'}
                   </div>
