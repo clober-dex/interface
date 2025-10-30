@@ -24,7 +24,7 @@ export const Default: Story = {
     onChainPrice: 0.00001,
     priceInput: '0.00001',
     priceDeviationPercent: 50,
-    closeModal: () => {},
+    onClose: () => {},
     limit: async () => {},
   },
 }

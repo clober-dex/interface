@@ -1,20 +1,16 @@
 import React from 'react'
 import { createPortal } from 'react-dom'
 
-import CloseSvg from '../svg/close-svg'
-
 const Modal = ({
   show,
   onClose,
   children,
   onModalClick,
-  onButtonClick,
   width = '480px',
 }: {
   show: boolean
   onClose: () => void
   onModalClick?: () => void
-  onButtonClick?: () => void
   width?: string
 } & React.PropsWithChildren) => {
   if (!show) {
@@ -34,11 +30,6 @@ const Modal = ({
           e.stopPropagation()
         }}
       >
-        <div className="absolute right-4 sm:right-6">
-          <button onClick={onButtonClick ? onButtonClick : onClose}>
-            <CloseSvg />
-          </button>
-        </div>
         {children}
       </div>
     </div>,

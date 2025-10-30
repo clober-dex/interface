@@ -892,15 +892,7 @@ export const PoolContractProvider = ({
       }}
     >
       {showRevertModal && (
-        <Modal
-          show
-          onClose={() => {
-            setShowRevertModal(false)
-          }}
-          onButtonClick={() => {
-            setShowRevertModal(false)
-          }}
-        >
+        <Modal show onClose={() => setShowRevertModal(false)}>
           <h1 className="flex font-bold text-xl mb-2">Transaction Reverted</h1>
           <h6 className="text-sm">
             The transaction has been reverted. Please try again with the

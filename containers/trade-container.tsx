@@ -674,7 +674,7 @@ export const TradeContainer = () => {
           onChainPrice={onChainPrice}
           priceInput={priceInput}
           priceDeviationPercent={priceDeviationPercent}
-          closeModal={() => setShowWarningModal(false)}
+          onClose={() => setShowWarningModal(false)}
           limit={async () => {
             if (!inputCurrency || !outputCurrency || !selectedMarket) {
               return

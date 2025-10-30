@@ -1,30 +1,25 @@
 import React from 'react'
-import { createPortal } from 'react-dom'
 
 import { formatTinyNumber } from '../../utils/bignumber'
+
+import Modal from './modal'
 
 const WarningLimitModal = ({
   onChainPrice,
   priceInput,
   priceDeviationPercent,
   limit,
-  closeModal,
+  onClose,
 }: {
   onChainPrice: number
   priceInput: string
   priceDeviationPercent: number
   limit: () => void
-  closeModal: () => void
+  onClose: () => void
 }) => {
-  return createPortal(
-    <div
-      className="flex items-center justify-center fixed inset-0 bg-black bg-opacity-50 z-[1000] backdrop-blur-sm px-4 sm:px-0"
-      onClick={() => closeModal()}
-    >
-      <div
-        className="flex flex-col w-80 sm:w-[480px] h-auto bg-[#17181e] text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 gap-6"
-        onClick={(e) => e.stopPropagation()}
-      >
+  return (
+    <Modal show onClose={onClose}>
+      <div className="flex flex-col w-full h-full gap-6">
         <div className="flex flex-col items-start gap-4 self-stretch">
           <div className="flex flex-col items-start gap-2 sm:gap-4 self-stretch">
             <div className="flex items-start gap-1.5">
@@ -59,13 +54,13 @@ const WarningLimitModal = ({
                 Warning
               </div>
             </div>
-            <div className="text-white text-sm">
+            <div className="text-white text-xs sm:text-sm">
               You’re trying to place an unfavorable order that is far from the
               market price. Are you sure you want to proceed?
             </div>
           </div>
 
-          <div className="w-full p-4 bg-gray-700 rounded-xl flex-col justify-center items-start gap-2 flex">
+          <div className="w-full p-3 sm:p-4 bg-gray-700 rounded-xl flex-col justify-center items-start gap-2 flex">
             <div className="flex flex-row w-full items-start gap-1 self-stretch">
               <div className="text-gray-300 text-xs sm:text-sm">
                 Current market price
@@ -113,8 +108,7 @@ const WarningLimitModal = ({
           </button>
         </div>
       </div>
-    </div>,
-    document.body,
+    </Modal>
   )
 }
 
