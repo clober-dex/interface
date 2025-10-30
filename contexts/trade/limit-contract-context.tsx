@@ -216,7 +216,7 @@ export const LimitContractProvider = ({
                   direction: result.make.direction,
                   currency: result.make.currency,
                   label: result.make.currency.symbol,
-                  value: toPreciseString(
+                  primaryText: toPreciseString(
                     result.make.amount,
                     prices[inputCurrency.address],
                     formatWithCommas,
@@ -265,7 +265,7 @@ export const LimitContractProvider = ({
                   direction: result.make.direction,
                   currency: result.make.currency,
                   label: result.make.currency.symbol,
-                  value: toPreciseString(
+                  primaryText: toPreciseString(
                     Number(result.make.amount) + Number(result.spent.amount),
                     prices[inputCurrency.address],
                     formatWithCommas,
@@ -275,7 +275,7 @@ export const LimitContractProvider = ({
                   direction: result.taken.direction,
                   currency: result.taken.currency,
                   label: result.taken.currency.symbol,
-                  value: toPreciseString(
+                  primaryText: toPreciseString(
                     result.taken.amount,
                     prices[outputCurrency.address],
                     formatWithCommas,
@@ -404,7 +404,7 @@ export const LimitContractProvider = ({
           fields: result.map(({ currency, amount, direction }) => ({
             currency,
             label: currency.symbol,
-            value: toPreciseString(
+            primaryText: toPreciseString(
               amount,
               prices[currency.address],
               formatWithCommas,
@@ -508,7 +508,7 @@ export const LimitContractProvider = ({
           fields: result.map(({ currency, amount, direction }) => ({
             currency,
             label: currency.symbol,
-            value: toPreciseString(
+            primaryText: toPreciseString(
               amount,
               prices[currency.address],
               formatWithCommas,

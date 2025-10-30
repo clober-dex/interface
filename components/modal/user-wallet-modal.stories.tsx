@@ -66,7 +66,7 @@ export const Default: Story = {
               decimals: 18,
             },
             label: 'ETH ASDFASDF',
-            value: '0.000000000000012',
+            primaryText: '0.000000000000012',
           },
           {
             direction: 'out',
@@ -77,7 +77,7 @@ export const Default: Story = {
               decimals: 18,
             },
             label: 'ETH',
-            value: '0.0004',
+            primaryText: '0.0004',
           },
           {
             direction: 'out',
@@ -88,7 +88,7 @@ export const Default: Story = {
               decimals: 18,
             },
             label: 'ETH',
-            value: '2.001',
+            primaryText: '2.001',
           },
         ],
       },
@@ -110,7 +110,7 @@ export const Default: Story = {
               decimals: 18,
             },
             label: 'ETH ASDFASDF',
-            value: '0.000000000000012',
+            primaryText: '0.000000000000012',
           },
           {
             direction: 'out',
@@ -121,7 +121,7 @@ export const Default: Story = {
               decimals: 18,
             },
             label: 'ETH',
-            value: '0.0004',
+            primaryText: '0.0004',
           },
           {
             direction: 'out',
@@ -132,7 +132,7 @@ export const Default: Story = {
               decimals: 18,
             },
             label: 'ETH',
-            value: '2.001',
+            primaryText: '2.001',
           },
         ],
       },

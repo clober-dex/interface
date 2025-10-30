@@ -20,7 +20,7 @@ export type Confirmation = {
     direction?: 'in' | 'out'
     currency?: Currency | LpCurrency
     label: string
-    value: string
+    primaryText: string
   }[]
 }
 

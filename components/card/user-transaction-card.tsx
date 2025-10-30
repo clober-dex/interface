@@ -104,7 +104,9 @@ const UserTransactionCard = ({
                       )}
                       <div className="flex overflow-hidden">{field.label}</div>
                     </div>
-                    <div className="flex overflow-hidden">{field.value}</div>
+                    <div className="flex overflow-hidden">
+                      {field.primaryText}
+                    </div>
                   </div>
                 ))}
             </div>
@@ -150,7 +152,9 @@ const UserTransactionCard = ({
                       )}
                       <div className="flex overflow-hidden">{field.label}</div>
                     </div>
-                    <div className="flex overflow-hidden">{field.value}</div>
+                    <div className="flex overflow-hidden">
+                      {field.primaryText}
+                    </div>
                   </div>
                 ))}
             </div>
@@ -196,7 +200,9 @@ const UserTransactionCard = ({
                       )}
                       <div className="flex overflow-hidden">{field.label}</div>
                     </div>
-                    <div className="flex overflow-hidden">{field.value}</div>
+                    <div className="flex overflow-hidden">
+                      {field.primaryText}
+                    </div>
                   </div>
                 ))}
             </div>

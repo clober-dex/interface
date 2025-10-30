@@ -397,7 +397,7 @@ export const FuturesContractProvider = ({
               currency: asset.currency,
               label: asset.currency.symbol,
               direction: 'in',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(debtAmount, asset.currency.decimals),
                 prices[asset.currency.address],
                 formatWithCommas,
@@ -516,7 +516,7 @@ export const FuturesContractProvider = ({
               currency: userPosition.asset.currency,
               label: userPosition.asset.currency.symbol,
               direction: 'in',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(
                   userPosition?.debtAmount ?? 0n,
                   userPosition.asset.currency.decimals,
@@ -529,7 +529,7 @@ export const FuturesContractProvider = ({
               currency: userPosition.asset.collateral,
               label: userPosition.asset.collateral.symbol,
               direction: 'out',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(
                   userPosition?.collateralAmount ?? 0n,
                   userPosition.asset.collateral.decimals,
@@ -797,7 +797,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
@@ -890,7 +890,7 @@ export const FuturesContractProvider = ({
               currency: asset.currency,
               label: asset.currency.symbol,
               direction: 'in',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(amount, asset.currency.decimals),
                 prices[asset.currency.address],
                 formatWithCommas,
@@ -900,7 +900,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
@@ -997,7 +997,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'in',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(amount, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
@@ -1102,7 +1102,7 @@ export const FuturesContractProvider = ({
               currency: asset.collateral,
               label: asset.collateral.symbol,
               direction: 'out',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(amount, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,

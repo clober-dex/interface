@@ -129,7 +129,7 @@ export const SwapContractProvider = ({
                 currency: inputCurrency,
                 label: inputCurrency.symbol,
                 direction: 'in',
-                value: toPreciseString(
+                primaryText: toPreciseString(
                   toUnitString(amountIn, inputCurrency.decimals),
                   prices[inputCurrency.address],
                   formatWithCommas,
@@ -139,7 +139,7 @@ export const SwapContractProvider = ({
                 currency: outputCurrency,
                 label: outputCurrency.symbol,
                 direction: 'out',
-                value: toPreciseString(
+                primaryText: toPreciseString(
                   toUnitString(expectedAmountOut, outputCurrency.decimals),
                   prices[outputCurrency.address],
                   formatWithCommas,

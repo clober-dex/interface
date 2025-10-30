@@ -309,17 +309,17 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           fields: [
             {
               label: 'From',
-              value: shortAddress(userAddress, 6),
+              primaryText: shortAddress(userAddress, 6),
             },
             {
               label: 'To',
-              value: shortAddress(recipient, 6),
+              primaryText: shortAddress(recipient, 6),
             },
             {
               currency: currency,
               label: currency.symbol,
               direction: 'in',
-              value: toPreciseString(
+              primaryText: toPreciseString(
                 toUnitString(amount, currency.decimals),
                 prices[currency.address],
                 formatWithCommas,

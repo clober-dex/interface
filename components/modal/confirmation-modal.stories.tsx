@@ -35,7 +35,7 @@ export const Default: Story = {
             decimals: 18,
           },
           label: 'Field 1',
-          value: 'Value 1',
+          primaryText: 'Value 1',
         },
         {
           currency: {
@@ -45,7 +45,7 @@ export const Default: Story = {
             decimals: 18,
           },
           label: 'Field 1',
-          value: 'Value 1',
+          primaryText: 'Value 1',
         },
       ],
     },
@@ -68,7 +68,7 @@ export const DefaultWithDirection: Story = {
             decimals: 18,
           },
           label: 'Field 1',
-          value: 'Value 1',
+          primaryText: 'Value 1',
         },
         {
           direction: 'out',
@@ -79,7 +79,7 @@ export const DefaultWithDirection: Story = {
             decimals: 18,
           },
           label: 'Field 1',
-          value: 'Value 1',
+          primaryText: 'Value 1',
         },
         {
           direction: 'out',
@@ -90,7 +90,7 @@ export const DefaultWithDirection: Story = {
             decimals: 18,
           },
           label: 'Field 1',
-          value: 'Value 1',
+          primaryText: 'Value 1',
         },
       ],
     },
