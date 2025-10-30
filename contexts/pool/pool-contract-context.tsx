@@ -43,6 +43,7 @@ export type PoolContractContext = {
     amount1: string,
     disableSwap: boolean,
     slippage: number,
+    lpPrice: number,
   ) => Promise<void>
   burn: (
     currency0: Currency,
@@ -50,6 +51,7 @@ export type PoolContractContext = {
     salt: `0x${string}`,
     lpCurrencyAmount: string,
     slippageInput: string,
+    lpPrice: number,
   ) => Promise<void>
   wrap: (
     currency0: Currency,
@@ -100,6 +102,7 @@ export const PoolContractProvider = ({
       amount1: string,
       disableSwap: boolean,
       slippage: number,
+      lpPrice: number,
     ) => {
       if (!walletClient || !selectedChain) {
         return
@@ -300,7 +303,7 @@ export const PoolContractProvider = ({
                     label: result.lpCurrency.currency.symbol,
                     primaryText: toPreciseString(
                       result.lpCurrency.amount,
-                      prices[baseCurrency.address],
+                      lpPrice,
                       formatWithCommas,
                     ),
                     secondaryText: formatDollarValue(
@@ -309,7 +312,7 @@ export const PoolContractProvider = ({
                         result.lpCurrency.currency.decimals,
                       ),
                       result.lpCurrency.currency.decimals,
-                      prices[result.lpCurrency.currency.address],
+                      lpPrice,
                     ),
                   },
               result.quoteResponse &&
@@ -408,6 +411,7 @@ export const PoolContractProvider = ({
       salt: `0x${string}`,
       lpCurrencyAmount: string,
       slippageInput: string,
+      lpPrice: number,
     ) => {
       if (!walletClient || !selectedChain) {
         return
@@ -427,17 +431,6 @@ export const PoolContractProvider = ({
           chain: selectedChain,
           fields: [],
         })
-
-        const baseCurrency = isAddressEqual(
-          getQuoteToken({
-            chainId: selectedChain.id,
-            token0: currency0.address,
-            token1: currency1.address,
-          }),
-          currency0.address,
-        )
-          ? currency1
-          : currency0
 
         const { result, transaction } = await removeLiquidity({
           chainId: selectedChain.id,
@@ -510,7 +503,7 @@ export const PoolContractProvider = ({
                   label: result.lpCurrency.currency.symbol,
                   primaryText: toPreciseString(
                     result.lpCurrency.amount,
-                    prices[baseCurrency.address],
+                    lpPrice,
                     formatWithCommas,
                   ),
                   secondaryText: formatDollarValue(
@@ -519,7 +512,7 @@ export const PoolContractProvider = ({
                       result.lpCurrency.currency.decimals,
                     ),
                     result.lpCurrency.currency.decimals,
-                    prices[result.lpCurrency.currency.address],
+                    lpPrice,
                   ),
                 },
           ].filter((field) => field !== undefined) as Confirmation['fields'],

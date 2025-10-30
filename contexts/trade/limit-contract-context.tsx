@@ -277,10 +277,8 @@ export const LimitContractProvider = ({
                     formatWithCommas,
                   ),
                   secondaryText: formatDollarValue(
-                    parseUnits(
-                      result.make.amount + result.spent.amount,
-                      inputCurrency.decimals,
-                    ),
+                    parseUnits(result.make.amount, inputCurrency.decimals) +
+                      parseUnits(result.spent.amount, inputCurrency.decimals),
                     inputCurrency.decimals,
                     prices[inputCurrency.address],
                   ),

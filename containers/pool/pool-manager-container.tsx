@@ -507,6 +507,7 @@ export const PoolManagerContainer = ({
                     currency1Amount,
                     !isNoLiquidity ? disableSwap : true,
                     Number(slippageInput),
+                    Number(pool.lpPriceUSD),
                   )
                 },
                 text: (() => {
@@ -619,6 +620,7 @@ export const PoolManagerContainer = ({
                     pool.salt,
                     lpCurrencyAmount,
                     slippageInput,
+                    Number(pool.lpPriceUSD),
                   )
                 },
                 text: (() => {

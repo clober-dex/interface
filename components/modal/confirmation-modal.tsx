@@ -100,10 +100,10 @@ const ConfirmationModal = ({
                     )}
                     <div>{field.label}</div>
                   </div>
-                  <div className="flex flex-col gap-0.5 justify-end items-center truncate">
+                  <div className="flex flex-col gap-0.5 text-right justify-end truncate">
                     {field.primaryText}
                     {field.secondaryText && (
-                      <span className="text-gray-500 text-xs">
+                      <span className="flex text-gray-500 text-xs">
                         ({field.secondaryText})
                       </span>
                     )}
