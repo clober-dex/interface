@@ -18,7 +18,7 @@ import { useCurrencyContext } from '../currency-context'
 import { Confirmation, useTransactionContext } from '../transaction-context'
 import { maxApprove } from '../../utils/approve20'
 import { useChainContext } from '../chain-context'
-import { toUnitString } from '../../utils/bigint'
+import { formatDollarValue, toUnitString } from '../../utils/bigint'
 import { FUTURES_MARKET_ABI } from '../../abis/futures/futures-market-abi'
 import { FuturesPosition } from '../../model/futures/futures-position'
 import { buildTransaction, sendTransaction } from '../../utils/transaction'
@@ -402,6 +402,11 @@ export const FuturesContractProvider = ({
                 prices[asset.currency.address],
                 formatWithCommas,
               ),
+              secondaryText: formatDollarValue(
+                debtAmount,
+                asset.currency.decimals,
+                prices[asset.currency.address],
+              ),
             },
           ] as Confirmation['fields'],
         }
@@ -524,6 +529,11 @@ export const FuturesContractProvider = ({
                 prices[userPosition.asset.currency.address],
                 formatWithCommas,
               ),
+              secondaryText: formatDollarValue(
+                userPosition?.debtAmount ?? 0n,
+                userPosition.asset.currency.decimals,
+                prices[userPosition.asset.currency.address],
+              ),
             },
             {
               currency: userPosition.asset.collateral,
@@ -536,6 +546,11 @@ export const FuturesContractProvider = ({
                 ),
                 prices[userPosition.asset.collateral.address],
                 formatWithCommas,
+              ),
+              secondaryText: formatDollarValue(
+                userPosition?.collateralAmount ?? 0n,
+                userPosition.asset.collateral.decimals,
+                prices[userPosition.asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],
@@ -802,6 +817,11 @@ export const FuturesContractProvider = ({
                 prices[asset.collateral.address],
                 formatWithCommas,
               ),
+              secondaryText: formatDollarValue(
+                collateralReceived,
+                asset.collateral.decimals,
+                prices[asset.collateral.address],
+              ),
             },
           ] as Confirmation['fields'],
         }
@@ -895,6 +915,11 @@ export const FuturesContractProvider = ({
                 prices[asset.currency.address],
                 formatWithCommas,
               ),
+              secondaryText: formatDollarValue(
+                amount,
+                asset.currency.decimals,
+                prices[asset.currency.address],
+              ),
             },
             {
               currency: asset.collateral,
@@ -904,6 +929,11 @@ export const FuturesContractProvider = ({
                 toUnitString(collateralReceived, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
+              ),
+              secondaryText: formatDollarValue(
+                collateralReceived,
+                asset.collateral.decimals,
+                prices[asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],
@@ -1001,6 +1031,11 @@ export const FuturesContractProvider = ({
                 toUnitString(amount, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
+              ),
+              secondaryText: formatDollarValue(
+                amount,
+                asset.collateral.decimals,
+                prices[asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],
@@ -1106,6 +1141,11 @@ export const FuturesContractProvider = ({
                 toUnitString(amount, asset.collateral.decimals),
                 prices[asset.collateral.address],
                 formatWithCommas,
+              ),
+              secondaryText: formatDollarValue(
+                amount,
+                asset.collateral.decimals,
+                prices[asset.collateral.address],
               ),
             },
           ] as Confirmation['fields'],

@@ -32,6 +32,7 @@ import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { aggregators } from '../../chain-configs/aggregators'
 import Modal from '../../components/modal/modal'
+import { formatDollarValue } from '../../utils/bigint'
 
 export type PoolContractContext = {
   mint: (
@@ -259,6 +260,14 @@ export const PoolContractProvider = ({
                       prices[result.currencyA.currency.address],
                       formatWithCommas,
                     ),
+                    secondaryText: formatDollarValue(
+                      parseUnits(
+                        result.currencyA.amount,
+                        result.currencyA.currency.decimals,
+                      ),
+                      result.currencyA.currency.decimals,
+                      prices[result.currencyA.currency.address],
+                    ),
                   },
               new BigNumber(result.currencyB.amount).isZero()
                 ? undefined
@@ -270,6 +279,14 @@ export const PoolContractProvider = ({
                       result.currencyB.amount,
                       prices[result.currencyB.currency.address],
                       formatWithCommas,
+                    ),
+                    secondaryText: formatDollarValue(
+                      parseUnits(
+                        result.currencyB.amount,
+                        result.currencyB.currency.decimals,
+                      ),
+                      result.currencyB.currency.decimals,
+                      prices[result.currencyB.currency.address],
                     ),
                   },
               new BigNumber(result.lpCurrency.amount).isZero()
@@ -285,6 +302,14 @@ export const PoolContractProvider = ({
                       result.lpCurrency.amount,
                       prices[baseCurrency.address],
                       formatWithCommas,
+                    ),
+                    secondaryText: formatDollarValue(
+                      parseUnits(
+                        result.lpCurrency.amount,
+                        result.lpCurrency.currency.decimals,
+                      ),
+                      result.lpCurrency.currency.decimals,
+                      prices[result.lpCurrency.currency.address],
                     ),
                   },
               result.quoteResponse &&
@@ -445,6 +470,14 @@ export const PoolContractProvider = ({
                     prices[result.currencyA.currency.address],
                     formatWithCommas,
                   ),
+                  secondaryText: formatDollarValue(
+                    parseUnits(
+                      result.currencyA.amount,
+                      result.currencyA.currency.decimals,
+                    ),
+                    result.currencyA.currency.decimals,
+                    prices[result.currencyA.currency.address],
+                  ),
                 },
             new BigNumber(result.currencyB.amount).isZero()
               ? undefined
@@ -456,6 +489,14 @@ export const PoolContractProvider = ({
                     result.currencyB.amount,
                     prices[result.currencyB.currency.address],
                     formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    parseUnits(
+                      result.currencyB.amount,
+                      result.currencyB.currency.decimals,
+                    ),
+                    result.currencyB.currency.decimals,
+                    prices[result.currencyB.currency.address],
                   ),
                 },
             new BigNumber(result.lpCurrency.amount).isZero()
@@ -471,6 +512,14 @@ export const PoolContractProvider = ({
                     result.lpCurrency.amount,
                     prices[baseCurrency.address],
                     formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    parseUnits(
+                      result.lpCurrency.amount,
+                      result.lpCurrency.currency.decimals,
+                    ),
+                    result.lpCurrency.currency.decimals,
+                    prices[result.lpCurrency.currency.address],
                   ),
                 },
           ].filter((field) => field !== undefined) as Confirmation['fields'],
@@ -637,6 +686,11 @@ export const PoolContractProvider = ({
               },
               label: 'LP Token',
               primaryText: toPreciseString(amount, lpPrice, formatWithCommas),
+              secondaryText: formatDollarValue(
+                parseUnits(amount, pool.lpCurrency.decimals),
+                pool.lpCurrency.decimals,
+                lpPrice,
+              ),
             },
             {
               direction: 'out',
@@ -646,6 +700,11 @@ export const PoolContractProvider = ({
               },
               label: 'LP Token (ERC20)',
               primaryText: toPreciseString(amount, lpPrice, formatWithCommas),
+              secondaryText: formatDollarValue(
+                parseUnits(amount, pool.lpCurrency.decimals),
+                pool.lpCurrency.decimals,
+                lpPrice,
+              ),
             },
           ] as Confirmation['fields'],
         }
@@ -756,6 +815,11 @@ export const PoolContractProvider = ({
               },
               label: 'LP Token (ERC20)',
               primaryText: toPreciseString(amount, lpPrice, formatWithCommas),
+              secondaryText: formatDollarValue(
+                parseUnits(amount, pool.lpCurrency.decimals),
+                pool.lpCurrency.decimals,
+                lpPrice,
+              ),
             },
             {
               direction: 'in',
@@ -765,6 +829,11 @@ export const PoolContractProvider = ({
               },
               label: 'LP Token',
               primaryText: toPreciseString(amount, lpPrice, formatWithCommas),
+              secondaryText: formatDollarValue(
+                parseUnits(amount, pool.lpCurrency.decimals),
+                pool.lpCurrency.decimals,
+                lpPrice,
+              ),
             },
           ] as Confirmation['fields'],
         }

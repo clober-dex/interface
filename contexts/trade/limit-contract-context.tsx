@@ -22,6 +22,7 @@ import { maxApprove } from '../../utils/approve20'
 import { toPreciseString, formatWithCommas } from '../../utils/bignumber'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
+import { formatDollarValue } from '../../utils/bigint'
 
 type LimitContractContext = {
   limit: (
@@ -221,6 +222,11 @@ export const LimitContractProvider = ({
                     prices[inputCurrency.address],
                     formatWithCommas,
                   ),
+                  secondaryText: formatDollarValue(
+                    parseUnits(result.make.amount, inputCurrency.decimals),
+                    inputCurrency.decimals,
+                    prices[inputCurrency.address],
+                  ),
                 },
               ] as Confirmation['fields'],
             }
@@ -270,6 +276,14 @@ export const LimitContractProvider = ({
                     prices[inputCurrency.address],
                     formatWithCommas,
                   ),
+                  secondaryText: formatDollarValue(
+                    parseUnits(
+                      result.make.amount + result.spent.amount,
+                      inputCurrency.decimals,
+                    ),
+                    inputCurrency.decimals,
+                    prices[inputCurrency.address],
+                  ),
                 },
                 {
                   direction: result.taken.direction,
@@ -279,6 +293,11 @@ export const LimitContractProvider = ({
                     result.taken.amount,
                     prices[outputCurrency.address],
                     formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    parseUnits(result.taken.amount, outputCurrency.decimals),
+                    outputCurrency.decimals,
+                    prices[outputCurrency.address],
                   ),
                 },
               ] as Confirmation['fields'],
@@ -409,6 +428,11 @@ export const LimitContractProvider = ({
               prices[currency.address],
               formatWithCommas,
             ),
+            secondaryText: formatDollarValue(
+              parseUnits(amount, currency.decimals),
+              currency.decimals,
+              prices[currency.address],
+            ),
             direction,
           })),
         }
@@ -512,6 +536,11 @@ export const LimitContractProvider = ({
               amount,
               prices[currency.address],
               formatWithCommas,
+            ),
+            secondaryText: formatDollarValue(
+              parseUnits(amount, currency.decimals),
+              currency.decimals,
+              prices[currency.address],
             ),
             direction,
           })),

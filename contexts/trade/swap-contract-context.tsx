@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react'
-import { getAddress, isAddressEqual, zeroAddress } from 'viem'
+import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import { Transaction, Transaction as SdkTransaction } from '@clober/v2-sdk'
 
 import { Currency } from '../../model/currency'
-import { toUnitString } from '../../utils/bigint'
+import { formatDollarValue, toUnitString } from '../../utils/bigint'
 import { Confirmation, useTransactionContext } from '../transaction-context'
 import { sendTransaction } from '../../utils/transaction'
 import { useCurrencyContext } from '../currency-context'
@@ -134,6 +134,11 @@ export const SwapContractProvider = ({
                   prices[inputCurrency.address],
                   formatWithCommas,
                 ),
+                secondaryText: formatDollarValue(
+                  amountIn,
+                  inputCurrency.decimals,
+                  prices[inputCurrency.address],
+                ),
               },
               {
                 currency: outputCurrency,
@@ -143,6 +148,11 @@ export const SwapContractProvider = ({
                   toUnitString(expectedAmountOut, outputCurrency.decimals),
                   prices[outputCurrency.address],
                   formatWithCommas,
+                ),
+                secondaryText: formatDollarValue(
+                  expectedAmountOut,
+                  outputCurrency.decimals,
+                  prices[outputCurrency.address],
                 ),
               },
             ] as Confirmation['fields'],
