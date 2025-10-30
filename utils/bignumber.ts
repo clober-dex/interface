@@ -89,6 +89,7 @@ export const findFirstNonZeroDecimalIndex = (
  * @param number - A number or string compatible with BigNumber.
  * @param places - Number of decimal places to show (default: 4).
  * @param roundingMode - Rounding mode from BigNumber (default: ROUND_FLOOR).
+ * @param formatter - (Optional) A custom formatter function to format the final string.
  * @returns A formatted string with either the specified decimal places or
  *          dynamically extended precision if the number is near zero.
  */
@@ -96,16 +97,18 @@ export const formatSignificantString = (
   number: BigNumber.Value,
   places: number = 4,
   roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_FLOOR,
+  formatter?: (value: BigNumber.Value) => string,
 ): string => {
   const result = new BigNumber(number).toFixed(places, roundingMode)
   if (new BigNumber(result).isZero()) {
     const index = findFirstNonZeroDecimalIndex(number)
-    return new BigNumber(number).toFixed(
+    const base = new BigNumber(number).toFixed(
       index + POLLY_FILL_DECIMALS,
       roundingMode,
     )
+    return formatter ? formatter(base) : base
   } else {
-    return result
+    return formatter ? formatter(result) : result
   }
 }
 
@@ -117,22 +120,26 @@ export const formatSignificantString = (
  *
  * @param number - A number or string compatible with BigNumber.
  * @param price - (Optional) USD price used to calculate decimal precision.
+ * @param formatter - (Optional) A custom formatter function to format the final string.
  * @returns A formatted string with context-aware precision.
  */
 export const formatPreciseAmountString = (
   number: BigNumber.Value,
   price?: number,
+  formatter?: (value: BigNumber.Value) => string,
 ): string => {
   if (!price) {
     const index = findFirstNonZeroDecimalIndex(number)
-    return new BigNumber(number).toFixed(
+    const base = new BigNumber(number).toFixed(
       index + POLLY_FILL_DECIMALS,
       BigNumber.ROUND_FLOOR,
     )
+    return formatter ? formatter(base) : base
   }
   const underHalfPennyDecimals =
     Math.floor(Math.max(-Math.log10(0.005 / price), 0) / 2) * 2
-  return new BigNumber(number).toFixed(underHalfPennyDecimals)
+  const base = new BigNumber(number).toFixed(underHalfPennyDecimals)
+  return formatter ? formatter(base) : base
 }
 
 /**

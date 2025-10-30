@@ -32,6 +32,7 @@ export const formatToCloberPriceString = (
   currency1: Currency,
   isBid: boolean,
   decimalPlaces?: number,
+  formatter?: (value: BigNumber.Value) => string,
 ): string => {
   const {
     normal: {
@@ -46,14 +47,16 @@ export const formatToCloberPriceString = (
     currency0,
     currency1,
   })
-  return formatTickPriceString(
+  const base = formatTickPriceString(
     chainId,
     isBid ? bidTick : askTick,
     currency0,
     currency1,
     isBid,
     decimalPlaces,
+    formatter,
   )
+  return formatter ? formatter(base) : base
 }
 
 export const formatTickPriceString = (
@@ -63,6 +66,7 @@ export const formatTickPriceString = (
   currency1: Currency,
   isBid: boolean,
   decimalPlaces?: number,
+  formatter?: (value: BigNumber.Value) => string,
 ): string => {
   const [marketQuoteCurrency, marketBaseCurrency] = isAddressEqual(
     getQuoteToken({
@@ -93,12 +97,14 @@ export const formatTickPriceString = (
       : getPriceDecimals(Number(price))
 
   if (decimalPlaces < 0) {
-    return new BigNumber(price)
+    const base = new BigNumber(price)
       .minus(new BigNumber(price).mod(10 ** -decimalPlaces))
       .toFixed()
+    return formatter ? formatter(base) : base
   }
-  return new BigNumber(price).toFixed(
+  const base = new BigNumber(price).toFixed(
     decimalPlaces,
     isBid ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
   )
+  return formatter ? formatter(base) : base
 }
