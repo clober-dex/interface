@@ -68,6 +68,7 @@ export const OpenOrderCard = ({
                     openOrder.inputCurrency,
                     openOrder.outputCurrency,
                     openOrder.isBid,
+                    formatWithCommas,
                   )}
                 </p>
               </div>
@@ -159,14 +160,13 @@ export const OpenOrderCard = ({
           </div>
 
           <div className="w-[110px] h-full justify-start items-center flex text-white text-sm font-medium">
-            {formatWithCommas(
-              formatTickPriceString(
-                chainId,
-                BigInt(openOrder.tick),
-                openOrder.inputCurrency,
-                openOrder.outputCurrency,
-                openOrder.isBid,
-              ),
+            {formatTickPriceString(
+              chainId,
+              BigInt(openOrder.tick),
+              openOrder.inputCurrency,
+              openOrder.outputCurrency,
+              openOrder.isBid,
+              formatWithCommas,
             )}
           </div>
 
