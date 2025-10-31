@@ -103,6 +103,7 @@ export const UserWalletModal = ({
       currencies={currencies}
       setCurrencies={setCurrencies}
       balances={balances}
+      remoteChainBalances={remoteChainBalances}
       prices={prices}
       gasPrice={gasPrice}
       onBack={() => setShowTokenTransferModal(false)}

@@ -2,6 +2,7 @@ import React from 'react'
 import '../../styles/globals.css'
 import { Meta, StoryObj } from '@storybook/react'
 import { mainnet } from 'viem/chains'
+import { zeroAddress } from 'viem'
 
 import { TokenTransferModal } from './token-transfer-modal'
 
@@ -45,6 +46,19 @@ export const Default: Story = {
     balances: {
       '0x0000000000000000000000000000000000000001': 100000000000000n,
       '0x0000000000000000000000000000000000000002': 2000000n,
+    },
+    remoteChainBalances: {
+      [zeroAddress]: {
+        total: 5000000n,
+        key: 'usdc',
+        breakdown: [
+          {
+            chain: { id: 1, name: 'Ethereum', logo: '' },
+            balance: 2000000n,
+          },
+          { chain: { id: 56, name: 'BSC', logo: '' }, balance: 3000000n },
+        ],
+      },
     },
     prices: {
       '0x0000000000000000000000000000000000000001': 3000.1,

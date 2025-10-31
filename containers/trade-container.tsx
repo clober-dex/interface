@@ -562,11 +562,15 @@ export const TradeContainer = () => {
         const output = outputCurrency.address
 
         if (isAddressEqual(input, zeroAddress) && isAddressEqual(output, ref)) {
-          return 'Wrap'
+          return amountIn > balances[inputCurrency.address]
+            ? 'Bridge & Wrap'
+            : 'Wrap'
         }
 
         if (isAddressEqual(input, ref) && isAddressEqual(output, zeroAddress)) {
-          return 'Unwrap'
+          return amountIn > balances[inputCurrency.address]
+            ? 'Bridge & Unwrap'
+            : 'Unwrap'
         }
 
         const allowanceTarget = selectedExecutorName
@@ -583,7 +587,9 @@ export const TradeContainer = () => {
           return `Max Approve ${inputCurrency.symbol}`
         }
 
-        return 'Swap'
+        return amountIn > balances[inputCurrency.address]
+          ? 'Bridge & Swap'
+          : 'Swap'
       })(),
     }),
     [

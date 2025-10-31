@@ -16,6 +16,7 @@ import { Chain } from '../../model/chain'
 import CurrencySelect from '../selector/currency-select'
 import { ActionButton } from '../button/action-button'
 import { toUnitString } from '../../utils/bigint'
+import { RemoteChainBalances } from '../../model/remote-chain-balances'
 
 import Modal from './modal'
 
@@ -27,6 +28,7 @@ export const TokenTransferModal = ({
   currencies,
   setCurrencies,
   balances,
+  remoteChainBalances,
   prices,
   gasPrice,
   onBack,
@@ -40,6 +42,7 @@ export const TokenTransferModal = ({
   currencies: Currency[]
   setCurrencies: (currencies: Currency[]) => void
   balances: Balances
+  remoteChainBalances?: RemoteChainBalances
   prices: Prices
   gasPrice: bigint | undefined
   onBack: () => void
@@ -74,6 +77,7 @@ export const TokenTransferModal = ({
                 : currencies
             }
             balances={balances}
+            remoteChainBalances={remoteChainBalances}
             prices={prices}
             onBack={() =>
               setShowCurrencySelect ? setShowCurrencySelect(false) : undefined
@@ -118,7 +122,11 @@ export const TokenTransferModal = ({
                   value={amount}
                   onValueChange={setAmount}
                   availableAmount={
-                    selectedCurrency ? balances[selectedCurrency.address] : 0n
+                    selectedCurrency
+                      ? balances[selectedCurrency.address] +
+                        (remoteChainBalances?.[selectedCurrency.address]
+                          ?.total ?? 0n)
+                      : 0n
                   }
                   onCurrencyClick={
                     setShowCurrencySelect
@@ -175,23 +183,42 @@ export const TokenTransferModal = ({
                   recipient.trim() === '' ||
                   !isAddress(recipient.trim()) ||
                   Number(amount) <= 0 ||
-                  balances[selectedCurrency.address] <
+                  balances[selectedCurrency.address] +
+                    (remoteChainBalances?.[selectedCurrency.address]?.total ??
+                      0n) <
                     parseUnits(amount, selectedCurrency.decimals)
                 }
-                text={
-                  !selectedCurrency
-                    ? 'Select Token'
-                    : recipient.trim() === ''
-                      ? 'Enter Recipient Address'
-                      : !isAddress(recipient.trim())
-                        ? 'Invalid Address'
-                        : Number(amount) <= 0
-                          ? 'Enter Amount'
-                          : balances[selectedCurrency.address] <
-                              parseUnits(amount, selectedCurrency.decimals)
-                            ? 'Insufficient Balance'
-                            : 'Confirm'
-                }
+                text={(() => {
+                  if (!selectedCurrency) {
+                    return 'Select Token'
+                  }
+
+                  const trimmedRecipient = recipient.trim()
+                  if (trimmedRecipient === '') {
+                    return 'Enter Recipient Address'
+                  }
+
+                  if (!isAddress(trimmedRecipient)) {
+                    return 'Invalid Address'
+                  }
+
+                  if (Number(amount) <= 0) {
+                    return 'Enter Amount'
+                  }
+
+                  const amountIn = parseUnits(amount, selectedCurrency.decimals)
+                  const balance =
+                    balances[selectedCurrency.address] +
+                    (remoteChainBalances?.[selectedCurrency.address]?.total ??
+                      0n)
+                  if (balance < amountIn) {
+                    return 'Insufficient Balance'
+                  }
+
+                  return amountIn > balances[selectedCurrency.address]
+                    ? 'Bridge & Transfer'
+                    : 'Transfer'
+                })()}
                 onClick={async () => {
                   if (selectedCurrency) {
                     await onTransfer(
