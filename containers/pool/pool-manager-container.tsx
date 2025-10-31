@@ -44,7 +44,8 @@ export const PoolManagerContainer = ({
   )
   const { data: walletClient } = useWalletClient()
   const { selectedChain } = useChainContext()
-  const { balances, prices, getAllowance } = useCurrencyContext()
+  const { balances, remoteChainBalances, prices, getAllowance } =
+    useCurrencyContext()
   const {
     currency0Amount,
     setCurrency0Amount,
@@ -464,13 +465,20 @@ export const PoolManagerContainer = ({
             <AddLiquidityForm
               chain={selectedChain}
               pool={pool}
+              remoteChainBalances={remoteChainBalances}
               prices={prices}
               currency0Amount={currency0Amount}
               setCurrency0Amount={setCurrency0Amount}
-              availableCurrency0Balance={balances[pool.currencyA.address]}
+              availableCurrency0Balance={
+                balances[pool.currencyA.address] +
+                (remoteChainBalances?.[pool.currencyA.address]?.total ?? 0n)
+              }
               currency1Amount={currency1Amount}
               setCurrency1Amount={setCurrency1Amount}
-              availableCurrency1Balance={balances[pool.currencyB.address]}
+              availableCurrency1Balance={
+                balances[pool.currencyB.address] +
+                (remoteChainBalances?.[pool.currencyB.address]?.total ?? 0n)
+              }
               disableSwap={disableSwap}
               setDisableSwap={setDisableSwap}
               disableDisableSwap={isNoLiquidity}
@@ -492,9 +500,13 @@ export const PoolManagerContainer = ({
                   (Number(currency0Amount) === 0 &&
                     Number(currency1Amount) === 0) ||
                   parseUnits(currency0Amount, pool.currencyA.decimals) >
-                    balances[pool.currencyA.address] ||
+                    balances[pool.currencyA.address] +
+                      (remoteChainBalances?.[pool.currencyA.address]?.total ??
+                        0n) ||
                   parseUnits(currency1Amount, pool.currencyB.decimals) >
-                    balances[pool.currencyB.address] ||
+                    balances[pool.currencyB.address] +
+                      (remoteChainBalances?.[pool.currencyB.address]?.total ??
+                        0n) ||
                   (disableSwap &&
                     (Number(currency0Amount) === 0 ||
                       Number(currency1Amount) === 0)),
@@ -534,8 +546,12 @@ export const PoolManagerContainer = ({
                     pool.currencyB.decimals,
                   )
 
-                  const balanceA = balances[pool.currencyA.address] ?? 0n
-                  const balanceB = balances[pool.currencyB.address] ?? 0n
+                  const balanceA =
+                    balances[pool.currencyA.address] +
+                    (remoteChainBalances?.[pool.currencyA.address]?.total ?? 0n)
+                  const balanceB =
+                    balances[pool.currencyB.address] +
+                    (remoteChainBalances?.[pool.currencyB.address]?.total ?? 0n)
 
                   if (amount0Units > balanceA) {
                     return `Insufficient ${pool.currencyA.symbol} balance`
@@ -559,7 +575,10 @@ export const PoolManagerContainer = ({
                     return 'Enter amount'
                   }
 
-                  return 'Add Liquidity'
+                  return amount0Units > balances[pool.currencyA.address] ||
+                    amount1Units > balances[pool.currencyB.address]
+                    ? 'Bridge & Add Liquidity'
+                    : 'Add Liquidity'
                 })(),
               }}
             />
