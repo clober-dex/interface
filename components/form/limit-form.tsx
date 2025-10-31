@@ -18,6 +18,8 @@ import {
 } from '../../utils/prices'
 import CloseSvg from '../svg/close-svg'
 import { Chain } from '../../model/chain'
+import { RemoteChainBalances } from '../../model/remote-chain-balances'
+import BalanceSourcesModal from '../modal/balance-sources-modal'
 
 export type LimitFormProps = {
   chain: Chain
@@ -25,6 +27,7 @@ export type LimitFormProps = {
   currencies: Currency[]
   setCurrencies: (currencies: Currency[]) => void
   balances: Balances
+  remoteChainBalances: RemoteChainBalances
   prices: Prices
   priceInput: string
   setPriceInput: (priceInput: string) => void
@@ -68,6 +71,7 @@ export const LimitForm = ({
   currencies,
   setCurrencies,
   balances,
+  remoteChainBalances,
   prices,
   priceInput,
   setPriceInput,
@@ -100,6 +104,8 @@ export const LimitForm = ({
       ? minimumDecimalPlaces
       : getPriceDecimals(Number(priceInput))
 
+  const [showUnifiedBalanceModal, setShowUnifiedBalanceModal] =
+    useState<boolean>(false)
   const [debouncedPriceInput, setDebouncedPriceInput] = useState('')
   const minimumPrice = toSignificantString(
     new BigNumber(0.1).pow(minimumDecimalPlaces).toString(),
@@ -153,7 +159,15 @@ export const LimitForm = ({
     setPriceInput,
   ])
 
-  return showInputCurrencySelect ? (
+  return showUnifiedBalanceModal ? (
+    <BalanceSourcesModal
+      balances={balances}
+      remoteChainBalances={remoteChainBalances}
+      currency={inputCurrency!}
+      prices={prices}
+      onClose={() => setShowUnifiedBalanceModal(false)}
+    />
+  ) : showInputCurrencySelect ? (
     <CurrencySelect
       chain={chain}
       explorerUrl={explorerUrl}
@@ -166,6 +180,7 @@ export const LimitForm = ({
           : currencies
       }
       balances={balances}
+      remoteChainBalances={remoteChainBalances}
       prices={prices}
       onBack={() =>
         setShowInputCurrencySelect
@@ -198,6 +213,7 @@ export const LimitForm = ({
           : currencies
       }
       balances={balances}
+      remoteChainBalances={remoteChainBalances}
       prices={prices}
       onBack={() =>
         setShowOutputCurrencySelect
@@ -449,6 +465,12 @@ export const LimitForm = ({
                   onCurrencyClick={
                     setShowInputCurrencySelect
                       ? () => setShowInputCurrencySelect(true)
+                      : undefined
+                  }
+                  setShowUnifiedBalanceModal={
+                    inputCurrency &&
+                    remoteChainBalances?.[inputCurrency.address].total
+                      ? setShowUnifiedBalanceModal
                       : undefined
                   }
                   price={

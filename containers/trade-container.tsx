@@ -335,7 +335,9 @@ export const TradeContainer = () => {
               [selectedMarket.base.address, selectedMarket.quote.address],
             )) ||
           amountIn === 0n ||
-          amountIn > balances[inputCurrency.address]),
+          amountIn >
+            balances[inputCurrency.address] +
+              (remoteChainBalances[inputCurrency.address]?.total ?? 0n)),
       onClick: async () => {
         if (!walletClient && openConnectModal) {
           openConnectModal()
@@ -369,7 +371,9 @@ export const TradeContainer = () => {
           return 'Enter amount'
         }
 
-        const balance = balances[inputCurrency.address] ?? 0n
+        const balance =
+          balances[inputCurrency.address] +
+          (remoteChainBalances[inputCurrency.address]?.total ?? 0n)
         if (amountIn > balance) {
           return 'Insufficient balance'
         }
@@ -382,10 +386,13 @@ export const TradeContainer = () => {
           return `Max Approve ${inputCurrency.symbol}`
         }
 
-        return 'Place Order'
+        return amountIn > balances[inputCurrency.address]
+          ? 'Bridge & Place Order'
+          : 'Place Order'
       })(),
     }),
     [
+      remoteChainBalances,
       getAllowance,
       selectedChain.id,
       amountIn,
@@ -409,6 +416,7 @@ export const TradeContainer = () => {
         explorerUrl: selectedChain.blockExplorers?.default?.url ?? '',
         prices,
         balances,
+        remoteChainBalances,
         currencies,
         setCurrencies,
         priceInput,
@@ -423,7 +431,8 @@ export const TradeContainer = () => {
         inputCurrencyAmount,
         setInputCurrencyAmount,
         availableInputCurrencyBalance: inputCurrency
-          ? balances[inputCurrency.address]
+          ? balances[inputCurrency.address] +
+            (remoteChainBalances[inputCurrency.address]?.total ?? 0n)
           : 0n,
         showOutputCurrencySelect,
         setShowOutputCurrencySelect,
@@ -454,6 +463,7 @@ export const TradeContainer = () => {
         actionButtonProps: limitActionButtonProps,
       }) as LimitFormProps,
     [
+      remoteChainBalances,
       availableDecimalPlacesGroups,
       balances,
       currencies,
