@@ -29,8 +29,14 @@ const WrongNetwork = ({
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
-  const { currencies, setCurrencies, balances, prices, transfer } =
-    useCurrencyContext()
+  const {
+    currencies,
+    setCurrencies,
+    balances,
+    remoteChainBalances,
+    prices,
+    transfer,
+  } = useCurrencyContext()
   const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
   const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
@@ -93,6 +99,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           currencies={currencies}
           setCurrencies={setCurrencies}
           balances={balances}
+          remoteChainBalances={remoteChainBalances}
           prices={prices}
           gasPrice={gasPrice}
           walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import { Transaction } from '../../contexts/transaction-context'
 import UserTransactionCard from '../card/user-transaction-card'
@@ -16,6 +16,8 @@ import { Prices } from '../../model/prices'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { formatTinyNumber, formatWithCommas } from '../../utils/bignumber'
 import { formatDollarValue, toUnitString } from '../../utils/bigint'
+import { RemoteChainBalances } from '../../model/remote-chain-balances'
+import CrossChainBalances from '../cross-chain-balances'
 
 import Modal from './modal'
 import { TokenTransferModal } from './token-transfer-modal'
@@ -43,6 +45,7 @@ export const UserWalletModal = ({
   currencies,
   setCurrencies,
   balances,
+  remoteChainBalances,
   prices,
   gasPrice,
   ens,
@@ -57,6 +60,7 @@ export const UserWalletModal = ({
   currencies: Currency[]
   setCurrencies: (currencies: Currency[]) => void
   balances: Balances
+  remoteChainBalances?: RemoteChainBalances
   prices: Prices
   gasPrice: bigint | undefined
   ens: string | null
@@ -330,7 +334,9 @@ export const UserWalletModal = ({
                       (currency) =>
                         Number(
                           toUnitString(
-                            balances[currency.address],
+                            balances[currency.address] +
+                              (remoteChainBalances?.[currency.address]?.total ??
+                                0n),
                             currency.decimals,
                           ),
                         ) *
@@ -341,57 +347,84 @@ export const UserWalletModal = ({
                       const priceA = prices[a.address]
                       const priceB = prices[b.address]
                       return (
-                        Number(toUnitString(balances[b.address], b.decimals)) *
+                        Number(
+                          toUnitString(
+                            balances[b.address] +
+                              (remoteChainBalances?.[b.address]?.total ?? 0n),
+                            b.decimals,
+                          ),
+                        ) *
                           priceB -
-                        Number(toUnitString(balances[a.address], a.decimals)) *
+                        Number(
+                          toUnitString(
+                            balances[a.address] +
+                              (remoteChainBalances?.[a.address]?.total ?? 0n),
+                            a.decimals,
+                          ),
+                        ) *
                           priceA
                       )
                     })
                     .map((currency) => (
                       <div
-                        className="self-stretch px-4 py-3 bg-gray-800 rounded-xl flex justify-start items-center"
+                        className={`self-stretch ${remoteChainBalances?.[currency.address].total ? 'pt-3' : 'py-3'} bg-gray-800 rounded-xl flex flex-col gap-2 justify-start items-center`}
                         key={currency.address}
                       >
-                        <div className="flex justify-start items-center gap-2.5">
-                          <CurrencyIcon
-                            chain={chain}
-                            currency={currency}
-                            className="w-7 h-7"
-                          />
-                          <div className="text-nowrap flex-1 flex flex-col justify-center items-start gap-0.5">
-                            <div className="w-full overflow-x-scroll text-start justify-start text-white text-sm font-medium">
-                              {currency.symbol}
-                            </div>
-                            <div className="text-center justify-start text-white text-xs font-medium flex flex-row gap-1">
-                              {formatWithCommas(
-                                toUnitString(
-                                  balances[currency.address],
-                                  currency.decimals,
-                                  prices[currency.address],
-                                ),
-                              )}
-                              <span className="text-[#a9b0bc]">
-                                (~
-                                {formatDollarValue(
-                                  balances[currency.address],
-                                  currency.decimals,
-                                  prices[currency.address],
+                        <div className="flex flex-row w-full items-center px-4">
+                          <div className="flex justify-start items-center gap-2.5">
+                            <CurrencyIcon
+                              chain={chain}
+                              currency={currency}
+                              className="w-7 h-7"
+                            />
+                            <div className="text-nowrap flex-1 flex flex-col justify-center items-start gap-0.5">
+                              <div className="w-full overflow-x-scroll text-start justify-start text-white text-sm font-medium">
+                                {currency.symbol}
+                              </div>
+                              <div className="text-center justify-start text-white text-xs font-medium flex flex-row gap-1">
+                                {formatWithCommas(
+                                  toUnitString(
+                                    balances[currency.address] +
+                                      (remoteChainBalances?.[currency.address]
+                                        ?.total ?? 0n),
+                                    currency.decimals,
+                                    prices[currency.address],
+                                  ),
                                 )}
-                                )
-                              </span>
+                                <span className="text-[#a9b0bc]">
+                                  (~
+                                  {formatDollarValue(
+                                    balances[currency.address] +
+                                      (remoteChainBalances?.[currency.address]
+                                        ?.total ?? 0n),
+                                    currency.decimals,
+                                    prices[currency.address],
+                                  )}
+                                  )
+                                </span>
+                              </div>
                             </div>
                           </div>
+
+                          <button
+                            onClick={() => {
+                              setSelectedCurrency(currency)
+                              setShowTokenTransferModal(true)
+                            }}
+                            className="ml-auto px-3 py-2 bg-blue-400/20 rounded-lg inline-flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
+                          >
+                            Send
+                          </button>
                         </div>
 
-                        <button
-                          onClick={() => {
-                            setSelectedCurrency(currency)
-                            setShowTokenTransferModal(true)
-                          }}
-                          className="ml-auto px-3 py-2 bg-blue-400/20 rounded-lg inline-flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
-                        >
-                          Send
-                        </button>
+                        {remoteChainBalances?.[currency.address].total && (
+                          <CrossChainBalances
+                            remoteChainBalances={remoteChainBalances}
+                            currency={currency}
+                            balance={balances[currency.address]}
+                            price={prices[currency.address]}
+                          />
+                        )}
                       </div>
                     ))}
                 </div>

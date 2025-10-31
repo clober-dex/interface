@@ -21,7 +21,7 @@ const CrossChainBalances = ({
   price?: number
 }) => {
   return (
-    <div className="w-full px-3 sm:p-4 bg-gray-800 rounded-xl flex-col justify-center items-start gap-2 flex">
+    <div className="w-full px-3 sm:px-4 py-1 sm:py-2 bg-gray-800 rounded-xl flex-col justify-center items-start gap-2 flex">
       {Object.entries(
         Object.fromEntries(
           Object.entries(remoteChainBalances).map(([addr, data]) => [
