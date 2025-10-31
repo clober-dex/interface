@@ -431,9 +431,6 @@ export const TradeContainer = () => {
         setOutputCurrency,
         outputCurrencyAmount,
         setOutputCurrencyAmount,
-        availableOutputCurrencyBalance: outputCurrency
-          ? balances[outputCurrency.address]
-          : 0n,
         swapInputCurrencyAndOutputCurrency: () => {
           setIsBid((prevState) => !prevState)
           setDepthClickedIndex(undefined)

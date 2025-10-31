@@ -48,7 +48,6 @@ export type LimitFormProps = {
   setOutputCurrency: (outputCurrency: Currency | undefined) => void
   outputCurrencyAmount: string
   setOutputCurrencyAmount: (outputCurrencyAmount: string) => void
-  availableOutputCurrencyBalance: bigint
   swapInputCurrencyAndOutputCurrency: () => void
   minimumDecimalPlaces: number | undefined
   onChainPrice: number
@@ -88,7 +87,6 @@ export const LimitForm = ({
   setOutputCurrency,
   outputCurrencyAmount,
   setOutputCurrencyAmount,
-  availableOutputCurrencyBalance,
   swapInputCurrencyAndOutputCurrency,
   minimumDecimalPlaces,
   onChainPrice,
@@ -468,7 +466,6 @@ export const LimitForm = ({
                   currency={outputCurrency}
                   value={outputCurrencyAmount}
                   onValueChange={setOutputCurrencyAmount}
-                  availableAmount={availableOutputCurrencyBalance}
                   onCurrencyClick={
                     setShowOutputCurrencySelect
                       ? () => setShowOutputCurrencySelect(true)

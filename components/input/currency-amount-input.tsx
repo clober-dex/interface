@@ -26,7 +26,7 @@ const CurrencyAmountInput = ({
   currency?: Currency
   value: string
   onValueChange: (value: string) => void
-  availableAmount: bigint
+  availableAmount?: bigint
   price?: number
   onCurrencyClick?: () => void
   setShowUnifiedBalanceModal?: (show: boolean) => void
@@ -110,7 +110,7 @@ const CurrencyAmountInput = ({
 
       <div className="flex flex-row items-center gap-2.5 w-full">
         <div className="h-full flex items-center">
-          {!props.disabled && currency ? (
+          {!props.disabled && availableAmount !== undefined && currency ? (
             <div className="flex items-center text-xs sm:text-sm gap-1 sm:gap-2">
               <button
                 className={`text-[#7b8394] text-[13px] font-medium ${

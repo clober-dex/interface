@@ -69,7 +69,6 @@ export const Selected: Story = {
     setOutputCurrency: () => {},
     outputCurrencyAmount: '0.1',
     setOutputCurrencyAmount: () => {},
-    availableOutputCurrencyBalance: 100000000000000000n,
     swapInputCurrencyAndOutputCurrency: () => {},
     setMarketRateAction: {
       isLoading: false,
