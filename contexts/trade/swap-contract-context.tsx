@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import { getAddress, isAddressEqual, zeroAddress } from 'viem'
 import { useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import { Transaction, Transaction as SdkTransaction } from '@clober/v2-sdk'
@@ -13,10 +13,11 @@ import { maxApprove } from '../../utils/approve20'
 import { Aggregator } from '../../model/aggregator'
 import { useChainContext } from '../chain-context'
 import { currentTimestampInSeconds } from '../../utils/date'
-import { toPreciseString, formatWithCommas } from '../../utils/bignumber'
+import { formatWithCommas, toPreciseString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { executors } from '../../chain-configs/executors'
 import Modal from '../../components/modal/modal'
+import { useNexus } from '../nexus-context'
 
 type SwapContractContext = {
   swap: (
@@ -38,6 +39,7 @@ export const SwapContractProvider = ({
 }: React.PropsWithChildren<{}>) => {
   const [showRevertModal, setShowRevertModal] = React.useState(false)
   const queryClient = useQueryClient()
+  const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
@@ -49,7 +51,7 @@ export const SwapContractProvider = ({
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { getAllowance, prices } = useCurrencyContext()
+  const { getAllowance, prices, balances } = useCurrencyContext()
 
   const swap = useCallback(
     async (
@@ -159,35 +161,43 @@ export const SwapContractProvider = ({
           }
           setConfirmation(confirmation)
 
-          await sendTransaction(
-            selectedChain,
-            walletClient,
-            transaction as SdkTransaction,
-            disconnectAsync,
-            (hash) => {
-              setConfirmation(undefined)
-              queuePendingTransaction({
-                ...confirmation,
-                txHash: hash,
-                type:
-                  aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-                timestamp: currentTimestampInSeconds(),
-              })
-            },
-            (receipt) => {
-              updatePendingTransaction({
-                ...confirmation,
-                txHash: receipt.transactionHash,
-                type:
-                  aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-                timestamp: currentTimestampInSeconds(),
-                blockNumber: Number(receipt.blockNumber),
-                success: receipt.status === 'success',
-              })
-            },
-            gasPrice,
-            selectedExecutorName,
-          )
+          if (nexusSDK && amountIn > balances[inputCurrency.address]) {
+            // use bridge if insufficient balance
+          } else {
+            await sendTransaction(
+              selectedChain,
+              walletClient,
+              transaction as SdkTransaction,
+              disconnectAsync,
+              (hash) => {
+                setConfirmation(undefined)
+                queuePendingTransaction({
+                  ...confirmation,
+                  txHash: hash,
+                  type:
+                    aggregator.name === CHAIN_CONFIG.DEX_NAME
+                      ? 'market'
+                      : 'swap',
+                  timestamp: currentTimestampInSeconds(),
+                })
+              },
+              (receipt) => {
+                updatePendingTransaction({
+                  ...confirmation,
+                  txHash: receipt.transactionHash,
+                  type:
+                    aggregator.name === CHAIN_CONFIG.DEX_NAME
+                      ? 'market'
+                      : 'swap',
+                  timestamp: currentTimestampInSeconds(),
+                  blockNumber: Number(receipt.blockNumber),
+                  success: receipt.status === 'success',
+                })
+              },
+              gasPrice,
+              selectedExecutorName,
+            )
+          }
         }
       } catch (e) {
         console.error(e)
@@ -203,6 +213,8 @@ export const SwapContractProvider = ({
       }
     },
     [
+      balances,
+      nexusSDK,
       gasPrice,
       selectedExecutorName,
       getAllowance,
