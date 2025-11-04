@@ -10,7 +10,8 @@ import {
   bitgetWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 
-import { socialAccountWallet } from '../utils/web3auth'
+import { socialAccountWallet } from '../utils/custom-wallets/web3auth'
+import { hahaWallet } from '../utils/custom-wallets/haha-wallet'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
@@ -137,8 +138,9 @@ export const getClientConfig = () => {
                   bitgetWallet,
                   coinbaseWallet,
                   walletConnectWallet,
+                  hahaWallet,
                 ]
-              : [bitgetWallet, coinbaseWallet, walletConnectWallet],
+              : [bitgetWallet, coinbaseWallet, walletConnectWallet, hahaWallet],
           },
         ],
         {

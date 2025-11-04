@@ -3,7 +3,7 @@ import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider'
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from '@web3auth/base'
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector'
 
-import { CHAIN_CONFIG } from '../../chain-configs'
+import { CHAIN_CONFIG } from '../../../chain-configs'
 
 export let web3AuthInstance: Web3Auth | null = null
 
