@@ -11,6 +11,7 @@ type PageButton = {
   label: string
   icon: React.JSX.Element
   isHiddenMenu: boolean
+  externalLink?: string
 }
 
 export const PAGE_BUTTONS: PageButton[] = [
@@ -33,10 +34,11 @@ export const PAGE_BUTTONS: PageButton[] = [
     isHiddenMenu: false,
   },
   {
-    path: '/futures',
-    label: 'Futures',
+    path: '/perp',
+    label: 'Perp',
     icon: <LimitPageSvg className="w-6 h-6" />,
-    isHiddenMenu: true,
+    isHiddenMenu: false,
+    externalLink: 'https://perp.clober.io',
   },
   {
     path: '/leaderboard',
