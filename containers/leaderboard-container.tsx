@@ -35,7 +35,6 @@ const BONUS_ADDRESSES = [
   '0x5ee7d599a01874c98b85747736dc545d3159faab',
   '0xbE6737f7fDd835aC2BD545e1936b81e0b9CBAB35',
 ]
-const BONUS_VOLUME_POINT = 1000
 
 type HeatmapProps = {
   userDailyVolumes: UserVolumeSnapshot[]
@@ -335,14 +334,10 @@ export const LeaderboardContainer = () => {
       if (!userAddress) {
         return 0
       }
-      const nativeVolume = await getUserNativeVolume({
+      return getUserNativeVolume({
         chainId: selectedChain.id,
         userAddress,
       })
-      const hasBonus = BONUS_ADDRESSES.some((a) =>
-        isAddressEqual(getAddress(a), getAddress(userAddress)),
-      )
-      return hasBonus ? nativeVolume + BONUS_VOLUME_POINT : nativeVolume
     },
     initialData: 0,
   })
@@ -427,7 +422,7 @@ export const LeaderboardContainer = () => {
           return {
             ...user,
             nativeVolume: hasBonus
-              ? user.nativeVolume + BONUS_VOLUME_POINT
+              ? user.nativeVolume + 1000
               : user.nativeVolume,
           }
         })
