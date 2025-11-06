@@ -13,6 +13,7 @@ import { useAccount, WagmiProvider } from 'wagmi'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
+import { isAddressEqual } from 'viem'
 
 import HeaderContainer from '../containers/header-container'
 import { ChainProvider } from '../contexts/chain-context'
@@ -49,18 +50,30 @@ const CacheProvider = ({ children }: React.PropsWithChildren) => {
 
 const WalletInfoWatcher = () => {
   const { address, isConnected, connector } = useAccount()
-  const mounted = useRef(false)
   const inProgress = useRef(false)
+  const lastAddress = useRef<string | null>(null)
+  const lastConnector = useRef<string | null>(null)
 
   useEffect(() => {
     if (!isConnected || !address || !connector?.name) {
       return
     }
-    if (mounted.current || inProgress.current) {
+
+    if (
+      lastAddress.current &&
+      lastConnector.current &&
+      isAddressEqual(address, lastAddress.current as `0x${string}`) &&
+      connector.name === lastConnector.current
+    ) {
       return
     }
 
-    mounted.current = true
+    lastAddress.current = address
+    lastConnector.current = connector.name
+
+    if (inProgress.current) {
+      return
+    }
     inProgress.current = true
     ;(async () => {
       try {
