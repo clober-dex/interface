@@ -9,7 +9,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import type { AppProps } from 'next/app'
-import { useAccount, useConnectorClient, WagmiProvider } from 'wagmi'
+import { useAccount, WagmiProvider } from 'wagmi'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
@@ -49,26 +49,32 @@ const CacheProvider = ({ children }: React.PropsWithChildren) => {
 
 const WalletInfoWatcher = () => {
   const { address, isConnected, connector } = useAccount()
-  const { data: client } = useConnectorClient()
+  const mounted = useRef(false)
+  const inProgress = useRef(false)
 
   useEffect(() => {
     if (!isConnected || !address || !connector?.name) {
       return
     }
-    const action = async () => {
+    if (mounted.current || inProgress.current) {
+      return
+    }
+
+    mounted.current = true
+    inProgress.current = true
+    ;(async () => {
       try {
         const wallets = await fetchWalletConnectors(address)
-
         if (!wallets.includes(connector.name)) {
           await postWalletConnector(address, connector.name)
         }
       } catch (err) {
         console.error('❌ error syncing wallet info:', err)
+      } finally {
+        inProgress.current = false
       }
-    }
-
-    action()
-  }, [isConnected, address, connector, client])
+    })()
+  }, [isConnected, address, connector?.name])
 
   return null
 }
