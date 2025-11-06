@@ -9,7 +9,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import type { AppProps } from 'next/app'
-import { WagmiProvider } from 'wagmi'
+import { useAccount, useConnectorClient, WagmiProvider } from 'wagmi'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
@@ -35,6 +35,7 @@ import { FuturesContractProvider } from '../contexts/futures/futures-contract-co
 import { CHAIN_CONFIG, getClientConfig } from '../chain-configs'
 import Sidebar from '../components/sidebar'
 import { BlockNumberWidget } from '../components/block-number-widget'
+import { fetchWalletConnectors, postWalletConnector } from '../apis/wallet'
 
 const CacheProvider = ({ children }: React.PropsWithChildren) => {
   const queryClient = useQueryClient()
@@ -44,6 +45,32 @@ const CacheProvider = ({ children }: React.PropsWithChildren) => {
   }, [queryClient])
 
   return <>{children}</>
+}
+
+const WalletInfoWatcher = () => {
+  const { address, isConnected, connector } = useAccount()
+  const { data: client } = useConnectorClient()
+
+  useEffect(() => {
+    if (!isConnected || !address || !connector?.name) {
+      return
+    }
+    const action = async () => {
+      try {
+        const wallets = await fetchWalletConnectors(address)
+
+        if (!wallets.includes(connector.name)) {
+          await postWalletConnector(address, connector.name)
+        }
+      } catch (err) {
+        console.error('❌ error syncing wallet info:', err)
+      }
+    }
+
+    action()
+  }, [isConnected, address, connector, client])
+
+  return null
 }
 
 const queryClient = new QueryClient()
@@ -71,6 +98,7 @@ const WalletProvider = ({ children }: React.PropsWithChildren) => {
           modalSize="compact"
           theme={darkTheme()}
         >
+          <WalletInfoWatcher />
           <CacheProvider>{children}</CacheProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

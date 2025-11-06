@@ -20,6 +20,7 @@
     "@tamagui/config": "^1.112.22",
     "@tamagui/next-plugin": "^1.112.22",
     "@tanstack/react-query": "^5.62.8",
+    "@vercel/kv": "^1.0.1",
     "@web3auth/ethereum-provider": "^9.7.0",
     "@web3auth/modal": "^9.0.0",
     "@web3auth/web3auth-wagmi-connector": "^7.0.0",
