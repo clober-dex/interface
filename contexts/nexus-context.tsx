@@ -1,5 +1,4 @@
 'use client'
-
 import React, {
   createContext,
   useCallback,
@@ -8,7 +7,7 @@ import React, {
   useState,
 } from 'react'
 import { useAccount } from 'wagmi'
-import type {
+import {
   EthereumProvider,
   NexusSDK,
   OnAllowanceHookData,
@@ -44,11 +43,8 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
           throw new Error('No EIP-1193 provider available')
         }
 
-        const mod = await import('@avail-project/nexus-core')
-        const { NexusSDK } = mod
         const sdk = new NexusSDK({
           network: CHAIN_CONFIG.CHAIN.testnet ? 'testnet' : 'mainnet',
-          debug: true,
         })
 
         await sdk.initialize(provider)
