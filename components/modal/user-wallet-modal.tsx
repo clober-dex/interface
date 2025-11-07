@@ -18,6 +18,8 @@ import { formatTinyNumber, formatWithCommas } from '../../utils/bignumber'
 import { formatDollarValue, toUnitString } from '../../utils/bigint'
 import { RemoteChainBalances } from '../../model/remote-chain-balances'
 import CrossChainBalances from '../cross-chain-balances'
+import { CHAIN_CONFIG } from '../../chain-configs'
+import { Toggle } from '../toggle'
 
 import Modal from './modal'
 import { TokenTransferModal } from './token-transfer-modal'
@@ -54,6 +56,8 @@ export const UserWalletModal = ({
   disconnectAsync,
   onClose,
   onTransfer,
+  useRemoteChainBalances,
+  setUseRemoteChainBalances,
 }: {
   chain: Chain
   userAddress: `0x${string}`
@@ -62,6 +66,8 @@ export const UserWalletModal = ({
   balances: Balances
   remoteChainBalances?: RemoteChainBalances
   prices: Prices
+  useRemoteChainBalances: boolean
+  setUseRemoteChainBalances: (value: boolean) => void
   gasPrice: bigint | undefined
   ens: string | null
   walletIconUrl: string | null
@@ -313,8 +319,33 @@ export const UserWalletModal = ({
         </div>
 
         {tab === 'tokens' && (
-          <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-medium mb-7 mt-[30px]">
-            ${formatTinyNumber(portfolioUSD)}
+          <div className="flex flex-col w-full">
+            {CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES && (
+              <div className="self-stretch px-4 py-3.5 bg-[#24272e] rounded-xl inline-flex justify-start items-center mt-4">
+                <div className="flex-1 flex justify-start items-center gap-2">
+                  <div className="flex-1 inline-flex flex-col justify-center items-start gap-0.5">
+                    <div className="justify-start text-white text-sm font-semibold">
+                      Use unified balance
+                    </div>
+                    <div className="justify-start text-[#8d94a1] text-[13px] font-medium">
+                      You can use balance across every chain
+                    </div>
+                  </div>
+
+                  <Toggle
+                    disabled={!CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES}
+                    defaultChecked={useRemoteChainBalances}
+                    onChange={() => {
+                      setUseRemoteChainBalances(!useRemoteChainBalances)
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-medium mb-7 mt-[30px]">
+              ${formatTinyNumber(portfolioUSD)}
+            </div>
           </div>
         )}
 
