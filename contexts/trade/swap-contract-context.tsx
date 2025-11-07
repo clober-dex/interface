@@ -18,6 +18,7 @@ import { CHAIN_CONFIG } from '../../chain-configs'
 import { executors } from '../../chain-configs/executors'
 import Modal from '../../components/modal/modal'
 import { useNexus } from '../nexus-context'
+import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
 
 type SwapContractContext = {
   swap: (
@@ -41,7 +42,6 @@ export const SwapContractProvider = ({
   const queryClient = useQueryClient()
   const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
-
   const { data: walletClient } = useWalletClient()
   const {
     setConfirmation,
@@ -51,7 +51,9 @@ export const SwapContractProvider = ({
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { getAllowance, prices, balances } = useCurrencyContext()
+  const { getAllowance, prices, balances, remoteChainBalances } =
+    useCurrencyContext()
+  const { bridgeAndExecute } = useBridgeAndExecuteContext()
 
   const swap = useCallback(
     async (
@@ -122,48 +124,76 @@ export const SwapContractProvider = ({
             },
           )
         } else {
-          const confirmation = {
-            title: 'Swap',
-            body: 'Please confirm in your wallet.',
-            chain: selectedChain,
-            fields: [
+          const remoteChainBalance =
+            remoteChainBalances?.[inputCurrency.address].total ?? 0n
+          const balance = balances[inputCurrency.address]
+
+          if (
+            nexusSDK &&
+            remoteChainBalance + balance >= amountIn &&
+            amountIn > balance
+          ) {
+            await bridgeAndExecute(
               {
-                currency: inputCurrency,
-                label: inputCurrency.symbol,
-                direction: 'in',
-                primaryText: toPreciseString(
-                  toUnitString(amountIn, inputCurrency.decimals),
-                  prices[inputCurrency.address],
-                  formatWithCommas,
-                ),
-                secondaryText: formatDollarValue(
-                  amountIn,
-                  inputCurrency.decimals,
-                  prices[inputCurrency.address],
-                ),
+                token: inputCurrency.symbol,
+                amount: amountIn,
+                toChainId: CHAIN_CONFIG.CHAIN.id,
+                sourceChains: remoteChainBalances?.[
+                  inputCurrency.address
+                ].breakdown.map((b) => b.chain.id),
+                execute: transaction,
+                waitForReceipt: false,
               },
               {
                 currency: outputCurrency,
-                label: outputCurrency.symbol,
                 direction: 'out',
-                primaryText: toPreciseString(
-                  toUnitString(expectedAmountOut, outputCurrency.decimals),
-                  prices[outputCurrency.address],
-                  formatWithCommas,
-                ),
-                secondaryText: formatDollarValue(
+                amount: toUnitString(
                   expectedAmountOut,
                   outputCurrency.decimals,
-                  prices[outputCurrency.address],
                 ),
               },
-            ] as Confirmation['fields'],
-          }
-          setConfirmation(confirmation)
-
-          if (nexusSDK && amountIn > balances[inputCurrency.address]) {
-            // use bridge if insufficient balance
+              'swap',
+            )
           } else {
+            const confirmation = {
+              title: 'Swap',
+              body: 'Please confirm in your wallet.',
+              chain: selectedChain,
+              fields: [
+                {
+                  currency: inputCurrency,
+                  label: inputCurrency.symbol,
+                  direction: 'in',
+                  primaryText: toPreciseString(
+                    toUnitString(amountIn, inputCurrency.decimals),
+                    prices[inputCurrency.address],
+                    formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    amountIn,
+                    inputCurrency.decimals,
+                    prices[inputCurrency.address],
+                  ),
+                },
+                {
+                  currency: outputCurrency,
+                  label: outputCurrency.symbol,
+                  direction: 'out',
+                  primaryText: toPreciseString(
+                    toUnitString(expectedAmountOut, outputCurrency.decimals),
+                    prices[outputCurrency.address],
+                    formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    expectedAmountOut,
+                    outputCurrency.decimals,
+                    prices[outputCurrency.address],
+                  ),
+                },
+              ] as Confirmation['fields'],
+            }
+            setConfirmation(confirmation)
+
             await sendTransaction(
               selectedChain,
               walletClient,
@@ -213,6 +243,8 @@ export const SwapContractProvider = ({
       }
     },
     [
+      remoteChainBalances,
+      bridgeAndExecute,
       balances,
       nexusSDK,
       gasPrice,
