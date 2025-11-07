@@ -210,6 +210,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                   onChange={() => {
                     setUseRemoteChainBalances(!useRemoteChainBalances)
                   }}
+                  checked={useRemoteChainBalances}
                 />
               </div>
             </div>
