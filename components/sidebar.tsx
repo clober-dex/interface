@@ -20,7 +20,11 @@ const Sidebar = ({
           <div key={page.path}>
             <PageButton
               disabled={router.pathname.includes(page.path)}
-              onClick={() => router.push(page.path)}
+              onClick={() =>
+                page.externalLink
+                  ? window.open(page.externalLink, '_blank')
+                  : router.push(page.path)
+              }
               className="relative"
             >
               {page.icon}

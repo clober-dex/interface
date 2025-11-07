@@ -408,24 +408,12 @@ export const LeaderboardContainer = () => {
         chainId: selectedChain.id,
       })
 
-      return topUsers
-        .filter(
-          ({ address }) =>
-            !CHAIN_CONFIG.BLACKLISTED_USERS.some((blacklist) =>
-              isAddressEqual(blacklist, getAddress(address)),
-            ),
-        )
-        .map((user) => {
-          const hasBonus = BONUS_ADDRESSES.some((a) =>
-            isAddressEqual(getAddress(a), getAddress(user.address)),
-          )
-          return {
-            ...user,
-            nativeVolume: hasBonus
-              ? user.nativeVolume + 1000
-              : user.nativeVolume,
-          }
-        })
+      return topUsers.filter(
+        ({ address }) =>
+          !CHAIN_CONFIG.BLACKLISTED_USERS.some((blacklist) =>
+            isAddressEqual(blacklist, getAddress(address)),
+          ),
+      )
     },
     initialData: [],
   })
@@ -512,7 +500,14 @@ export const LeaderboardContainer = () => {
               </div>
               <div className="self-stretch text-center text-white text-base sm:text-xl font-semibold">
                 <CountUp
-                  end={myNativeVolume / 10}
+                  end={
+                    myNativeVolume / 10 +
+                    (BONUS_ADDRESSES.some((addr) =>
+                      isAddressEqual(addr as `0x${string}`, userAddress),
+                    )
+                      ? 1000
+                      : 0)
+                  }
                   formattingFn={countUpFormatter}
                   preserveValue
                   useEasing={false}

@@ -9,10 +9,11 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import type { AppProps } from 'next/app'
-import { WagmiProvider } from 'wagmi'
+import { useAccount, WagmiProvider } from 'wagmi'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
+import { isAddressEqual } from 'viem'
 
 import HeaderContainer from '../containers/header-container'
 import { ChainProvider } from '../contexts/chain-context'
@@ -35,6 +36,7 @@ import { FuturesContractProvider } from '../contexts/futures/futures-contract-co
 import { CHAIN_CONFIG, getClientConfig } from '../chain-configs'
 import Sidebar from '../components/sidebar'
 import { BlockNumberWidget } from '../components/block-number-widget'
+import { fetchWalletConnectors, postWalletConnector } from '../apis/wallet'
 
 const CacheProvider = ({ children }: React.PropsWithChildren) => {
   const queryClient = useQueryClient()
@@ -44,6 +46,50 @@ const CacheProvider = ({ children }: React.PropsWithChildren) => {
   }, [queryClient])
 
   return <>{children}</>
+}
+
+const WalletInfoWatcher = () => {
+  const { address, isConnected, connector } = useAccount()
+  const inProgress = useRef(false)
+  const lastAddress = useRef<string | null>(null)
+  const lastConnector = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!isConnected || !address || !connector?.name) {
+      return
+    }
+
+    if (
+      lastAddress.current &&
+      lastConnector.current &&
+      isAddressEqual(address, lastAddress.current as `0x${string}`) &&
+      connector.name === lastConnector.current
+    ) {
+      return
+    }
+
+    lastAddress.current = address
+    lastConnector.current = connector.name
+
+    if (inProgress.current) {
+      return
+    }
+    inProgress.current = true
+    ;(async () => {
+      try {
+        const wallets = await fetchWalletConnectors(address)
+        if (!wallets.includes(connector.name)) {
+          await postWalletConnector(address, connector.name)
+        }
+      } catch (err) {
+        console.error('❌ error syncing wallet info:', err)
+      } finally {
+        inProgress.current = false
+      }
+    })()
+  }, [isConnected, address, connector?.name])
+
+  return null
 }
 
 const queryClient = new QueryClient()
@@ -74,6 +120,7 @@ const WalletProvider = ({ children }: React.PropsWithChildren) => {
           modalSize="compact"
           theme={darkTheme()}
         >
+          <WalletInfoWatcher />
           <CacheProvider>
             <NexusProvider>{children}</NexusProvider>
           </CacheProvider>
