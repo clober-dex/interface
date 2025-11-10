@@ -51,7 +51,7 @@ export const BridgeAndExecuteProvider = ({
 
       const inputCurrency =
         bridgeAndExecuteSimulationResult.bridgeSimulation?.token!
-      const confirmation = {
+      const bridgeAndExecuteConfirmation = {
         title: `Bridge & ${transactionType.charAt(0).toUpperCase()}${transactionType.slice(1)}`,
         body: 'Please confirm in your wallet.',
         chain: selectedChain,
@@ -102,14 +102,19 @@ export const BridgeAndExecuteProvider = ({
             ),
           },
         ] as Confirmation['fields'],
-        footer: `Bridge Fee: ${bridgeAndExecuteSimulationResult.bridgeSimulation?.intent.fees.total} ${bridgeAndExecuteSimulationResult.bridgeSimulation?.token.symbol}`,
+        footer: `Bridge Fee: ${toPreciseString(
+          bridgeAndExecuteSimulationResult.bridgeSimulation?.intent?.fees
+            ?.total ?? '0',
+          prices[inputCurrency.contractAddress],
+          formatWithCommas,
+        )} ${bridgeAndExecuteSimulationResult.bridgeSimulation?.token.symbol}`,
       }
-      setConfirmation(confirmation)
+      setConfirmation(bridgeAndExecuteConfirmation)
 
       const bridgeAndExecuteResult = await nexusSDK.bridgeAndExecute(params)
 
       queuePendingTransaction({
-        ...confirmation,
+        ...bridgeAndExecuteConfirmation,
         txHash: bridgeAndExecuteResult.executeTransactionHash as `0x${string}`,
         type: transactionType,
         timestamp: currentTimestampInSeconds(),
@@ -120,7 +125,7 @@ export const BridgeAndExecuteProvider = ({
       })
 
       updatePendingTransaction({
-        ...confirmation,
+        ...bridgeAndExecuteConfirmation,
         txHash: receipt.transactionHash,
         type: transactionType,
         timestamp: currentTimestampInSeconds(),
