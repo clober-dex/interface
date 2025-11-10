@@ -277,7 +277,21 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
         return {}
       }
       const unifiedBalances = await nexusSDK.getUnifiedBalances()
-      return parseRemoteChainBalances(balances, unifiedBalances)
+      const remoteChainBalances = parseRemoteChainBalances(
+        balances,
+        unifiedBalances,
+      )
+      await Promise.all(
+        Object.entries(remoteChainBalances).map(async ([address, { key }]) => {
+          const bridgeMaxResult = await nexusSDK.calculateMaxForBridge({
+            chainId: selectedChain.id,
+            token: key,
+          })
+          remoteChainBalances[address as `0x${string}`].total =
+            bridgeMaxResult.amountRaw
+        }),
+      )
+      return remoteChainBalances
     },
     initialData: {},
     refetchInterval: 5 * 1000, // checked
