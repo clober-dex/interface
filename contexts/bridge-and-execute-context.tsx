@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react'
-import { BridgeAndExecuteParams } from '@avail-project/nexus-core'
+import { BridgeAndExecuteParams, NEXUS_EVENTS } from '@avail-project/nexus-core'
 import { parseUnits } from 'viem'
 import { CurrencyFlow } from '@clober/v2-sdk'
 import { usePublicClient } from 'wagmi'
 
 import { Chain } from '../model/chain'
 import { formatWithCommas, toPreciseString } from '../utils/bignumber'
-import { formatDollarValue } from '../utils/bigint'
+import { formatDollarValue, toUnitString } from '../utils/bigint'
 import { Currency } from '../model/currency'
 import { currentTimestampInSeconds } from '../utils/date'
 import { TransactionType } from '../model/transaction-type'
@@ -33,7 +33,7 @@ export const BridgeAndExecuteProvider = ({
   const { selectedChain } = useChainContext()
   const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
     useTransactionContext()
-  const { prices } = useCurrencyContext()
+  const { prices, balances } = useCurrencyContext()
   const { nexusSDK } = useNexus()
 
   const bridgeAndExecute = useCallback(
@@ -51,37 +51,104 @@ export const BridgeAndExecuteProvider = ({
 
       const inputCurrency =
         bridgeAndExecuteSimulationResult.bridgeSimulation?.token!
-      const bridgeAndExecuteConfirmation = {
+      const footer = `Bridge Fee: ${toPreciseString(
+        bridgeAndExecuteSimulationResult.bridgeSimulation?.intent?.fees
+          ?.total ?? '0',
+        prices[inputCurrency.contractAddress],
+        formatWithCommas,
+      )} ${bridgeAndExecuteSimulationResult.bridgeSimulation?.token.symbol}`
+
+      const bridgeInFields: Confirmation['fields'] = (
+        bridgeAndExecuteSimulationResult.bridgeSimulation?.intent?.sources ?? []
+      ).map(({ amount, chainName, chainID, chainLogo }) => ({
+        currency: {
+          ...inputCurrency,
+          address: inputCurrency.contractAddress,
+        },
+        label: inputCurrency.symbol,
+        direction: 'in',
+        chain: {
+          id: chainID,
+          name: chainName,
+          icon: chainLogo,
+        } as Chain,
+        primaryText: toPreciseString(
+          amount,
+          prices[inputCurrency.contractAddress],
+          formatWithCommas,
+        ),
+        secondaryText: formatDollarValue(
+          parseUnits(amount, inputCurrency.decimals),
+          inputCurrency.decimals,
+          prices[inputCurrency.contractAddress],
+        ),
+      }))
+
+      const bridgeConfirmation: Confirmation = {
+        title: `Bridge`,
+        body: 'Please confirm in your wallet.',
+        chain: selectedChain,
+        fields: [
+          ...bridgeInFields,
+          bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
+            ? {
+                currency: outputCurrencyFlow.currency as Currency,
+                label: outputCurrencyFlow.currency.symbol,
+                direction: 'out',
+                chain: selectedChain,
+                primaryText: toPreciseString(
+                  bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
+                    .destination.amount ?? '0',
+                  prices[outputCurrencyFlow.currency.address],
+                  formatWithCommas,
+                ),
+                secondaryText: formatDollarValue(
+                  parseUnits(
+                    bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
+                      .destination.amount ?? '0',
+                    outputCurrencyFlow.currency.decimals,
+                  ),
+                  outputCurrencyFlow.currency.decimals,
+                  prices[outputCurrencyFlow.currency.address],
+                ),
+              }
+            : null,
+        ].filter(
+          (field): field is Exclude<typeof field, null> => field !== null,
+        ) as Confirmation['fields'],
+        footer,
+      }
+
+      const bridgeAndExecuteConfirmation: Confirmation = {
         title: `Bridge & ${transactionType.charAt(0).toUpperCase()}${transactionType.slice(1)}`,
         body: 'Please confirm in your wallet.',
         chain: selectedChain,
         fields: [
-          ...(
-            bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
-              ?.allSources ?? []
-          ).map(({ amount, chainName, chainID, chainLogo }) => ({
-            currency: {
-              ...inputCurrency,
-              address: inputCurrency.contractAddress,
-            },
-            label: inputCurrency.symbol,
-            direction: 'in',
-            chain: {
-              id: chainID,
-              name: chainName,
-              icon: chainLogo,
-            } as Chain,
-            primaryText: toPreciseString(
-              amount,
-              prices[inputCurrency.contractAddress],
-              formatWithCommas,
-            ),
-            secondaryText: formatDollarValue(
-              parseUnits(amount, inputCurrency.decimals),
-              inputCurrency.decimals,
-              prices[inputCurrency.contractAddress],
-            ),
-          })),
+          balances[inputCurrency.contractAddress] > 0n
+            ? {
+                currency: {
+                  ...inputCurrency,
+                  address: inputCurrency.contractAddress,
+                },
+                label: inputCurrency.symbol,
+                direction: 'in',
+                chain: selectedChain,
+                primaryText: toPreciseString(
+                  toUnitString(
+                    balances[inputCurrency.contractAddress],
+                    inputCurrency.decimals,
+                  ),
+                  prices[inputCurrency.contractAddress],
+                  formatWithCommas,
+                ),
+                secondaryText: formatDollarValue(
+                  balances[inputCurrency.contractAddress],
+                  inputCurrency.decimals,
+                  prices[inputCurrency.contractAddress],
+                ),
+              }
+            : null,
+          ...bridgeInFields,
           {
             currency: outputCurrencyFlow.currency as Currency,
             label: outputCurrencyFlow.currency.symbol,
@@ -101,17 +168,41 @@ export const BridgeAndExecuteProvider = ({
               prices[outputCurrencyFlow.currency.address],
             ),
           },
-        ] as Confirmation['fields'],
-        footer: `Bridge Fee: ${toPreciseString(
-          bridgeAndExecuteSimulationResult.bridgeSimulation?.intent?.fees
-            ?.total ?? '0',
-          prices[inputCurrency.contractAddress],
-          formatWithCommas,
-        )} ${bridgeAndExecuteSimulationResult.bridgeSimulation?.token.symbol}`,
+        ].filter(
+          (field): field is Exclude<typeof field, null> => field !== null,
+        ) as Confirmation['fields'],
+        footer,
       }
       setConfirmation(bridgeAndExecuteConfirmation)
 
-      const bridgeAndExecuteResult = await nexusSDK.bridgeAndExecute(params)
+      let hexIntentID: `0x${string}` | undefined = undefined
+      const bridgeAndExecuteResult = await nexusSDK.bridgeAndExecute(params, {
+        onEvent: (event) => {
+          if (event.name === NEXUS_EVENTS.STEP_COMPLETE) {
+            if (event.args.type === 'INTENT_SUBMITTED') {
+              hexIntentID = `0x${BigInt(event.args.data.intentID)
+                .toString(16)
+                .padStart(64, '0')}`
+              queuePendingTransaction({
+                ...bridgeConfirmation,
+                txHash: hexIntentID,
+                type: 'bridge',
+                timestamp: currentTimestampInSeconds(),
+                externalLink: event.args.data.explorerURL,
+              })
+            } else if (event.args.type === 'INTENT_FULFILLED' && hexIntentID) {
+              updatePendingTransaction({
+                ...bridgeAndExecuteConfirmation,
+                txHash: hexIntentID,
+                type: transactionType,
+                timestamp: currentTimestampInSeconds(),
+                blockNumber: 0,
+                success: true,
+              })
+            }
+          }
+        },
+      })
 
       queuePendingTransaction({
         ...bridgeAndExecuteConfirmation,
@@ -134,6 +225,7 @@ export const BridgeAndExecuteProvider = ({
       })
     },
     [
+      balances,
       nexusSDK,
       prices,
       publicClient,
