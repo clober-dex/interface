@@ -3,8 +3,8 @@ import React, { useEffect, useRef } from 'react'
 import NumberInput from '../input/number-input'
 
 const UNLIMITED_SLIPPAGE = 50
-const FIRST_SLIPPAGE = 2.0
-const SECOND_SLIPPAGE = 4.0
+const FIRST_SLIPPAGE = 1.99
+const SECOND_SLIPPAGE = 3.99
 const WARNING_SLIPPAGE_THRESHOLD = 10.0
 
 export const SlippageSelector = ({
@@ -24,6 +24,8 @@ export const SlippageSelector = ({
       Number(slippageInput) !== UNLIMITED_SLIPPAGE
     ) {
       setCustomValue(slippageInput)
+    } else {
+      setCustomValue('')
     }
   }, [slippageInput])
 
