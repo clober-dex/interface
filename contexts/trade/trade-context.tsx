@@ -110,8 +110,14 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   })
   const { selectedExecutorName } = useTransactionContext()
   const { chainId } = useAccount()
-  const { whitelistCurrencies, setCurrencies, prices, balances, getAllowance } =
-    useCurrencyContext()
+  const {
+    whitelistCurrencies,
+    setCurrencies,
+    prices,
+    balances,
+    remoteChainBalances,
+    getAllowance,
+  } = useCurrencyContext()
 
   const [isBid, setIsBid] = useState(true)
   const [tab, _setTab] = useState<'limit' | 'swap'>(() => {
@@ -278,7 +284,10 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
       ) {
         const amountIn = parseUnits(inputCurrencyAmount, inputCurrency.decimals)
         const userBalance = balances[inputCurrency.address] ?? 0n
-        const insufficientFunds = userBalance < amountIn
+        const userRemoteChainBalance =
+          remoteChainBalances[inputCurrency.address]?.total ?? 0n
+        const insufficientFunds =
+          userBalance + userRemoteChainBalance < amountIn
 
         const getExecutorAddress = () =>
           selectedExecutorName
@@ -288,9 +297,11 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
         const allowanceTarget = getExecutorAddress()
         const currentAllowance = getAllowance(allowanceTarget!, inputCurrency)
         const insufficientAllowance = currentAllowance < amountIn
+        const bridgeAndSwap = amountIn > userBalance
 
         const shouldSkipUser = insufficientFunds || insufficientAllowance
         const isDefaultExecutor = selectedExecutorName === null
+        const estimateGas = isDefaultExecutor && !bridgeAndSwap
 
         await fetchQuotesLive(
           aggregators,
@@ -301,7 +312,7 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
           gasPrice,
           prices,
           shouldSkipUser ? undefined : userAddress,
-          isDefaultExecutor,
+          estimateGas,
           setQuotes,
         )
       }
