@@ -92,24 +92,27 @@ export const BridgeAndExecuteProvider = ({
           ...bridgeInFields,
           bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
             ? {
-                currency: outputCurrencyFlow.currency as Currency,
-                label: outputCurrencyFlow.currency.symbol,
+                currency: {
+                  ...inputCurrency,
+                  address: inputCurrency.contractAddress,
+                },
+                label: inputCurrency.symbol,
                 direction: 'out',
                 chain: selectedChain,
                 primaryText: toPreciseString(
                   bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
                     .destination.amount ?? '0',
-                  prices[outputCurrencyFlow.currency.address],
+                  prices[inputCurrency.contractAddress],
                   formatWithCommas,
                 ),
                 secondaryText: formatDollarValue(
                   parseUnits(
                     bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
                       .destination.amount ?? '0',
-                    outputCurrencyFlow.currency.decimals,
+                    inputCurrency.decimals,
                   ),
-                  outputCurrencyFlow.currency.decimals,
-                  prices[outputCurrencyFlow.currency.address],
+                  inputCurrency.decimals,
+                  prices[inputCurrency.contractAddress],
                 ),
               }
             : null,

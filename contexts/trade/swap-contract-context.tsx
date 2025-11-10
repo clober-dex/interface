@@ -123,7 +123,9 @@ export const SwapContractProvider = ({
               await new Promise((resolve) => setTimeout(resolve, 100))
             },
           )
-        } else {
+        }
+        // do swap
+        else {
           const remoteChainBalance =
             remoteChainBalances?.[inputCurrency.address].total ?? 0n
           const balance = balances[inputCurrency.address]
