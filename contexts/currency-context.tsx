@@ -284,7 +284,7 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
       await Promise.all(
         Object.entries(remoteChainBalances).map(async ([address, { key }]) => {
           const bridgeMaxResult = await nexusSDK.calculateMaxForBridge({
-            chainId: selectedChain.id,
+            toChainId: selectedChain.id,
             token: key,
           })
           remoteChainBalances[address as `0x${string}`].total =
