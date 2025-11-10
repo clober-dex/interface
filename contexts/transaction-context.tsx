@@ -25,6 +25,7 @@ export type Confirmation = {
     secondaryText?: string
   }[]
   footer?: string
+  externalLink?: string
 }
 
 export type Transaction = Confirmation & {
