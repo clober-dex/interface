@@ -135,15 +135,7 @@ export const SwapForm = ({
         : rate
   }, [inputCurrency, inputCurrencyAmount, outputCurrencyAmount, quoteCurrency])
 
-  return showUnifiedBalanceModal ? (
-    <BalanceSourcesModal
-      balances={balances}
-      remoteChainBalances={remoteChainBalances}
-      currency={inputCurrency!}
-      prices={prices}
-      onClose={() => setShowUnifiedBalanceModal(false)}
-    />
-  ) : showInputCurrencySelect ? (
+  return showInputCurrencySelect ? (
     <div className="flex flex-col rounded-2xl outline outline-1 outline-offset-[-1px] outline-[#272930] bg-[#16181d] py-5 max-h-full sm:h-[572px] sm:max-h-[572px]">
       <CurrencySelect
         chain={chain}
@@ -219,6 +211,16 @@ export const SwapForm = ({
     </div>
   ) : (
     <div className="flex flex-col gap-2.5 h-full w-full">
+      {showUnifiedBalanceModal && (
+        <BalanceSourcesModal
+          balances={balances}
+          remoteChainBalances={remoteChainBalances}
+          currency={inputCurrency!}
+          prices={prices}
+          onClose={() => setShowUnifiedBalanceModal(false)}
+        />
+      )}
+
       <Toast
         isCopyToast={isCopyToast}
         setIsCopyToast={setIsCopyToast}
