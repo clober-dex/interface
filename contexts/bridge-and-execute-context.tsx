@@ -102,6 +102,7 @@ export const BridgeAndExecuteProvider = ({
             ),
           },
         ] as Confirmation['fields'],
+        footer: `Bridge Fee: ${bridgeAndExecuteSimulationResult.bridgeSimulation?.intent.fees.total} ${bridgeAndExecuteSimulationResult.bridgeSimulation?.token.symbol}`,
       }
       setConfirmation(confirmation)
 
