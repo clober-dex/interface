@@ -16,7 +16,7 @@
     "@headlessui/react": "^1.7.16",
     "@heroicons/react": "^2.0.18",
     "@pythnetwork/pyth-evm-js": "^1.83.0",
-    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@rainbow-me/rainbowkit": "^2.2.9",
     "@tamagui/config": "^1.112.22",
     "@tamagui/next-plugin": "^1.112.22",
     "@tanstack/react-query": "^5.62.8",
