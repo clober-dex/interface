@@ -19,14 +19,9 @@ import { useCurrencyContext } from '../contexts/currency-context'
 import { TransactionSettingModal } from '../components/modal/transaction-setting-modal'
 import { useNexus } from '../contexts/nexus-context'
 import { Toggle } from '../components/toggle'
+import { WrongNetworkButton } from '../components/button/wrong-network-button'
 
 const TX_NOTIFICATION_BUFFER = 5
-
-const WrongNetwork = ({
-  openChainModal,
-}: { openChainModal: () => void } & any) => {
-  return <>{openChainModal && openChainModal()}</>
-}
 
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { data: gasPrice } = useGasPrice()
@@ -149,7 +144,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           <div className="relative flex items-center flex-row gap-1 sm:gap-2">
             {status === 'disconnected' || status === 'connecting' ? (
               <ConnectButton openConnectModal={openConnectModal} />
-            ) : address && connector && chainId ? (
+            ) : address && connector && chainId === selectedChain.id ? (
               <UserButton
                 chain={selectedChain}
                 address={address}
@@ -163,7 +158,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 ens={ens}
               />
             ) : openChainModal ? (
-              <WrongNetwork openChainModal={openChainModal} />
+              <WrongNetworkButton openChainModal={openChainModal} />
             ) : (
               <button
                 disabled={true}
