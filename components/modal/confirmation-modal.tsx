@@ -128,9 +128,7 @@ const ConfirmationModal = ({
             ))}
           </div>
 
-          {confirmation.footer && (
-            <span className="text-xs text-right">{confirmation.footer}</span>
-          )}
+          {confirmation.footer && <>{confirmation.footer}</>}
         </div>
       </div>
     </div>,

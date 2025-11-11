@@ -24,7 +24,7 @@ export type Confirmation = {
     primaryText: string
     secondaryText?: string
   }[]
-  footer?: string
+  footer?: React.ReactNode
   externalLink?: string
 }
 
