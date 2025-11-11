@@ -123,7 +123,7 @@ export const Default: Story = {
         amount: 500499999999999950n,
       },
     ],
-    slippageInput: '0.5',
+    slippageInput: CHAIN_CONFIG.DEFAULT_SLIPPAGE_PERCENT.toString(),
     setSlippageInput: () => {},
     actionButtonProps: {
       disabled: false,

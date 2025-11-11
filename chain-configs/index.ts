@@ -89,6 +89,7 @@ export const CHAIN_CONFIG: ChainConfig = {
     ({ poolKey }) => poolKey,
   ),
   REFERENCE_CURRENCY: getReferenceCurrency({ chainId: CHAIN.id }),
+  DEFAULT_SLIPPAGE_PERCENT: 1.99,
   DEFAULT_INPUT_CURRENCY: getNativeCurrency({ chainId: CHAIN.id }),
   DEFAULT_OUTPUT_CURRENCY: {
     address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
