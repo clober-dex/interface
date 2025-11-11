@@ -101,7 +101,7 @@ export class AggregatorRouterGateway implements Aggregator {
         from: userAddress,
         gasPrice: transaction.gasPrice,
       }
-      let gasEstimate = 2_000_000n // Default gas estimate if no transaction is provided
+      let gasEstimate = transaction.gas ?? 2_000_000n // Default gas estimate if no transaction is provided
       if (userAddress && estimateGas) {
         try {
           gasEstimate = await this.publicClient.estimateGas({
@@ -116,7 +116,7 @@ export class AggregatorRouterGateway implements Aggregator {
           )
         }
       }
-      gasEstimate = gasEstimate + 500_000n // Add buffer for gas limit
+      gasEstimate = gasEstimate + 200_000n // Add buffer for gas limit
       return {
         amountOut,
         gasLimit: gasEstimate,
