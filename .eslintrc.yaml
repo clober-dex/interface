@@ -15,17 +15,6 @@ extends:
   - plugin:import/errors
   - plugin:import/warnings
   - plugin:import/typescript
-settings:
-  import/resolver:
-    typescript:
-      alwaysTryTypes: true
-      project: './tsconfig.json'
-    node:
-      extensions:
-        - .js
-        - .jsx
-        - .ts
-        - .tsx
 rules:
   curly: error
   no-return-await: error
