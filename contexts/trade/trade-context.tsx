@@ -149,7 +149,9 @@ export const TradeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [outputCurrencyAmount, setOutputCurrencyAmount] = useState('')
 
   const [priceInput, setPriceInput] = useState('')
-  const [slippageInput, _setSlippageInput] = useState('0.5')
+  const [slippageInput, _setSlippageInput] = useState(
+    CHAIN_CONFIG.DEFAULT_SLIPPAGE_PERCENT.toString(),
+  )
   const [latestQuotesRefreshTime, setLatestQuotesRefreshTime] = useState(
     Date.now(),
   )
