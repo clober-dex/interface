@@ -157,7 +157,7 @@ export const TransactionProvider = ({
   }, [userAddress])
 
   const queuePendingTransaction = useCallback(
-    (transaction: Transaction) => {
+    (transaction: Transaction, sendAnalytics = true) => {
       if (userAddress && transaction.chain.id === selectedChain.id) {
         setPendingTransactions((previous) => {
           const updatedTransactions = [...previous, transaction]
@@ -168,43 +168,45 @@ export const TransactionProvider = ({
           return updatedTransactions
         })
 
-        try {
-          // @ts-ignore
-          window.gtag('event', transaction.type, {
-            user_address: userAddress,
-            chain_id: transaction.chain?.id,
-            transaction: {
-              tx_hash: transaction.txHash,
-              timestamp: transaction.timestamp,
-              block_number: transaction.blockNumber,
-              success: transaction.success,
-              currency_flow: transaction.fields,
-            },
-          })
+        if (sendAnalytics) {
+          try {
+            // @ts-ignore
+            window.gtag('event', transaction.type, {
+              user_address: userAddress,
+              chain_id: transaction.chain?.id,
+              transaction: {
+                tx_hash: transaction.txHash,
+                timestamp: transaction.timestamp,
+                block_number: transaction.blockNumber,
+                success: transaction.success,
+                currency_flow: transaction.fields,
+              },
+            })
 
-          // @ts-ignore
-          window.__adrsbl.run(transaction.type, true, [
-            { name: 'user_address', value: userAddress },
-            { name: 'chain_id', value: transaction.chain?.id },
-            {
-              name: 'tx_hash',
-              value: transaction.txHash,
-            },
-            {
-              name: 'timestamp',
-              value: transaction.timestamp,
-            },
-            {
-              name: 'block_number',
-              value: transaction.blockNumber,
-            },
-            {
-              name: 'success',
-              value: transaction.success,
-            },
-          ])
-        } catch (e) {
-          console.error('Error sending transaction event', e)
+            // @ts-ignore
+            window.__adrsbl.run(transaction.type, true, [
+              { name: 'user_address', value: userAddress },
+              { name: 'chain_id', value: transaction.chain?.id },
+              {
+                name: 'tx_hash',
+                value: transaction.txHash,
+              },
+              {
+                name: 'timestamp',
+                value: transaction.timestamp,
+              },
+              {
+                name: 'block_number',
+                value: transaction.blockNumber,
+              },
+              {
+                name: 'success',
+                value: transaction.success,
+              },
+            ])
+          } catch (e) {
+            console.error('Error sending transaction event', e)
+          }
         }
       }
     },
