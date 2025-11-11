@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { BridgeAndExecuteParams, NEXUS_EVENTS } from '@avail-project/nexus-core'
 import { parseUnits } from 'viem'
 import { CurrencyFlow } from '@clober/v2-sdk'
-import { usePublicClient } from 'wagmi'
+import { useAccount, usePublicClient } from 'wagmi'
+import { useQuery } from '@tanstack/react-query'
 
 import { Chain } from '../model/chain'
 import { formatWithCommas, toPreciseString } from '../utils/bignumber'
@@ -103,10 +104,35 @@ export const BridgeAndExecuteProvider = ({
 }: React.PropsWithChildren<{}>) => {
   const publicClient = usePublicClient()
   const { selectedChain } = useChainContext()
+  const { address: userAddress } = useAccount()
   const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
     useTransactionContext()
   const { prices, balances } = useCurrencyContext()
   const { nexusSDK } = useNexus()
+
+  const { data: intents } = useQuery({
+    queryKey: ['nexus-intents', userAddress, nexusSDK !== null],
+    queryFn: async () => {
+      if (!userAddress || !nexusSDK) {
+        return []
+      }
+      return nexusSDK.getMyIntents()
+    },
+    refetchInterval: 5 * 1000, // checked
+    refetchIntervalInBackground: true,
+  })
+
+  useEffect(() => {
+    ;(intents ?? []).forEach((intent) => {
+      console.log('intent', intent)
+      // const bridgeConfirmation: Confirmation = {
+      //   title: `Bridge`,
+      //   body: 'Please confirm in your wallet.',
+      //   chain: selectedChain,
+      //   fields: [],
+      // }
+    })
+  }, [intents, selectedChain])
 
   const bridgeAndExecute = useCallback(
     async (
@@ -120,6 +146,11 @@ export const BridgeAndExecuteProvider = ({
 
       const bridgeAndExecuteSimulationResult =
         await nexusSDK.simulateBridgeAndExecute(params)
+
+      console.log(
+        'bridgeAndExecuteSimulationResult:',
+        bridgeAndExecuteSimulationResult,
+      )
 
       const inputCurrency =
         bridgeAndExecuteSimulationResult.bridgeSimulation?.token!
@@ -162,44 +193,6 @@ export const BridgeAndExecuteProvider = ({
           prices[inputCurrency.contractAddress],
         ),
       }))
-
-      const bridgeConfirmation: Confirmation = {
-        title: `Bridge`,
-        body: 'Please confirm in your wallet.',
-        chain: selectedChain,
-        fields: [
-          ...bridgeInFields,
-          bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
-            ? {
-                currency: {
-                  ...inputCurrency,
-                  address: inputCurrency.contractAddress,
-                },
-                label: inputCurrency.symbol,
-                direction: 'out',
-                chain: selectedChain,
-                primaryText: toPreciseString(
-                  bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
-                    .destination.amount ?? '0',
-                  prices[inputCurrency.contractAddress],
-                  formatWithCommas,
-                ),
-                secondaryText: formatDollarValue(
-                  parseUnits(
-                    bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
-                      .destination.amount ?? '0',
-                    inputCurrency.decimals,
-                  ),
-                  inputCurrency.decimals,
-                  prices[inputCurrency.contractAddress],
-                ),
-              }
-            : null,
-        ].filter(
-          (field): field is Exclude<typeof field, null> => field !== null,
-        ) as Confirmation['fields'],
-        footer,
-      }
 
       const bridgeAndExecuteConfirmation: Confirmation = {
         title: `Bridge & ${transactionType.charAt(0).toUpperCase()}${transactionType.slice(1)}`,
@@ -257,32 +250,9 @@ export const BridgeAndExecuteProvider = ({
       }
       setConfirmation(bridgeAndExecuteConfirmation)
 
-      let hexIntentID: `0x${string}` | undefined = undefined
       const bridgeAndExecuteResult = await nexusSDK.bridgeAndExecute(params, {
         onEvent: (event) => {
           if (event.name === NEXUS_EVENTS.STEP_COMPLETE) {
-            setConfirmation(undefined)
-            if (event.args.type === 'INTENT_SUBMITTED') {
-              hexIntentID = `0x${BigInt(event.args.data.intentID)
-                .toString(16)
-                .padStart(64, '0')}`
-              queuePendingTransaction({
-                ...bridgeConfirmation,
-                txHash: hexIntentID,
-                type: 'bridge',
-                timestamp: currentTimestampInSeconds(),
-                externalLink: event.args.data.explorerURL,
-              })
-            } else if (event.args.type === 'INTENT_FULFILLED' && hexIntentID) {
-              updatePendingTransaction({
-                ...bridgeAndExecuteConfirmation,
-                txHash: hexIntentID,
-                type: transactionType,
-                timestamp: currentTimestampInSeconds(),
-                blockNumber: 0,
-                success: true,
-              })
-            }
             setConfirmation({
               ...bridgeAndExecuteConfirmation,
               footer: (
