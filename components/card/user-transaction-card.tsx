@@ -257,11 +257,11 @@ const UserTransactionCard = ({
             </div>
           </div>
 
-          {transaction.footer && (
-            <span className="text-xs flex w-full justify-end mt-1">
-              {transaction.footer}
-            </span>
-          )}
+          {/*{transaction.footer && (*/}
+          {/*  <span className="text-xs flex w-full justify-end mt-1">*/}
+          {/*    {transaction.footer}*/}
+          {/*  </span>*/}
+          {/*)}*/}
         </div>
       )}
     </button>
