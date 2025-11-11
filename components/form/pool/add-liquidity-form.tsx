@@ -66,28 +66,32 @@ export const AddLiquidityForm = ({
     setShowCurrencyBUnifiedBalanceModal,
   ] = useState<boolean>(false)
 
-  return showCurrencyAUnifiedBalanceModal ? (
-    <BalanceSourcesModal
-      balances={{
-        [pool.currencyA!.address]: availableCurrency0Balance,
-      }}
-      remoteChainBalances={remoteChainBalances}
-      currency={pool.currencyA!}
-      prices={prices}
-      onClose={() => setShowCurrencyAUnifiedBalanceModal(false)}
-    />
-  ) : showCurrencyBUnifiedBalanceModal ? (
-    <BalanceSourcesModal
-      balances={{
-        [pool.currencyB!.address]: availableCurrency1Balance,
-      }}
-      remoteChainBalances={remoteChainBalances}
-      currency={pool.currencyB!}
-      prices={prices}
-      onClose={() => setShowCurrencyBUnifiedBalanceModal(false)}
-    />
-  ) : (
+  return (
     <>
+      {showCurrencyAUnifiedBalanceModal ? (
+        <BalanceSourcesModal
+          balances={{
+            [pool.currencyA!.address]: availableCurrency0Balance,
+          }}
+          remoteChainBalances={remoteChainBalances}
+          currency={pool.currencyA!}
+          prices={prices}
+          onClose={() => setShowCurrencyAUnifiedBalanceModal(false)}
+        />
+      ) : showCurrencyBUnifiedBalanceModal ? (
+        <BalanceSourcesModal
+          balances={{
+            [pool.currencyB!.address]: availableCurrency1Balance,
+          }}
+          remoteChainBalances={remoteChainBalances}
+          currency={pool.currencyB!}
+          prices={prices}
+          onClose={() => setShowCurrencyBUnifiedBalanceModal(false)}
+        />
+      ) : (
+        <></>
+      )}
+
       <div className="flex flex-col relative gap-4 self-stretch p-4 sm:p-5 bg-[#16181d] rounded-2xl lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
         <div className="flex flex-row w-full text-[#8d94a1] text-[13px] font-medium">
           Enter amount you’d like to add.

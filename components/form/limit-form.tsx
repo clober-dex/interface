@@ -159,15 +159,7 @@ export const LimitForm = ({
     setPriceInput,
   ])
 
-  return showUnifiedBalanceModal ? (
-    <BalanceSourcesModal
-      balances={balances}
-      remoteChainBalances={remoteChainBalances}
-      currency={inputCurrency!}
-      prices={prices}
-      onClose={() => setShowUnifiedBalanceModal(false)}
-    />
-  ) : showInputCurrencySelect ? (
+  return showInputCurrencySelect ? (
     <CurrencySelect
       chain={chain}
       explorerUrl={explorerUrl}
@@ -235,6 +227,16 @@ export const LimitForm = ({
     />
   ) : (
     <div className="flex flex-col gap-5 h-full w-full">
+      {showUnifiedBalanceModal && (
+        <BalanceSourcesModal
+          balances={balances}
+          remoteChainBalances={remoteChainBalances}
+          currency={inputCurrency!}
+          prices={prices}
+          onClose={() => setShowUnifiedBalanceModal(false)}
+        />
+      )}
+
       <div className="flex flex-col gap-4 self-stretch w-full px-5">
         <div className="flex items-start gap-4 self-stretch">
           <div className="flex flex-row gap-1 text-[#8d94a1] text-[13px] font-medium h-full justify-start">
