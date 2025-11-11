@@ -5,9 +5,8 @@ import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
 import { createConfig, injected } from 'wagmi'
 import {
-  coinbaseWallet,
-  walletConnectWallet,
   bitgetWallet,
+  walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 
 import { socialAccountWallet } from '../utils/custom-wallets/web3auth'
@@ -138,11 +137,10 @@ export const getClientConfig = () => {
               ? [
                   socialAccountWallet,
                   bitgetWallet,
-                  coinbaseWallet,
                   walletConnectWallet,
                   hahaWallet,
                 ]
-              : [bitgetWallet, coinbaseWallet, walletConnectWallet, hahaWallet],
+              : [bitgetWallet, walletConnectWallet, hahaWallet],
           },
         ],
         {
