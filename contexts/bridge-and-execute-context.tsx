@@ -10,6 +10,7 @@ import { formatDollarValue, toUnitString } from '../utils/bigint'
 import { Currency } from '../model/currency'
 import { currentTimestampInSeconds } from '../utils/date'
 import { TransactionType } from '../model/transaction-type'
+import { OutlinkSvg } from '../components/svg/outlink-svg'
 
 import { useNexus } from './nexus-context'
 import { Confirmation, useTransactionContext } from './transaction-context'
@@ -54,10 +55,11 @@ const Steps = ({
         <a
           href={externalLink}
           target="_blank"
-          className="text-xs text-white underline"
+          className="flex flex-row gap-1.5 items-center justify-center text-xs text-white underline"
           rel="noopener"
         >
           Step {currentStep.index + 1} of {STEPS.length}
+          <OutlinkSvg className="w-3 h-3" />
         </a>
         <ol role="list" className="ml-6 flex items-center space-x-5">
           {STEPS.map((step) => (
@@ -284,7 +286,7 @@ export const BridgeAndExecuteProvider = ({
             setConfirmation({
               ...bridgeAndExecuteConfirmation,
               footer: (
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 w-full">
                   {!STEPS.find(({ name }) => name === event.args.type) &&
                     footer}
                   <Steps
