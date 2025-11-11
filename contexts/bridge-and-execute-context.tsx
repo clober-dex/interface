@@ -33,7 +33,13 @@ const STEPS = [
   { name: 'INTENT_FULFILLED', index: 3 },
 ]
 
-const Steps = ({ type }: { type: string }) => {
+const Steps = ({
+  type,
+  externalLink,
+}: {
+  type: string
+  externalLink?: string
+}) => {
   const currentStep = useMemo(
     () => STEPS.find(({ name }) => name === type),
     [type],
@@ -45,9 +51,14 @@ const Steps = ({ type }: { type: string }) => {
         aria-label="Progress"
         className="flex items-center justify-center mt-1 w-full"
       >
-        <p className="text-xs text-white">
+        <a
+          href={externalLink}
+          target="_blank"
+          className="text-xs text-white underline"
+          rel="noopener"
+        >
           Step {currentStep.index + 1} of {STEPS.length}
-        </p>
+        </a>
         <ol role="list" className="ml-6 flex items-center space-x-5">
           {STEPS.map((step) => (
             <li key={step.name}>
@@ -274,8 +285,12 @@ export const BridgeAndExecuteProvider = ({
               ...bridgeAndExecuteConfirmation,
               footer: (
                 <div className="flex flex-col gap-1">
-                  {footer}
-                  <Steps type={event.args.type} />
+                  {!STEPS.find(({ name }) => name === event.args.type) &&
+                    footer}
+                  <Steps
+                    type={event.args.type}
+                    externalLink={(event.args as any).data?.explorerURL}
+                  />
                 </div>
               ),
             })
