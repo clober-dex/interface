@@ -33,7 +33,7 @@
     es-toolkit "^1.39.7"
     tslib "^2.8.1"
 
-"@avail-project/nexus-core@^1.0.0-beta.22":
+"@avail-project/nexus-core@^1.0.0-beta.26":
   version "1.0.0-beta.26"
   resolved "https://registry.yarnpkg.com/@avail-project/nexus-core/-/nexus-core-1.0.0-beta.26.tgz#ce10d381d70f06f509765f97eacb520c31e372a3"
   integrity sha512-vOOJFBlSCb6Cg7QcM3p7r3yyoqWDDLKJ96UyTWmeeMyklkNLVpkmqU4j3Bp8mUQP8tIWBl9sWQiKvBaK76ZpTA==
