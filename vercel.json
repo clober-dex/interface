@@ -42,6 +42,5 @@
         }
       ]
     }
-  ],
-  "buildCommand": "npm run vercel-build"
+  ]
 }
