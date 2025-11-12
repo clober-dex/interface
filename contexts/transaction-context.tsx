@@ -41,7 +41,10 @@ type TransactionContext = {
   setConfirmation: (confirmation?: Confirmation) => void
   pendingTransactions: Transaction[]
   transactionHistory: Transaction[]
-  queuePendingTransaction: (transaction: Transaction) => void
+  queuePendingTransaction: (
+    transaction: Transaction,
+    sendAnalytics?: boolean,
+  ) => void
   updatePendingTransaction: (transaction: Transaction) => void
   lastIndexedBlockNumber: number
   selectedExecutorName: string | null

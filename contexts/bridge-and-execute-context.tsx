@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import { BridgeAndExecuteParams, NEXUS_EVENTS } from '@avail-project/nexus-core'
-import { parseUnits } from 'viem'
+import {
+  BridgeAndExecuteParams,
+  CHAIN_METADATA,
+  NEXUS_EVENTS,
+} from '@avail-project/nexus-core'
+import { isAddressEqual, parseUnits } from 'viem'
 import { CurrencyFlow } from '@clober/v2-sdk'
 import { useAccount, usePublicClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -12,6 +16,7 @@ import { Currency } from '../model/currency'
 import { currentTimestampInSeconds } from '../utils/date'
 import { TransactionType } from '../model/transaction-type'
 import { OutlinkSvg } from '../components/svg/outlink-svg'
+import { WHITELISTED_CURRENCIES } from '../chain-configs/currency'
 
 import { useNexus } from './nexus-context'
 import { Confirmation, useTransactionContext } from './transaction-context'
@@ -122,17 +127,92 @@ export const BridgeAndExecuteProvider = ({
     refetchIntervalInBackground: true,
   })
 
-  useEffect(() => {
-    ;(intents ?? []).forEach((intent) => {
-      console.log('intent', intent)
-      // const bridgeConfirmation: Confirmation = {
-      //   title: `Bridge`,
-      //   body: 'Please confirm in your wallet.',
-      //   chain: selectedChain,
-      //   fields: [],
-      // }
-    })
-  }, [intents, selectedChain])
+  useEffect(
+    () => {
+      const now = currentTimestampInSeconds()
+      ;(intents ?? []).forEach(
+        ({ destinations, expiry, id, sources, fulfilled }) => {
+          // todo: use currency from api
+          const destination = destinations[0]
+          const currency = WHITELISTED_CURRENCIES.find((c) =>
+            isAddressEqual(c.address, destination.tokenAddress),
+          )
+          const hexId = `0x${id.toString(16)}` as `0x${string}`
+          if (currency) {
+            const bridgeConfirmation: Confirmation = {
+              title: `Bridge`,
+              chain: selectedChain,
+              fields: [
+                ...sources.map(({ value, chainID }) => {
+                  const chainId = Number(chainID)
+                  return {
+                    currency,
+                    label: currency.symbol,
+                    direction: 'in',
+                    chain: {
+                      id: chainId,
+                      name: CHAIN_METADATA[chainId].name,
+                      logo: CHAIN_METADATA[chainId].logo,
+                    } as unknown as Chain,
+                    primaryText: toPreciseString(
+                      toUnitString(value, currency.decimals),
+                      prices[currency.address],
+                      formatWithCommas,
+                    ),
+                    secondaryText: formatDollarValue(
+                      value,
+                      currency.decimals,
+                      prices[currency.address],
+                    ),
+                  }
+                }),
+                {
+                  currency,
+                  label: currency.symbol,
+                  direction: 'out',
+                  chain: selectedChain,
+                  primaryText: toPreciseString(
+                    toUnitString(destination.value, currency.decimals),
+                    prices[currency.address],
+                    formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    destinations[0].value,
+                    currency.decimals,
+                    prices[currency.address],
+                  ),
+                },
+              ] as Confirmation['fields'],
+            }
+            queuePendingTransaction(
+              {
+                ...bridgeConfirmation,
+                txHash: hexId,
+                type: 'bridge',
+                timestamp: expiry,
+                externalLink: selectedChain.testnet
+                  ? `https://explorer.nexus-folly.availproject.org/intent/${id}`
+                  : `https://explorer.nexus.availproject.org/intent/${id}`,
+              },
+              false,
+            )
+            if (now > expiry) {
+              updatePendingTransaction({
+                ...bridgeConfirmation,
+                txHash: hexId,
+                type: 'bridge',
+                timestamp: expiry,
+                blockNumber: 0,
+                success: fulfilled,
+              })
+            }
+          }
+        },
+      )
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [intents],
+  )
 
   const bridgeAndExecute = useCallback(
     async (
@@ -168,32 +248,6 @@ export const BridgeAndExecuteProvider = ({
         </div>
       )
 
-      const bridgeInFields: Confirmation['fields'] = (
-        bridgeAndExecuteSimulationResult.bridgeSimulation?.intent?.sources ?? []
-      ).map(({ amount, chainName, chainID, chainLogo }) => ({
-        currency: {
-          ...inputCurrency,
-          address: inputCurrency.contractAddress,
-        },
-        label: inputCurrency.symbol,
-        direction: 'in',
-        chain: {
-          id: chainID,
-          name: chainName,
-          icon: chainLogo,
-        } as Chain,
-        primaryText: toPreciseString(
-          amount,
-          prices[inputCurrency.contractAddress],
-          formatWithCommas,
-        ),
-        secondaryText: formatDollarValue(
-          parseUnits(amount, inputCurrency.decimals),
-          inputCurrency.decimals,
-          prices[inputCurrency.contractAddress],
-        ),
-      }))
-
       const bridgeAndExecuteConfirmation: Confirmation = {
         title: `Bridge & ${transactionType.charAt(0).toUpperCase()}${transactionType.slice(1)}`,
         body: 'Please confirm in your wallet.',
@@ -223,7 +277,32 @@ export const BridgeAndExecuteProvider = ({
                 ),
               }
             : null,
-          ...bridgeInFields,
+          ...(
+            bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
+              ?.sources ?? []
+          ).map(({ amount, chainName, chainID, chainLogo }) => ({
+            currency: {
+              ...inputCurrency,
+              address: inputCurrency.contractAddress,
+            },
+            label: inputCurrency.symbol,
+            direction: 'in',
+            chain: {
+              id: chainID,
+              name: chainName,
+              icon: chainLogo,
+            } as Chain,
+            primaryText: toPreciseString(
+              amount,
+              prices[inputCurrency.contractAddress],
+              formatWithCommas,
+            ),
+            secondaryText: formatDollarValue(
+              parseUnits(amount, inputCurrency.decimals),
+              inputCurrency.decimals,
+              prices[inputCurrency.contractAddress],
+            ),
+          })),
           {
             currency: outputCurrencyFlow.currency as Currency,
             label: outputCurrencyFlow.currency.symbol,
