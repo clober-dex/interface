@@ -92,6 +92,6 @@
     "@vanilla-extract/dynamic": "2.1.5"
   },
   "engines": {
-    "node": "22.14.0"
+    "node": "22.x"
   }
 }
