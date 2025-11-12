@@ -5,7 +5,6 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
   - prettier
-  - react-hooks
 extends:
   - next/core-web-vitals
   - eslint:recommended
@@ -28,8 +27,6 @@ rules:
   react/prop-types: off
   react/display-name: off
   require-await: off
-  react-hooks/rules-of-hooks: error
-  react-hooks/exhaustive-deps: error
   no-unused-vars: off
   '@typescript-eslint/no-unused-vars':
     - error
