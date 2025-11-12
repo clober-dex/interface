@@ -110,8 +110,13 @@ export const BridgeAndExecuteProvider = ({
   const publicClient = usePublicClient()
   const { selectedChain } = useChainContext()
   const { address: userAddress } = useAccount()
-  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
-    useTransactionContext()
+  const {
+    setConfirmation,
+    queuePendingTransaction,
+    updatePendingTransaction,
+    lastIndexedBlockNumber,
+    transactionHistory,
+  } = useTransactionContext()
   const { prices, balances } = useCurrencyContext()
   const { nexusSDK } = useNexus()
 
@@ -121,7 +126,11 @@ export const BridgeAndExecuteProvider = ({
       if (!userAddress || !nexusSDK) {
         return []
       }
-      return nexusSDK.getMyIntents()
+      const intents = await nexusSDK.getMyIntents()
+      return intents.filter(
+        (intent, index, self) =>
+          index === self.findIndex((t) => t.id === intent.id),
+      )
     },
     refetchInterval: 5 * 1000, // checked
     refetchIntervalInBackground: true,
@@ -129,6 +138,10 @@ export const BridgeAndExecuteProvider = ({
 
   useEffect(
     () => {
+      if (lastIndexedBlockNumber === 0) {
+        return
+      }
+
       const now = currentTimestampInSeconds()
       ;(intents ?? []).forEach(
         ({ destinations, expiry, id, sources, fulfilled }) => {
@@ -138,21 +151,23 @@ export const BridgeAndExecuteProvider = ({
             isAddressEqual(c.address, destination.tokenAddress),
           )
           const hexId = `0x${id.toString(16)}` as `0x${string}`
-          if (currency) {
+          if (
+            currency &&
+            !transactionHistory.find((tx) => tx.txHash === hexId)
+          ) {
             const bridgeConfirmation: Confirmation = {
               title: `Bridge`,
               chain: selectedChain,
               fields: [
                 ...sources.map(({ value, chainID }) => {
-                  const chainId = Number(chainID)
                   return {
                     currency,
                     label: currency.symbol,
                     direction: 'in',
                     chain: {
-                      id: chainId,
-                      name: CHAIN_METADATA[chainId].name,
-                      logo: CHAIN_METADATA[chainId].logo,
+                      id: chainID,
+                      name: CHAIN_METADATA[chainID].name,
+                      icon: CHAIN_METADATA[chainID].logo,
                     } as unknown as Chain,
                     primaryText: toPreciseString(
                       toUnitString(value, currency.decimals),
@@ -177,7 +192,7 @@ export const BridgeAndExecuteProvider = ({
                     formatWithCommas,
                   ),
                   secondaryText: formatDollarValue(
-                    destinations[0].value,
+                    destination.value,
                     currency.decimals,
                     prices[currency.address],
                   ),
@@ -196,13 +211,13 @@ export const BridgeAndExecuteProvider = ({
               },
               false,
             )
-            if (now > expiry) {
+            if (fulfilled || now > expiry) {
               updatePendingTransaction({
                 ...bridgeConfirmation,
                 txHash: hexId,
                 type: 'bridge',
                 timestamp: expiry,
-                blockNumber: 0,
+                blockNumber: 1,
                 success: fulfilled,
               })
             }
@@ -226,11 +241,6 @@ export const BridgeAndExecuteProvider = ({
 
       const bridgeAndExecuteSimulationResult =
         await nexusSDK.simulateBridgeAndExecute(params)
-
-      console.log(
-        'bridgeAndExecuteSimulationResult:',
-        bridgeAndExecuteSimulationResult,
-      )
 
       const inputCurrency =
         bridgeAndExecuteSimulationResult.bridgeSimulation?.token!
