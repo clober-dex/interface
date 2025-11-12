@@ -138,87 +138,91 @@ export const BridgeAndExecuteProvider = ({
       }
 
       const now = currentTimestampInSeconds()
-      // ;(intents ?? []).forEach(
-      //   ({ destinations, expiry, id, sources, fulfilled }) => {
-      //     // todo: use currency from api
-      //     const destination = destinations[0]
-      //     const currency = WHITELISTED_CURRENCIES.find((c) =>
-      //       isAddressEqual(c.address, destination.tokenAddress),
-      //     )
-      //     const hexId = `0x${id.toString(16)}` as `0x${string}`
-      //     if (
-      //       currency &&
-      //       !transactionHistory.find((tx) => tx.txHash === hexId)
-      //     ) {
-      //       const bridgeConfirmation: Confirmation = {
-      //         title: `Bridge`,
-      //         chain: selectedChain,
-      //         fields: [
-      //           ...sources.map(({ value, chainID }) => {
-      //             return {
-      //               currency,
-      //               label: currency.symbol,
-      //               direction: 'in',
-      //               chain: {
-      //                 id: chainID,
-      //                 name: CHAIN_METADATA[chainID].name,
-      //                 icon: CHAIN_METADATA[chainID].logo,
-      //               } as unknown as Chain,
-      //               primaryText: toPreciseString(
-      //                 toUnitString(value, currency.decimals),
-      //                 prices[currency.address],
-      //                 formatWithCommas,
-      //               ),
-      //               secondaryText: formatDollarValue(
-      //                 value,
-      //                 currency.decimals,
-      //                 prices[currency.address],
-      //               ),
-      //             }
-      //           }),
-      //           {
-      //             currency,
-      //             label: currency.symbol,
-      //             direction: 'out',
-      //             chain: selectedChain,
-      //             primaryText: toPreciseString(
-      //               toUnitString(destination.value, currency.decimals),
-      //               prices[currency.address],
-      //               formatWithCommas,
-      //             ),
-      //             secondaryText: formatDollarValue(
-      //               destination.value,
-      //               currency.decimals,
-      //               prices[currency.address],
-      //             ),
-      //           },
-      //         ] as Confirmation['fields'],
-      //       }
-      //       queuePendingTransaction(
-      //         {
-      //           ...bridgeConfirmation,
-      //           txHash: hexId,
-      //           type: 'bridge',
-      //           timestamp: expiry,
-      //           externalLink: selectedChain.testnet
-      //             ? `https://explorer.nexus-folly.availproject.org/intent/${id}`
-      //             : `https://explorer.nexus.availproject.org/intent/${id}`,
-      //         },
-      //         false,
-      //       )
-      //       if (fulfilled || now > expiry) {
-      //         updatePendingTransaction({
-      //           ...bridgeConfirmation,
-      //           txHash: hexId,
-      //           type: 'bridge',
-      //           timestamp: expiry,
-      //           blockNumber: 1,
-      //           success: fulfilled,
-      //         })
-      //       }
-      //     }
-      //   },
-      // )
+      ;(intents ?? []).forEach(
+        ({ destinations, expiry, id, sources, fulfilled }) => {
+          // todo: use currency from api
+          const destination = destinations[0]
+          const hexId = `0x${id.toString(16)}` as `0x${string}`
+          if (!transactionHistory.find((tx) => tx.txHash === hexId)) {
+            const bridgeConfirmation: Confirmation = {
+              title: `Bridge`,
+              chain: selectedChain,
+              fields: [
+                ...sources.map(({ value, chain }) => {
+                  return {
+                    currency: {
+                      address: destination.token.address,
+                      symbol: destination.token.symbol,
+                      decimals: destination.token.decimals,
+                      name: destination.token.symbol,
+                    },
+                    label: destination.token.symbol,
+                    direction: 'in',
+                    chain: {
+                      id: chain.id,
+                      name: chain.name,
+                      icon: chain.logo,
+                    } as unknown as Chain,
+                    primaryText: toPreciseString(
+                      value,
+                      prices[destination.token.address],
+                      formatWithCommas,
+                    ),
+                    secondaryText: formatDollarValue(
+                      parseUnits(value, destination.token.decimals),
+                      destination.token.decimals,
+                      prices[destination.token.address],
+                    ),
+                  }
+                }),
+                {
+                  currency: {
+                    address: destination.token.address,
+                    symbol: destination.token.symbol,
+                    decimals: destination.token.decimals,
+                    name: destination.token.symbol,
+                  },
+                  label: destination.token.symbol,
+                  direction: 'out',
+                  chain: selectedChain,
+                  primaryText: toPreciseString(
+                    destination.value,
+                    prices[destination.token.address],
+                    formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    parseUnits(destination.value, destination.token.decimals),
+                    destination.token.decimals,
+                    prices[destination.token.address],
+                  ),
+                },
+              ] as Confirmation['fields'],
+            }
+            queuePendingTransaction(
+              {
+                ...bridgeConfirmation,
+                txHash: hexId,
+                type: 'bridge',
+                timestamp: expiry,
+                externalLink: selectedChain.testnet
+                  ? `https://explorer.nexus-folly.availproject.org/intent/${id}`
+                  : `https://explorer.nexus.availproject.org/intent/${id}`,
+              },
+              false,
+            )
+            if (fulfilled || now > expiry) {
+              updatePendingTransaction({
+                ...bridgeConfirmation,
+                txHash: hexId,
+                type: 'bridge',
+                timestamp: expiry,
+                blockNumber: 1,
+                success: fulfilled,
+              })
+            }
+          }
+        },
+      )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [intents],
