@@ -122,6 +122,7 @@ export const LeaderBoard = ({
         </div>
       )}
 
+      {/*@ts-ignore */}
       <List
         height={1000}
         itemCount={sortedValues.length}

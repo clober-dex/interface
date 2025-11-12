@@ -386,6 +386,7 @@ export const DiscoverContainer = () => {
               {/* desktop: 1-column list */}
               {filteredMarketSnapshots.length > 0 && (
                 <div className="hidden lg:block w-full overflow-hidden mt-10 bg-[#17181e] outline outline-1 outline-offset-[-1px] outline-[#272930]">
+                  {/*@ts-ignore */}
                   <List
                     height={Math.floor(height - 200)}
                     itemCount={filteredMarketSnapshots.length}
@@ -401,6 +402,7 @@ export const DiscoverContainer = () => {
 
               {/* tablet: 2-column grid (md~lg) */}
               <div className="hidden md:block lg:hidden overflow-hidden max-w-full">
+                {/*@ts-ignore */}
                 <Grid
                   columnCount={2}
                   columnWidth={Math.floor(
@@ -421,6 +423,7 @@ export const DiscoverContainer = () => {
 
               {/* mobile: 1-column list */}
               <div className="block md:hidden w-full overflow-hidden">
+                {/*@ts-ignore */}
                 <List
                   height={height - 20}
                   itemCount={filteredMarketSnapshots.length}

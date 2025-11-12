@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import {
-  BridgeAndExecuteParams,
-  CHAIN_METADATA,
-  NEXUS_EVENTS,
-} from '@avail-project/nexus-core'
-import { isAddressEqual, parseUnits } from 'viem'
+import { BridgeAndExecuteParams, NEXUS_EVENTS } from '@avail-project/nexus-core'
+import { parseUnits } from 'viem'
 import { CurrencyFlow } from '@clober/v2-sdk'
 import { useAccount, usePublicClient } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
@@ -16,7 +12,6 @@ import { Currency } from '../model/currency'
 import { currentTimestampInSeconds } from '../utils/date'
 import { TransactionType } from '../model/transaction-type'
 import { OutlinkSvg } from '../components/svg/outlink-svg'
-import { WHITELISTED_CURRENCIES } from '../chain-configs/currency'
 
 import { useNexus } from './nexus-context'
 import { Confirmation, useTransactionContext } from './transaction-context'
@@ -143,87 +138,87 @@ export const BridgeAndExecuteProvider = ({
       }
 
       const now = currentTimestampInSeconds()
-      ;(intents ?? []).forEach(
-        ({ destinations, expiry, id, sources, fulfilled }) => {
-          // todo: use currency from api
-          const destination = destinations[0]
-          const currency = WHITELISTED_CURRENCIES.find((c) =>
-            isAddressEqual(c.address, destination.tokenAddress),
-          )
-          const hexId = `0x${id.toString(16)}` as `0x${string}`
-          if (
-            currency &&
-            !transactionHistory.find((tx) => tx.txHash === hexId)
-          ) {
-            const bridgeConfirmation: Confirmation = {
-              title: `Bridge`,
-              chain: selectedChain,
-              fields: [
-                ...sources.map(({ value, chainID }) => {
-                  return {
-                    currency,
-                    label: currency.symbol,
-                    direction: 'in',
-                    chain: {
-                      id: chainID,
-                      name: CHAIN_METADATA[chainID].name,
-                      icon: CHAIN_METADATA[chainID].logo,
-                    } as unknown as Chain,
-                    primaryText: toPreciseString(
-                      toUnitString(value, currency.decimals),
-                      prices[currency.address],
-                      formatWithCommas,
-                    ),
-                    secondaryText: formatDollarValue(
-                      value,
-                      currency.decimals,
-                      prices[currency.address],
-                    ),
-                  }
-                }),
-                {
-                  currency,
-                  label: currency.symbol,
-                  direction: 'out',
-                  chain: selectedChain,
-                  primaryText: toPreciseString(
-                    toUnitString(destination.value, currency.decimals),
-                    prices[currency.address],
-                    formatWithCommas,
-                  ),
-                  secondaryText: formatDollarValue(
-                    destination.value,
-                    currency.decimals,
-                    prices[currency.address],
-                  ),
-                },
-              ] as Confirmation['fields'],
-            }
-            queuePendingTransaction(
-              {
-                ...bridgeConfirmation,
-                txHash: hexId,
-                type: 'bridge',
-                timestamp: expiry,
-                externalLink: selectedChain.testnet
-                  ? `https://explorer.nexus-folly.availproject.org/intent/${id}`
-                  : `https://explorer.nexus.availproject.org/intent/${id}`,
-              },
-              false,
-            )
-            if (fulfilled || now > expiry) {
-              updatePendingTransaction({
-                ...bridgeConfirmation,
-                txHash: hexId,
-                type: 'bridge',
-                timestamp: expiry,
-                blockNumber: 1,
-                success: fulfilled,
-              })
-            }
-          }
-        },
-      )
+      // ;(intents ?? []).forEach(
+      //   ({ destinations, expiry, id, sources, fulfilled }) => {
+      //     // todo: use currency from api
+      //     const destination = destinations[0]
+      //     const currency = WHITELISTED_CURRENCIES.find((c) =>
+      //       isAddressEqual(c.address, destination.tokenAddress),
+      //     )
+      //     const hexId = `0x${id.toString(16)}` as `0x${string}`
+      //     if (
+      //       currency &&
+      //       !transactionHistory.find((tx) => tx.txHash === hexId)
+      //     ) {
+      //       const bridgeConfirmation: Confirmation = {
+      //         title: `Bridge`,
+      //         chain: selectedChain,
+      //         fields: [
+      //           ...sources.map(({ value, chainID }) => {
+      //             return {
+      //               currency,
+      //               label: currency.symbol,
+      //               direction: 'in',
+      //               chain: {
+      //                 id: chainID,
+      //                 name: CHAIN_METADATA[chainID].name,
+      //                 icon: CHAIN_METADATA[chainID].logo,
+      //               } as unknown as Chain,
+      //               primaryText: toPreciseString(
+      //                 toUnitString(value, currency.decimals),
+      //                 prices[currency.address],
+      //                 formatWithCommas,
+      //               ),
+      //               secondaryText: formatDollarValue(
+      //                 value,
+      //                 currency.decimals,
+      //                 prices[currency.address],
+      //               ),
+      //             }
+      //           }),
+      //           {
+      //             currency,
+      //             label: currency.symbol,
+      //             direction: 'out',
+      //             chain: selectedChain,
+      //             primaryText: toPreciseString(
+      //               toUnitString(destination.value, currency.decimals),
+      //               prices[currency.address],
+      //               formatWithCommas,
+      //             ),
+      //             secondaryText: formatDollarValue(
+      //               destination.value,
+      //               currency.decimals,
+      //               prices[currency.address],
+      //             ),
+      //           },
+      //         ] as Confirmation['fields'],
+      //       }
+      //       queuePendingTransaction(
+      //         {
+      //           ...bridgeConfirmation,
+      //           txHash: hexId,
+      //           type: 'bridge',
+      //           timestamp: expiry,
+      //           externalLink: selectedChain.testnet
+      //             ? `https://explorer.nexus-folly.availproject.org/intent/${id}`
+      //             : `https://explorer.nexus.availproject.org/intent/${id}`,
+      //         },
+      //         false,
+      //       )
+      //       if (fulfilled || now > expiry) {
+      //         updatePendingTransaction({
+      //           ...bridgeConfirmation,
+      //           txHash: hexId,
+      //           type: 'bridge',
+      //           timestamp: expiry,
+      //           blockNumber: 1,
+      //           success: fulfilled,
+      //         })
+      //       }
+      //     }
+      //   },
+      // )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [intents],
