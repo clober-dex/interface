@@ -94,7 +94,7 @@ const UserTransactionCard = ({
                 .map((field, index) => (
                   <div
                     key={`transaction-${transaction.txHash}-in-${index}`}
-                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs sm:text-sm rounded-lg h-11"
+                    className="flex w-full items-center justify-between bg-[#24272e] px-3 py-1.5 text-xs sm:text-sm rounded-lg h-[50px]"
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       {field.currency && transaction.chain ? (
@@ -123,8 +123,13 @@ const UserTransactionCard = ({
                       )}
                       <div className="flex overflow-hidden">{field.label}</div>
                     </div>
-                    <div className="flex overflow-hidden">
+                    <div className="flex flex-col gap-0.5 text-right justify-end items-end truncate">
                       {field.primaryText}
+                      {field.secondaryText && (
+                        <span className="block w-full text-gray-500 text-xs text-right">
+                          ({field.secondaryText})
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -134,7 +139,7 @@ const UserTransactionCard = ({
           <div className="flex flex-1 w-full self-stretch justify-start items-start gap-1">
             {transaction.fields.filter((field) => field.direction === 'in')
               .length > 0 && (
-              <div className="flex text-sm w-9 items-center justify-center bg-red-500 bg-opacity-10 font-bold text-red-500 rounded-lg h-11">
+              <div className="flex text-sm w-9 items-center justify-center bg-red-500 bg-opacity-10 font-bold text-red-500 rounded-lg h-[50px]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 12 4"
@@ -157,7 +162,7 @@ const UserTransactionCard = ({
                 .map((field, index) => (
                   <div
                     key={`transaction-${transaction.txHash}-in-${index}`}
-                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs sm:text-sm rounded-lg h-11"
+                    className="flex w-full items-center justify-between bg-[#24272e] px-3 py-1.5 text-xs sm:text-sm rounded-lg h-[50px]"
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       {field.currency && transaction.chain ? (
@@ -186,8 +191,13 @@ const UserTransactionCard = ({
                       )}
                       <div className="flex overflow-hidden">{field.label}</div>
                     </div>
-                    <div className="flex overflow-hidden">
+                    <div className="flex flex-col gap-0.5 text-right justify-end items-end truncate">
                       {field.primaryText}
+                      {field.secondaryText && (
+                        <span className="block w-full text-gray-500 text-xs text-right">
+                          ({field.secondaryText})
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -197,7 +207,7 @@ const UserTransactionCard = ({
           <div className="flex flex-1 w-full self-stretch justify-start items-start gap-1">
             {transaction.fields.filter((field) => field.direction === 'out')
               .length > 0 && (
-              <div className="flex text-sm w-9 items-center justify-center bg-green-500 bg-opacity-10 font-bold text-green-500 rounded-lg h-11">
+              <div className="flex text-sm w-9 items-center justify-center bg-green-500 bg-opacity-10 font-bold text-green-500 rounded-lg h-[50px]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 16 16"
@@ -220,7 +230,7 @@ const UserTransactionCard = ({
                 .map((field, index) => (
                   <div
                     key={`transaction-${transaction.txHash}-out-${index}`}
-                    className="flex w-full items-center justify-between bg-gray-800 px-2 py-1.5 text-xs sm:text-sm rounded-lg h-11"
+                    className="flex w-full items-center justify-between bg-[#24272e] px-3 py-1.5 text-xs sm:text-sm rounded-lg h-[50px]"
                   >
                     <div className="flex items-center gap-1.5 truncate">
                       {field.currency && transaction.chain ? (
@@ -249,8 +259,13 @@ const UserTransactionCard = ({
                       )}
                       <div className="flex overflow-hidden">{field.label}</div>
                     </div>
-                    <div className="flex overflow-hidden">
+                    <div className="flex flex-col gap-0.5 text-right justify-end items-end truncate">
                       {field.primaryText}
+                      {field.secondaryText && (
+                        <span className="block w-full text-gray-500 text-xs text-right">
+                          ({field.secondaryText})
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
