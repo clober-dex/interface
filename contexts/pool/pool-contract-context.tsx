@@ -32,6 +32,8 @@ import { CHAIN_CONFIG } from '../../chain-configs'
 import { aggregators } from '../../chain-configs/aggregators'
 import Modal from '../../components/modal/modal'
 import { formatDollarValue } from '../../utils/bigint'
+import { useNexus } from '../nexus-context'
+import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
 
 export type PoolContractContext = {
   mint: (
@@ -80,6 +82,7 @@ export const PoolContractProvider = ({
 }: React.PropsWithChildren<{}>) => {
   const [showRevertModal, setShowRevertModal] = React.useState(false)
   const queryClient = useQueryClient()
+  const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
@@ -90,7 +93,9 @@ export const PoolContractProvider = ({
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { getAllowance, prices } = useCurrencyContext()
+  const { getAllowance, prices, balances, remoteChainBalances } =
+    useCurrencyContext()
+  const { bridgeAndExecute } = useBridgeAndExecuteContext()
 
   const mint = useCallback(
     async (
@@ -217,6 +222,24 @@ export const PoolContractProvider = ({
 
         // If both currencies have sufficient allowance, proceed to add liquidity
         else {
+          let useBridge = false
+          if (nexusSDK && amount0) {
+            const amount = parseUnits(amount0, currency0.decimals)
+            const remoteChainBalance =
+              remoteChainBalances?.[currency0.address].total ?? 0n
+            const balance = balances[currency0.address]
+            useBridge =
+              remoteChainBalance + balance >= amount && amount > balance
+          }
+          if (nexusSDK && amount1) {
+            const amount = parseUnits(amount1, currency1.decimals)
+            const remoteChainBalance =
+              remoteChainBalances?.[currency1.address].total ?? 0n
+            const balance = balances[currency1.address]
+            useBridge =
+              remoteChainBalance + balance >= amount && amount > balance
+          }
+
           const { transaction, result } = await addLiquidity({
             chainId: selectedChain.id,
             userAddress: walletClient.account.address,
@@ -232,6 +255,7 @@ export const PoolContractProvider = ({
               disableSwap,
               slippage,
               timeoutForQuotes: 2000,
+              gasLimit: useBridge ? 5_000_000n : undefined,
             },
           })
 
@@ -315,35 +339,63 @@ export const PoolContractProvider = ({
                 : undefined,
             ].filter((field) => field !== undefined) as Confirmation['fields'],
           }
-          setConfirmation(confirmation)
-          if (transaction) {
-            await sendTransaction(
-              selectedChain,
-              walletClient,
-              transaction,
-              disconnectAsync,
-              (hash) => {
-                setConfirmation(undefined)
-                queuePendingTransaction({
-                  ...confirmation,
-                  txHash: hash,
-                  type: 'mint',
-                  timestamp: currentTimestampInSeconds(),
-                })
-              },
-              (receipt) => {
-                updatePendingTransaction({
-                  ...confirmation,
-                  txHash: receipt.transactionHash,
-                  type: 'mint',
-                  timestamp: currentTimestampInSeconds(),
-                  blockNumber: Number(receipt.blockNumber),
-                  success: receipt.status === 'success',
-                })
-              },
-              gasPrice,
-              null,
-            )
+          if (useBridge) {
+            // await bridgeAndExecute(
+            //   {
+            //     token: inputCurrency.symbol,
+            //     amount: amountIn,
+            //     toChainId: CHAIN_CONFIG.CHAIN.id,
+            //     sourceChains: remoteChainBalances?.[
+            //       inputCurrency.address
+            //     ].breakdown.map((b) => b.chain.id),
+            //     execute: {
+            //       ...transaction,
+            //       gas:
+            //         makeRatio < 0.01
+            //           ? 550_000n * BigInt(result.spent.events.length) // take
+            //           : 550_000n * BigInt(1 + result.spent.events.length), // limit
+            //     },
+            //     waitForReceipt: false,
+            //   },
+            //   makeRatio < 0.01 ? 'take' : 'limit',
+            //   `Bridge & ${confirmation.title}`,
+            //   {
+            //     currency: outputCurrency,
+            //     direction: 'out',
+            //     amount: result.taken.amount,
+            //   },
+            // )
+          } else {
+            setConfirmation(confirmation)
+            if (transaction) {
+              await sendTransaction(
+                selectedChain,
+                walletClient,
+                transaction,
+                disconnectAsync,
+                (hash) => {
+                  setConfirmation(undefined)
+                  queuePendingTransaction({
+                    ...confirmation,
+                    txHash: hash,
+                    type: 'mint',
+                    timestamp: currentTimestampInSeconds(),
+                  })
+                },
+                (receipt) => {
+                  updatePendingTransaction({
+                    ...confirmation,
+                    txHash: receipt.transactionHash,
+                    type: 'mint',
+                    timestamp: currentTimestampInSeconds(),
+                    blockNumber: Number(receipt.blockNumber),
+                    success: receipt.status === 'success',
+                  })
+                },
+                gasPrice,
+                null,
+              )
+            }
           }
         }
       } catch (e: any) {
@@ -364,6 +416,9 @@ export const PoolContractProvider = ({
       }
     },
     [
+      nexusSDK,
+      balances,
+      remoteChainBalances,
       gasPrice,
       getAllowance,
       disconnectAsync,

@@ -466,19 +466,25 @@ export const PoolManagerContainer = ({
               chain={selectedChain}
               pool={pool}
               balances={balances}
-              remoteChainBalances={remoteChainBalances}
+              remoteChainBalances={disableSwap ? {} : remoteChainBalances}
               prices={prices}
               currency0Amount={currency0Amount}
               setCurrency0Amount={setCurrency0Amount}
               availableCurrency0Balance={
                 balances[pool.currencyA.address] +
-                (remoteChainBalances?.[pool.currencyA.address]?.total ?? 0n)
+                (disableSwap
+                  ? 0n
+                  : (remoteChainBalances?.[pool.currencyA.address]?.total ??
+                    0n))
               }
               currency1Amount={currency1Amount}
               setCurrency1Amount={setCurrency1Amount}
               availableCurrency1Balance={
                 balances[pool.currencyB.address] +
-                (remoteChainBalances?.[pool.currencyB.address]?.total ?? 0n)
+                (disableSwap
+                  ? 0n
+                  : (remoteChainBalances?.[pool.currencyB.address]?.total ??
+                    0n))
               }
               disableSwap={disableSwap}
               setDisableSwap={setDisableSwap}
@@ -502,12 +508,16 @@ export const PoolManagerContainer = ({
                     Number(currency1Amount) === 0) ||
                   parseUnits(currency0Amount, pool.currencyA.decimals) >
                     balances[pool.currencyA.address] +
-                      (remoteChainBalances?.[pool.currencyA.address]?.total ??
-                        0n) ||
+                      (disableSwap
+                        ? 0n
+                        : (remoteChainBalances?.[pool.currencyA.address]
+                            ?.total ?? 0n)) ||
                   parseUnits(currency1Amount, pool.currencyB.decimals) >
                     balances[pool.currencyB.address] +
-                      (remoteChainBalances?.[pool.currencyB.address]?.total ??
-                        0n) ||
+                      (disableSwap
+                        ? 0n
+                        : (remoteChainBalances?.[pool.currencyB.address]
+                            ?.total ?? 0n)) ||
                   (disableSwap &&
                     (Number(currency0Amount) === 0 ||
                       Number(currency1Amount) === 0)),

@@ -104,7 +104,7 @@ export const AddLiquidityForm = ({
             availableAmount={availableCurrency0Balance}
             setShowUnifiedBalanceModal={
               pool.currencyA &&
-              remoteChainBalances?.[pool.currencyA.address].total
+              remoteChainBalances?.[pool.currencyA.address]?.total
                 ? setShowCurrencyAUnifiedBalanceModal
                 : undefined
             }
@@ -118,7 +118,7 @@ export const AddLiquidityForm = ({
             availableAmount={availableCurrency1Balance}
             setShowUnifiedBalanceModal={
               pool.currencyB &&
-              remoteChainBalances?.[pool.currencyB.address].total
+              remoteChainBalances?.[pool.currencyB.address]?.total
                 ? setShowCurrencyBUnifiedBalanceModal
                 : undefined
             }
