@@ -27,6 +27,7 @@ type BridgeAndExecuteContext = {
       direction: 'in' | 'out'
       price?: number
     },
+    additionalFields?: Confirmation['fields'],
   ): Promise<void>
 }
 
@@ -124,6 +125,7 @@ export const BridgeAndExecuteProvider = ({
         direction: 'in' | 'out'
         price?: number
       },
+      additionalFields?: Confirmation['fields'],
     ) => {
       if (!nexusSDK || !publicClient) {
         return
@@ -267,6 +269,7 @@ export const BridgeAndExecuteProvider = ({
                 ),
               }
             : null,
+          ...(additionalFields ?? []),
         ].filter(
           (field): field is Exclude<typeof field, null> => field !== null,
         ) as Confirmation['fields'],

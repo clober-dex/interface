@@ -365,6 +365,18 @@ export const PoolContractProvider = ({
                 amount: result.lpCurrency.amount,
                 price: lpPrice,
               },
+              result.quoteResponse &&
+                result.quoteRequest &&
+                result.quoteResponse.amountOut > 0n
+                ? [
+                    {
+                      label: 'Swap Rate',
+                      primaryText: `${formatWithCommas(
+                        toSignificantString(result.quoteResponse.exchangeRate),
+                      )}`,
+                    },
+                  ]
+                : undefined,
             )
           } else {
             setConfirmation(confirmation)
