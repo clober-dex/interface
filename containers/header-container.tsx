@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
@@ -22,6 +22,7 @@ import { Toggle } from '../components/toggle'
 import { WrongNetworkButton } from '../components/button/wrong-network-button'
 
 const TX_NOTIFICATION_BUFFER = 5
+const DISMISS_TXS_KEY = 'dismissed-txs'
 
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { data: gasPrice } = useGasPrice()
@@ -35,7 +36,23 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
     transfer,
   } = useCurrencyContext()
   const { useRemoteChainBalances, setUseRemoteChainBalances } = useNexus()
-  const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
+  const [dismissedTxs, _setDismissedTxs] = useState<`0x${string}`[]>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(DISMISS_TXS_KEY)
+      if (stored) {
+        try {
+          return JSON.parse(stored)
+        } catch {
+          return []
+        }
+      }
+    }
+    return []
+  })
+  const setDismissedTxs = useCallback((txs: `0x${string}`[]) => {
+    _setDismissedTxs(txs)
+    localStorage.setItem(DISMISS_TXS_KEY, JSON.stringify(txs))
+  }, [])
   const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
   const { openChainModal } = useChainModal()
@@ -154,7 +171,11 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 walletIconUrl={
                   connector?.icon ?? web3AuthData?.profileImage ?? ''
                 }
-                shiny={pendingTransactions.length > 0}
+                shiny={
+                  pendingTransactions.filter(
+                    (tx) => !dismissedTxs.includes(tx.txHash),
+                  ).length > 0
+                }
                 ens={ens}
               />
             ) : openChainModal ? (
@@ -252,8 +273,8 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                       {hoveredTx === transaction.txHash && (
                         <button
                           onClick={() =>
-                            setDismissedTxs((prev) => [
-                              ...prev,
+                            setDismissedTxs([
+                              ...dismissedTxs,
                               transaction.txHash,
                             ])
                           }
