@@ -22,6 +22,7 @@ type BridgeAndExecuteContext = {
     params: BridgeAndExecuteParams,
     outputCurrencyFlow: CurrencyFlow,
     transactionType: TransactionType,
+    title: string,
   ): Promise<void>
 }
 
@@ -113,6 +114,7 @@ export const BridgeAndExecuteProvider = ({
       params: BridgeAndExecuteParams,
       outputCurrencyFlow: CurrencyFlow,
       transactionType: TransactionType,
+      title: string,
     ) => {
       if (!nexusSDK || !publicClient) {
         return
@@ -202,7 +204,7 @@ export const BridgeAndExecuteProvider = ({
       }
 
       const bridgeAndExecuteConfirmation: Confirmation = {
-        title: `Bridge & ${transactionType.charAt(0).toUpperCase()}${transactionType.slice(1)}`,
+        title,
         body: 'Please confirm in your wallet.',
         chain: selectedChain,
         fields: [

@@ -155,6 +155,7 @@ export const SwapContractProvider = ({
                 ),
               },
               'swap',
+              'Bridge & Swap',
             )
           } else {
             const confirmation = {
