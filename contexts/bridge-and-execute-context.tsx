@@ -301,10 +301,7 @@ export const BridgeAndExecuteProvider = ({
                   type: transactionType,
                   timestamp: now,
                   blockNumber: 1,
-                  success:
-                    currentIntent.fulfilled || now > currentIntent.expiry
-                      ? currentIntent.fulfilled
-                      : false,
+                  success: true,
                 })
               }
             }
