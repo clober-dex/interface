@@ -25,6 +25,7 @@ type BridgeAndExecuteContext = {
       currency: Currency | LpCurrency
       amount: string
       direction: 'in' | 'out'
+      price?: number
     },
   ): Promise<void>
 }
@@ -121,6 +122,7 @@ export const BridgeAndExecuteProvider = ({
         currency: Currency | LpCurrency
         amount: string
         direction: 'in' | 'out'
+        price?: number
       },
     ) => {
       if (!nexusSDK || !publicClient) {
@@ -243,16 +245,14 @@ export const BridgeAndExecuteProvider = ({
           outputCurrencyFlow
             ? {
                 currency: outputCurrencyFlow.currency,
-                label:
-                  (outputCurrencyFlow.currency as LpCurrency).currencyA &&
-                  (outputCurrencyFlow.currency as LpCurrency).currencyB
-                    ? `CLV-${(outputCurrencyFlow.currency as LpCurrency).currencyA?.symbol}-${(outputCurrencyFlow.currency as LpCurrency).currencyB?.symbol}`
-                    : outputCurrencyFlow.currency.symbol,
+                label: outputCurrencyFlow.currency.symbol,
                 direction: 'out',
                 chain: selectedChain,
                 primaryText: toPreciseString(
                   outputCurrencyFlow.amount,
-                  prices[outputCurrencyFlow.currency.address],
+                  outputCurrencyFlow.price ??
+                    prices[outputCurrencyFlow.currency.address] ??
+                    undefined,
                   formatWithCommas,
                 ),
                 secondaryText: formatDollarValue(
@@ -261,7 +261,9 @@ export const BridgeAndExecuteProvider = ({
                     outputCurrencyFlow.currency.decimals,
                   ),
                   outputCurrencyFlow.currency.decimals,
-                  prices[outputCurrencyFlow.currency.address],
+                  outputCurrencyFlow.price ??
+                    prices[outputCurrencyFlow.currency.address] ??
+                    undefined,
                 ),
               }
             : null,

@@ -357,11 +357,13 @@ export const PoolContractProvider = ({
               `Bridge & ${confirmation.title}`,
               {
                 currency: {
+                  ...result.lpCurrency.currency,
                   currencyA: result.currencyA.currency,
                   currencyB: result.currencyB.currency,
                 } as LpCurrency,
                 direction: 'out',
                 amount: result.lpCurrency.amount,
+                price: lpPrice,
               },
             )
           } else {
