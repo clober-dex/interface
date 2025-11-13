@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { BridgeAndExecuteParams, NEXUS_EVENTS } from '@avail-project/nexus-core'
-import { parseUnits } from 'viem'
+import { numberToHex, parseUnits } from 'viem'
 import { CurrencyFlow } from '@clober/v2-sdk'
-import { useAccount, usePublicClient } from 'wagmi'
-import { useQuery } from '@tanstack/react-query'
+import { usePublicClient } from 'wagmi'
 
 import { Chain } from '../model/chain'
 import { formatWithCommas, toPreciseString } from '../utils/bignumber'
@@ -104,129 +103,10 @@ export const BridgeAndExecuteProvider = ({
 }: React.PropsWithChildren<{}>) => {
   const publicClient = usePublicClient()
   const { selectedChain } = useChainContext()
-  const { address: userAddress } = useAccount()
-  const {
-    setConfirmation,
-    queuePendingTransaction,
-    updatePendingTransaction,
-    lastIndexedBlockNumber,
-    transactionHistory,
-  } = useTransactionContext()
+  const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
+    useTransactionContext()
   const { prices, balances } = useCurrencyContext()
   const { nexusSDK } = useNexus()
-
-  const { data: intents } = useQuery({
-    queryKey: ['nexus-intents', userAddress, nexusSDK !== null],
-    queryFn: async () => {
-      if (!userAddress || !nexusSDK) {
-        return []
-      }
-      const intents = await nexusSDK.getMyIntents()
-      return intents.filter(
-        (intent, index, self) =>
-          index === self.findIndex((t) => t.id === intent.id),
-      )
-    },
-    refetchInterval: 5 * 1000, // checked
-    refetchIntervalInBackground: true,
-  })
-
-  useEffect(
-    () => {
-      if (lastIndexedBlockNumber === 0) {
-        return
-      }
-
-      const now = currentTimestampInSeconds()
-      ;(intents ?? []).forEach(
-        ({ destinations, expiry, id, sources, fulfilled }) => {
-          // todo: use currency from api
-          const destination = destinations[0]
-          const hexId = `0x${id.toString(16)}` as `0x${string}`
-          if (!transactionHistory.find((tx) => tx.txHash === hexId)) {
-            const bridgeConfirmation: Confirmation = {
-              title: `Bridge`,
-              chain: selectedChain,
-              fields: [
-                ...sources.map(({ value, chain }) => {
-                  return {
-                    currency: {
-                      address: destination.token.address,
-                      symbol: destination.token.symbol,
-                      decimals: destination.token.decimals,
-                      name: destination.token.symbol,
-                    },
-                    label: destination.token.symbol,
-                    direction: 'in',
-                    chain: {
-                      id: chain.id,
-                      name: chain.name,
-                      icon: chain.logo,
-                    } as unknown as Chain,
-                    primaryText: toPreciseString(
-                      value,
-                      prices[destination.token.address],
-                      formatWithCommas,
-                    ),
-                    secondaryText: formatDollarValue(
-                      parseUnits(value, destination.token.decimals),
-                      destination.token.decimals,
-                      prices[destination.token.address],
-                    ),
-                  }
-                }),
-                {
-                  currency: {
-                    address: destination.token.address,
-                    symbol: destination.token.symbol,
-                    decimals: destination.token.decimals,
-                    name: destination.token.symbol,
-                  },
-                  label: destination.token.symbol,
-                  direction: 'out',
-                  chain: selectedChain,
-                  primaryText: toPreciseString(
-                    destination.value,
-                    prices[destination.token.address],
-                    formatWithCommas,
-                  ),
-                  secondaryText: formatDollarValue(
-                    parseUnits(destination.value, destination.token.decimals),
-                    destination.token.decimals,
-                    prices[destination.token.address],
-                  ),
-                },
-              ] as Confirmation['fields'],
-            }
-            queuePendingTransaction(
-              {
-                ...bridgeConfirmation,
-                txHash: hexId,
-                type: 'bridge',
-                timestamp: expiry,
-                externalLink: selectedChain.testnet
-                  ? `https://explorer.nexus-folly.availproject.org/intent/${id}`
-                  : `https://explorer.nexus.availproject.org/intent/${id}`,
-              },
-              false,
-            )
-            if (fulfilled || now > expiry) {
-              updatePendingTransaction({
-                ...bridgeConfirmation,
-                txHash: hexId,
-                type: 'bridge',
-                timestamp: expiry,
-                blockNumber: 1,
-                success: fulfilled,
-              })
-            }
-          }
-        },
-      )
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [intents],
-  )
 
   const bridgeAndExecute = useCallback(
     async (
@@ -244,6 +124,32 @@ export const BridgeAndExecuteProvider = ({
       const inputCurrency =
         bridgeAndExecuteSimulationResult.bridgeSimulation?.token!
 
+      const bridgeInFields: Confirmation['fields'] = (
+        bridgeAndExecuteSimulationResult.bridgeSimulation?.intent?.sources ?? []
+      ).map(({ amount, chainName, chainID, chainLogo }) => ({
+        currency: {
+          ...inputCurrency,
+          address: inputCurrency.contractAddress,
+        },
+        label: inputCurrency.symbol,
+        direction: 'in',
+        chain: {
+          id: chainID,
+          name: chainName,
+          icon: chainLogo,
+        } as Chain,
+        primaryText: toPreciseString(
+          amount,
+          prices[inputCurrency.contractAddress],
+          formatWithCommas,
+        ),
+        secondaryText: formatDollarValue(
+          parseUnits(amount, inputCurrency.decimals),
+          inputCurrency.decimals,
+          prices[inputCurrency.contractAddress],
+        ),
+      }))
+
       const footer = (
         <div className="flex flex-row gap-1 text-xs justify-end">
           <span className="text-gray-50">Bridge Fee:</span>
@@ -256,6 +162,44 @@ export const BridgeAndExecuteProvider = ({
           {bridgeAndExecuteSimulationResult.bridgeSimulation?.token.symbol}
         </div>
       )
+
+      const bridgeConfirmation: Confirmation = {
+        title: `Bridge`,
+        body: 'Please confirm in your wallet.',
+        chain: selectedChain,
+        fields: [
+          ...bridgeInFields,
+          bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
+            ? {
+                currency: {
+                  ...inputCurrency,
+                  address: inputCurrency.contractAddress,
+                },
+                label: inputCurrency.symbol,
+                direction: 'out',
+                chain: selectedChain,
+                primaryText: toPreciseString(
+                  bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
+                    .destination.amount ?? '0',
+                  prices[inputCurrency.contractAddress],
+                  formatWithCommas,
+                ),
+                secondaryText: formatDollarValue(
+                  parseUnits(
+                    bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
+                      .destination.amount ?? '0',
+                    inputCurrency.decimals,
+                  ),
+                  inputCurrency.decimals,
+                  prices[inputCurrency.contractAddress],
+                ),
+              }
+            : null,
+        ].filter(
+          (field): field is Exclude<typeof field, null> => field !== null,
+        ) as Confirmation['fields'],
+        footer,
+      }
 
       const bridgeAndExecuteConfirmation: Confirmation = {
         title: `Bridge & ${transactionType.charAt(0).toUpperCase()}${transactionType.slice(1)}`,
@@ -286,32 +230,7 @@ export const BridgeAndExecuteProvider = ({
                 ),
               }
             : null,
-          ...(
-            bridgeAndExecuteSimulationResult.bridgeSimulation?.intent
-              ?.sources ?? []
-          ).map(({ amount, chainName, chainID, chainLogo }) => ({
-            currency: {
-              ...inputCurrency,
-              address: inputCurrency.contractAddress,
-            },
-            label: inputCurrency.symbol,
-            direction: 'in',
-            chain: {
-              id: chainID,
-              name: chainName,
-              icon: chainLogo,
-            } as Chain,
-            primaryText: toPreciseString(
-              amount,
-              prices[inputCurrency.contractAddress],
-              formatWithCommas,
-            ),
-            secondaryText: formatDollarValue(
-              parseUnits(amount, inputCurrency.decimals),
-              inputCurrency.decimals,
-              prices[inputCurrency.contractAddress],
-            ),
-          })),
+          ...bridgeInFields,
           {
             currency: outputCurrencyFlow.currency as Currency,
             label: outputCurrencyFlow.currency.symbol,
@@ -338,8 +257,9 @@ export const BridgeAndExecuteProvider = ({
       }
       setConfirmation(bridgeAndExecuteConfirmation)
 
+      let hexIntentID: `0x${string}` | undefined = undefined
       const bridgeAndExecuteResult = await nexusSDK.bridgeAndExecute(params, {
-        onEvent: (event) => {
+        onEvent: async (event) => {
           if (event.name === NEXUS_EVENTS.STEP_COMPLETE) {
             setConfirmation({
               ...bridgeAndExecuteConfirmation,
@@ -354,6 +274,40 @@ export const BridgeAndExecuteProvider = ({
                 </div>
               ),
             })
+
+            if (event.args.type === 'INTENT_SUBMITTED') {
+              hexIntentID = numberToHex(
+                event.args.data.intentID,
+              ) as `0x${string}`
+
+              queuePendingTransaction({
+                ...bridgeConfirmation,
+                txHash: hexIntentID,
+                type: 'bridge',
+                timestamp: currentTimestampInSeconds(),
+                externalLink: event.args.data.explorerURL,
+              })
+            } else if (event.args.type === 'INTENT_FULFILLED' && hexIntentID) {
+              const intents = await nexusSDK.getMyIntents()
+              const currentIntent = intents.find(
+                (intent) => hexIntentID === numberToHex(intent.id),
+              )
+
+              if (currentIntent) {
+                const now = currentTimestampInSeconds()
+                updatePendingTransaction({
+                  ...bridgeAndExecuteConfirmation,
+                  txHash: hexIntentID,
+                  type: transactionType,
+                  timestamp: now,
+                  blockNumber: 1,
+                  success:
+                    currentIntent.fulfilled || now > currentIntent.expiry
+                      ? currentIntent.fulfilled
+                      : false,
+                })
+              }
+            }
           }
         },
       })
