@@ -12,7 +12,7 @@ import {
 import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
 
-import { Currency } from '../../model/currency'
+import { Currency, LpCurrency } from '../../model/currency'
 import { Confirmation, useTransactionContext } from '../transaction-context'
 import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
@@ -339,32 +339,31 @@ export const PoolContractProvider = ({
                 : undefined,
             ].filter((field) => field !== undefined) as Confirmation['fields'],
           }
-          if (useBridge) {
-            // await bridgeAndExecute(
-            //   {
-            //     token: inputCurrency.symbol,
-            //     amount: amountIn,
-            //     toChainId: CHAIN_CONFIG.CHAIN.id,
-            //     sourceChains: remoteChainBalances?.[
-            //       inputCurrency.address
-            //     ].breakdown.map((b) => b.chain.id),
-            //     execute: {
-            //       ...transaction,
-            //       gas:
-            //         makeRatio < 0.01
-            //           ? 550_000n * BigInt(result.spent.events.length) // take
-            //           : 550_000n * BigInt(1 + result.spent.events.length), // limit
-            //     },
-            //     waitForReceipt: false,
-            //   },
-            //   makeRatio < 0.01 ? 'take' : 'limit',
-            //   `Bridge & ${confirmation.title}`,
-            //   {
-            //     currency: outputCurrency,
-            //     direction: 'out',
-            //     amount: result.taken.amount,
-            //   },
-            // )
+          if (transaction && useBridge) {
+            await bridgeAndExecute(
+              {
+                token: amount0 ? currency0.symbol : currency1.symbol,
+                amount: amount0
+                  ? parseUnits(amount0, currency0.decimals)
+                  : parseUnits(amount1, currency1.decimals),
+                toChainId: CHAIN_CONFIG.CHAIN.id,
+                sourceChains: remoteChainBalances?.[
+                  amount0 ? currency0.address : currency1.address
+                ].breakdown.map((b) => b.chain.id),
+                execute: transaction,
+                waitForReceipt: false,
+              },
+              'mint',
+              `Bridge & ${confirmation.title}`,
+              {
+                currency: {
+                  currencyA: result.currencyA.currency,
+                  currencyB: result.currencyB.currency,
+                } as LpCurrency,
+                direction: 'out',
+                amount: result.lpCurrency.amount,
+              },
+            )
           } else {
             setConfirmation(confirmation)
             if (transaction) {

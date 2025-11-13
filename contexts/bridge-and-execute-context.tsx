@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo } from 'react'
 import { BridgeAndExecuteParams, NEXUS_EVENTS } from '@avail-project/nexus-core'
 import { numberToHex, parseUnits } from 'viem'
-import { CurrencyFlow } from '@clober/v2-sdk'
 import { usePublicClient } from 'wagmi'
 
 import { Chain } from '../model/chain'
 import { formatWithCommas, toPreciseString } from '../utils/bignumber'
 import { formatDollarValue, toUnitString } from '../utils/bigint'
-import { Currency } from '../model/currency'
+import { Currency, LpCurrency } from '../model/currency'
 import { currentTimestampInSeconds } from '../utils/date'
 import { TransactionType } from '../model/transaction-type'
 import { OutlinkSvg } from '../components/svg/outlink-svg'
@@ -22,7 +21,11 @@ type BridgeAndExecuteContext = {
     params: BridgeAndExecuteParams,
     transactionType: TransactionType,
     title: string,
-    outputCurrencyFlow?: CurrencyFlow,
+    outputCurrencyFlow?: {
+      currency: Currency | LpCurrency
+      amount: string
+      direction: 'in' | 'out'
+    },
   ): Promise<void>
 }
 
@@ -114,7 +117,11 @@ export const BridgeAndExecuteProvider = ({
       params: BridgeAndExecuteParams,
       transactionType: TransactionType,
       title: string,
-      outputCurrencyFlow?: CurrencyFlow,
+      outputCurrencyFlow?: {
+        currency: Currency | LpCurrency
+        amount: string
+        direction: 'in' | 'out'
+      },
     ) => {
       if (!nexusSDK || !publicClient) {
         return
@@ -235,8 +242,12 @@ export const BridgeAndExecuteProvider = ({
           ...bridgeInFields,
           outputCurrencyFlow
             ? {
-                currency: outputCurrencyFlow.currency as Currency,
-                label: outputCurrencyFlow.currency.symbol,
+                currency: outputCurrencyFlow.currency,
+                label:
+                  (outputCurrencyFlow.currency as LpCurrency).currencyA &&
+                  (outputCurrencyFlow.currency as LpCurrency).currencyB
+                    ? `CLV-${(outputCurrencyFlow.currency as LpCurrency).currencyA?.symbol}-${(outputCurrencyFlow.currency as LpCurrency).currencyB?.symbol}`
+                    : outputCurrencyFlow.currency.symbol,
                 direction: 'out',
                 chain: selectedChain,
                 primaryText: toPreciseString(
