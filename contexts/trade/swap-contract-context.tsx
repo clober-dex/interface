@@ -146,6 +146,8 @@ export const SwapContractProvider = ({
                 execute: transaction,
                 waitForReceipt: false,
               },
+              'swap',
+              'Bridge & Swap',
               {
                 currency: outputCurrency,
                 direction: 'out',
@@ -154,8 +156,6 @@ export const SwapContractProvider = ({
                   outputCurrency.decimals,
                 ),
               },
-              'swap',
-              'Bridge & Swap',
             )
           } else {
             const confirmation = {

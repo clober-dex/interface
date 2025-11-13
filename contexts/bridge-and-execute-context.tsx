@@ -20,9 +20,9 @@ import { useChainContext } from './chain-context'
 type BridgeAndExecuteContext = {
   bridgeAndExecute(
     params: BridgeAndExecuteParams,
-    outputCurrencyFlow: CurrencyFlow,
     transactionType: TransactionType,
     title: string,
+    outputCurrencyFlow?: CurrencyFlow,
   ): Promise<void>
 }
 
@@ -112,9 +112,9 @@ export const BridgeAndExecuteProvider = ({
   const bridgeAndExecute = useCallback(
     async (
       params: BridgeAndExecuteParams,
-      outputCurrencyFlow: CurrencyFlow,
       transactionType: TransactionType,
       title: string,
+      outputCurrencyFlow?: CurrencyFlow,
     ) => {
       if (!nexusSDK || !publicClient) {
         return
@@ -233,25 +233,27 @@ export const BridgeAndExecuteProvider = ({
               }
             : null,
           ...bridgeInFields,
-          {
-            currency: outputCurrencyFlow.currency as Currency,
-            label: outputCurrencyFlow.currency.symbol,
-            direction: 'out',
-            chain: selectedChain,
-            primaryText: toPreciseString(
-              outputCurrencyFlow.amount,
-              prices[outputCurrencyFlow.currency.address],
-              formatWithCommas,
-            ),
-            secondaryText: formatDollarValue(
-              parseUnits(
-                outputCurrencyFlow.amount,
-                outputCurrencyFlow.currency.decimals,
-              ),
-              outputCurrencyFlow.currency.decimals,
-              prices[outputCurrencyFlow.currency.address],
-            ),
-          },
+          outputCurrencyFlow
+            ? {
+                currency: outputCurrencyFlow.currency as Currency,
+                label: outputCurrencyFlow.currency.symbol,
+                direction: 'out',
+                chain: selectedChain,
+                primaryText: toPreciseString(
+                  outputCurrencyFlow.amount,
+                  prices[outputCurrencyFlow.currency.address],
+                  formatWithCommas,
+                ),
+                secondaryText: formatDollarValue(
+                  parseUnits(
+                    outputCurrencyFlow.amount,
+                    outputCurrencyFlow.currency.decimals,
+                  ),
+                  outputCurrencyFlow.currency.decimals,
+                  prices[outputCurrencyFlow.currency.address],
+                ),
+              }
+            : null,
         ].filter(
           (field): field is Exclude<typeof field, null> => field !== null,
         ) as Confirmation['fields'],
