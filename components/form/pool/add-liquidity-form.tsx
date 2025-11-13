@@ -11,10 +11,12 @@ import { Pool } from '../../../model/pool'
 import { Toggle } from '../../toggle'
 import { RemoteChainBalances } from '../../../model/remote-chain-balances'
 import BalanceSourcesModal from '../../modal/balance-sources-modal'
+import { Balances } from '../../../model/balances'
 
 export const AddLiquidityForm = ({
   chain,
   pool,
+  balances,
   remoteChainBalances,
   prices,
   currency0Amount,
@@ -34,6 +36,7 @@ export const AddLiquidityForm = ({
 }: {
   chain: Chain
   pool: Pool
+  balances: Balances
   remoteChainBalances: RemoteChainBalances
   prices: Prices
   currency0Amount: string
@@ -70,9 +73,7 @@ export const AddLiquidityForm = ({
     <>
       {showCurrencyAUnifiedBalanceModal ? (
         <BalanceSourcesModal
-          balances={{
-            [pool.currencyA!.address]: availableCurrency0Balance,
-          }}
+          balances={balances}
           remoteChainBalances={remoteChainBalances}
           currency={pool.currencyA!}
           prices={prices}
@@ -80,9 +81,7 @@ export const AddLiquidityForm = ({
         />
       ) : showCurrencyBUnifiedBalanceModal ? (
         <BalanceSourcesModal
-          balances={{
-            [pool.currencyB!.address]: availableCurrency1Balance,
-          }}
+          balances={balances}
           remoteChainBalances={remoteChainBalances}
           currency={pool.currencyB!}
           prices={prices}

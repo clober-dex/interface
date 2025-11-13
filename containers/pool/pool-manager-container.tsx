@@ -465,6 +465,7 @@ export const PoolManagerContainer = ({
             <AddLiquidityForm
               chain={selectedChain}
               pool={pool}
+              balances={balances}
               remoteChainBalances={remoteChainBalances}
               prices={prices}
               currency0Amount={currency0Amount}
