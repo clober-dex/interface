@@ -5,7 +5,6 @@ import {
   addLiquidity,
   getContractAddresses,
   getPool,
-  getQuoteToken,
   removeLiquidity,
   unwrapFromERC20,
   wrapToERC20,
@@ -23,8 +22,8 @@ import {
   maxApprove as maxApproveERC6909,
 } from '../../utils/approve6909'
 import {
-  toPreciseString,
   formatWithCommas,
+  toPreciseString,
   toSignificantString,
 } from '../../utils/bignumber'
 import { sendTransaction } from '../../utils/transaction'
@@ -218,17 +217,6 @@ export const PoolContractProvider = ({
 
         // If both currencies have sufficient allowance, proceed to add liquidity
         else {
-          const [baseCurrency, quoteCurrency] = isAddressEqual(
-            getQuoteToken({
-              chainId: selectedChain.id,
-              token0: currency0.address,
-              token1: currency1.address,
-            }),
-            currency0.address,
-          )
-            ? [currency1, currency0]
-            : [currency0, currency1]
-
           const { transaction, result } = await addLiquidity({
             chainId: selectedChain.id,
             userAddress: walletClient.account.address,
@@ -322,21 +310,6 @@ export const PoolContractProvider = ({
                     label: 'Swap Rate',
                     primaryText: `${formatWithCommas(
                       toSignificantString(result.quoteResponse.exchangeRate),
-                    )}`,
-                  }
-                : undefined,
-              result.quoteResponse &&
-              result.quoteRequest &&
-              result.quoteResponse.amountOut > 0n &&
-              prices[baseCurrency.address] &&
-              prices[quoteCurrency.address]
-                ? {
-                    label: 'Market Rate',
-                    primaryText: `${formatWithCommas(
-                      toSignificantString(
-                        prices[baseCurrency.address] /
-                          prices[quoteCurrency.address],
-                      ),
                     )}`,
                   }
                 : undefined,
