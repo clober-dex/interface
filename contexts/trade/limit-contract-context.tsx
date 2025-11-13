@@ -23,6 +23,8 @@ import { toPreciseString, formatWithCommas } from '../../utils/bignumber'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { formatDollarValue } from '../../utils/bigint'
+import { useNexus } from '../nexus-context'
+import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
 
 type LimitContractContext = {
   limit: (
@@ -46,6 +48,7 @@ export const LimitContractProvider = ({
   children,
 }: React.PropsWithChildren<{}>) => {
   const queryClient = useQueryClient()
+  const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
@@ -53,11 +56,17 @@ export const LimitContractProvider = ({
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
-    selectedExecutorName,
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { isOpenOrderApproved, getAllowance, prices } = useCurrencyContext()
+  const {
+    isOpenOrderApproved,
+    getAllowance,
+    prices,
+    balances,
+    remoteChainBalances,
+  } = useCurrencyContext()
+  const { bridgeAndExecute } = useBridgeAndExecuteContext()
 
   const limit = useCallback(
     async (
@@ -186,6 +195,15 @@ export const LimitContractProvider = ({
         }
         // if input currency is native token, we don't need to approve
         else {
+          const amountIn = parseUnits(amount, inputCurrency.decimals)
+          const remoteChainBalance =
+            remoteChainBalances?.[inputCurrency.address].total ?? 0n
+          const balance = balances[inputCurrency.address]
+          const useBridge =
+            nexusSDK &&
+            remoteChainBalance + balance >= amountIn &&
+            amountIn > balance
+
           const args = {
             chainId: selectedChain.id,
             userAddress: walletClient.account.address,
@@ -200,6 +218,7 @@ export const LimitContractProvider = ({
               roundingDownTakenBid: false,
               roundingUpTakenAsk: false,
               postOnly: CHAIN_CONFIG.HIDE_ORDERBOOK,
+              gasLimit: useBridge ? 1_000_000n : undefined,
             },
           }
           const { transaction, result } = await limitOrder(args)
@@ -230,35 +249,52 @@ export const LimitContractProvider = ({
                 },
               ] as Confirmation['fields'],
             }
-            setConfirmation(confirmation)
+            if (useBridge) {
+              await bridgeAndExecute(
+                {
+                  token: inputCurrency.symbol,
+                  amount: amountIn,
+                  toChainId: CHAIN_CONFIG.CHAIN.id,
+                  sourceChains: remoteChainBalances?.[
+                    inputCurrency.address
+                  ].breakdown.map((b) => b.chain.id),
+                  execute: { ...transaction, gas: 550_000n },
+                  waitForReceipt: false,
+                },
+                'make',
+                `Bridge & ${confirmation.title}`,
+              )
+            } else {
+              setConfirmation(confirmation)
 
-            await sendTransaction(
-              selectedChain,
-              walletClient,
-              transaction,
-              disconnectAsync,
-              (hash) => {
-                setConfirmation(undefined)
-                queuePendingTransaction({
-                  ...confirmation,
-                  txHash: hash,
-                  type: 'make',
-                  timestamp: currentTimestampInSeconds(),
-                })
-              },
-              (receipt) => {
-                updatePendingTransaction({
-                  ...confirmation,
-                  txHash: receipt.transactionHash,
-                  type: 'make',
-                  timestamp: currentTimestampInSeconds(),
-                  blockNumber: Number(receipt.blockNumber),
-                  success: receipt.status === 'success',
-                })
-              },
-              gasPrice,
-              null,
-            )
+              await sendTransaction(
+                selectedChain,
+                walletClient,
+                transaction,
+                disconnectAsync,
+                (hash) => {
+                  setConfirmation(undefined)
+                  queuePendingTransaction({
+                    ...confirmation,
+                    txHash: hash,
+                    type: 'make',
+                    timestamp: currentTimestampInSeconds(),
+                  })
+                },
+                (receipt) => {
+                  updatePendingTransaction({
+                    ...confirmation,
+                    txHash: receipt.transactionHash,
+                    type: 'make',
+                    timestamp: currentTimestampInSeconds(),
+                    blockNumber: Number(receipt.blockNumber),
+                    success: receipt.status === 'success',
+                  })
+                },
+                gasPrice,
+                null,
+              )
+            }
           }
           // limit order or take order
           else {
@@ -300,57 +336,85 @@ export const LimitContractProvider = ({
                 },
               ] as Confirmation['fields'],
             }
-            setConfirmation(confirmation)
-
             const makeRatio =
               (Number(result.make.amount) * 100) / Number(amount)
-            await sendTransaction(
-              selectedChain,
-              walletClient,
-              transaction,
-              disconnectAsync,
-              (hash) => {
-                setConfirmation(undefined)
-                if (makeRatio < 0.01) {
-                  queuePendingTransaction({
-                    ...confirmation,
-                    txHash: hash,
-                    type: 'take',
-                    timestamp: currentTimestampInSeconds(),
-                  })
-                } else {
-                  queuePendingTransaction({
-                    ...confirmation,
-                    txHash: hash,
-                    type: 'limit',
-                    timestamp: currentTimestampInSeconds(),
-                  })
-                }
-              },
-              (receipt) => {
-                if (makeRatio < 0.01) {
-                  updatePendingTransaction({
-                    ...confirmation,
-                    txHash: receipt.transactionHash,
-                    type: 'take',
-                    timestamp: currentTimestampInSeconds(),
-                    blockNumber: Number(receipt.blockNumber),
-                    success: receipt.status === 'success',
-                  })
-                } else {
-                  updatePendingTransaction({
-                    ...confirmation,
-                    txHash: receipt.transactionHash,
-                    type: 'limit',
-                    timestamp: currentTimestampInSeconds(),
-                    blockNumber: Number(receipt.blockNumber),
-                    success: receipt.status === 'success',
-                  })
-                }
-              },
-              gasPrice,
-              null,
-            )
+            if (useBridge) {
+              await bridgeAndExecute(
+                {
+                  token: inputCurrency.symbol,
+                  amount: amountIn,
+                  toChainId: CHAIN_CONFIG.CHAIN.id,
+                  sourceChains: remoteChainBalances?.[
+                    inputCurrency.address
+                  ].breakdown.map((b) => b.chain.id),
+                  execute: {
+                    ...transaction,
+                    gas:
+                      makeRatio < 0.01
+                        ? 550_000n * BigInt(result.spent.events.length) // take
+                        : 550_000n * BigInt(1 + result.spent.events.length), // limit
+                  },
+                  waitForReceipt: false,
+                },
+                makeRatio < 0.01 ? 'take' : 'limit',
+                `Bridge & ${confirmation.title}`,
+                {
+                  currency: outputCurrency,
+                  direction: 'out',
+                  amount: result.taken.amount,
+                },
+              )
+            } else {
+              setConfirmation(confirmation)
+
+              await sendTransaction(
+                selectedChain,
+                walletClient,
+                transaction,
+                disconnectAsync,
+                (hash) => {
+                  setConfirmation(undefined)
+                  if (makeRatio < 0.01) {
+                    queuePendingTransaction({
+                      ...confirmation,
+                      txHash: hash,
+                      type: 'take',
+                      timestamp: currentTimestampInSeconds(),
+                    })
+                  } else {
+                    queuePendingTransaction({
+                      ...confirmation,
+                      txHash: hash,
+                      type: 'limit',
+                      timestamp: currentTimestampInSeconds(),
+                    })
+                  }
+                },
+                (receipt) => {
+                  if (makeRatio < 0.01) {
+                    updatePendingTransaction({
+                      ...confirmation,
+                      txHash: receipt.transactionHash,
+                      type: 'take',
+                      timestamp: currentTimestampInSeconds(),
+                      blockNumber: Number(receipt.blockNumber),
+                      success: receipt.status === 'success',
+                    })
+                  } else {
+                    updatePendingTransaction({
+                      ...confirmation,
+                      txHash: receipt.transactionHash,
+                      type: 'limit',
+                      timestamp: currentTimestampInSeconds(),
+                      blockNumber: Number(receipt.blockNumber),
+                      success: receipt.status === 'success',
+                    })
+                  }
+                },
+                gasPrice,
+                null,
+              )
+            }
           }
         }
       } catch (e) {
@@ -365,6 +429,9 @@ export const LimitContractProvider = ({
       }
     },
     [
+      nexusSDK,
+      balances,
+      remoteChainBalances,
       gasPrice,
       getAllowance,
       disconnectAsync,
