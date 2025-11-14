@@ -2,7 +2,6 @@ import React from 'react'
 import '../../styles/globals.css'
 import { Meta, StoryObj } from '@storybook/react'
 import { mainnet } from 'viem/chains'
-import { zeroAddress } from 'viem'
 
 import { TokenTransferModal } from './token-transfer-modal'
 
