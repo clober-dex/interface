@@ -33,10 +33,10 @@
     es-toolkit "^1.39.7"
     tslib "^2.8.1"
 
-"@avail-project/nexus-core@^1.0.0-beta.28":
-  version "1.0.0-beta.28"
-  resolved "https://registry.yarnpkg.com/@avail-project/nexus-core/-/nexus-core-1.0.0-beta.28.tgz#acf11f821db5ce4c93adc19e577cae4cb519a8c3"
-  integrity sha512-i/QgbnhUXLsLRx5N+DdHdD2wjPl9DgHfw6N9WfIWMWPXZJ/gj+GUthl2JiGlvI4uHmF/X3+LskvzutT+YOjyaQ==
+"@avail-project/nexus-core@^1.0.0-beta.29":
+  version "1.0.0-beta.29"
+  resolved "https://registry.yarnpkg.com/@avail-project/nexus-core/-/nexus-core-1.0.0-beta.29.tgz#3e505d4cd791f45395e137ef8eeb4355d29358a1"
+  integrity sha512-jEoWVlwnYyUmftluDpBGyaFxUhqfiMIDgzSUvRptxFSffjPGxY6kbFcGInhXdGRee7F17P3LKl4urrkictwZIA==
   dependencies:
     "@avail-project/ca-common" "1.0.0-beta.7"
     "@cosmjs/proto-signing" "^0.34.0"
@@ -53,6 +53,7 @@
     msgpackr "^1.11.5"
     tronweb "^6.0.4"
     tslib "2.8.1"
+    viem "^2.31.7"
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.16.7", "@babel/code-frame@^7.27.1":
   version "7.27.1"
