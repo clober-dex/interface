@@ -20,6 +20,7 @@ import { RemoteChainBalances } from '../../model/remote-chain-balances'
 import CrossChainBalances from '../cross-chain-balances'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { Toggle } from '../toggle'
+import { OutlinkSvg } from '../svg/outlink-svg'
 
 import Modal from './modal'
 import { TokenTransferModal } from './token-transfer-modal'
@@ -141,7 +142,7 @@ export const UserWalletModal = ({
         </svg>
       </div>
 
-      <div className="flex flex-col max-h-[460px] sm:max-h-[576px]">
+      <div className="flex flex-col max-h-[600px] sm:max-h-[676px]">
         <h1 className="flex font-semibold mb-6 sm:text-xl items-center justify-center w-full">
           My Wallet
         </h1>
@@ -410,8 +411,18 @@ export const UserWalletModal = ({
                               className="w-7 h-7"
                             />
                             <div className="text-nowrap flex-1 flex flex-col justify-center items-start gap-0.5">
-                              <div className="w-full overflow-x-scroll text-start justify-start text-white text-sm font-medium">
+                              <div className="flex flex-row gap-1 w-full overflow-x-scroll text-start justify-start items-center text-white text-sm font-medium">
                                 {currency.symbol}
+
+                                <a
+                                  href={`${explorerUrl}/token/${currency.address}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center justify-center rounded-md p-1 hover:bg-gray-700 transition-colors duration-200"
+                                >
+                                  <OutlinkSvg className="w-2 h-2 sm:w-3 sm:h-3 items-center justify-center flex" />
+                                </a>
                               </div>
                               <div className="text-center justify-start text-white text-xs font-medium flex flex-row gap-1">
                                 {formatWithCommas(

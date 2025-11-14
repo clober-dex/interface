@@ -214,7 +214,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
               </svg>
             </button>
 
-            <div className="h-9 p-2.5 bg-[#2b2c30] rounded-xl inline-flex justify-start items-center gap-2">
+            <div className="h-9 p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex justify-start items-center gap-2">
               <div className="flex justify-start items-center gap-1.5">
                 <div className="text-right justify-start text-white text-sm font-medium">
                   Unified Balance
