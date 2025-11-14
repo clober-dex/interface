@@ -316,7 +316,7 @@ export const BridgeAndExecuteProvider = ({
               if (currentIntent) {
                 const now = currentTimestampInSeconds()
                 updatePendingTransaction({
-                  ...bridgeAndExecuteConfirmation,
+                  ...bridgeConfirmation,
                   txHash: hexIntentID,
                   type: transactionType,
                   timestamp: now,
