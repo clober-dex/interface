@@ -28,7 +28,7 @@ export const UserButton = ({
       }
     >
       <span className="relative whitespace-nowrap">
-        <span className="z-10 transition-opacity ease-in-out flex items-center justify-center gap-1.5 md:justify-start rounded md:rounded-xl md:w-full p-2 md:p-2.5 cursor-pointer h-9 bg-[#2b2c30] group-hover:bg-gray-700">
+        <span className="z-10 transition-opacity ease-in-out flex items-center justify-center gap-1.5 md:justify-start rounded md:rounded-xl md:w-full p-1.5 sm:p-2 md:p-2.5 cursor-pointer h-[30px] sm:h-9 bg-[#2b2c30] group-hover:bg-gray-700">
           <div className="w-6 h-4 relative">
             {walletIconUrl ? (
               <img
