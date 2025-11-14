@@ -443,7 +443,7 @@ export const UserWalletModal = ({
                               setSelectedCurrency(currency)
                               setShowTokenTransferModal(true)
                             }}
-                            className="ml-auto px-3 py-2 bg-blue-400/20 rounded-lg inline-flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
+                            className="h-8 ml-auto px-3 py-2 bg-blue-400/20 rounded-lg inline-flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
                           >
                             Send
                           </button>
