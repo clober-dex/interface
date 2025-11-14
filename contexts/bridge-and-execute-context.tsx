@@ -1,5 +1,9 @@
 import React, { useCallback, useMemo } from 'react'
-import { BridgeAndExecuteParams, NEXUS_EVENTS } from '@avail-project/nexus-core'
+import {
+  BridgeAndExecuteParams,
+  BridgeParams,
+  NEXUS_EVENTS,
+} from '@avail-project/nexus-core'
 import { numberToHex, parseUnits } from 'viem'
 import { usePublicClient } from 'wagmi'
 
@@ -17,6 +21,7 @@ import { useCurrencyContext } from './currency-context'
 import { useChainContext } from './chain-context'
 
 type BridgeAndExecuteContext = {
+  bridge(params: BridgeParams): Promise<void>
   bridgeAndExecute(
     params: BridgeAndExecuteParams,
     transactionType: TransactionType,
@@ -113,6 +118,153 @@ export const BridgeAndExecuteProvider = ({
     useTransactionContext()
   const { prices, balances } = useCurrencyContext()
   const { nexusSDK } = useNexus()
+
+  const bridge = useCallback(
+    async (params: BridgeParams) => {
+      if (!nexusSDK) {
+        return
+      }
+
+      const simulationResult = await nexusSDK.simulateBridge(params)
+
+      const currency = simulationResult.token!
+
+      const footer = (
+        <div className="flex flex-row gap-1 text-xs justify-end">
+          <span className="text-gray-50">Bridge Fee:</span>
+          {toPreciseString(
+            simulationResult.intent.fees.total ?? '0',
+            prices[currency.contractAddress],
+            formatWithCommas,
+          )}{' '}
+          {simulationResult.token.symbol}
+        </div>
+      )
+
+      const bridgeConfirmation: Confirmation = {
+        title: `Bridge`,
+        body: 'Please confirm in your wallet.',
+        chain: selectedChain,
+        fields: [
+          ...(simulationResult.intent.sources ?? []).map(
+            ({ amount, chainName, chainID, chainLogo }) => ({
+              currency: {
+                ...currency,
+                address: currency.contractAddress,
+              },
+              label: currency.symbol,
+              direction: 'in',
+              chain: {
+                id: chainID,
+                name: chainName,
+                icon: chainLogo,
+              } as Chain,
+              primaryText: toPreciseString(
+                amount,
+                prices[currency.contractAddress],
+                formatWithCommas,
+              ),
+              secondaryText: formatDollarValue(
+                parseUnits(amount, currency.decimals),
+                currency.decimals,
+                prices[currency.contractAddress],
+              ),
+            }),
+          ),
+          {
+            currency: {
+              ...currency,
+              address: currency.contractAddress,
+            },
+            label: currency.symbol,
+            direction: 'out',
+            chain: {
+              id: simulationResult.intent.destination.chainID,
+              name: simulationResult.intent.destination.chainName,
+              icon: simulationResult.intent.destination.chainLogo,
+            } as Chain,
+            primaryText: toPreciseString(
+              simulationResult.intent.destination.amount,
+              prices[currency.contractAddress],
+              formatWithCommas,
+            ),
+            secondaryText: formatDollarValue(
+              parseUnits(
+                simulationResult.intent.destination.amount,
+                currency.decimals,
+              ),
+              currency.decimals,
+              prices[currency.contractAddress],
+            ),
+          },
+        ] as Confirmation['fields'],
+        footer,
+      }
+      setConfirmation(bridgeConfirmation)
+
+      let hexIntentID: `0x${string}` | undefined = undefined
+      await nexusSDK.bridge(params, {
+        onEvent: async (event) => {
+          if (event.name === NEXUS_EVENTS.STEP_COMPLETE) {
+            setConfirmation({
+              ...bridgeConfirmation,
+              footer: (
+                <div className="flex flex-col gap-1 w-full">
+                  {!STEPS.find(({ name }) => name === event.args.type) &&
+                    footer}
+                  <Steps
+                    type={event.args.type}
+                    externalLink={(event.args as any).data?.explorerURL}
+                  />
+                </div>
+              ),
+            })
+
+            if (event.args.type === 'INTENT_SUBMITTED') {
+              hexIntentID = numberToHex(
+                event.args.data.intentID,
+              ) as `0x${string}`
+
+              queuePendingTransaction({
+                ...bridgeConfirmation,
+                txHash: hexIntentID,
+                type: 'bridge',
+                timestamp: currentTimestampInSeconds(),
+                externalLink: event.args.data.explorerURL,
+              })
+            } else if (event.args.type === 'INTENT_FULFILLED' && hexIntentID) {
+              const intents = await nexusSDK.getMyIntents()
+              const currentIntent = intents.find(
+                (intent) => hexIntentID === numberToHex(intent.id),
+              )
+
+              if (currentIntent) {
+                const now = currentTimestampInSeconds()
+                updatePendingTransaction({
+                  ...bridgeConfirmation,
+                  txHash: hexIntentID,
+                  type: 'bridge',
+                  timestamp: now,
+                  blockNumber: 1,
+                  success: true,
+                })
+
+                setConfirmation(undefined)
+              }
+            }
+          }
+        },
+      })
+    },
+    [
+      nexusSDK,
+      prices,
+      queuePendingTransaction,
+      selectedChain,
+      setConfirmation,
+      updatePendingTransaction,
+    ],
+  )
 
   const bridgeAndExecute = useCallback(
     async (
@@ -362,7 +514,14 @@ export const BridgeAndExecuteProvider = ({
   )
 
   return (
-    <Context.Provider value={{ bridgeAndExecute }}>{children}</Context.Provider>
+    <Context.Provider
+      value={{
+        bridge,
+        bridgeAndExecute,
+      }}
+    >
+      {children}
+    </Context.Provider>
   )
 }
 

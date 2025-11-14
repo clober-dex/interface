@@ -21,10 +21,10 @@ import CrossChainBalances from '../cross-chain-balances'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { Toggle } from '../toggle'
 import { OutlinkSvg } from '../svg/outlink-svg'
+import { TokenPullModalContainer } from '../../containers/token-pull-modal-container'
 
 import Modal from './modal'
 import { TokenTransferModal } from './token-transfer-modal'
-import { TokenPullModal } from './token-pull-modal'
 
 const getTimeAgo = (timestamp: number, cache: Map<string, boolean>) => {
   timestamp = timestamp * 1000
@@ -119,17 +119,9 @@ export const UserWalletModal = ({
       onTransfer={onTransfer}
     />
   ) : showTokenPullModal && remoteChainBalances ? (
-    <TokenPullModal
-      chain={chain}
-      explorerUrl={explorerUrl}
+    <TokenPullModalContainer
       selectedCurrency={selectedCurrency}
       setSelectedCurrency={setSelectedCurrency}
-      currencies={currencies}
-      setCurrencies={setCurrencies}
-      balances={balances}
-      remoteChainBalances={remoteChainBalances}
-      prices={prices}
-      gasPrice={gasPrice}
       onBack={() => setShowTokenPullModal(false)}
       onClose={onClose}
     />

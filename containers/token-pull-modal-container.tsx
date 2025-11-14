@@ -1,45 +1,29 @@
-import React from 'react'
-import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import React, { useEffect, useState } from 'react'
+import { isAddressEqual, parseUnits } from 'viem'
+import { useQuery } from '@tanstack/react-query'
 
-import { Currency } from '../../model/currency'
-import { Balances } from '../../model/balances'
-import { LeftBracketAngleSvg } from '../svg/left-bracket-angle-svg'
-import CurrencyAmountInput from '../input/currency-amount-input'
-import { Prices } from '../../model/prices'
-import { Chain } from '../../model/chain'
-import CurrencySelect from '../selector/currency-select'
-import { ActionButton } from '../button/action-button'
-import { toUnitString } from '../../utils/bigint'
-import { RemoteChainBalances } from '../../model/remote-chain-balances'
-import { CHAIN_CONFIG } from '../../chain-configs'
+import { Currency } from '../model/currency'
+import { CHAIN_CONFIG } from '../chain-configs'
+import Modal from '../components/modal/modal'
+import CurrencySelect from '../components/selector/currency-select'
+import BalanceSourcesModal from '../components/modal/balance-sources-modal'
+import { LeftBracketAngleSvg } from '../components/svg/left-bracket-angle-svg'
+import CurrencyAmountInput from '../components/input/currency-amount-input'
+import { ActionButton } from '../components/button/action-button'
+import { useCurrencyContext } from '../contexts/currency-context'
+import { useChainContext } from '../contexts/chain-context'
+import { useNexus } from '../contexts/nexus-context'
+import { formatWithCommas, toPreciseString } from '../utils/bignumber'
+import { useBridgeAndExecuteContext } from '../contexts/bridge-and-execute-context'
 
-import Modal from './modal'
-import BalanceSourcesModal from './balance-sources-modal'
-
-export const TokenPullModal = ({
-  chain,
-  explorerUrl,
+export const TokenPullModalContainer = ({
   selectedCurrency,
   setSelectedCurrency,
-  currencies,
-  setCurrencies,
-  balances,
-  remoteChainBalances,
-  prices,
-  gasPrice,
   onBack,
   onClose,
 }: {
-  chain: Chain
-  explorerUrl: string
   selectedCurrency: Currency | undefined
   setSelectedCurrency: (currency: Currency | undefined) => void
-  currencies: Currency[]
-  setCurrencies: (currencies: Currency[]) => void
-  balances: Balances
-  remoteChainBalances: RemoteChainBalances
-  prices: Prices
-  gasPrice: bigint | undefined
   onBack: () => void
   onClose: () => void
 }) => {
@@ -48,14 +32,55 @@ export const TokenPullModal = ({
   const [showUnifiedBalanceModal, setShowUnifiedBalanceModal] =
     React.useState<boolean>(false)
   const [amount, setAmount] = React.useState<string>('')
+  const [debouncedValue, setDebouncedValue] = useState('')
+
+  const { currencies, setCurrencies, balances, remoteChainBalances, prices } =
+    useCurrencyContext()
+  const { nexusSDK } = useNexus()
+  const { bridge } = useBridgeAndExecuteContext()
+  const { selectedChain } = useChainContext()
+
+  const { data: bridgeFee } = useQuery({
+    queryKey: [
+      'calculate-bridge-fee',
+      selectedChain.id,
+      Number(debouncedValue),
+      nexusSDK !== null,
+      selectedCurrency,
+    ],
+    queryFn: async () => {
+      if (!nexusSDK || !selectedCurrency) {
+        return null
+      }
+      const simulationResult = await nexusSDK.simulateBridge({
+        token: selectedCurrency.symbol,
+        amount: parseUnits(amount, selectedCurrency.decimals),
+        toChainId: selectedChain.id,
+        sourceChains: remoteChainBalances?.[
+          selectedCurrency.address
+        ]?.breakdown.map((breakdown) => breakdown.chain.id),
+      })
+      return Number(simulationResult.intent.fees.total)
+    },
+    initialData: null,
+  })
+
+  // debounce inputCurrencyAmount for 500ms to avoid unnecessary quote fetches while typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(amount)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [amount])
 
   return (
     <Modal show onClose={onClose}>
       <div className="flex flex-col w-full h-full">
         {showCurrencySelect ? (
           <CurrencySelect
-            chain={chain}
-            explorerUrl={explorerUrl}
+            chain={selectedChain}
+            explorerUrl={selectedChain.blockExplorers?.default.url || ''}
             currencies={
               selectedCurrency
                 ? currencies.filter(
@@ -124,7 +149,7 @@ export const TokenPullModal = ({
                   Bridge Token from cross-chain
                 </div>
                 <CurrencyAmountInput
-                  chain={chain}
+                  chain={selectedChain}
                   currency={selectedCurrency}
                   value={amount}
                   onValueChange={setAmount}
@@ -162,16 +187,20 @@ export const TokenPullModal = ({
                       Bridge Fee
                     </div>
                   </div>
-                  <div className="flex justify-start items-start gap-1">
+                  <div className="flex justify-start items-center gap-1.5">
                     <div className="text-center justify-start text-gray-500 text-sm">
                       Up to
                     </div>
-                    <div className="text-center justify-start text-white text-sm">
-                      $
-                      {(
-                        Number(toUnitString(100_000n * (gasPrice ?? 0n), 18)) *
-                        prices[zeroAddress]
-                      ).toFixed(4)}
+                    <div className="flex text-center justify-start items-center text-white text-sm">
+                      {bridgeFee && selectedCurrency ? (
+                        `${toPreciseString(
+                          bridgeFee,
+                          selectedCurrency.decimals,
+                          formatWithCommas,
+                        )} ${selectedCurrency.symbol}`
+                      ) : (
+                        <div className="w-10 h-4 rounded animate-pulse bg-gray-500" />
+                      )}{' '}
                     </div>
                   </div>
                 </div>
@@ -206,12 +235,12 @@ export const TokenPullModal = ({
                     .trim()}`
                 })()}
                 onClick={async () => {
-                  if (selectedCurrency) {
-                    // await onTransfer(
-                    //   selectedCurrency,
-                    //   parseUnits(amount, selectedCurrency.decimals),
-                    //   getAddress(recipient.trim() as `0x${string}`),
-                    // )
+                  if (selectedCurrency && nexusSDK) {
+                    await bridge({
+                      token: selectedCurrency.symbol,
+                      amount: parseUnits(amount, selectedCurrency.decimals),
+                      toChainId: selectedChain.id,
+                    })
                   }
                 }}
               />
