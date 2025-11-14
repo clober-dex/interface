@@ -110,7 +110,6 @@ export const UserWalletModal = ({
       currencies={currencies}
       setCurrencies={setCurrencies}
       balances={balances}
-      remoteChainBalances={remoteChainBalances}
       prices={prices}
       gasPrice={gasPrice}
       onBack={() => setShowTokenTransferModal(false)}
@@ -411,7 +410,7 @@ export const UserWalletModal = ({
                               className="w-7 h-7"
                             />
                             <div className="text-nowrap flex-1 flex flex-col justify-center items-start gap-0.5">
-                              <div className="flex flex-row gap-1 w-full overflow-x-scroll text-start justify-start items-center text-white text-sm font-medium">
+                              <div className="flex flex-row gap-0.5 w-full overflow-x-scroll text-start justify-start items-center text-white text-sm font-medium">
                                 {currency.symbol}
 
                                 <a
