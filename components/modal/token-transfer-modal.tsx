@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   getAddress,
   isAddress,
@@ -19,6 +19,7 @@ import { toUnitString } from '../../utils/bigint'
 import { RemoteChainBalances } from '../../model/remote-chain-balances'
 
 import Modal from './modal'
+import BalanceSourcesModal from './balance-sources-modal'
 
 export const TokenTransferModal = ({
   chain,
@@ -56,6 +57,8 @@ export const TokenTransferModal = ({
   const [recipient, setRecipient] = React.useState<string>('')
   const [showCurrencySelect, setShowCurrencySelect] =
     React.useState<boolean>(false)
+  const [showUnifiedBalanceModal, setShowUnifiedBalanceModal] =
+    useState<boolean>(false)
   const [amount, setAmount] = React.useState<string>('')
 
   return (
@@ -99,6 +102,18 @@ export const TokenTransferModal = ({
           />
         ) : (
           <div className="flex flex-col h-full max-h-[480px] sm:max-h-[576px]">
+            {remoteChainBalances &&
+              selectedCurrency &&
+              showUnifiedBalanceModal && (
+                <BalanceSourcesModal
+                  balances={balances}
+                  remoteChainBalances={remoteChainBalances}
+                  currency={selectedCurrency}
+                  prices={prices}
+                  onClose={() => setShowUnifiedBalanceModal(false)}
+                />
+              )}
+
             <div className="absolute w-7 h-7">
               <button
                 className="flex items-center justify-center w-full h-full"
@@ -131,6 +146,12 @@ export const TokenTransferModal = ({
                   onCurrencyClick={
                     setShowCurrencySelect
                       ? () => setShowCurrencySelect(true)
+                      : undefined
+                  }
+                  setShowUnifiedBalanceModal={
+                    selectedCurrency &&
+                    remoteChainBalances?.[selectedCurrency.address].total
+                      ? setShowUnifiedBalanceModal
                       : undefined
                   }
                   price={
