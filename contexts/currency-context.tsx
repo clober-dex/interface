@@ -413,14 +413,6 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
           chain: selectedChain,
           fields: [
             {
-              label: 'From',
-              primaryText: shortAddress(userAddress, 6),
-            },
-            {
-              label: 'To',
-              primaryText: shortAddress(recipient, 6),
-            },
-            {
               currency: currency,
               label: currency.symbol,
               direction: 'in',
@@ -434,6 +426,10 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
                 currency.decimals,
                 prices[currency.address],
               ),
+            },
+            {
+              label: 'To',
+              primaryText: shortAddress(recipient, 6),
             },
           ] as Confirmation['fields'],
         }

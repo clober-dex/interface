@@ -202,9 +202,7 @@ export const TokenTransferModal = ({
                     return 'Insufficient Balance'
                   }
 
-                  return amountIn > balances[selectedCurrency.address]
-                    ? 'Bridge & Transfer'
-                    : 'Transfer'
+                  return 'Transfer'
                 })()}
                 onClick={async () => {
                   if (selectedCurrency) {
