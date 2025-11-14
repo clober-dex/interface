@@ -24,6 +24,7 @@ import { OutlinkSvg } from '../svg/outlink-svg'
 
 import Modal from './modal'
 import { TokenTransferModal } from './token-transfer-modal'
+import { TokenPullModal } from './token-pull-modal'
 
 const getTimeAgo = (timestamp: number, cache: Map<string, boolean>) => {
   timestamp = timestamp * 1000
@@ -83,6 +84,7 @@ export const UserWalletModal = ({
 }) => {
   const cache = new Map<string, boolean>()
   const [showTokenTransferModal, setShowTokenTransferModal] = useState(false)
+  const [showTokenPullModal, setShowTokenPullModal] = useState(false)
   const [isCopyToast, setIsCopyToast] = useState(false)
   const [tab, setTab] = React.useState<'tokens' | 'transactions'>(
     'transactions',
@@ -115,6 +117,21 @@ export const UserWalletModal = ({
       onBack={() => setShowTokenTransferModal(false)}
       onClose={onClose}
       onTransfer={onTransfer}
+    />
+  ) : showTokenPullModal && remoteChainBalances ? (
+    <TokenPullModal
+      chain={chain}
+      explorerUrl={explorerUrl}
+      selectedCurrency={selectedCurrency}
+      setSelectedCurrency={setSelectedCurrency}
+      currencies={currencies}
+      setCurrencies={setCurrencies}
+      balances={balances}
+      remoteChainBalances={remoteChainBalances}
+      prices={prices}
+      gasPrice={gasPrice}
+      onBack={() => setShowTokenPullModal(false)}
+      onClose={onClose}
     />
   ) : (
     <Modal show onClose={onClose}>
@@ -448,15 +465,36 @@ export const UserWalletModal = ({
                             </div>
                           </div>
 
-                          <button
-                            onClick={() => {
-                              setSelectedCurrency(currency)
-                              setShowTokenTransferModal(true)
-                            }}
-                            className="h-8 ml-auto px-3 py-2 bg-blue-400/20 rounded-lg inline-flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
-                          >
-                            Send
-                          </button>
+                          <div className="flex ml-auto flex-row gap-1.5">
+                            {remoteChainBalances?.[currency.address].total && (
+                              <button
+                                onClick={() => {
+                                  setSelectedCurrency(currency)
+                                  setShowTokenPullModal(true)
+                                }}
+                                className="h-8 px-3 py-2 bg-blue-400/20 rounded-lg flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
+                              >
+                                <div className="hidden sm:flex">
+                                  Bridge to{' '}
+                                  {CHAIN_CONFIG.CHAIN.name
+                                    .replace('Testnet', '')
+                                    .replace('testnet', '')
+                                    .trim()}
+                                </div>
+                                <div className="flex sm:hidden">Bridge</div>
+                              </button>
+                            )}
+
+                            <button
+                              onClick={() => {
+                                setSelectedCurrency(currency)
+                                setShowTokenTransferModal(true)
+                              }}
+                              className="h-8 px-3 py-2 bg-blue-400/20 rounded-lg flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
+                            >
+                              Send
+                            </button>
+                          </div>
                         </div>
 
                         {remoteChainBalances?.[currency.address].total && (
