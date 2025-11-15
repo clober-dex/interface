@@ -5,7 +5,6 @@ import {
   addLiquidity,
   getContractAddresses,
   getPool,
-  getQuoteToken,
   removeLiquidity,
   unwrapFromERC20,
   wrapToERC20,
@@ -13,7 +12,7 @@ import {
 import { isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import BigNumber from 'bignumber.js'
 
-import { Currency } from '../../model/currency'
+import { Currency, LpCurrency } from '../../model/currency'
 import { Confirmation, useTransactionContext } from '../transaction-context'
 import { useChainContext } from '../chain-context'
 import { useCurrencyContext } from '../currency-context'
@@ -23,8 +22,8 @@ import {
   maxApprove as maxApproveERC6909,
 } from '../../utils/approve6909'
 import {
-  toPreciseString,
   formatWithCommas,
+  toPreciseString,
   toSignificantString,
 } from '../../utils/bignumber'
 import { sendTransaction } from '../../utils/transaction'
@@ -33,6 +32,8 @@ import { CHAIN_CONFIG } from '../../chain-configs'
 import { aggregators } from '../../chain-configs/aggregators'
 import Modal from '../../components/modal/modal'
 import { formatDollarValue } from '../../utils/bigint'
+import { useNexus } from '../nexus-context'
+import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
 
 export type PoolContractContext = {
   mint: (
@@ -81,6 +82,7 @@ export const PoolContractProvider = ({
 }: React.PropsWithChildren<{}>) => {
   const [showRevertModal, setShowRevertModal] = React.useState(false)
   const queryClient = useQueryClient()
+  const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
 
   const { data: walletClient } = useWalletClient()
@@ -91,7 +93,9 @@ export const PoolContractProvider = ({
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { getAllowance, prices } = useCurrencyContext()
+  const { getAllowance, prices, balances, remoteChainBalances } =
+    useCurrencyContext()
+  const { bridgeAndExecute } = useBridgeAndExecuteContext()
 
   const mint = useCallback(
     async (
@@ -218,16 +222,23 @@ export const PoolContractProvider = ({
 
         // If both currencies have sufficient allowance, proceed to add liquidity
         else {
-          const [baseCurrency, quoteCurrency] = isAddressEqual(
-            getQuoteToken({
-              chainId: selectedChain.id,
-              token0: currency0.address,
-              token1: currency1.address,
-            }),
-            currency0.address,
-          )
-            ? [currency1, currency0]
-            : [currency0, currency1]
+          let useBridge = false
+          if (nexusSDK && amount0) {
+            const amount = parseUnits(amount0, currency0.decimals)
+            const remoteChainBalance =
+              remoteChainBalances?.[currency0.address].total ?? 0n
+            const balance = balances[currency0.address]
+            useBridge =
+              remoteChainBalance + balance >= amount && amount > balance
+          }
+          if (nexusSDK && amount1) {
+            const amount = parseUnits(amount1, currency1.decimals)
+            const remoteChainBalance =
+              remoteChainBalances?.[currency1.address].total ?? 0n
+            const balance = balances[currency1.address]
+            useBridge =
+              remoteChainBalance + balance >= amount && amount > balance
+          }
 
           const { transaction, result } = await addLiquidity({
             chainId: selectedChain.id,
@@ -244,6 +255,7 @@ export const PoolContractProvider = ({
               disableSwap,
               slippage,
               timeoutForQuotes: 2000,
+              gasLimit: useBridge ? 5_000_000n : undefined,
             },
           })
 
@@ -325,52 +337,78 @@ export const PoolContractProvider = ({
                     )}`,
                   }
                 : undefined,
-              result.quoteResponse &&
-              result.quoteRequest &&
-              result.quoteResponse.amountOut > 0n &&
-              prices[baseCurrency.address] &&
-              prices[quoteCurrency.address]
-                ? {
-                    label: 'Market Rate',
-                    primaryText: `${formatWithCommas(
-                      toSignificantString(
-                        prices[baseCurrency.address] /
-                          prices[quoteCurrency.address],
-                      ),
-                    )}`,
-                  }
-                : undefined,
             ].filter((field) => field !== undefined) as Confirmation['fields'],
           }
-          setConfirmation(confirmation)
-          if (transaction) {
-            await sendTransaction(
-              selectedChain,
-              walletClient,
-              transaction,
-              disconnectAsync,
-              (hash) => {
-                setConfirmation(undefined)
-                queuePendingTransaction({
-                  ...confirmation,
-                  txHash: hash,
-                  type: 'mint',
-                  timestamp: currentTimestampInSeconds(),
-                })
+          if (transaction && useBridge) {
+            await bridgeAndExecute(
+              {
+                token: amount0 ? currency0.symbol : currency1.symbol,
+                amount: amount0
+                  ? parseUnits(amount0, currency0.decimals)
+                  : parseUnits(amount1, currency1.decimals),
+                toChainId: CHAIN_CONFIG.CHAIN.id,
+                sourceChains: remoteChainBalances?.[
+                  amount0 ? currency0.address : currency1.address
+                ].breakdown.map((b) => b.chain.id),
+                execute: transaction,
+                waitForReceipt: false,
               },
-              (receipt) => {
-                updatePendingTransaction({
-                  ...confirmation,
-                  txHash: receipt.transactionHash,
-                  type: 'mint',
-                  timestamp: currentTimestampInSeconds(),
-                  blockNumber: Number(receipt.blockNumber),
-                  success: receipt.status === 'success',
-                })
+              'mint',
+              `Bridge & ${confirmation.title}`,
+              {
+                currency: {
+                  ...result.lpCurrency.currency,
+                  currencyA: result.currencyA.currency,
+                  currencyB: result.currencyB.currency,
+                } as LpCurrency,
+                direction: 'out',
+                amount: result.lpCurrency.amount,
+                price: lpPrice,
               },
-              gasPrice,
-              null,
+              result.quoteResponse &&
+                result.quoteRequest &&
+                result.quoteResponse.amountOut > 0n
+                ? [
+                    {
+                      label: 'Swap Rate',
+                      primaryText: `${formatWithCommas(
+                        toSignificantString(result.quoteResponse.exchangeRate),
+                      )}`,
+                    },
+                  ]
+                : undefined,
             )
+          } else {
+            setConfirmation(confirmation)
+            if (transaction) {
+              await sendTransaction(
+                selectedChain,
+                walletClient,
+                transaction,
+                disconnectAsync,
+                (hash) => {
+                  setConfirmation(undefined)
+                  queuePendingTransaction({
+                    ...confirmation,
+                    txHash: hash,
+                    type: 'mint',
+                    timestamp: currentTimestampInSeconds(),
+                  })
+                },
+                (receipt) => {
+                  updatePendingTransaction({
+                    ...confirmation,
+                    txHash: receipt.transactionHash,
+                    type: 'mint',
+                    timestamp: currentTimestampInSeconds(),
+                    blockNumber: Number(receipt.blockNumber),
+                    success: receipt.status === 'success',
+                  })
+                },
+                gasPrice,
+                null,
+              )
+            }
           }
         }
       } catch (e: any) {
@@ -391,6 +429,9 @@ export const PoolContractProvider = ({
       }
     },
     [
+      nexusSDK,
+      balances,
+      remoteChainBalances,
       gasPrice,
       getAllowance,
       disconnectAsync,

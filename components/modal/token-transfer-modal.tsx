@@ -178,20 +178,32 @@ export const TokenTransferModal = ({
                   balances[selectedCurrency.address] <
                     parseUnits(amount, selectedCurrency.decimals)
                 }
-                text={
-                  !selectedCurrency
-                    ? 'Select Token'
-                    : recipient.trim() === ''
-                      ? 'Enter Recipient Address'
-                      : !isAddress(recipient.trim())
-                        ? 'Invalid Address'
-                        : Number(amount) <= 0
-                          ? 'Enter Amount'
-                          : balances[selectedCurrency.address] <
-                              parseUnits(amount, selectedCurrency.decimals)
-                            ? 'Insufficient Balance'
-                            : 'Confirm'
-                }
+                text={(() => {
+                  if (!selectedCurrency) {
+                    return 'Select Token'
+                  }
+
+                  const trimmedRecipient = recipient.trim()
+                  if (trimmedRecipient === '') {
+                    return 'Enter Recipient Address'
+                  }
+
+                  if (!isAddress(trimmedRecipient)) {
+                    return 'Invalid Address'
+                  }
+
+                  if (Number(amount) <= 0) {
+                    return 'Enter Amount'
+                  }
+
+                  const amountIn = parseUnits(amount, selectedCurrency.decimals)
+                  const balance = balances[selectedCurrency.address]
+                  if (balance < amountIn) {
+                    return 'Insufficient Balance'
+                  }
+
+                  return 'Transfer'
+                })()}
                 onClick={async () => {
                   if (selectedCurrency) {
                     await onTransfer(

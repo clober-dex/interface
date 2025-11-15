@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import { Prices } from '../../../model/prices'
 import { ActionButton, ActionButtonProps } from '../../button/action-button'
@@ -9,10 +9,15 @@ import { SlippageSelector } from '../../selector/slippage-selector'
 import { Chain } from '../../../model/chain'
 import { Pool } from '../../../model/pool'
 import { Toggle } from '../../toggle'
+import { RemoteChainBalances } from '../../../model/remote-chain-balances'
+import BalanceSourcesModal from '../../modal/balance-sources-modal'
+import { Balances } from '../../../model/balances'
 
 export const AddLiquidityForm = ({
   chain,
   pool,
+  balances,
+  remoteChainBalances,
   prices,
   currency0Amount,
   setCurrency0Amount,
@@ -31,6 +36,8 @@ export const AddLiquidityForm = ({
 }: {
   chain: Chain
   pool: Pool
+  balances: Balances
+  remoteChainBalances: RemoteChainBalances
   prices: Prices
   currency0Amount: string
   setCurrency0Amount: (inputCurrencyAmount: string) => void
@@ -53,8 +60,37 @@ export const AddLiquidityForm = ({
       pool.liquidityB.total.value === '0',
     [pool],
   )
+  const [
+    showCurrencyAUnifiedBalanceModal,
+    setShowCurrencyAUnifiedBalanceModal,
+  ] = useState<boolean>(false)
+  const [
+    showCurrencyBUnifiedBalanceModal,
+    setShowCurrencyBUnifiedBalanceModal,
+  ] = useState<boolean>(false)
+
   return (
     <>
+      {showCurrencyAUnifiedBalanceModal ? (
+        <BalanceSourcesModal
+          balances={balances}
+          remoteChainBalances={remoteChainBalances}
+          currency={pool.currencyA!}
+          prices={prices}
+          onClose={() => setShowCurrencyAUnifiedBalanceModal(false)}
+        />
+      ) : showCurrencyBUnifiedBalanceModal ? (
+        <BalanceSourcesModal
+          balances={balances}
+          remoteChainBalances={remoteChainBalances}
+          currency={pool.currencyB!}
+          prices={prices}
+          onClose={() => setShowCurrencyBUnifiedBalanceModal(false)}
+        />
+      ) : (
+        <></>
+      )}
+
       <div className="flex flex-col relative gap-4 self-stretch p-4 sm:p-5 bg-[#16181d] rounded-2xl lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930]">
         <div className="flex flex-row w-full text-[#8d94a1] text-[13px] font-medium">
           Enter amount you’d like to add.
@@ -66,6 +102,12 @@ export const AddLiquidityForm = ({
             value={currency0Amount}
             onValueChange={setCurrency0Amount}
             availableAmount={availableCurrency0Balance}
+            setShowUnifiedBalanceModal={
+              pool.currencyA &&
+              remoteChainBalances?.[pool.currencyA.address]?.total
+                ? setShowCurrencyAUnifiedBalanceModal
+                : undefined
+            }
             price={prices[pool.currencyA.address]}
           />
           <CurrencyAmountInput
@@ -74,6 +116,12 @@ export const AddLiquidityForm = ({
             value={currency1Amount}
             onValueChange={setCurrency1Amount}
             availableAmount={availableCurrency1Balance}
+            setShowUnifiedBalanceModal={
+              pool.currencyB &&
+              remoteChainBalances?.[pool.currencyB.address]?.total
+                ? setShowCurrencyBUnifiedBalanceModal
+                : undefined
+            }
             price={prices[pool.currencyB.address]}
           />
         </div>

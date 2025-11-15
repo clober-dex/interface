@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import { Transaction } from '../../contexts/transaction-context'
 import UserTransactionCard from '../card/user-transaction-card'
@@ -16,6 +16,12 @@ import { Prices } from '../../model/prices'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { formatTinyNumber, formatWithCommas } from '../../utils/bignumber'
 import { formatDollarValue, toUnitString } from '../../utils/bigint'
+import { RemoteChainBalances } from '../../model/remote-chain-balances'
+import CrossChainBalances from '../cross-chain-balances'
+import { CHAIN_CONFIG } from '../../chain-configs'
+import { Toggle } from '../toggle'
+import { OutlinkSvg } from '../svg/outlink-svg'
+import { TokenPullModalContainer } from '../../containers/token-pull-modal-container'
 
 import Modal from './modal'
 import { TokenTransferModal } from './token-transfer-modal'
@@ -43,6 +49,7 @@ export const UserWalletModal = ({
   currencies,
   setCurrencies,
   balances,
+  remoteChainBalances,
   prices,
   gasPrice,
   ens,
@@ -51,13 +58,18 @@ export const UserWalletModal = ({
   disconnectAsync,
   onClose,
   onTransfer,
+  useRemoteChainBalances,
+  setUseRemoteChainBalances,
 }: {
   chain: Chain
   userAddress: `0x${string}`
   currencies: Currency[]
   setCurrencies: (currencies: Currency[]) => void
   balances: Balances
+  remoteChainBalances?: RemoteChainBalances
   prices: Prices
+  useRemoteChainBalances: boolean
+  setUseRemoteChainBalances: (value: boolean) => void
   gasPrice: bigint | undefined
   ens: string | null
   walletIconUrl: string | null
@@ -72,6 +84,7 @@ export const UserWalletModal = ({
 }) => {
   const cache = new Map<string, boolean>()
   const [showTokenTransferModal, setShowTokenTransferModal] = useState(false)
+  const [showTokenPullModal, setShowTokenPullModal] = useState(false)
   const [isCopyToast, setIsCopyToast] = useState(false)
   const [tab, setTab] = React.useState<'tokens' | 'transactions'>(
     'transactions',
@@ -105,6 +118,13 @@ export const UserWalletModal = ({
       onClose={onClose}
       onTransfer={onTransfer}
     />
+  ) : showTokenPullModal && remoteChainBalances ? (
+    <TokenPullModalContainer
+      selectedCurrency={selectedCurrency}
+      setSelectedCurrency={setSelectedCurrency}
+      onBack={() => setShowTokenPullModal(false)}
+      onClose={onClose}
+    />
   ) : (
     <Modal show onClose={onClose}>
       <Toast
@@ -130,7 +150,7 @@ export const UserWalletModal = ({
         </svg>
       </div>
 
-      <div className="flex flex-col max-h-[460px] sm:max-h-[576px]">
+      <div className="flex flex-col max-h-[600px] sm:max-h-[676px]">
         <h1 className="flex font-semibold mb-6 sm:text-xl items-center justify-center w-full">
           My Wallet
         </h1>
@@ -308,8 +328,33 @@ export const UserWalletModal = ({
         </div>
 
         {tab === 'tokens' && (
-          <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-medium mb-7 mt-[30px]">
-            ${formatTinyNumber(portfolioUSD)}
+          <div className="flex flex-col w-full">
+            {CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES && (
+              <div className="self-stretch px-4 py-3.5 bg-[#24272e] rounded-xl inline-flex justify-start items-center mt-4">
+                <div className="flex-1 flex justify-start items-center gap-2">
+                  <div className="flex-1 inline-flex flex-col justify-center items-start gap-0.5">
+                    <div className="justify-start text-white text-sm font-semibold">
+                      Use unified balance
+                    </div>
+                    <div className="justify-start text-[#8d94a1] text-[13px] font-medium">
+                      You can use balance across every chain
+                    </div>
+                  </div>
+
+                  <Toggle
+                    disabled={!CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES}
+                    defaultChecked={useRemoteChainBalances}
+                    onChange={() => {
+                      setUseRemoteChainBalances(!useRemoteChainBalances)
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="sticky top-0 z-10 text-center justify-start text-white text-[28px] font-medium mb-7 mt-[30px]">
+              ${formatTinyNumber(portfolioUSD)}
+            </div>
           </div>
         )}
 
@@ -330,7 +375,9 @@ export const UserWalletModal = ({
                       (currency) =>
                         Number(
                           toUnitString(
-                            balances[currency.address],
+                            balances[currency.address] +
+                              (remoteChainBalances?.[currency.address]?.total ??
+                                0n),
                             currency.decimals,
                           ),
                         ) *
@@ -341,57 +388,115 @@ export const UserWalletModal = ({
                       const priceA = prices[a.address]
                       const priceB = prices[b.address]
                       return (
-                        Number(toUnitString(balances[b.address], b.decimals)) *
+                        Number(
+                          toUnitString(
+                            balances[b.address] +
+                              (remoteChainBalances?.[b.address]?.total ?? 0n),
+                            b.decimals,
+                          ),
+                        ) *
                           priceB -
-                        Number(toUnitString(balances[a.address], a.decimals)) *
+                        Number(
+                          toUnitString(
+                            balances[a.address] +
+                              (remoteChainBalances?.[a.address]?.total ?? 0n),
+                            a.decimals,
+                          ),
+                        ) *
                           priceA
                       )
                     })
                     .map((currency) => (
                       <div
-                        className="self-stretch px-4 py-3 bg-gray-800 rounded-xl flex justify-start items-center"
+                        className={`self-stretch ${remoteChainBalances?.[currency.address].total ? 'pt-3' : 'py-3'} bg-gray-800 rounded-xl flex flex-col gap-2 justify-start items-center`}
                         key={currency.address}
                       >
-                        <div className="flex justify-start items-center gap-2.5">
-                          <CurrencyIcon
-                            chain={chain}
-                            currency={currency}
-                            className="w-7 h-7"
-                          />
-                          <div className="text-nowrap flex-1 flex flex-col justify-center items-start gap-0.5">
-                            <div className="w-full overflow-x-scroll text-start justify-start text-white text-sm font-medium">
-                              {currency.symbol}
-                            </div>
-                            <div className="text-center justify-start text-white text-xs font-medium flex flex-row gap-1">
-                              {formatWithCommas(
-                                toUnitString(
-                                  balances[currency.address],
-                                  currency.decimals,
-                                  prices[currency.address],
-                                ),
-                              )}
-                              <span className="text-[#a9b0bc]">
-                                (~
-                                {formatDollarValue(
-                                  balances[currency.address],
-                                  currency.decimals,
-                                  prices[currency.address],
+                        <div className="flex flex-row w-full items-center px-4">
+                          <div className="flex justify-start items-center gap-2.5">
+                            <CurrencyIcon
+                              chain={chain}
+                              currency={currency}
+                              className="w-7 h-7"
+                            />
+                            <div className="text-nowrap flex-1 flex flex-col justify-center items-start gap-0.5">
+                              <div className="flex flex-row gap-0.5 w-full overflow-x-scroll text-start justify-start items-center text-white text-sm font-medium">
+                                {currency.symbol}
+
+                                <a
+                                  href={`${explorerUrl}/token/${currency.address}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center justify-center rounded-md p-1 hover:bg-gray-700 transition-colors duration-200"
+                                >
+                                  <OutlinkSvg className="w-2 h-2 sm:w-3 sm:h-3 items-center justify-center flex" />
+                                </a>
+                              </div>
+                              <div className="text-center justify-start text-white text-xs font-medium flex flex-row gap-1">
+                                {formatWithCommas(
+                                  toUnitString(
+                                    balances[currency.address] +
+                                      (remoteChainBalances?.[currency.address]
+                                        ?.total ?? 0n),
+                                    currency.decimals,
+                                    prices[currency.address],
+                                  ),
                                 )}
-                                )
-                              </span>
+                                <span className="text-[#a9b0bc]">
+                                  (~
+                                  {formatDollarValue(
+                                    balances[currency.address] +
+                                      (remoteChainBalances?.[currency.address]
+                                        ?.total ?? 0n),
+                                    currency.decimals,
+                                    prices[currency.address],
+                                  )}
+                                  )
+                                </span>
+                              </div>
                             </div>
+                          </div>
+
+                          <div className="flex ml-auto flex-row gap-1.5">
+                            {remoteChainBalances?.[currency.address].total && (
+                              <button
+                                onClick={() => {
+                                  setSelectedCurrency(currency)
+                                  setShowTokenPullModal(true)
+                                }}
+                                className="h-8 px-3 py-2 bg-blue-400/20 rounded-lg flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
+                              >
+                                <div className="hidden sm:flex">
+                                  Bridge to{' '}
+                                  {CHAIN_CONFIG.CHAIN.name
+                                    .replace('Testnet', '')
+                                    .replace('testnet', '')
+                                    .trim()}
+                                </div>
+                                <div className="flex sm:hidden">Bridge</div>
+                              </button>
+                            )}
+
+                            <button
+                              onClick={() => {
+                                setSelectedCurrency(currency)
+                                setShowTokenTransferModal(true)
+                              }}
+                              className="h-8 px-3 py-2 bg-blue-400/20 rounded-lg flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
+                            >
+                              Send
+                            </button>
                           </div>
                         </div>
 
-                        <button
-                          onClick={() => {
-                            setSelectedCurrency(currency)
-                            setShowTokenTransferModal(true)
-                          }}
-                          className="ml-auto px-3 py-2 bg-blue-400/20 rounded-lg inline-flex justify-center items-center gap-2.5 text-blue-400 text-[13px] font-semibold"
-                        >
-                          Send
-                        </button>
+                        {remoteChainBalances?.[currency.address].total && (
+                          <CrossChainBalances
+                            remoteChainBalances={remoteChainBalances}
+                            currency={currency}
+                            balance={balances[currency.address]}
+                            price={prices[currency.address]}
+                          />
+                        )}
                       </div>
                     ))}
                 </div>

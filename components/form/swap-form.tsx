@@ -18,6 +18,8 @@ import { ClipboardSvg } from '../svg/clipboard-svg'
 import { Toast } from '../toast'
 import { SlippageSelector } from '../selector/slippage-selector'
 import { QuestionMarkSvg } from '../svg/question-mark-svg'
+import { RemoteChainBalances } from '../../model/remote-chain-balances'
+import BalanceSourcesModal from '../modal/balance-sources-modal'
 
 export type SwapFormProps = {
   chain: Chain
@@ -25,6 +27,7 @@ export type SwapFormProps = {
   currencies: Currency[]
   setCurrencies: (currencies: Currency[]) => void
   balances: Balances
+  remoteChainBalances: RemoteChainBalances
   prices: Prices
   showInputCurrencySelect: boolean
   setShowInputCurrencySelect:
@@ -60,6 +63,7 @@ export const SwapForm = ({
   currencies,
   setCurrencies,
   balances,
+  remoteChainBalances,
   prices,
   showInputCurrencySelect,
   setShowInputCurrencySelect,
@@ -105,6 +109,8 @@ export const SwapForm = ({
     setInputCurrencyAmount,
     setOutputCurrency,
   ])
+  const [showUnifiedBalanceModal, setShowUnifiedBalanceModal] =
+    useState<boolean>(false)
   const [isCopyToast, setIsCopyToast] = useState(false)
   const [quoteCurrency, baseCurrency] = useMemo(() => {
     if (!inputCurrency || !outputCurrency) {
@@ -143,6 +149,7 @@ export const SwapForm = ({
             : currencies
         }
         balances={balances}
+        remoteChainBalances={remoteChainBalances}
         prices={prices}
         onBack={() =>
           setShowInputCurrencySelect
@@ -179,6 +186,7 @@ export const SwapForm = ({
             : currencies
         }
         balances={balances}
+        remoteChainBalances={remoteChainBalances}
         prices={prices}
         onBack={() =>
           setShowOutputCurrencySelect
@@ -203,6 +211,16 @@ export const SwapForm = ({
     </div>
   ) : (
     <div className="flex flex-col gap-2.5 h-full w-full">
+      {showUnifiedBalanceModal && (
+        <BalanceSourcesModal
+          balances={balances}
+          remoteChainBalances={remoteChainBalances}
+          currency={inputCurrency!}
+          prices={prices}
+          onClose={() => setShowUnifiedBalanceModal(false)}
+        />
+      )}
+
       <Toast
         isCopyToast={isCopyToast}
         setIsCopyToast={setIsCopyToast}
@@ -272,6 +290,12 @@ export const SwapForm = ({
                 onCurrencyClick={
                   setShowInputCurrencySelect
                     ? () => setShowInputCurrencySelect(true)
+                    : undefined
+                }
+                setShowUnifiedBalanceModal={
+                  inputCurrency &&
+                  remoteChainBalances?.[inputCurrency.address].total
+                    ? setShowUnifiedBalanceModal
                     : undefined
                 }
                 price={

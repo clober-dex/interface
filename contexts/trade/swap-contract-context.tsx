@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
+import { getAddress, isAddressEqual, zeroAddress } from 'viem'
 import { useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import { Transaction, Transaction as SdkTransaction } from '@clober/v2-sdk'
@@ -13,10 +13,12 @@ import { maxApprove } from '../../utils/approve20'
 import { Aggregator } from '../../model/aggregator'
 import { useChainContext } from '../chain-context'
 import { currentTimestampInSeconds } from '../../utils/date'
-import { toPreciseString, formatWithCommas } from '../../utils/bignumber'
+import { formatWithCommas, toPreciseString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { executors } from '../../chain-configs/executors'
 import Modal from '../../components/modal/modal'
+import { useNexus } from '../nexus-context'
+import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
 
 type SwapContractContext = {
   swap: (
@@ -38,8 +40,8 @@ export const SwapContractProvider = ({
 }: React.PropsWithChildren<{}>) => {
   const [showRevertModal, setShowRevertModal] = React.useState(false)
   const queryClient = useQueryClient()
+  const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
-
   const { data: walletClient } = useWalletClient()
   const {
     setConfirmation,
@@ -49,7 +51,9 @@ export const SwapContractProvider = ({
     gasPrice,
   } = useTransactionContext()
   const { selectedChain } = useChainContext()
-  const { getAllowance, prices } = useCurrencyContext()
+  const { getAllowance, prices, balances, remoteChainBalances } =
+    useCurrencyContext()
+  const { bridgeAndExecute } = useBridgeAndExecuteContext()
 
   const swap = useCallback(
     async (
@@ -119,75 +123,114 @@ export const SwapContractProvider = ({
               await new Promise((resolve) => setTimeout(resolve, 100))
             },
           )
-        } else {
-          const confirmation = {
-            title: 'Swap',
-            body: 'Please confirm in your wallet.',
-            chain: selectedChain,
-            fields: [
+        }
+        // do swap
+        else {
+          const remoteChainBalance =
+            remoteChainBalances?.[inputCurrency.address].total ?? 0n
+          const balance = balances[inputCurrency.address]
+
+          if (
+            nexusSDK &&
+            remoteChainBalance + balance >= amountIn &&
+            amountIn > balance
+          ) {
+            await bridgeAndExecute(
               {
-                currency: inputCurrency,
-                label: inputCurrency.symbol,
-                direction: 'in',
-                primaryText: toPreciseString(
-                  toUnitString(amountIn, inputCurrency.decimals),
-                  prices[inputCurrency.address],
-                  formatWithCommas,
-                ),
-                secondaryText: formatDollarValue(
-                  amountIn,
-                  inputCurrency.decimals,
-                  prices[inputCurrency.address],
-                ),
+                token: inputCurrency.symbol,
+                amount: amountIn,
+                toChainId: CHAIN_CONFIG.CHAIN.id,
+                sourceChains: remoteChainBalances?.[
+                  inputCurrency.address
+                ].breakdown.map((b) => b.chain.id),
+                execute: transaction,
+                waitForReceipt: false,
               },
+              'swap',
+              'Bridge & Swap',
               {
                 currency: outputCurrency,
-                label: outputCurrency.symbol,
                 direction: 'out',
-                primaryText: toPreciseString(
-                  toUnitString(expectedAmountOut, outputCurrency.decimals),
-                  prices[outputCurrency.address],
-                  formatWithCommas,
-                ),
-                secondaryText: formatDollarValue(
+                amount: toUnitString(
                   expectedAmountOut,
                   outputCurrency.decimals,
-                  prices[outputCurrency.address],
                 ),
               },
-            ] as Confirmation['fields'],
-          }
-          setConfirmation(confirmation)
+            )
+          } else {
+            const confirmation = {
+              title: 'Swap',
+              body: 'Please confirm in your wallet.',
+              chain: selectedChain,
+              fields: [
+                {
+                  currency: inputCurrency,
+                  label: inputCurrency.symbol,
+                  direction: 'in',
+                  primaryText: toPreciseString(
+                    toUnitString(amountIn, inputCurrency.decimals),
+                    prices[inputCurrency.address],
+                    formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    amountIn,
+                    inputCurrency.decimals,
+                    prices[inputCurrency.address],
+                  ),
+                },
+                {
+                  currency: outputCurrency,
+                  label: outputCurrency.symbol,
+                  direction: 'out',
+                  primaryText: toPreciseString(
+                    toUnitString(expectedAmountOut, outputCurrency.decimals),
+                    prices[outputCurrency.address],
+                    formatWithCommas,
+                  ),
+                  secondaryText: formatDollarValue(
+                    expectedAmountOut,
+                    outputCurrency.decimals,
+                    prices[outputCurrency.address],
+                  ),
+                },
+              ] as Confirmation['fields'],
+            }
+            setConfirmation(confirmation)
 
-          await sendTransaction(
-            selectedChain,
-            walletClient,
-            transaction as SdkTransaction,
-            disconnectAsync,
-            (hash) => {
-              setConfirmation(undefined)
-              queuePendingTransaction({
-                ...confirmation,
-                txHash: hash,
-                type:
-                  aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-                timestamp: currentTimestampInSeconds(),
-              })
-            },
-            (receipt) => {
-              updatePendingTransaction({
-                ...confirmation,
-                txHash: receipt.transactionHash,
-                type:
-                  aggregator.name === CHAIN_CONFIG.DEX_NAME ? 'market' : 'swap',
-                timestamp: currentTimestampInSeconds(),
-                blockNumber: Number(receipt.blockNumber),
-                success: receipt.status === 'success',
-              })
-            },
-            gasPrice,
-            selectedExecutorName,
-          )
+            await sendTransaction(
+              selectedChain,
+              walletClient,
+              transaction as SdkTransaction,
+              disconnectAsync,
+              (hash) => {
+                setConfirmation(undefined)
+                queuePendingTransaction({
+                  ...confirmation,
+                  txHash: hash,
+                  type:
+                    aggregator.name === CHAIN_CONFIG.DEX_NAME
+                      ? 'market'
+                      : 'swap',
+                  timestamp: currentTimestampInSeconds(),
+                })
+              },
+              (receipt) => {
+                updatePendingTransaction({
+                  ...confirmation,
+                  txHash: receipt.transactionHash,
+                  type:
+                    aggregator.name === CHAIN_CONFIG.DEX_NAME
+                      ? 'market'
+                      : 'swap',
+                  timestamp: currentTimestampInSeconds(),
+                  blockNumber: Number(receipt.blockNumber),
+                  success: receipt.status === 'success',
+                })
+              },
+              gasPrice,
+              selectedExecutorName,
+            )
+          }
         }
       } catch (e) {
         console.error(e)
@@ -203,6 +246,10 @@ export const SwapContractProvider = ({
       }
     },
     [
+      remoteChainBalances,
+      bridgeAndExecute,
+      balances,
+      nexusSDK,
       gasPrice,
       selectedExecutorName,
       getAllowance,

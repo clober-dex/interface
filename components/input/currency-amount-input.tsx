@@ -18,6 +18,7 @@ const CurrencyAmountInput = ({
   availableAmount,
   price,
   onCurrencyClick,
+  setShowUnifiedBalanceModal,
   children,
   ...props
 }: {
@@ -25,9 +26,10 @@ const CurrencyAmountInput = ({
   currency?: Currency
   value: string
   onValueChange: (value: string) => void
-  availableAmount: bigint
+  availableAmount?: bigint
   price?: number
   onCurrencyClick?: () => void
+  setShowUnifiedBalanceModal?: (show: boolean) => void
 } & React.PropsWithChildren<{
   children?: React.ReactNode
 }> &
@@ -108,11 +110,20 @@ const CurrencyAmountInput = ({
 
       <div className="flex flex-row items-center gap-2.5 w-full">
         <div className="h-full flex items-center">
-          {!props.disabled && currency ? (
+          {!props.disabled && availableAmount !== undefined && currency ? (
             <div className="flex items-center text-xs sm:text-sm gap-1 sm:gap-2">
-              <div className="text-[#7b8394] text-[13px] font-medium">
-                Available:
-              </div>
+              <button
+                className={`text-[#7b8394] text-[13px] font-medium ${
+                  setShowUnifiedBalanceModal ? 'cursor-pointer underline' : ''
+                }`}
+                onClick={() => {
+                  if (setShowUnifiedBalanceModal) {
+                    setShowUnifiedBalanceModal(true)
+                  }
+                }}
+              >
+                {setShowUnifiedBalanceModal ? 'Unified Balance:' : 'Available:'}
+              </button>
               <div className="text-white text-[13px] font-medium">
                 {toUnitString(
                   availableAmount,

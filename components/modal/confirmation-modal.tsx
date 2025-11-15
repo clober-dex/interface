@@ -95,19 +95,19 @@ const ConfirmationModal = ({
                           <CurrencyIcon
                             chain={confirmation.chain}
                             currency={field.currency}
-                            className="w-5 h-5 absolute left-0 top-1 z-[1] rounded-xl bg-gray-300 aspect-square"
+                            className="w-[22px] h-[22px] absolute left-0 top-0 z-[1] rounded-xl bg-gray-300 aspect-square"
                           />
 
                           <ChainIcon
                             chain={field.chain}
-                            className="w-3 h-3 absolute left-3 top-0 z-[2] rounded-xl aspect-square bg-white p-0.5"
+                            className="w-3.5 h-3.5 absolute left-3 bottom-0 z-[2] rounded-xl aspect-square bg-white p-0.5"
                           />
                         </div>
                       ) : (
                         <CurrencyIcon
                           chain={confirmation.chain}
                           currency={field.currency}
-                          className="w-5 h-5 rounded-full"
+                          className="w-6 h-6 rounded-full"
                         />
                       )
                     ) : (
@@ -127,6 +127,8 @@ const ConfirmationModal = ({
               </div>
             ))}
           </div>
+
+          {confirmation.footer && <>{confirmation.footer}</>}
         </div>
       </div>
     </div>,

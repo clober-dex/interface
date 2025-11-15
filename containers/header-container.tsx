@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useAccount, useDisconnect, useGasPrice } from 'wagmi'
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useQuery } from '@tanstack/react-query'
@@ -17,21 +17,42 @@ import { web3AuthInstance } from '../utils/custom-wallets/web3auth/instance'
 import UserTransactionCard from '../components/card/user-transaction-card'
 import { useCurrencyContext } from '../contexts/currency-context'
 import { TransactionSettingModal } from '../components/modal/transaction-setting-modal'
+import { useNexus } from '../contexts/nexus-context'
+import { Toggle } from '../components/toggle'
+import { WrongNetworkButton } from '../components/button/wrong-network-button'
 
 const TX_NOTIFICATION_BUFFER = 5
-
-const WrongNetwork = ({
-  openChainModal,
-}: { openChainModal: () => void } & any) => {
-  return <>{openChainModal && openChainModal()}</>
-}
+const DISMISS_TXS_KEY = 'dismissed-txs'
 
 const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { data: gasPrice } = useGasPrice()
   const { selectedChain } = useChainContext()
-  const { currencies, setCurrencies, balances, prices, transfer } =
-    useCurrencyContext()
-  const [dismissedTxs, setDismissedTxs] = useState<string[]>([])
+  const {
+    currencies,
+    setCurrencies,
+    balances,
+    remoteChainBalances,
+    prices,
+    transfer,
+  } = useCurrencyContext()
+  const { useRemoteChainBalances, setUseRemoteChainBalances } = useNexus()
+  const [dismissedTxs, _setDismissedTxs] = useState<`0x${string}`[]>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(DISMISS_TXS_KEY)
+      if (stored) {
+        try {
+          return JSON.parse(stored)
+        } catch {
+          return []
+        }
+      }
+    }
+    return []
+  })
+  const setDismissedTxs = useCallback((txs: `0x${string}`[]) => {
+    _setDismissedTxs(txs)
+    localStorage.setItem(DISMISS_TXS_KEY, JSON.stringify(txs))
+  }, [])
   const [hoveredTx, setHoveredTx] = useState<string | null>(null)
   const { chainId, address, status, connector } = useAccount()
   const { openChainModal } = useChainModal()
@@ -93,6 +114,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           currencies={currencies}
           setCurrencies={setCurrencies}
           balances={balances}
+          remoteChainBalances={remoteChainBalances}
           prices={prices}
           gasPrice={gasPrice}
           walletIconUrl={connector?.icon ?? web3AuthData?.profileImage ?? ''}
@@ -101,6 +123,8 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           onClose={() => setOpenTransactionHistoryModal(false)}
           onTransfer={transfer}
           ens={ens}
+          useRemoteChainBalances={useRemoteChainBalances}
+          setUseRemoteChainBalances={setUseRemoteChainBalances}
         />
       )}
 
@@ -137,7 +161,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           <div className="relative flex items-center flex-row gap-1 sm:gap-2">
             {status === 'disconnected' || status === 'connecting' ? (
               <ConnectButton openConnectModal={openConnectModal} />
-            ) : address && connector && chainId ? (
+            ) : address && connector && chainId === selectedChain.id ? (
               <UserButton
                 chain={selectedChain}
                 address={address}
@@ -147,11 +171,15 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 walletIconUrl={
                   connector?.icon ?? web3AuthData?.profileImage ?? ''
                 }
-                shiny={pendingTransactions.length > 0}
+                shiny={
+                  pendingTransactions.filter(
+                    (tx) => !dismissedTxs.includes(tx.txHash),
+                  ).length > 0
+                }
                 ens={ens}
               />
             ) : openChainModal ? (
-              <WrongNetwork openChainModal={openChainModal} />
+              <WrongNetworkButton openChainModal={openChainModal} />
             ) : (
               <button
                 disabled={true}
@@ -185,6 +213,23 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 </defs>
               </svg>
             </button>
+
+            <div className="h-9 p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex justify-start items-center gap-2">
+              <div className="flex justify-start items-center gap-1.5">
+                <div className="text-right justify-start text-white text-sm font-medium">
+                  Unified Balance
+                </div>
+
+                <Toggle
+                  disabled={!CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES}
+                  defaultChecked={useRemoteChainBalances}
+                  onChange={() => {
+                    setUseRemoteChainBalances(!useRemoteChainBalances)
+                  }}
+                  checked={useRemoteChainBalances}
+                />
+              </div>
+            </div>
 
             <div className="absolute top-12 sm:top-14 -right-4 w-[300px] sm:w-[368px] z-10 border-[#2f313d] border-solid flex flex-col gap-2">
               <AnimatePresence initial={false}>
@@ -228,8 +273,8 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                       {hoveredTx === transaction.txHash && (
                         <button
                           onClick={() =>
-                            setDismissedTxs((prev) => [
-                              ...prev,
+                            setDismissedTxs([
+                              ...dismissedTxs,
                               transaction.txHash,
                             ])
                           }

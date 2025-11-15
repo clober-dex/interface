@@ -22,3 +22,4 @@ export type TransactionType =
   | 'market' // market order
   | 'swap' // swap from aggregator
   | 'transfer' // transfer currency
+  | 'bridge' // bridge currency

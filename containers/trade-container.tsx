@@ -15,7 +15,7 @@ import { useLimitContractContext } from '../contexts/trade/limit-contract-contex
 import { useCurrencyContext } from '../contexts/currency-context'
 import { isAddressesEqual, shortAddress } from '../utils/address'
 import { aggregators } from '../chain-configs/aggregators'
-import { applyPercent, toUnitString, max } from '../utils/bigint'
+import { applyPercent, max, toUnitString } from '../utils/bigint'
 import { MarketInfoCard } from '../components/card/market/market-info-card'
 import { Currency } from '../model/currency'
 import WarningLimitModal from '../components/modal/warning-limit-modal'
@@ -261,8 +261,14 @@ export const TradeContainer = () => {
   } = useTradeContext()
 
   const { openConnectModal } = useConnectModal()
-  const { balances, getAllowance, prices, currencies, setCurrencies } =
-    useCurrencyContext()
+  const {
+    balances,
+    getAllowance,
+    prices,
+    currencies,
+    setCurrencies,
+    remoteChainBalances,
+  } = useCurrencyContext()
   const [showMobileModal, setShowMobileModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [showMarketSelect, setShowMarketSelect] = useState<boolean>(false)
@@ -329,7 +335,9 @@ export const TradeContainer = () => {
               [selectedMarket.base.address, selectedMarket.quote.address],
             )) ||
           amountIn === 0n ||
-          amountIn > balances[inputCurrency.address]),
+          amountIn >
+            balances[inputCurrency.address] +
+              (remoteChainBalances[inputCurrency.address]?.total ?? 0n)),
       onClick: async () => {
         if (!walletClient && openConnectModal) {
           openConnectModal()
@@ -363,7 +371,9 @@ export const TradeContainer = () => {
           return 'Enter amount'
         }
 
-        const balance = balances[inputCurrency.address] ?? 0n
+        const balance =
+          balances[inputCurrency.address] +
+          (remoteChainBalances[inputCurrency.address]?.total ?? 0n)
         if (amountIn > balance) {
           return 'Insufficient balance'
         }
@@ -376,10 +386,13 @@ export const TradeContainer = () => {
           return `Max Approve ${inputCurrency.symbol}`
         }
 
-        return 'Place Order'
+        return amountIn > balances[inputCurrency.address]
+          ? 'Bridge & Place Order'
+          : 'Place Order'
       })(),
     }),
     [
+      remoteChainBalances,
       getAllowance,
       selectedChain.id,
       amountIn,
@@ -403,6 +416,7 @@ export const TradeContainer = () => {
         explorerUrl: selectedChain.blockExplorers?.default?.url ?? '',
         prices,
         balances,
+        remoteChainBalances,
         currencies,
         setCurrencies,
         priceInput,
@@ -417,7 +431,8 @@ export const TradeContainer = () => {
         inputCurrencyAmount,
         setInputCurrencyAmount,
         availableInputCurrencyBalance: inputCurrency
-          ? balances[inputCurrency.address]
+          ? balances[inputCurrency.address] +
+            (remoteChainBalances[inputCurrency.address]?.total ?? 0n)
           : 0n,
         showOutputCurrencySelect,
         setShowOutputCurrencySelect,
@@ -425,9 +440,6 @@ export const TradeContainer = () => {
         setOutputCurrency,
         outputCurrencyAmount,
         setOutputCurrencyAmount,
-        availableOutputCurrencyBalance: outputCurrency
-          ? balances[outputCurrency.address]
-          : 0n,
         swapInputCurrencyAndOutputCurrency: () => {
           setIsBid((prevState) => !prevState)
           setDepthClickedIndex(undefined)
@@ -451,6 +463,7 @@ export const TradeContainer = () => {
         actionButtonProps: limitActionButtonProps,
       }) as LimitFormProps,
     [
+      remoteChainBalances,
       availableDecimalPlacesGroups,
       balances,
       currencies,
@@ -492,7 +505,9 @@ export const TradeContainer = () => {
         !inputCurrency ||
         !outputCurrency ||
         amountIn === 0n ||
-        amountIn > balances[inputCurrency.address],
+        amountIn >
+          balances[inputCurrency.address] +
+            (remoteChainBalances[inputCurrency.address]?.total ?? 0n),
       onClick: async () => {
         if (!userAddress && openConnectModal) {
           openConnectModal()
@@ -542,7 +557,9 @@ export const TradeContainer = () => {
           return 'Enter amount'
         }
 
-        const balance = balances[inputCurrency.address] ?? 0n
+        const balance =
+          balances[inputCurrency.address] +
+          (remoteChainBalances[inputCurrency.address]?.total ?? 0n)
         if (amountIn > balance) {
           return 'Insufficient balance'
         }
@@ -552,11 +569,15 @@ export const TradeContainer = () => {
         const output = outputCurrency.address
 
         if (isAddressEqual(input, zeroAddress) && isAddressEqual(output, ref)) {
-          return 'Wrap'
+          return amountIn > balances[inputCurrency.address]
+            ? 'Bridge & Wrap'
+            : 'Wrap'
         }
 
         if (isAddressEqual(input, ref) && isAddressEqual(output, zeroAddress)) {
-          return 'Unwrap'
+          return amountIn > balances[inputCurrency.address]
+            ? 'Bridge & Unwrap'
+            : 'Unwrap'
         }
 
         const allowanceTarget = selectedExecutorName
@@ -573,23 +594,26 @@ export const TradeContainer = () => {
           return `Max Approve ${inputCurrency.symbol}`
         }
 
-        return 'Swap'
+        return amountIn > balances[inputCurrency.address]
+          ? 'Bridge & Swap'
+          : 'Swap'
       })(),
     }),
     [
-      selectedExecutorName,
+      inputCurrencyAmount,
+      selectedQuote,
+      inputCurrency,
+      outputCurrency,
       amountIn,
       balances,
-      getAllowance,
-      gasPrice,
-      inputCurrency,
-      inputCurrencyAmount,
-      openConnectModal,
-      outputCurrency,
-      selectedQuote,
-      swap,
+      remoteChainBalances,
       userAddress,
+      openConnectModal,
+      gasPrice,
+      swap,
       walletClient,
+      selectedExecutorName,
+      getAllowance,
     ],
   )
 
@@ -601,6 +625,7 @@ export const TradeContainer = () => {
         currencies,
         setCurrencies,
         balances,
+        remoteChainBalances,
         prices,
         showInputCurrencySelect,
         setShowInputCurrencySelect,
@@ -609,7 +634,8 @@ export const TradeContainer = () => {
         inputCurrencyAmount,
         setInputCurrencyAmount,
         availableInputCurrencyBalance: inputCurrency
-          ? balances[inputCurrency.address]
+          ? balances[inputCurrency.address] +
+            (remoteChainBalances[inputCurrency.address]?.total ?? 0n)
           : 0n,
         showOutputCurrencySelect,
         setShowOutputCurrencySelect,
@@ -639,6 +665,7 @@ export const TradeContainer = () => {
         refreshQuotesAction,
       }) as SwapFormProps,
     [
+      remoteChainBalances,
       selectedExecutorName,
       quotes.best?.fee,
       balances,

@@ -11,10 +11,7 @@ const config: StorybookConfig = {
     '@storybook/addon-interactions',
   ],
 
-  framework: {
-    name: '@storybook/nextjs',
-    options: {},
-  },
+  framework: '@storybook/nextjs',
 
   docs: {
     autodocs: 'tag',
@@ -22,6 +19,7 @@ const config: StorybookConfig = {
 
   typescript: {
     reactDocgen: 'react-docgen-typescript'
-  }
+  },
 }
+
 export default config

@@ -60,7 +60,7 @@ const WarningLimitModal = ({
             </div>
           </div>
 
-          <div className="w-full p-3 sm:p-4 bg-gray-700 rounded-xl flex-col justify-center items-start gap-2 flex">
+          <div className="w-full p-3 sm:p-4 bg-gray-800 rounded-xl flex-col justify-center items-start gap-2 flex">
             <div className="flex flex-row w-full items-start gap-1 self-stretch">
               <div className="text-gray-300 text-xs sm:text-sm">
                 Current market price

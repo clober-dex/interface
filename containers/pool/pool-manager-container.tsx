@@ -44,7 +44,8 @@ export const PoolManagerContainer = ({
   )
   const { data: walletClient } = useWalletClient()
   const { selectedChain } = useChainContext()
-  const { balances, prices, getAllowance } = useCurrencyContext()
+  const { balances, remoteChainBalances, prices, getAllowance } =
+    useCurrencyContext()
   const {
     currency0Amount,
     setCurrency0Amount,
@@ -464,13 +465,27 @@ export const PoolManagerContainer = ({
             <AddLiquidityForm
               chain={selectedChain}
               pool={pool}
+              balances={balances}
+              remoteChainBalances={disableSwap ? {} : remoteChainBalances}
               prices={prices}
               currency0Amount={currency0Amount}
               setCurrency0Amount={setCurrency0Amount}
-              availableCurrency0Balance={balances[pool.currencyA.address]}
+              availableCurrency0Balance={
+                balances[pool.currencyA.address] +
+                (disableSwap
+                  ? 0n
+                  : (remoteChainBalances?.[pool.currencyA.address]?.total ??
+                    0n))
+              }
               currency1Amount={currency1Amount}
               setCurrency1Amount={setCurrency1Amount}
-              availableCurrency1Balance={balances[pool.currencyB.address]}
+              availableCurrency1Balance={
+                balances[pool.currencyB.address] +
+                (disableSwap
+                  ? 0n
+                  : (remoteChainBalances?.[pool.currencyB.address]?.total ??
+                    0n))
+              }
               disableSwap={disableSwap}
               setDisableSwap={setDisableSwap}
               disableDisableSwap={isNoLiquidity}
@@ -487,17 +502,68 @@ export const PoolManagerContainer = ({
                   receiveLpAmount === 0n)
               }
               actionButtonProps={{
-                disabled:
-                  !walletClient ||
-                  (Number(currency0Amount) === 0 &&
-                    Number(currency1Amount) === 0) ||
-                  parseUnits(currency0Amount, pool.currencyA.decimals) >
-                    balances[pool.currencyA.address] ||
-                  parseUnits(currency1Amount, pool.currencyB.decimals) >
-                    balances[pool.currencyB.address] ||
-                  (disableSwap &&
-                    (Number(currency0Amount) === 0 ||
-                      Number(currency1Amount) === 0)),
+                disabled: (() => {
+                  if (!walletClient) {
+                    return true
+                  }
+
+                  const amount0 = Number(currency0Amount)
+                  const amount1 = Number(currency1Amount)
+
+                  // 1. no amount
+                  if (amount0 === 0 && amount1 === 0) {
+                    return true
+                  }
+
+                  const amount0Units = parseUnits(
+                    currency0Amount,
+                    pool.currencyA.decimals,
+                  )
+                  const amount1Units = parseUnits(
+                    currency1Amount,
+                    pool.currencyB.decimals,
+                  )
+
+                  const balanceA =
+                    balances[pool.currencyA.address] +
+                    (disableSwap
+                      ? 0n
+                      : (remoteChainBalances?.[pool.currencyA.address]?.total ??
+                        0n))
+
+                  const balanceB =
+                    balances[pool.currencyB.address] +
+                    (disableSwap
+                      ? 0n
+                      : (remoteChainBalances?.[pool.currencyB.address]?.total ??
+                        0n))
+
+                  // 2. insufficient balance
+                  if (amount0Units > balanceA) {
+                    return true
+                  }
+                  if (amount1Units > balanceB) {
+                    return true
+                  }
+
+                  // 3. disableSwap is true but one side amount is zero
+                  if (disableSwap && (amount0 === 0 || amount1 === 0)) {
+                    return true
+                  }
+
+                  // 4. if using bridge, both side amounts must be greater than zero
+                  const useBridge =
+                    amount0Units > balances[pool.currencyA.address] ||
+                    amount1Units > balances[pool.currencyB.address]
+
+                  if (useBridge) {
+                    if (amount0 > 0 && amount1 > 0) {
+                      return true
+                    }
+                  }
+
+                  return false
+                })(),
                 onClick: async () => {
                   await mint(
                     pool.currencyA,
@@ -534,8 +600,12 @@ export const PoolManagerContainer = ({
                     pool.currencyB.decimals,
                   )
 
-                  const balanceA = balances[pool.currencyA.address] ?? 0n
-                  const balanceB = balances[pool.currencyB.address] ?? 0n
+                  const balanceA =
+                    balances[pool.currencyA.address] +
+                    (remoteChainBalances?.[pool.currencyA.address]?.total ?? 0n)
+                  const balanceB =
+                    balances[pool.currencyB.address] +
+                    (remoteChainBalances?.[pool.currencyB.address]?.total ?? 0n)
 
                   if (amount0Units > balanceA) {
                     return `Insufficient ${pool.currencyA.symbol} balance`
@@ -559,6 +629,15 @@ export const PoolManagerContainer = ({
                     return 'Enter amount'
                   }
 
+                  const useBridge =
+                    amount0Units > balances[pool.currencyA.address] ||
+                    amount1Units > balances[pool.currencyB.address]
+                  if (useBridge) {
+                    if (amount0 > 0 && amount1 > 0) {
+                      return 'Bridge one side only'
+                    }
+                    return 'Bridge & Add Liquidity'
+                  }
                   return 'Add Liquidity'
                 })(),
               }}

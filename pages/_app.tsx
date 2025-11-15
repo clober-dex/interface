@@ -37,6 +37,7 @@ import { CHAIN_CONFIG, getClientConfig } from '../chain-configs'
 import Sidebar from '../components/sidebar'
 import { BlockNumberWidget } from '../components/block-number-widget'
 import { fetchWalletConnectors, postWalletConnector } from '../apis/wallet'
+import { BridgeAndExecuteProvider } from '../contexts/bridge-and-execute-context'
 
 const CacheProvider = ({ children }: React.PropsWithChildren) => {
   const queryClient = useQueryClient()
@@ -93,6 +94,9 @@ const WalletInfoWatcher = () => {
 }
 
 const queryClient = new QueryClient()
+const NexusProvider = dynamic(() => import('../contexts/nexus-context'), {
+  ssr: false,
+})
 const WalletProvider = ({ children }: React.PropsWithChildren) => {
   const [clientReady, setClientReady] = useState(false)
   const [clientConfig, setClientConfig] = useState<any | null>(null)
@@ -118,7 +122,9 @@ const WalletProvider = ({ children }: React.PropsWithChildren) => {
           theme={darkTheme()}
         >
           <WalletInfoWatcher />
-          <CacheProvider>{children}</CacheProvider>
+          <CacheProvider>
+            <NexusProvider>{children}</NexusProvider>
+          </CacheProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
@@ -284,63 +290,65 @@ function App({ Component, pageProps }: AppProps) {
           <ChainProvider>
             <TransactionProvider>
               <CurrencyProvider>
-                <div className="relative flex flex-col w-[100vw] min-h-[100vh] bg-[#0F1013] text-white bg-right bg-no-repeat">
-                  <PanelWrapper open={open} setOpen={setOpen} />
-                  <SidebarWrapper />
-                  <HeaderContainer onMenuClick={() => setOpen(true)} />
+                <BridgeAndExecuteProvider>
+                  <div className="relative flex flex-col w-[100vw] min-h-[100vh] bg-[#0F1013] text-white bg-right bg-no-repeat">
+                    <PanelWrapper open={open} setOpen={setOpen} />
+                    <SidebarWrapper />
+                    <HeaderContainer onMenuClick={() => setOpen(true)} />
 
-                  {router.pathname.includes('/discover') ? (
-                    <TradeProvidersWrapper>
-                      <div className="flex flex-1 relative xl:w-full xl:justify-center">
-                        <div className="flex w-full flex-col xl:items-center gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] md:mt-[56px]">
-                          <Component {...pageProps} />
+                    {router.pathname.includes('/discover') ? (
+                      <TradeProvidersWrapper>
+                        <div className="flex flex-1 relative xl:w-full xl:justify-center">
+                          <div className="flex w-full flex-col xl:items-center gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] md:mt-[56px]">
+                            <Component {...pageProps} />
+                          </div>
                         </div>
-                      </div>
-                    </TradeProvidersWrapper>
-                  ) : router.pathname.includes('/trade') ? (
-                    <TradeProvidersWrapper>
-                      <div className="flex flex-1 relative justify-center">
-                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[108px]">
-                          <Component {...pageProps} />
+                      </TradeProvidersWrapper>
+                    ) : router.pathname.includes('/trade') ? (
+                      <TradeProvidersWrapper>
+                        <div className="flex flex-1 relative justify-center">
+                          <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[108px]">
+                            <Component {...pageProps} />
+                          </div>
                         </div>
-                      </div>
-                    </TradeProvidersWrapper>
-                  ) : router.pathname.includes('/earn/[poolKey]') ? (
-                    <PoolProvidersWrapper>
-                      <div className="flex flex-1 relative justify-center">
-                        <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[112px]">
-                          <Component {...pageProps} />
+                      </TradeProvidersWrapper>
+                    ) : router.pathname.includes('/earn/[poolKey]') ? (
+                      <PoolProvidersWrapper>
+                        <div className="flex flex-1 relative justify-center">
+                          <div className="flex w-full flex-col items-center gap-7 md:gap-11 px-2 pb-0 mt-[72px] md:mt-[112px]">
+                            <Component {...pageProps} />
+                          </div>
                         </div>
-                      </div>
-                    </PoolProvidersWrapper>
-                  ) : router.pathname.includes('/earn') ? (
-                    <PoolProvidersWrapper>
-                      <div className="flex flex-1 relative xl:w-full xl:justify-center">
-                        <div className="flex w-full flex-col xl:items-center gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] sm:mt-10 md:mt-[56px]">
-                          <Component {...pageProps} />
+                      </PoolProvidersWrapper>
+                    ) : router.pathname.includes('/earn') ? (
+                      <PoolProvidersWrapper>
+                        <div className="flex flex-1 relative xl:w-full xl:justify-center">
+                          <div className="flex w-full flex-col xl:items-center gap-6 md:gap-11 md:ml-24 pb-0 mt-[30px] sm:mt-10 md:mt-[56px]">
+                            <Component {...pageProps} />
+                          </div>
                         </div>
-                      </div>
-                    </PoolProvidersWrapper>
-                  ) : router.pathname.includes('/futures') ? (
-                    <FuturesProvidersWrapper>
-                      <div className="flex flex-1 relative justify-center">
-                        <div className="flex w-full flex-col items-center gap-6 md:gap-11 px-2 pb-0">
-                          <Component {...pageProps} />
+                      </PoolProvidersWrapper>
+                    ) : router.pathname.includes('/futures') ? (
+                      <FuturesProvidersWrapper>
+                        <div className="flex flex-1 relative justify-center">
+                          <div className="flex w-full flex-col items-center gap-6 md:gap-11 px-2 pb-0">
+                            <Component {...pageProps} />
+                          </div>
                         </div>
-                      </div>
-                    </FuturesProvidersWrapper>
-                  ) : (
-                    <TradeProvidersWrapper>
-                      <div className="flex flex-1 relative justify-center">
-                        <div className="flex w-full flex-col items-center gap-6 md:gap-11 px-2 pb-0 mt-[30px] md:mt-[56px]">
-                          <Component {...pageProps} />
+                      </FuturesProvidersWrapper>
+                    ) : (
+                      <TradeProvidersWrapper>
+                        <div className="flex flex-1 relative justify-center">
+                          <div className="flex w-full flex-col items-center gap-6 md:gap-11 px-2 pb-0 mt-[30px] md:mt-[56px]">
+                            <Component {...pageProps} />
+                          </div>
                         </div>
-                      </div>
-                    </TradeProvidersWrapper>
-                  )}
+                      </TradeProvidersWrapper>
+                    )}
 
-                  <FooterWrapper />
-                </div>
+                    <FooterWrapper />
+                  </div>
+                </BridgeAndExecuteProvider>
               </CurrencyProvider>
             </TransactionProvider>
           </ChainProvider>
