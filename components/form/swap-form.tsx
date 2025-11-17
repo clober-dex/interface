@@ -140,14 +140,7 @@ export const SwapForm = ({
       <CurrencySelect
         chain={chain}
         explorerUrl={explorerUrl}
-        currencies={
-          outputCurrency
-            ? currencies.filter(
-                (currency) =>
-                  !isAddressEqual(currency.address, outputCurrency.address),
-              )
-            : currencies
-        }
+        currencies={currencies}
         balances={balances}
         remoteChainBalances={remoteChainBalances}
         prices={prices}
@@ -165,11 +158,18 @@ export const SwapForm = ({
                 ? [...currencies, currency]
                 : currencies,
             )
-            setInputCurrency(currency)
             setShowInputCurrencySelect(false)
+
+            if (
+              !isAddressEqual(outputCurrency?.address ?? '0x', currency.address)
+            ) {
+              setInputCurrency(currency)
+            } else {
+              setOutputCurrency(inputCurrency)
+              setInputCurrency(currency)
+            }
           }
         }}
-        defaultBlacklistedCurrency={outputCurrency}
       />
     </div>
   ) : showOutputCurrencySelect ? (
@@ -177,14 +177,7 @@ export const SwapForm = ({
       <CurrencySelect
         chain={chain}
         explorerUrl={explorerUrl}
-        currencies={
-          inputCurrency
-            ? currencies.filter(
-                (currency) =>
-                  !isAddressEqual(currency.address, inputCurrency.address),
-              )
-            : currencies
-        }
+        currencies={currencies}
         balances={balances}
         remoteChainBalances={remoteChainBalances}
         prices={prices}
@@ -202,11 +195,18 @@ export const SwapForm = ({
                 ? [...currencies, currency]
                 : currencies,
             )
-            setOutputCurrency(currency)
             setShowOutputCurrencySelect(false)
+
+            if (
+              !isAddressEqual(inputCurrency?.address ?? '0x', currency.address)
+            ) {
+              setOutputCurrency(currency)
+            } else {
+              setInputCurrency(outputCurrency)
+              setOutputCurrency(currency)
+            }
           }
         }}
-        defaultBlacklistedCurrency={inputCurrency}
       />
     </div>
   ) : (
