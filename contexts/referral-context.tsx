@@ -15,7 +15,7 @@ import {
   getBaseUrl,
   signAndSendRequest,
 } from '../apis/orderly/utils'
-import { getReferralStatus } from '../apis/orderly/referral'
+import { getReferralStatus, verifyReferralCode } from '../apis/orderly/referral'
 import { buildTransaction, sendTransaction } from '../utils/transaction'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { currentTimestampInSeconds } from '../utils/date'
@@ -80,6 +80,8 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [pendingReferralCode, setPendingReferralCode] = useState<string | null>(
     null,
   )
+  const [isExistingReferralCode, setIsExistingReferralCode] =
+    useState<boolean>(true)
   const [referralCode, setReferralCode] = useState<string | null>(null)
 
   const registerOrderlyReferralCode = useCallback(
@@ -240,6 +242,10 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
             setReferralCode(refererCode)
           }
         } else if (refFromUrl && !refererCode && !onChainRefereeRegistered) {
+          const exists = await verifyReferralCode(chainHexId, refFromUrl)
+          if (!exists) {
+            setIsExistingReferralCode(false)
+          }
           setIsReferralModalOpen(true)
           setPendingReferralCode(refFromUrl)
           registerActionRef.current = async () => {
@@ -293,14 +299,16 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
               </div>
             </h6>
             <ActionButton
-              disabled={false}
+              disabled={!isExistingReferralCode}
               onClick={async () => {
                 if (registerActionRef.current) {
                   await registerActionRef.current()
                   setIsReferralModalOpen(false)
                 }
               }}
-              text="Register"
+              text={
+                isExistingReferralCode ? 'Confirm' : 'Invalid Referral Code'
+              }
             />
           </div>
         </Modal>

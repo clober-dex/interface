@@ -7,6 +7,31 @@ import { SupportedChainIds } from './networks'
 import { getBaseUrl, signAndSendRequest } from './utils'
 import { getAccountId } from './account'
 
+export async function verifyReferralCode(
+  chainId: SupportedChainIds,
+  referralCode: string,
+): Promise<boolean> {
+  const keyRes = await fetch(
+    `${getBaseUrl(chainId)}/v1/public/referral/verify_ref_code?referral_code=${referralCode}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  )
+  const keyJson = (await keyRes.json()) as {
+    success: boolean
+    data: {
+      exist: boolean
+    }
+  }
+  if (!keyJson.success) {
+    return false
+  }
+  return keyJson.data.exist
+}
+
 export async function getReferralStatus(
   publicClient: PublicClient,
   orderlyKey: Uint8Array,
