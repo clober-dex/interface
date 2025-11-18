@@ -6,6 +6,7 @@ type EXTERNAL_CONTRACT =
   | 'PythOracle'
   | 'TradingCompetitionRegistration'
   | 'AggregatorRouterGateway'
+  | 'ReferralManager'
 
 type EXTERNAL_SUBGRAPH =
   | 'FUTURES_MARKET'
