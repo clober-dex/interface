@@ -4,7 +4,7 @@ export type TransactionType =
   | 'burn' // remove liquidity from the pool
   | 'lp-wrap' // wrap liquidity pool token to erc20
   | 'lp-unwrap' // unwrap erc20 to liquidity pool token
-  | 'register' // register for trading competition
+  | 'register'
   | 'borrow' // borrow a futures asset
   | 'repay' // repay a futures asset
   | 'repay-all' // repay all a futures asset

@@ -61,6 +61,7 @@ export const CHAIN_CONFIG: ChainConfig = {
     AggregatorRouterGateway: getAddress(
       '0xfD845859628946B317A78A9250DA251114FbD846',
     ),
+    ReferralManager: getAddress('0x8D2E4Ea2bF106c723e27A303F60b0b2FD297EC09'),
   },
   BLACKLISTED_USERS: [
     '0x5F79EE8f8fA862E98201120d83c4eC39D9468D49',
