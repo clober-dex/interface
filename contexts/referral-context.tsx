@@ -64,20 +64,6 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
     })
   }, [selectedChain])
 
-  const [orderlyKey, setOrderlyKey] = useState<string | null>(() => {
-    if (!userAddress || typeof window === 'undefined') {
-      return null
-    }
-    const stored = localStorage.getItem(ORDERLY_KEY(userAddress, chainHexId))
-    if (stored) {
-      try {
-        return JSON.parse(stored)
-      } catch {
-        return null
-      }
-    }
-  })
-
   const [pendingCodeToBind, setPendingCodeToBind] = useState<string | null>(
     null,
   )
@@ -85,8 +71,8 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [referrerCode, setReferrerCode] = useState<string | null>(null)
 
   const bindReferrerOnOrderly = useCallback(
-    async (code: string) => {
-      if (orderlyKey && userAddress) {
+    async (code: string, orderlyKey: string) => {
+      if (userAddress) {
         const res = await signAndSendRequest(
           getAccountId(userAddress),
           base64DecodeURL(orderlyKey),
@@ -107,7 +93,7 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
         }
       }
     },
-    [chainHexId, orderlyKey, userAddress],
+    [chainHexId, userAddress],
   )
 
   const registerOnChainReferee = useCallback(
@@ -187,101 +173,106 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
     ],
   )
 
-  useEffect(() => {
-    const action = async () => {
-      if (!userAddress || !walletClient) {
-        return
-      }
-      await walletClient.switchChain({ id: selectedChain.id }).catch(() => {})
+  useEffect(
+    () => {
+      const action = async () => {
+        if (!userAddress || !walletClient) {
+          return
+        }
+        await walletClient.switchChain({ id: selectedChain.id }).catch(() => {})
 
-      const result = await isWalletRegistered(
-        chainHexId,
-        BROKER_ID,
-        userAddress,
-      )
-      if (!result) {
-        await registerAccount(walletClient, chainHexId, BROKER_ID)
-      }
-
-      if (!orderlyKey) {
-        const key = await addOrderlyKey(
-          walletClient,
+        const result = await isWalletRegistered(
           chainHexId,
           BROKER_ID,
-          'read,trading,asset',
+          userAddress,
         )
-        setOrderlyKey(base64EncodeURL(key))
-        if (userAddress) {
+        if (!result) {
+          await registerAccount(walletClient, chainHexId, BROKER_ID)
+        }
+
+        let orderlyKey = localStorage.getItem(
+          ORDERLY_KEY(userAddress, chainHexId),
+        )
+
+        if (!orderlyKey) {
+          const key = await addOrderlyKey(
+            walletClient,
+            chainHexId,
+            BROKER_ID,
+            'read,trading,asset',
+          )
           localStorage.setItem(
             ORDERLY_KEY(userAddress, chainHexId),
-            JSON.stringify(base64EncodeURL(key)),
+            base64EncodeURL(key),
           )
         }
-      }
 
-      if (orderlyKey) {
-        const { referrerCode: orderlyReferrerCode, onChainRefereeRegistered } =
-          await getReferralStatus(
+        orderlyKey = localStorage.getItem(ORDERLY_KEY(userAddress, chainHexId))
+
+        if (orderlyKey) {
+          const {
+            referrerCode: orderlyReferrerCode,
+            onChainRefereeRegistered,
+          } = await getReferralStatus(
             publicClient,
             base64DecodeURL(orderlyKey),
             userAddress,
           )
-        const searchParams = new URLSearchParams(window.location.search)
-        const refFromUrl = searchParams.get('ref')
+          const searchParams = new URLSearchParams(window.location.search)
+          const refFromUrl = searchParams.get('ref')
 
-        console.log('Referral Status:', {
-          referrerCode: orderlyReferrerCode,
-          onChainRefereeRegistered,
-          refFromUrl,
-        })
+          console.log('Referral Status:', {
+            referrerCode: orderlyReferrerCode,
+            onChainRefereeRegistered,
+            refFromUrl,
+            userAddress,
+          })
 
-        if (orderlyReferrerCode && onChainRefereeRegistered) {
-          setReferrerCode(orderlyReferrerCode)
-        }
-
-        if (orderlyReferrerCode && !onChainRefereeRegistered) {
-          setIsBindReferralCodeModalOpen(true)
-          setPendingCodeToBind(orderlyReferrerCode)
-          onConfirmRef.current = async () => {
-            await registerOnChainReferee(orderlyReferrerCode)
+          if (orderlyReferrerCode && onChainRefereeRegistered) {
             setReferrerCode(orderlyReferrerCode)
           }
-        } else if (
-          refFromUrl &&
-          !orderlyReferrerCode &&
-          !onChainRefereeRegistered
-        ) {
-          const exists = await verifyReferralCode(chainHexId, refFromUrl)
-          if (!exists) {
-            setIsValidReferralCode(false)
-          }
-          setIsBindReferralCodeModalOpen(true)
-          setPendingCodeToBind(refFromUrl)
-          onConfirmRef.current = async () => {
-            await bindReferrerOnOrderly(refFromUrl)
-            await registerOnChainReferee(refFromUrl)
-            setReferrerCode(refFromUrl)
+
+          if (orderlyReferrerCode && !onChainRefereeRegistered) {
+            setIsBindReferralCodeModalOpen(true)
+            setPendingCodeToBind(orderlyReferrerCode)
+            onConfirmRef.current = async () => {
+              await registerOnChainReferee(orderlyReferrerCode)
+              setReferrerCode(orderlyReferrerCode)
+            }
+          } else if (
+            refFromUrl &&
+            !orderlyReferrerCode &&
+            !onChainRefereeRegistered
+          ) {
+            const exists = await verifyReferralCode(chainHexId, refFromUrl)
+            if (!exists) {
+              setIsValidReferralCode(false)
+            }
+            setIsBindReferralCodeModalOpen(true)
+            setPendingCodeToBind(refFromUrl)
+            onConfirmRef.current = async () => {
+              await bindReferrerOnOrderly(refFromUrl, orderlyKey!)
+              await registerOnChainReferee(refFromUrl)
+              setReferrerCode(refFromUrl)
+            }
           }
         }
       }
-    }
 
-    setIsBindReferralCodeModalOpen(false)
-    setPendingCodeToBind(null)
-    setReferrerCode(null)
-    setIsValidReferralCode(true)
+      if (typeof window === 'undefined') {
+        return
+      }
 
-    action()
-  }, [
-    chainHexId,
-    orderlyKey,
-    publicClient,
-    registerOnChainReferee,
-    bindReferrerOnOrderly,
-    selectedChain.id,
-    userAddress,
-    walletClient,
-  ])
+      setIsBindReferralCodeModalOpen(false)
+      setPendingCodeToBind(null)
+      setReferrerCode(null)
+      setIsValidReferralCode(true)
+
+      action()
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedChain.id, userAddress, walletClient],
+  )
 
   return (
     <Context.Provider value={{ referrerCode }}>
