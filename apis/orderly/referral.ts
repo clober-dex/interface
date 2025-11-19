@@ -37,7 +37,7 @@ export async function getReferralStatus(
   orderlyKey: Uint8Array,
   userAddress: `0x${string}`,
 ): Promise<{
-  refererCode: string | null
+  referrerCode: string | null
   onChainRefereeRegistered: boolean
 }> {
   const accountId = getAccountId(userAddress)
@@ -66,7 +66,7 @@ export async function getReferralStatus(
   })
 
   return {
-    refererCode: data.referee_info.referer_code,
+    referrerCode: data.referee_info.referer_code,
     onChainRefereeRegistered: refereeRegistered,
   }
 }

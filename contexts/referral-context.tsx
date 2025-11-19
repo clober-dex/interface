@@ -27,11 +27,11 @@ import { useChainContext } from './chain-context'
 import { Confirmation, useTransactionContext } from './transaction-context'
 
 type ReferralContext = {
-  referralCode: string | null
+  referrerCode: string | null
 }
 
 const Context = React.createContext<ReferralContext>({
-  referralCode: null,
+  referrerCode: null,
 })
 
 const ORDERLY_KEY = (address: `0x${string}`, chainId: SupportedChainIds) =>
@@ -53,8 +53,9 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
     () => numberToHex(selectedChain.id) as SupportedChainIds,
     [selectedChain.id],
   )
-  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false)
-  const registerActionRef = useRef<null | (() => Promise<void>)>(null)
+  const [isBindReferralCodeModalOpen, setIsBindReferralCodeModalOpen] =
+    useState(false)
+  const onConfirmRef = useRef<null | (() => Promise<void>)>(null)
 
   const publicClient = useMemo(() => {
     return createPublicClient({
@@ -77,14 +78,13 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
     }
   })
 
-  const [pendingReferralCode, setPendingReferralCode] = useState<string | null>(
+  const [pendingCodeToBind, setPendingCodeToBind] = useState<string | null>(
     null,
   )
-  const [isExistingReferralCode, setIsExistingReferralCode] =
-    useState<boolean>(true)
-  const [referralCode, setReferralCode] = useState<string | null>(null)
+  const [isValidReferralCode, setIsValidReferralCode] = useState<boolean>(true)
+  const [referrerCode, setReferrerCode] = useState<string | null>(null)
 
-  const registerOrderlyReferralCode = useCallback(
+  const bindReferrerOnOrderly = useCallback(
     async (code: string) => {
       if (orderlyKey && userAddress) {
         const res = await signAndSendRequest(
@@ -110,7 +110,7 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
     [chainHexId, orderlyKey, userAddress],
   )
 
-  const registerOnChainReferralCode = useCallback(
+  const registerOnChainReferee = useCallback(
     async (code: string) => {
       try {
         if (!walletClient) {
@@ -220,7 +220,7 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
 
       if (orderlyKey) {
-        const { refererCode, onChainRefereeRegistered } =
+        const { referrerCode: orderlyReferrerCode, onChainRefereeRegistered } =
           await getReferralStatus(
             publicClient,
             base64DecodeURL(orderlyKey),
@@ -230,54 +230,58 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
         const refFromUrl = searchParams.get('ref')
 
         console.log('Referral Status:', {
-          refererCode,
+          referrerCode: orderlyReferrerCode,
           onChainRefereeRegistered,
           refFromUrl,
         })
-        if (refererCode && !onChainRefereeRegistered) {
-          setIsReferralModalOpen(true)
-          setPendingReferralCode(refererCode)
-          registerActionRef.current = async () => {
-            await registerOnChainReferralCode(refererCode)
-            setReferralCode(refererCode)
+        if (orderlyReferrerCode && !onChainRefereeRegistered) {
+          setIsBindReferralCodeModalOpen(true)
+          setPendingCodeToBind(orderlyReferrerCode)
+          onConfirmRef.current = async () => {
+            await registerOnChainReferee(orderlyReferrerCode)
+            setReferrerCode(orderlyReferrerCode)
           }
-        } else if (refFromUrl && !refererCode && !onChainRefereeRegistered) {
+        } else if (
+          refFromUrl &&
+          !orderlyReferrerCode &&
+          !onChainRefereeRegistered
+        ) {
           const exists = await verifyReferralCode(chainHexId, refFromUrl)
           if (!exists) {
-            setIsExistingReferralCode(false)
+            setIsValidReferralCode(false)
           }
-          setIsReferralModalOpen(true)
-          setPendingReferralCode(refFromUrl)
-          registerActionRef.current = async () => {
-            await registerOrderlyReferralCode(refFromUrl)
-            await registerOnChainReferralCode(refFromUrl)
-            setReferralCode(refFromUrl)
+          setIsBindReferralCodeModalOpen(true)
+          setPendingCodeToBind(refFromUrl)
+          onConfirmRef.current = async () => {
+            await bindReferrerOnOrderly(refFromUrl)
+            await registerOnChainReferee(refFromUrl)
+            setReferrerCode(refFromUrl)
           }
         }
       }
     }
 
-    setIsReferralModalOpen(false)
-    setPendingReferralCode(null)
-    setReferralCode(null)
+    setIsBindReferralCodeModalOpen(false)
+    setPendingCodeToBind(null)
+    setReferrerCode(null)
     action()
   }, [
     chainHexId,
     orderlyKey,
     publicClient,
-    registerOnChainReferralCode,
-    registerOrderlyReferralCode,
+    registerOnChainReferee,
+    bindReferrerOnOrderly,
     selectedChain.id,
     userAddress,
     walletClient,
   ])
 
   return (
-    <Context.Provider value={{ referralCode }}>
-      {isReferralModalOpen &&
-      pendingReferralCode &&
-      registerActionRef.current ? (
-        <Modal show onClose={() => setIsReferralModalOpen(false)}>
+    <Context.Provider value={{ referrerCode: referrerCode }}>
+      {isBindReferralCodeModalOpen &&
+      pendingCodeToBind &&
+      onConfirmRef.current ? (
+        <Modal show onClose={() => setIsBindReferralCodeModalOpen(false)}>
           <div className="flex flex-col gap-4">
             <h1 className="flex font-semibold text-xl mb-2">
               Referral Registration
@@ -293,22 +297,20 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
                     autoComplete="off"
                     disabled
                     className="focus:outline-none focus-visible:outline-none focus:ring-1 focus:rounded-[10px] focus:ring-gray-400 inline w-full rounded-md border-0 pl-3 py-3 bg-[#2a2b2f] placeholder:text-gray-400 text-xs sm:text-sm text-white"
-                    placeholder={pendingReferralCode || 'Referral Code'}
+                    placeholder={pendingCodeToBind || 'Referral Code'}
                   />
                 </div>
               </div>
             </h6>
             <ActionButton
-              disabled={!isExistingReferralCode}
+              disabled={!isValidReferralCode}
               onClick={async () => {
-                if (registerActionRef.current) {
-                  await registerActionRef.current()
-                  setIsReferralModalOpen(false)
+                if (onConfirmRef.current) {
+                  await onConfirmRef.current()
+                  setIsBindReferralCodeModalOpen(false)
                 }
               }}
-              text={
-                isExistingReferralCode ? 'Confirm' : 'Invalid Referral Code'
-              }
+              text={isValidReferralCode ? 'Confirm' : 'Invalid Referral Code'}
             />
           </div>
         </Modal>
