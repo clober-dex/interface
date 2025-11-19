@@ -53,6 +53,7 @@ export const UserWalletModal = ({
   prices,
   gasPrice,
   ens,
+  referrerCode,
   walletIconUrl,
   transactionHistory,
   disconnectAsync,
@@ -72,6 +73,7 @@ export const UserWalletModal = ({
   setUseRemoteChainBalances: (value: boolean) => void
   gasPrice: bigint | undefined
   ens: string | null
+  referrerCode: string | null
   walletIconUrl: string | null
   transactionHistory: Transaction[]
   disconnectAsync: () => Promise<void>
@@ -176,9 +178,17 @@ export const UserWalletModal = ({
                 />
               </div>
 
-              <span className="block text-white text-sm sm:text-base font-medium">
+              <div className="flex flex-col gap-[1px] text-white text-sm sm:text-base font-medium">
                 {ens ?? formatAddress(userAddress || '', 6)}
-              </span>
+                {referrerCode && (
+                  <span className="text-xs font-normal text-gray-400">
+                    Bind Code:{' '}
+                    <span className="font-medium text-gray-500">
+                      {referrerCode}
+                    </span>
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="flex flex-row gap-1 ml-auto">

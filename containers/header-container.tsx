@@ -20,6 +20,7 @@ import { TransactionSettingModal } from '../components/modal/transaction-setting
 import { useNexus } from '../contexts/nexus-context'
 import { Toggle } from '../components/toggle'
 import { WrongNetworkButton } from '../components/button/wrong-network-button'
+import { useReferralContext } from '../contexts/referral-context'
 
 const TX_NOTIFICATION_BUFFER = 5
 const DISMISS_TXS_KEY = 'dismissed-txs'
@@ -62,6 +63,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
     useState(false)
   const [openTransactionSettingModal, setOpenTransactionSettingModal] =
     useState(false)
+  const { referrerCode } = useReferralContext()
   const {
     pendingTransactions,
     transactionHistory,
@@ -123,6 +125,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
           onClose={() => setOpenTransactionHistoryModal(false)}
           onTransfer={transfer}
           ens={ens}
+          referrerCode={referrerCode}
           useRemoteChainBalances={useRemoteChainBalances}
           setUseRemoteChainBalances={setUseRemoteChainBalances}
         />
