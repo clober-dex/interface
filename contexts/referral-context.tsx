@@ -281,11 +281,25 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
       onConfirmRef.current ? (
         <Modal show onClose={() => setIsBindReferralCodeModalOpen(false)}>
           <div className="flex flex-col gap-4">
-            <h1 className="flex font-semibold text-xl mb-2">
-              Referral Registration
-            </h1>
             <h6 className="flex flex-col gap-4 text-sm">
-              Text.
+              <div className="flex flex-col gap-1 text-gray-400">
+                <h1 className="flex font-semibold text-xl mb-2 text-white">
+                  Bind Referral Code
+                </h1>
+                <div>
+                  •{' '}
+                  <span className="font-semibold text-white">
+                    10% extra Vault Points
+                  </span>
+                </div>
+                <div>
+                  •{' '}
+                  <span className="font-semibold text-white">
+                    20% fee refund
+                  </span>{' '}
+                  on perp trades
+                </div>
+              </div>
               <div className="flex flex-col relative rounded-[10px] shadow-sm bg-[#24272e] outline outline-1 outline-offset-[-1px] outline-[#39393b]">
                 <div className="inline-block">
                   <input
