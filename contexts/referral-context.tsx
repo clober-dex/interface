@@ -234,6 +234,11 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
           onChainRefereeRegistered,
           refFromUrl,
         })
+
+        if (orderlyReferrerCode && onChainRefereeRegistered) {
+          setReferrerCode(orderlyReferrerCode)
+        }
+
         if (orderlyReferrerCode && !onChainRefereeRegistered) {
           setIsBindReferralCodeModalOpen(true)
           setPendingCodeToBind(orderlyReferrerCode)
@@ -264,6 +269,8 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
     setIsBindReferralCodeModalOpen(false)
     setPendingCodeToBind(null)
     setReferrerCode(null)
+    setIsValidReferralCode(true)
+
     action()
   }, [
     chainHexId,
@@ -277,7 +284,7 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
   ])
 
   return (
-    <Context.Provider value={{ referrerCode: referrerCode }}>
+    <Context.Provider value={{ referrerCode }}>
       {isBindReferralCodeModalOpen &&
       pendingCodeToBind &&
       onConfirmRef.current ? (
