@@ -35,7 +35,7 @@ jobs:
 
       - name: Check price endpoint
         run: |
-          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://alpha.clober.io/api/chains/1/price")
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://alpha.clober.io/api/chains/1/price/0x0000000000000000000000000000000000000000")
           if [ "$STATUS" -ne 200 ]; then
             echo "❌ price endpoint failed with status $STATUS"
             exit 1
