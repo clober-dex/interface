@@ -430,8 +430,12 @@ export const BridgeAndExecuteProvider = ({
       setConfirmation(bridgeAndExecuteConfirmation)
 
       let hexIntentID: `0x${string}` | undefined = undefined
+      let externalLink: string | undefined = undefined
       const bridgeAndExecuteResult = await nexusSDK.bridgeAndExecute(params, {
         onEvent: async (event) => {
+          if (!externalLink && (event.args as any).data?.explorerURL) {
+            externalLink = (event.args as any).data?.explorerURL
+          }
           if (event.name === NEXUS_EVENTS.STEP_COMPLETE) {
             setConfirmation({
               ...bridgeAndExecuteConfirmation,
@@ -439,10 +443,7 @@ export const BridgeAndExecuteProvider = ({
                 <div className="flex flex-col gap-1 w-full">
                   {!STEPS.find(({ name }) => name === event.args.type) &&
                     footer}
-                  <Steps
-                    type={event.args.type}
-                    externalLink={(event.args as any).data?.explorerURL}
-                  />
+                  <Steps type={event.args.type} externalLink={externalLink} />
                 </div>
               ),
             })
