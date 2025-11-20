@@ -1,5 +1,5 @@
 import { createPublicClient, http, isAddressEqual, zeroAddress } from 'viem'
-import { CHAIN_IDS } from '@clober/v2-sdk'
+import { CHAIN_IDS, getReferenceCurrency } from '@clober/v2-sdk'
 
 import { ERC20_PERMIT_ABI } from '../abis/@openzeppelin/erc20-permit-abi'
 import { Currency } from '../model/currency'
@@ -175,7 +175,12 @@ export const isCurrencyEqual = (a: Currency, b: Currency) => {
 
 export const fetchCurrenciesDone = (currencies: Currency[]) => {
   return currencies.find((currency) =>
-    isAddressEqual(currency.address, CHAIN_CONFIG.REFERENCE_CURRENCY.address),
+    isAddressEqual(
+      currency.address,
+      getReferenceCurrency({
+        chainId: CHAIN_CONFIG.CHAIN.id,
+      }).address,
+    ),
   )
 }
 

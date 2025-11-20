@@ -88,7 +88,6 @@ export const CHAIN_CONFIG: ChainConfig = {
   WHITELISTED_POOL_KEYS: WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.map(
     ({ poolKey }) => poolKey,
   ),
-  REFERENCE_CURRENCY: getReferenceCurrency({ chainId: CHAIN.id }),
   DEFAULT_SLIPPAGE_PERCENT: 1.99,
   DEFAULT_INPUT_CURRENCY: getNativeCurrency({ chainId: CHAIN.id }),
   DEFAULT_OUTPUT_CURRENCY: {

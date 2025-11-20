@@ -2,7 +2,11 @@ import React, { useCallback } from 'react'
 import { getAddress, isAddressEqual, zeroAddress } from 'viem'
 import { useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
-import { Transaction, Transaction as SdkTransaction } from '@clober/v2-sdk'
+import {
+  getReferenceCurrency,
+  Transaction,
+  Transaction as SdkTransaction,
+} from '@clober/v2-sdk'
 
 import { Currency } from '../../model/currency'
 import { formatDollarValue, toUnitString } from '../../utils/bigint'
@@ -83,8 +87,11 @@ export const SwapContractProvider = ({
               ?.contract || aggregator.contract,
           )
         }
+        const ref = getReferenceCurrency({
+          chainId: selectedChain.id,
+        }).address
         if (
-          !isAddressEqual(spender, CHAIN_CONFIG.REFERENCE_CURRENCY.address) &&
+          !isAddressEqual(spender, ref) &&
           !isAddressEqual(inputCurrency.address, zeroAddress) &&
           getAllowance(spender, inputCurrency) < amountIn
         ) {
