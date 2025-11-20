@@ -28,7 +28,7 @@ function validateQueryParams(query: NextApiRequest['query']) {
     typeof chainId !== 'string' ||
     chainId !== CHAIN_CONFIG.CHAIN.id.toString()
   ) {
-    throw new Error('Unsupported chainId')
+    throw new Error('Invalid chainId')
   }
 
   if (
@@ -323,7 +323,7 @@ export default async function handler(
   } catch (error: any) {
     console.error('Error processing quote request:', error)
     if (error.message?.startsWith('Invalid')) {
-      res.status(400).json({ code: 'BAD_REQUEST', error: error.message })
+      res.status(200).json({ code: 'BAD_REQUEST', error: error.message })
       return
     }
 

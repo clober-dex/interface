@@ -12,6 +12,7 @@ import {
   zeroAddress,
 } from 'viem'
 import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js'
+import { getReferenceCurrency } from '@clober/v2-sdk'
 
 import { Asset } from '../../model/futures/asset'
 import { useCurrencyContext } from '../currency-context'
@@ -172,9 +173,12 @@ export const FuturesContractProvider = ({
           fields: [],
         })
 
+        const ref = getReferenceCurrency({
+          chainId: selectedChain.id,
+        }).address
         const spender = CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.FuturesMarket
         if (
-          !isAddressEqual(spender, CHAIN_CONFIG.REFERENCE_CURRENCY.address) &&
+          !isAddressEqual(spender, ref) &&
           !isAddressEqual(asset.collateral.address, zeroAddress) &&
           getAllowance(spender, asset.collateral) < collateralAmount
         ) {

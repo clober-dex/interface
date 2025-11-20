@@ -3,7 +3,12 @@ import { getAddress, isAddressEqual, parseUnits, zeroAddress } from 'viem'
 import { useAccount, useGasPrice, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
-import { getContractAddresses, getLatestTrades, Swap } from '@clober/v2-sdk'
+import {
+  getContractAddresses,
+  getLatestTrades,
+  getReferenceCurrency,
+  Swap,
+} from '@clober/v2-sdk'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -564,7 +569,9 @@ export const TradeContainer = () => {
           return 'Insufficient balance'
         }
 
-        const ref = CHAIN_CONFIG.REFERENCE_CURRENCY.address
+        const ref = getReferenceCurrency({
+          chainId: selectedChain.id,
+        }).address
         const input = inputCurrency.address
         const output = outputCurrency.address
 
@@ -612,6 +619,7 @@ export const TradeContainer = () => {
       gasPrice,
       swap,
       walletClient,
+      selectedChain.id,
       selectedExecutorName,
       getAllowance,
     ],

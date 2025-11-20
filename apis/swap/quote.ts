@@ -1,4 +1,4 @@
-import { Transaction } from '@clober/v2-sdk'
+import { getReferenceCurrency, Transaction } from '@clober/v2-sdk'
 import {
   decodeFunctionData,
   encodeFunctionData,
@@ -36,16 +36,13 @@ const applyFeeAdjustment = (
     ),
     0n,
   )
+  const ref = getReferenceCurrency({
+    chainId: CHAIN_CONFIG.CHAIN.id,
+  }).address
   const wrapOrUnwrap =
     (isAddressEqual(inputCurrency.address, zeroAddress) &&
-      isAddressEqual(
-        outputCurrency.address,
-        CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-      )) ||
-    (isAddressEqual(
-      inputCurrency.address,
-      CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-    ) &&
+      isAddressEqual(outputCurrency.address, ref)) ||
+    (isAddressEqual(inputCurrency.address, ref) &&
       isAddressEqual(outputCurrency.address, zeroAddress))
 
   const _fee = wrapOrUnwrap ? 0n : fee
@@ -234,16 +231,13 @@ export async function fetchQuotesLive(
     best: null,
     all: [],
   }))
+  const ref = getReferenceCurrency({
+    chainId: CHAIN_CONFIG.CHAIN.id,
+  }).address
   const isWrapOrUnwrap =
     (isAddressEqual(inputCurrency.address, zeroAddress) &&
-      isAddressEqual(
-        outputCurrency.address,
-        CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-      )) ||
-    (isAddressEqual(
-      inputCurrency.address,
-      CHAIN_CONFIG.REFERENCE_CURRENCY.address,
-    ) &&
+      isAddressEqual(outputCurrency.address, ref)) ||
+    (isAddressEqual(inputCurrency.address, ref) &&
       isAddressEqual(outputCurrency.address, zeroAddress))
 
   await Promise.all(

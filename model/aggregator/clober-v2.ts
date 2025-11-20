@@ -7,6 +7,7 @@ import {
 import {
   getCurrencies,
   getLatestPriceMap,
+  getReferenceCurrency,
   marketOrder,
   Transaction,
 } from '@clober/v2-sdk'
@@ -37,7 +38,9 @@ export class CloberV2Aggregator implements Aggregator {
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
     this.chain = chain
-    this.weth = CHAIN_CONFIG.REFERENCE_CURRENCY.address
+    this.weth = getReferenceCurrency({
+      chainId: this.chain.id,
+    }).address
   }
 
   public async currencies(): Promise<Currency[]> {
@@ -118,7 +121,7 @@ export class CloberV2Aggregator implements Aggregator {
           }),
           gas: this.wrapOrUnWrapGasLimit,
           value: amountIn,
-          to: CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+          to: this.weth,
           gasPrice,
           from: userAddress,
         },
@@ -137,7 +140,7 @@ export class CloberV2Aggregator implements Aggregator {
           }),
           gas: this.wrapOrUnWrapGasLimit,
           value: 0n,
-          to: CHAIN_CONFIG.REFERENCE_CURRENCY.address,
+          to: this.weth,
           gasPrice,
           from: userAddress,
         },

@@ -1,0 +1,47 @@
+name: API Health Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check base-tokens endpoint
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://alpha.clober.io/api/chains/1/base-tokens/0x0000000000000000000000000000000000000000/quote-tokens/0x0000000000000000000000000000000000000000")
+          if [ "$STATUS" -ne 200 ]; then
+            echo "❌ base-tokens endpoint failed with status $STATUS"
+            exit 1
+          else
+            echo "✅ base-tokens OK ($STATUS)"
+          fi
+
+      - name: Check quote endpoint
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://alpha.clober.io/api/chains/1/quote")
+          if [ "$STATUS" -ne 200 ]; then
+            echo "❌ quote endpoint failed with status $STATUS"
+            exit 1
+          else
+            echo "✅ quote OK ($STATUS)"
+          fi
+
+      - name: Check price endpoint
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://alpha.clober.io/api/chains/1/price")
+          if [ "$STATUS" -ne 200 ]; then
+            echo "❌ price endpoint failed with status $STATUS"
+            exit 1
+          else
+            echo "✅ price OK ($STATUS)"
+          fi
+
+      - name: All checks passed
+        run: echo "🎉 All API endpoints are healthy!"
