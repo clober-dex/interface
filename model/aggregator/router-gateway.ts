@@ -77,6 +77,15 @@ export class AggregatorRouterGateway implements Aggregator {
     )
 
     if (transaction) {
+      if (transaction.data.trim() === '0x') {
+        return {
+          amountOut,
+          gasLimit: 0n,
+          aggregator: this,
+          transaction: undefined,
+          executionMilliseconds: performance.now() - start,
+        }
+      }
       const data = encodeFunctionData({
         abi: ROUTER_GATEWAY_ABI,
         functionName: 'swap',
