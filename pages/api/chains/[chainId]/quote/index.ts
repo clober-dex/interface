@@ -10,8 +10,8 @@ import {
 } from 'viem'
 import { Currency } from '@clober/v2-sdk'
 
-import { CHAIN_CONFIG } from '../../../chain-configs'
-import { aggregators } from '../../../chain-configs/aggregators'
+import { CHAIN_CONFIG } from '../../../../../chain-configs'
+import { aggregators } from '../../../../../chain-configs/aggregators'
 
 function validateQueryParams(query: NextApiRequest['query']) {
   const {
@@ -20,7 +20,16 @@ function validateQueryParams(query: NextApiRequest['query']) {
     amountIn,
     slippageLimitPercent,
     userAddress,
+    chainId,
   } = query
+
+  if (
+    !chainId ||
+    typeof chainId !== 'string' ||
+    chainId !== CHAIN_CONFIG.CHAIN.id.toString()
+  ) {
+    throw new Error('Unsupported chainId')
+  }
 
   if (
     !inputTokenAddress ||

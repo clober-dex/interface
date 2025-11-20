@@ -8,10 +8,10 @@ import {
 } from 'viem'
 import BigNumber from 'bignumber.js'
 
-import { CHAIN_CONFIG } from '../../../../chain-configs'
-import { fetchCurrency } from '../../../../utils/currency'
-import { Currency } from '../../../../model/currency'
-import { aggregators } from '../../../../chain-configs/aggregators'
+import { CHAIN_CONFIG } from '../../../../../../chain-configs'
+import { fetchCurrency } from '../../../../../../utils/currency'
+import { Currency } from '../../../../../../model/currency'
+import { aggregators } from '../../../../../../chain-configs/aggregators'
 
 const cache: {
   [key: string]: Currency
@@ -24,11 +24,16 @@ export default async function handler(
   try {
     const query = req.query
     // eslint-disable-next-line prefer-const
-    let { token } = query
-    if (!token || typeof token !== 'string') {
+    let { token, chainId } = query
+    if (
+      !token ||
+      !chainId ||
+      typeof token !== 'string' ||
+      typeof chainId !== 'string'
+    ) {
       res.json({
         status: 'error',
-        message: 'URL should be /api/price/[token]',
+        message: 'URL should be /api/chains/[chainId]/price/[token]',
       })
       return
     }
@@ -36,6 +41,13 @@ export default async function handler(
       res.json({
         status: 'error',
         message: 'Invalid address',
+      })
+      return
+    }
+    if (CHAIN_CONFIG.CHAIN.id.toString() !== chainId) {
+      res.json({
+        status: 'error',
+        message: 'Unsupported chainId',
       })
       return
     }

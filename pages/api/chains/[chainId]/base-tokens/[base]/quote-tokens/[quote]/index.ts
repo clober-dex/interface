@@ -3,8 +3,8 @@ import { getAddress, isAddress, isAddressEqual, zeroAddress } from 'viem'
 import axios from 'axios'
 import { getReferenceCurrency } from '@clober/v2-sdk'
 
-import { TokenInfo } from '../../../../../../model/token-info'
-import { CHAIN_CONFIG } from '../../../../../../chain-configs'
+import { TokenInfo } from '../../../../../../../../model/token-info'
+import { CHAIN_CONFIG } from '../../../../../../../../chain-configs'
 
 type PairDto = {
   pairAddress: string
@@ -77,16 +77,19 @@ export default async function handler(
   try {
     const query = req.query
     // eslint-disable-next-line prefer-const
-    let { base, quote } = query
+    let { base, quote, chainId } = query
     if (
       !base ||
       !quote ||
+      !chainId ||
       typeof base !== 'string' ||
-      typeof quote !== 'string'
+      typeof quote !== 'string' ||
+      typeof chainId !== 'string'
     ) {
       res.json({
         status: 'error',
-        message: 'URL should be /api/base-tokens/[base]/quote-tokens/[quote]',
+        message:
+          'URL should be /api/chains/[chainId]/base-tokens/[base]/quote-tokens/[quote]',
       })
       return
     }
@@ -94,6 +97,13 @@ export default async function handler(
       res.json({
         status: 'error',
         message: 'Invalid address',
+      })
+      return
+    }
+    if (CHAIN_CONFIG.CHAIN.id.toString() !== chainId) {
+      res.json({
+        status: 'error',
+        message: 'Unsupported chainId',
       })
       return
     }
