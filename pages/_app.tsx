@@ -33,12 +33,13 @@ import { PoolProvider } from '../contexts/pool/pool-context'
 import { PoolContractProvider } from '../contexts/pool/pool-contract-context'
 import { FuturesProvider } from '../contexts/futures/futures-context'
 import { FuturesContractProvider } from '../contexts/futures/futures-contract-context'
-import { CHAIN_CONFIG, getClientConfig } from '../chain-configs'
+import { CHAIN_CONFIG } from '../chain-configs'
 import Sidebar from '../components/sidebar'
 import { BlockNumberWidget } from '../components/block-number-widget'
 import { fetchWalletConnectors, postWalletConnector } from '../apis/wallet'
 import { BridgeAndExecuteProvider } from '../contexts/bridge-and-execute-context'
 import { ReferralProvider } from '../contexts/referral-context'
+import { getClientConfig } from '../chain-configs/client-config'
 
 const CacheProvider = ({ children }: React.PropsWithChildren) => {
   const queryClient = useQueryClient()

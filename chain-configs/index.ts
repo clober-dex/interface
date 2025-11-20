@@ -1,16 +1,7 @@
 import { monadTestnet } from 'viem/chains'
-import { connectorsForWallets } from '@rainbow-me/rainbowkit'
-import { getAddress, http, zeroAddress } from 'viem'
-import { getNativeCurrency, getReferenceCurrency } from '@clober/v2-sdk'
+import { getAddress, zeroAddress } from 'viem'
+import { getNativeCurrency } from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
-import { createConfig, injected } from 'wagmi'
-import {
-  bitgetWallet,
-  walletConnectWallet,
-} from '@rainbow-me/rainbowkit/wallets'
-
-import { socialAccountWallet } from '../utils/custom-wallets/web3auth'
-import { hahaWallet } from '../utils/custom-wallets/haha-wallet'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
@@ -110,46 +101,4 @@ export const CHAIN_CONFIG: ChainConfig = {
       ({ wrappedLpCurrency }) => wrappedLpCurrency,
     ).map(({ wrappedLpCurrency }) => wrappedLpCurrency!),
   ],
-}
-
-let config: any | null = null
-export const getClientConfig = () => {
-  if (typeof window === 'undefined') {
-    return null
-  }
-  if (config) {
-    return config
-  }
-
-  config = createConfig({
-    chains: [CHAIN],
-    transports: {
-      [CHAIN.id]: http(CHAIN_CONFIG.RPC_URL),
-    },
-    ssr: false,
-    connectors: [
-      injected({ shimDisconnect: true }),
-      ...connectorsForWallets(
-        [
-          {
-            groupName: 'Recommended',
-            wallets: CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID
-              ? [
-                  socialAccountWallet,
-                  bitgetWallet,
-                  walletConnectWallet,
-                  hahaWallet,
-                ]
-              : [bitgetWallet, walletConnectWallet, hahaWallet],
-          },
-        ],
-        {
-          appName: CHAIN_CONFIG.DEX_NAME,
-          projectId: CHAIN_CONFIG.WALLET_CONNECT_PROJECT_ID,
-        },
-      ),
-    ],
-  })
-
-  return config
 }
