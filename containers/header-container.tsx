@@ -217,22 +217,24 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
               </svg>
             </button>
 
-            <div className="h-9 p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex justify-start items-center gap-2">
-              <div className="flex justify-start items-center gap-1.5">
-                <div className="text-right justify-start text-white text-sm font-medium">
-                  Unified Balance
-                </div>
+            {CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES && (
+              <div className="h-9 p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex justify-start items-center gap-2">
+                <div className="flex justify-start items-center gap-1.5">
+                  <div className="text-right justify-start text-white text-sm font-medium">
+                    Unified Balance
+                  </div>
 
-                <Toggle
-                  disabled={!CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES}
-                  defaultChecked={useRemoteChainBalances}
-                  onChange={() => {
-                    setUseRemoteChainBalances(!useRemoteChainBalances)
-                  }}
-                  checked={useRemoteChainBalances}
-                />
+                  <Toggle
+                    disabled={!CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES}
+                    defaultChecked={useRemoteChainBalances}
+                    onChange={() => {
+                      setUseRemoteChainBalances(!useRemoteChainBalances)
+                    }}
+                    checked={useRemoteChainBalances}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="absolute top-12 sm:top-14 -right-4 w-[300px] sm:w-[368px] z-10 border-[#2f313d] border-solid flex flex-col gap-2">
               <AnimatePresence initial={false}>
