@@ -1,11 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 
 import NumberInput from '../input/number-input'
-
-const UNLIMITED_SLIPPAGE = 50
-const FIRST_SLIPPAGE = 1.99
-const SECOND_SLIPPAGE = 3.99
-const WARNING_SLIPPAGE_THRESHOLD = 10.0
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 export const SlippageSelector = ({
   slippageInput,
@@ -19,9 +15,9 @@ export const SlippageSelector = ({
 
   useEffect(() => {
     if (
-      Number(slippageInput) !== FIRST_SLIPPAGE &&
-      Number(slippageInput) !== SECOND_SLIPPAGE &&
-      Number(slippageInput) !== UNLIMITED_SLIPPAGE
+      Number(slippageInput) !== CHAIN_CONFIG.SLIPPAGE_PERCENT.LOW &&
+      Number(slippageInput) !== CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM &&
+      Number(slippageInput) !== CHAIN_CONFIG.SLIPPAGE_PERCENT.UNLIMITED
     ) {
       setCustomValue(slippageInput)
     } else {
@@ -31,7 +27,7 @@ export const SlippageSelector = ({
 
   useEffect(() => {
     if (prevCustomValueRef.current !== '' && customValue === '') {
-      setSlippageInput(SECOND_SLIPPAGE.toString())
+      setSlippageInput(CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM.toString())
     }
     prevCustomValueRef.current = customValue
   }, [customValue, setSlippageInput])
@@ -40,29 +36,33 @@ export const SlippageSelector = ({
     <div className="flex h-full w-full flex-col gap-1.5 text-white">
       <div className="bg-gray-600 text-white rounded-[22px] ml-auto w-fit h-7 py-0.5 flex flex-row relative text-xs mt-2.5">
         <button
-          disabled={Number(slippageInput) === FIRST_SLIPPAGE}
+          disabled={Number(slippageInput) === CHAIN_CONFIG.SLIPPAGE_PERCENT.LOW}
           onClick={() => {
-            setSlippageInput(FIRST_SLIPPAGE.toString())
+            setSlippageInput(CHAIN_CONFIG.SLIPPAGE_PERCENT.LOW.toString())
             setCustomValue('')
           }}
           className="flex flex-1 pr-2 pl-3 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          {FIRST_SLIPPAGE.toFixed(2)}%
+          {CHAIN_CONFIG.SLIPPAGE_PERCENT.LOW.toFixed(2)}%
         </button>
         <button
-          disabled={Number(slippageInput) === SECOND_SLIPPAGE}
+          disabled={
+            Number(slippageInput) === CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM
+          }
           onClick={() => {
-            setSlippageInput(SECOND_SLIPPAGE.toString())
+            setSlippageInput(CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM.toString())
             setCustomValue('')
           }}
           className="flex flex-1 px-2 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
         >
-          {SECOND_SLIPPAGE.toFixed(2)}%
+          {CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM.toFixed(2)}%
         </button>
         <button
-          disabled={Number(slippageInput) === UNLIMITED_SLIPPAGE}
+          disabled={
+            Number(slippageInput) === CHAIN_CONFIG.SLIPPAGE_PERCENT.UNLIMITED
+          }
           onClick={() => {
-            setSlippageInput(UNLIMITED_SLIPPAGE.toString())
+            setSlippageInput(CHAIN_CONFIG.SLIPPAGE_PERCENT.UNLIMITED.toString())
             setCustomValue('')
           }}
           className="w-[34px] sm:w-[46px] flex flex-1 px-2 py-0 rounded-[18px] disabled:text-blue-400 disabled:bg-blue-500/25 justify-center items-center gap-1"
@@ -71,14 +71,14 @@ export const SlippageSelector = ({
         </button>
 
         <div
-          className={`flex flex-row items-center pr-2 ${customValue.length > 0 && (Number(slippageInput) >= WARNING_SLIPPAGE_THRESHOLD || Number(slippageInput) <= 0.05) ? 'text-yellow-500' : 'text-white'} ${customValue.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
+          className={`flex flex-row items-center pr-2 ${customValue.length > 0 && (Number(slippageInput) >= CHAIN_CONFIG.SLIPPAGE_PERCENT.WARNING || Number(slippageInput) <= 0.05) ? 'text-yellow-500' : 'text-white'} ${customValue.length !== 0 ? 'outline outline-1 outline-blue-500 rounded-full' : ''}`}
         >
           <NumberInput
             placeholder="Custom"
             disabled={
-              Number(slippageInput) === FIRST_SLIPPAGE &&
-              Number(slippageInput) === SECOND_SLIPPAGE &&
-              Number(slippageInput) === UNLIMITED_SLIPPAGE
+              Number(slippageInput) === CHAIN_CONFIG.SLIPPAGE_PERCENT.LOW &&
+              Number(slippageInput) === CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM &&
+              Number(slippageInput) === CHAIN_CONFIG.SLIPPAGE_PERCENT.UNLIMITED
             }
             value={customValue}
             onValueChange={(e) => {
@@ -98,7 +98,7 @@ export const SlippageSelector = ({
         </div>
       </div>
 
-      {Number(slippageInput) >= WARNING_SLIPPAGE_THRESHOLD ? (
+      {Number(slippageInput) >= CHAIN_CONFIG.SLIPPAGE_PERCENT.WARNING ? (
         <div className="flex w-full">
           <div className="flex flex-row items-center gap-1 ml-auto text-[13px] font-medium text-yellow-500">
             <svg
@@ -129,16 +129,17 @@ export const SlippageSelector = ({
         <></>
       )}
 
-      {Number(slippageInput) < FIRST_SLIPPAGE ? (
+      {Number(slippageInput) < CHAIN_CONFIG.SLIPPAGE_PERCENT.LOW ? (
         <div className="flex w-full text-nowrap justify-end text-yellow-500">
-          Slippage below {FIRST_SLIPPAGE}% may result in a failed tx.
+          Slippage below {CHAIN_CONFIG.SLIPPAGE_PERCENT.LOW}% may result in a
+          failed tx.
         </div>
       ) : (
         <></>
       )}
 
-      {Number(slippageInput) < WARNING_SLIPPAGE_THRESHOLD &&
-        Number(slippageInput) >= FIRST_SLIPPAGE && (
+      {Number(slippageInput) < CHAIN_CONFIG.SLIPPAGE_PERCENT.WARNING &&
+        Number(slippageInput) >= CHAIN_CONFIG.SLIPPAGE_PERCENT.LOW && (
           <div className="flex h-[19.5px] w-1" />
         )}
     </div>

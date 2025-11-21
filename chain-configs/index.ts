@@ -90,8 +90,8 @@ export const CHAIN_CONFIG: ChainConfig = {
   ),
   SLIPPAGE_PERCENT: {
     DEFAULT: 1.99,
-    FIRST: 1.99,
-    SECOND: 3.99,
+    LOW: 1.99,
+    MEDIUM: 3.99,
     WARNING: 10.0,
     UNLIMITED: 50.0,
   },

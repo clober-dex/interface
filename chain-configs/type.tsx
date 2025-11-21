@@ -46,8 +46,8 @@ export type ChainConfig = {
   WHITELISTED_POOL_KEYS: `0x${string}`[]
   SLIPPAGE_PERCENT: {
     DEFAULT: number
-    FIRST: number
-    SECOND: number
+    LOW: number
+    MEDIUM: number
     WARNING: number
     UNLIMITED: number
   }
