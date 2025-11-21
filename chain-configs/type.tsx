@@ -44,7 +44,13 @@ export type ChainConfig = {
   EXTERNAL_CONTRACT_ADDRESSES: Record<EXTERNAL_CONTRACT, `0x${string}`>
   EXTERNAL_SUBGRAPH_ENDPOINTS: Record<EXTERNAL_SUBGRAPH, `https://${string}`>
   WHITELISTED_POOL_KEYS: `0x${string}`[]
-  DEFAULT_SLIPPAGE_PERCENT: number
+  SLIPPAGE_PERCENT: {
+    DEFAULT: number
+    FIRST: number
+    SECOND: number
+    WARNING: number
+    UNLIMITED: number
+  }
   DEFAULT_INPUT_CURRENCY: Currency
   DEFAULT_OUTPUT_CURRENCY: Currency
   DEFAULT_STABLE_COIN_CURRENCY: Currency

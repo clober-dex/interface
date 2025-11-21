@@ -114,7 +114,7 @@ export const Default: Story = {
     disableSwap: true,
     setDisableSwap: () => {},
     disableDisableSwap: false,
-    slippageInput: CHAIN_CONFIG.DEFAULT_SLIPPAGE_PERCENT.toString(),
+    slippageInput: CHAIN_CONFIG.SLIPPAGE_PERCENT.DEFAULT.toString(),
     setSlippageInput: () => {},
     receiveLpCurrencyAmount: 1000999999999999900n,
     isCalculatingReceiveLpAmount: true,

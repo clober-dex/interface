@@ -32,7 +32,7 @@ const Context = React.createContext<PoolContext>({
   setCurrency1Amount: () => {},
   disableSwap: false,
   setDisableSwap: () => {},
-  slippageInput: CHAIN_CONFIG.DEFAULT_SLIPPAGE_PERCENT.toString(),
+  slippageInput: CHAIN_CONFIG.SLIPPAGE_PERCENT.DEFAULT.toString(),
   setSlippageInput: () => {},
   lpBalances: {},
 })
@@ -46,7 +46,7 @@ export const PoolProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [currency1Amount, setCurrency1Amount] = React.useState('')
   const [disableSwap, setDisableSwap] = React.useState(false)
   const [slippageInput, setSlippageInput] = React.useState(
-    CHAIN_CONFIG.DEFAULT_SLIPPAGE_PERCENT.toString(),
+    CHAIN_CONFIG.SLIPPAGE_PERCENT.DEFAULT.toString(),
   )
   const publicClient = useMemo(() => {
     return createPublicClient({
