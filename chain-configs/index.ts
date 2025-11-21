@@ -1,5 +1,9 @@
 import { getAddress, zeroAddress } from 'viem'
-import { getNativeCurrency } from '@clober/v2-sdk'
+import {
+  getContractAddresses,
+  getNativeCurrency,
+  getReferenceCurrency,
+} from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
 
 import { ChainConfig } from './type'
@@ -56,11 +60,12 @@ export const CHAIN_CONFIG: ChainConfig = {
   BLACKLISTED_USERS: [],
   ROUTER_MAP: {
     // ['0x1e538356D3Cfe7fA04696A92515adD4A895ECB65']: 'MadHouse',
-    // ['0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701']: `W${CHAIN.nativeCurrency.symbol.toUpperCase()}`,
+    [getReferenceCurrency({ chainId: CHAIN.id }).address]:
+      `W${CHAIN.nativeCurrency.symbol.toUpperCase()}`,
     // ['0x6352a56caadC4F1E25CD6c75970Fa768A3304e64']: 'OpenOcean',
     // ['0x11133460F102c5dE431F7749c8Bc2b7c172568E1']: 'Monorail',
     // ['0x0f3Cfe8869d6fFdA410Ae6a7B78e7168780e22C3']: 'EisenFinance',
-    // ['0x08feDaACe14EB141E51282441b05182519D853D1']: 'Clober',
+    [getContractAddresses({ chainId: CHAIN.id }).Controller]: 'Clober',
   },
   EXTERNAL_SUBGRAPH_ENDPOINTS: {
     FUTURES_MARKET: 'https://',
