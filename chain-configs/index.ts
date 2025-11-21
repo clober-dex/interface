@@ -11,6 +11,15 @@ const CHAIN = {
   ...monadTestnet,
   icon: '/chain-logo-images/monad.png',
 }
+
+const CANONICAL_USDC = {
+  address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea' as `0x${string}`,
+  name: 'USD Coin',
+  symbol: 'USDC',
+  decimals: 6,
+  icon: '/asset-icon/USDC.webp',
+}
+
 export const CHAIN_CONFIG: ChainConfig = {
   CHAIN,
   TITLE: 'Fully On-chain Order Book',
@@ -87,20 +96,8 @@ export const CHAIN_CONFIG: ChainConfig = {
     UNLIMITED: 50.0,
   },
   DEFAULT_INPUT_CURRENCY: getNativeCurrency({ chainId: CHAIN.id }),
-  DEFAULT_OUTPUT_CURRENCY: {
-    address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-    name: 'USD Coin',
-    symbol: 'USDC',
-    decimals: 6,
-    icon: '/asset-icon/USDC.webp',
-  },
-  DEFAULT_STABLE_COIN_CURRENCY: {
-    address: '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea',
-    name: 'USD Coin',
-    symbol: 'USDC',
-    decimals: 6,
-    icon: '/asset-icon/USDC.webp',
-  },
+  DEFAULT_OUTPUT_CURRENCY: CANONICAL_USDC,
+  DEFAULT_STABLE_COIN_CURRENCY: CANONICAL_USDC,
   WHITELISTED_CURRENCIES: [
     ...WHITELISTED_CURRENCIES,
     ...WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES.filter(
