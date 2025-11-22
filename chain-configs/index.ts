@@ -33,7 +33,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   LANDING_PAGE_URL: 'https://clober.io',
   TWITTER_HANDLE: '@CloberDEX',
   GITHIB_URL: 'https://github.com/clober-dex/',
-  ASSETS_GITHUB_REPO: null,
+  ASSETS_GITHUB_REPO: 'monad-crypto/token-list',
   DISCORD_URL: 'https://discord.gg/clober-dex',
   DOCS_URL: 'https://docs.clober.io/',
   HIDE_ORDERBOOK: false,
