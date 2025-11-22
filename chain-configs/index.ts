@@ -59,7 +59,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   },
   BLACKLISTED_USERS: [],
   ROUTER_MAP: {
-    // ['0x1e538356D3Cfe7fA04696A92515adD4A895ECB65']: 'MadHouse',
+    ['0x6017684Bea9Cb6e9874fC6DBA4438271eBF9F5DA']: 'MadHouse',
     [getReferenceCurrency({ chainId: CHAIN.id }).address]:
       `W${CHAIN.nativeCurrency.symbol.toUpperCase()}`,
     // ['0x6352a56caadC4F1E25CD6c75970Fa768A3304e64']: 'OpenOcean',
