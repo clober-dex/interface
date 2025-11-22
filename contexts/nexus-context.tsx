@@ -45,6 +45,7 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
 
         const sdk = new NexusSDK({
           network: CHAIN_CONFIG.CHAIN.testnet ? 'testnet' : 'mainnet',
+          siweChain: CHAIN_CONFIG.CHAIN.id,
         })
 
         await sdk.initialize(provider)
