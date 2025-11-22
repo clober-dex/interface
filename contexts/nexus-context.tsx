@@ -117,7 +117,7 @@ const NexusProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const stored = localStorage.getItem(USE_REMOTE_CHAIN_BALANCES_KEY)
-    _setUseRemoteChainBalances(stored ? stored === 'true' : true)
+    _setUseRemoteChainBalances(stored ? stored === 'true' : false)
   }, [])
 
   return (
