@@ -11,7 +11,7 @@ import { Aggregator } from './index'
 
 export class MonorailAggregator implements Aggregator {
   public readonly name = 'Monorail'
-  public readonly baseUrl = 'https://testnet-pathfinder.monorail.xyz'
+  public readonly baseUrl = 'https://pathfinder.monorail.xyz'
   public readonly contract: `0x${string}`
   public readonly minimumSlippage = 0.01 // 0.01% slippage
   public readonly maximumSlippage = 50 // 50% slippage
@@ -59,6 +59,7 @@ export class MonorailAggregator implements Aggregator {
     const start = performance.now()
     slippageLimitPercent = this.calculateSlippage(slippageLimitPercent)
     let params = {
+      source: 4322176390363441,
       amount: toUnitString(amountIn, inputCurrency.decimals),
       from: isAddressEqual(inputCurrency.address, this.nativeTokenAddress)
         ? this.nativeTokenAddress
@@ -83,7 +84,7 @@ export class MonorailAggregator implements Aggregator {
         data: string
         value: string
       }
-    }>(this.baseUrl, `v3/quote`, {
+    }>(this.baseUrl, `v4/quote`, {
       method: 'GET',
       headers: {
         accept: 'application/json',
@@ -91,6 +92,15 @@ export class MonorailAggregator implements Aggregator {
       timeout: timeout ?? this.TIMEOUT,
       params,
     })
+    if (!userAddress) {
+      return {
+        amountOut: BigInt(output),
+        gasLimit: BigInt(gas_estimate),
+        aggregator: this,
+        transaction: undefined,
+        executionMilliseconds: performance.now() - start,
+      }
+    }
 
     return {
       amountOut: BigInt(output),

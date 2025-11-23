@@ -63,7 +63,7 @@ export const CHAIN_CONFIG: ChainConfig = {
     [getReferenceCurrency({ chainId: CHAIN.id }).address]:
       `W${CHAIN.nativeCurrency.symbol.toUpperCase()}`,
     // ['0x6352a56caadC4F1E25CD6c75970Fa768A3304e64']: 'OpenOcean',
-    // ['0x11133460F102c5dE431F7749c8Bc2b7c172568E1']: 'Monorail',
+    ['0xA68A7F0601effDc65C64d9C47cA1b18D96B4352c']: 'Monorail',
     ['0xECE5E77f9A9846C4D69555Eb44E0CFF8B5F03F1e']: 'EisenFinance',
     ['0x6131B5fae19EA4f9D964eAc0408E4408b66337b5']: 'KyberSwap',
     [getContractAddresses({ chainId: CHAIN.id }).Controller]: 'Clober',

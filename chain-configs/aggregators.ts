@@ -6,6 +6,7 @@ import { CloberV2Aggregator } from '../model/aggregator/clober-v2'
 import { EisenFinanceAggregator } from '../model/aggregator/eisenfinance'
 import { MadhouseAggregator } from '../model/aggregator/madhouse'
 import { KyberswapAggregator } from '../model/aggregator/kyberswap'
+import { MonorailAggregator } from '../model/aggregator/monorail'
 
 import { CHAIN_CONFIG } from './index'
 
@@ -29,5 +30,10 @@ export const aggregators: Aggregator[] = [
     CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
     CHAIN_CONFIG.CHAIN,
     new KyberswapAggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
+  ),
+  new AggregatorRouterGateway(
+    CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
+    CHAIN_CONFIG.CHAIN,
+    new MonorailAggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
   ),
 ]
