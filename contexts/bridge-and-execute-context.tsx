@@ -4,8 +4,8 @@ import {
   BridgeParams,
   NEXUS_EVENTS,
 } from '@avail-project/nexus-core'
-import { numberToHex, parseUnits } from 'viem'
-import { usePublicClient } from 'wagmi'
+import { getAddress, numberToHex, parseUnits } from 'viem'
+import { useAccount, usePublicClient } from 'wagmi'
 
 import { Chain } from '../model/chain'
 import { formatWithCommas, toPreciseString } from '../utils/bignumber'
@@ -113,6 +113,7 @@ export const BridgeAndExecuteProvider = ({
   children,
 }: React.PropsWithChildren<{}>) => {
   const publicClient = usePublicClient()
+  const { address: userAddress } = useAccount()
   const { selectedChain } = useChainContext()
   const { setConfirmation, queuePendingTransaction, updatePendingTransaction } =
     useTransactionContext()
@@ -432,6 +433,15 @@ export const BridgeAndExecuteProvider = ({
       let hexIntentID: `0x${string}` | undefined = undefined
       let externalLink: string | undefined = undefined
       const bridgeAndExecuteResult = await nexusSDK.bridgeAndExecute(params, {
+        beforeExecute: async () => {
+          const gasEstimate = await publicClient.estimateGas({
+            to: getAddress(params.execute.to),
+            data: params.execute.data as `0x${string}`,
+            value: params.execute.value,
+            account: userAddress,
+          })
+          return { gas: gasEstimate }
+        },
         onEvent: async (event) => {
           if (!externalLink && (event.args as any).data?.explorerURL) {
             externalLink = (event.args as any).data?.explorerURL
