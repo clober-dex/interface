@@ -21,6 +21,7 @@ function validateQueryParams(query: NextApiRequest['query']) {
     slippageLimitPercent,
     userAddress,
     chainId,
+    skipUserValidation,
   } = query
 
   if (
@@ -63,6 +64,14 @@ function validateQueryParams(query: NextApiRequest['query']) {
     throw new Error('Invalid userAddress')
   }
 
+  if (
+    skipUserValidation &&
+    skipUserValidation !== 'true' &&
+    skipUserValidation !== 'false'
+  ) {
+    throw new Error('Invalid skipUserValidation')
+  }
+
   if (isAddressEqual(inputTokenAddress, outputTokenAddress)) {
     throw new Error(
       'Invalid inputTokenAddress and outputTokenAddress: they must be different addresses',
@@ -75,6 +84,7 @@ function validateQueryParams(query: NextApiRequest['query']) {
     amountIn: BigInt(amountIn!),
     slippageLimitPercent: Number(slippageLimitPercent!),
     userAddress: userAddress ? getAddress(userAddress as string) : undefined,
+    skipUserValidation: skipUserValidation === 'true',
   }
 }
 
@@ -253,6 +263,7 @@ export default async function handler(
       amountIn,
       slippageLimitPercent,
       userAddress,
+      skipUserValidation,
     } = validated
 
     const {
@@ -262,13 +273,17 @@ export default async function handler(
       inputCurrencyBalance,
       inputCurrencyAllowance,
     } = await getSwapContext(inputTokenAddress, outputTokenAddress, userAddress)
-    if (userAddress && inputCurrencyBalance < amountIn) {
+    if (!skipUserValidation && userAddress && inputCurrencyBalance < amountIn) {
       res
         .status(422)
         .json({ code: 'INSUFFICIENT_BALANCE', error: 'Insufficient balance' })
       return
     }
-    if (userAddress && inputCurrencyAllowance < amountIn) {
+    if (
+      !skipUserValidation &&
+      userAddress &&
+      inputCurrencyAllowance < amountIn
+    ) {
       res.status(422).json({
         code: 'INSUFFICIENT_ALLOWANCE',
         error: `Please approve spender ${CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway} first`,
