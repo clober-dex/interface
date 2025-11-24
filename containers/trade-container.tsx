@@ -871,8 +871,9 @@ export const TradeContainer = () => {
                 {!showOrderBook && baseCurrency && quoteCurrency ? (
                   !selectedChain.testnet && selectedTokenInfo?.pairAddress ? (
                     <IframeChartContainer
-                      pairAddress={getAddress(selectedTokenInfo.pairAddress)}
-                      chainId={selectedChain.id}
+                      setShowOrderBook={setShowOrderBook}
+                      baseCurrency={baseCurrency}
+                      chainName={selectedChain.name.toLowerCase()}
                     />
                   ) : (
                     <NativeChartContainer
