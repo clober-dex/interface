@@ -81,11 +81,13 @@ export class KyberswapAggregator implements Aggregator {
         tokenIn,
         tokenOut,
         amountIn: amountIn.toString(),
+        clientID: 'clober',
       },
     })
 
     let params = {
       routeSummary,
+      clientID: 'clober',
       slippageTolerance: slippageLimitPercent * 100,
     } as any
     if (userAddress) {
