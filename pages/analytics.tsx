@@ -429,7 +429,7 @@ export default function Analytics() {
                   defaultValue={
                     analytics && analytics.analyticsSnapshots
                       ? analytics.analyticsSnapshots[
-                          analytics.analyticsSnapshots.length - 2
+                          analytics.analyticsSnapshots.length - 1
                         ].totalValueLockedUSD
                       : 0
                   }
@@ -492,7 +492,7 @@ export default function Analytics() {
                   defaultValue={
                     analytics && analytics.analyticsSnapshots
                       ? analytics.analyticsSnapshots[
-                          analytics.analyticsSnapshots.length - 2
+                          analytics.analyticsSnapshots.length - 1
                         ].poolTotalValueLockedUSD
                       : 0
                   }
