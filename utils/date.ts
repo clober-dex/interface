@@ -16,9 +16,9 @@ export const currentTimestampInSeconds = (): number =>
   Math.floor(new Date().getTime() / 1000)
 
 export const getStartOfTodayTimestampInSeconds = (): number => {
-  const now = currentTimestampInSeconds()
-  const dayID = Math.floor(now / 86400)
-  return dayID * 86400
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return Math.floor(today.getTime() / 1000)
 }
 
 export const getExpirationDateTextColor = (
