@@ -71,8 +71,9 @@ export class MadhouseAggregator implements Aggregator {
       includePoolInfo: true,
     } as any
 
-    const { amountOut, tx } = await fetchApi<{
+    const { amountOut, tx, gasCost } = await fetchApi<{
       amountOut: string
+      gasCost: string
       tx: {
         to: string
         data: string
@@ -87,15 +88,13 @@ export class MadhouseAggregator implements Aggregator {
       params,
     })
 
-    const gasEstimate = 2_000_000n
-
     return {
       amountOut: BigInt(amountOut),
-      gasLimit: gasEstimate,
+      gasLimit: BigInt(gasCost),
       aggregator: this,
       transaction: {
         data: tx.data as `0x${string}`,
-        gas: gasEstimate,
+        gas: BigInt(gasCost),
         value: BigInt(tx.value),
         to: getAddress(tx.to),
         gasPrice: gasPrice,
