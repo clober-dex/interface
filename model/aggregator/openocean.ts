@@ -19,7 +19,7 @@ export class OpenOceanAggregator implements Aggregator {
   private readonly TIMEOUT = 4000
   private readonly nativeTokenAddress = zeroAddress
   private readonly referrer: `0x${string}` =
-    '0x331fa4a4f7b906491f37bdc8b042b894234e101f'
+    '0xfb976Bae0b3Ef71843F1c6c63da7Df2e44B3836d'
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
