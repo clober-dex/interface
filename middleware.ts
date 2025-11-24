@@ -1,9 +1,14 @@
-// TODO: remove this file if no longer needed
 // middleware.ts
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+const PATH_PREFIX: string = '/'
+
 export function middleware(req: NextRequest) {
+  if (!req.nextUrl.pathname.startsWith(PATH_PREFIX)) {
+    return NextResponse.next()
+  }
+
   const basicAuth = req.headers.get('authorization')
 
   if (basicAuth) {
@@ -22,4 +27,8 @@ export function middleware(req: NextRequest) {
     status: 401,
     headers: { 'WWW-Authenticate': 'Basic realm="Secure Area"' },
   })
+}
+
+export const config = {
+  matcher: [PATH_PREFIX === '/' ? '/:path*' : `${PATH_PREFIX}/:path*`],
 }
