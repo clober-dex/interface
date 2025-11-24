@@ -136,6 +136,9 @@ export const toPreciseString = (
   const underHalfPennyDecimals =
     Math.floor(Math.max(-Math.log10(0.005 / price), 0) / 2) * 2
   const base = new BigNumber(number).toFixed(underHalfPennyDecimals)
+  if (new BigNumber(base).isZero()) {
+    return toSignificantString(number)
+  }
   return formatter ? formatter(base) : base
 }
 
@@ -181,7 +184,7 @@ export const formatWithCommas = (number: BigNumber.Value): string => {
  */
 export const formatAbbreviatedNumberString = (
   value: BigNumber.Value,
-  decimalPlaces = 1,
+  decimalPlaces = 2,
 ): string => {
   value = new BigNumber(value)
   let abbreviatedDollarValue = new BigNumber(value)
