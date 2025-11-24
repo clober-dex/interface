@@ -33,10 +33,6 @@ export type ChainConfig = {
   ENABLE_REMOTE_CHAIN_BALANCES: boolean
   RPC_URL: string
   PYTH_HERMES_ENDPOINT: string
-  ANALYTICS_VOLUME_BLACKLIST: {
-    timestamp: number
-    address: `0x${string}`
-  }[]
   MAX_SWAP_FEE: number
   SWAP_FEE_PERCENT: number
   BLACKLISTED_USERS: `0x${string}`[]

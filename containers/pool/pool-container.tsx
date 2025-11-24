@@ -37,7 +37,7 @@ export const PoolContainer = () => {
       Object.keys(prices).length !== 0,
     ],
     queryFn: async () => {
-      return fetchPoolSnapshots(selectedChain)
+      return fetchPoolSnapshots(selectedChain, prices)
     },
     initialData: [],
   })
