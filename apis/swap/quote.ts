@@ -297,8 +297,8 @@ export async function fetchQuotesLive(
               timestamp: new Date().getTime(),
               amountIn,
               ...quote,
-              gasUsd: 0,
-              netAmountOutUsd: 0,
+              gasUsd,
+              netAmountOutUsd,
               fee: 0n,
             }
           }
