@@ -21,6 +21,7 @@ import { useNexus } from '../contexts/nexus-context'
 import { Toggle } from '../components/toggle'
 import { WrongNetworkButton } from '../components/button/wrong-network-button'
 import { useReferralContext } from '../contexts/referral-context'
+import { BalloonModal } from '../components/modal/balloon-modal'
 
 const TX_NOTIFICATION_BUFFER = 5
 const DISMISS_TXS_KEY = 'dismissed-txs'
@@ -218,7 +219,13 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </button>
 
             {CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES && (
-              <div className="h-9 p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex justify-start items-center gap-2">
+              <div className="relative h-9 p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex justify-start items-center gap-2">
+                <BalloonModal className="flex absolute top-10 right-1/2">
+                  <div className="text-xs font-medium flex w-full text-nowrap justify-center items-center text-white bg-gray-800 rounded-lg px-3 py-2">
+                    Use cross-chain assets!
+                  </div>
+                </BalloonModal>
+
                 <div className="flex justify-start items-center gap-1.5">
                   <div className="text-right justify-start text-white text-sm font-medium">
                     Unified Balance
