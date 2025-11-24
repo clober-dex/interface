@@ -31,7 +31,7 @@ type SwapContractContext = {
     outputCurrency: Currency,
     expectedAmountOut: bigint,
     aggregator: Aggregator,
-    transaction: Transaction,
+    transaction?: Transaction,
   ) => Promise<void>
 }
 
@@ -66,7 +66,7 @@ export const SwapContractProvider = ({
       outputCurrency: Currency,
       expectedAmountOut: bigint,
       aggregator: Aggregator,
-      transaction: Transaction,
+      transaction?: Transaction,
     ) => {
       if (!walletClient) {
         return
@@ -132,7 +132,7 @@ export const SwapContractProvider = ({
           )
         }
         // do swap
-        else {
+        else if (transaction) {
           const remoteChainBalance =
             remoteChainBalances?.[inputCurrency.address].total ?? 0n
           const balance = balances[inputCurrency.address]
