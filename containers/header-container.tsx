@@ -253,17 +253,32 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
                     </BalloonModal>
                     <style jsx>{`
                       .shimmer-border {
-                        animation: border-shimmer 2s ease-in-out infinite;
+                        animation: border-shimmer 1.4s ease-in-out infinite;
                       }
                       @keyframes border-shimmer {
                         0% {
-                          box-shadow: 0 0 0px rgba(80, 150, 255, 0);
+                          box-shadow:
+                            0 0 0px rgba(80, 150, 255, 0),
+                            0 0 0px rgba(80, 150, 255, 0) inset;
+                          border-color: rgba(80, 150, 255, 0.3);
                         }
-                        50% {
-                          box-shadow: 0 0 10px rgba(80, 150, 255, 0.45);
+                        35% {
+                          box-shadow:
+                            0 0 14px rgba(80, 150, 255, 0.65),
+                            0 0 6px rgba(80, 150, 255, 0.55) inset;
+                          border-color: rgba(120, 180, 255, 0.9);
+                        }
+                        70% {
+                          box-shadow:
+                            0 0 22px rgba(80, 150, 255, 0.85),
+                            0 0 10px rgba(80, 150, 255, 0.55) inset;
+                          border-color: rgba(160, 200, 255, 1);
                         }
                         100% {
-                          box-shadow: 0 0 0px rgba(80, 150, 255, 0);
+                          box-shadow:
+                            0 0 0px rgba(80, 150, 255, 0),
+                            0 0 0px rgba(80, 150, 255, 0) inset;
+                          border-color: rgba(80, 150, 255, 0.3);
                         }
                       }
                     `}</style>
