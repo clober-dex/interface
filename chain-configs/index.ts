@@ -43,7 +43,8 @@ export const CHAIN_CONFIG: ChainConfig = {
   GOOGLE_ANALYTICS_TRACKING_ID: 'G-TE8CSB6JP2',
   IS_SWAP_DEFAULT: true,
   ENABLE_REMOTE_CHAIN_BALANCES: false,
-  RPC_URL: process.env.NEXT_PUBLIC_RPC_URL!,
+  RPC_URL:
+    'https://rpc-mainnet.monadinfra.com/rpc/9O0pQDN9n3ORB3tgy759FHQdt9Esjutd',
   PYTH_HERMES_ENDPOINT: 'https://hermes.pyth.network',
   ANALYTICS_VOLUME_BLACKLIST: [],
   MAX_SWAP_FEE: 0.1,
