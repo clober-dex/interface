@@ -91,7 +91,7 @@ async function getSwapContext(
 }> {
   const publicClient = createPublicClient({
     chain: CHAIN_CONFIG.CHAIN,
-    transport: http(CHAIN_CONFIG.RPC_URL),
+    transport: http(),
   })
   const isInputNative = isAddressEqual(inputTokenAddress, zeroAddress)
   const isOutputNative = isAddressEqual(outputTokenAddress, zeroAddress)
