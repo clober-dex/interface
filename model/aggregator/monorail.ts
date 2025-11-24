@@ -30,7 +30,36 @@ export class MonorailAggregator implements Aggregator {
   }
 
   public async prices(): Promise<Prices> {
-    return {} as Prices
+    const result = await fetchApi<
+      {
+        address: `0x${string}`
+        usd_per_token: string
+      }[]
+    >('https://api.monorail.xyz', `v2/tokens/category/verified`, {
+      method: 'GET',
+      headers: {
+        accept: '*/*',
+      },
+    })
+
+    return result.reduce(
+      (acc, curr) => {
+        if (!isAddressEqual(curr.address, this.nativeTokenAddress)) {
+          const price = parseFloat(curr.usd_per_token ?? '0')
+          if (price > 0) {
+            acc[getAddress(curr.address)] = price
+            acc[curr.address.toLowerCase() as `0x${string}`] = price
+          }
+        }
+        return acc
+      },
+      {
+        [zeroAddress]: parseFloat(
+          result.find((r) => isAddressEqual(r.address, this.nativeTokenAddress))
+            ?.usd_per_token ?? '0',
+        ),
+      } as Prices,
+    )
   }
 
   private calculateSlippage(slippageLimitPercent: number) {
