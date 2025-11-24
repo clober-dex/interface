@@ -5,7 +5,6 @@ import { Chain } from '../chain'
 import { Currency } from '../currency'
 import { fetchApi } from '../../apis/utils'
 import { Prices } from '../prices'
-import { currentTimestampInSeconds } from '../../utils/date'
 
 import { Aggregator } from './index'
 
