@@ -1,5 +1,5 @@
 {
-  "name": "v3.clober.io",
+  "name": "interface",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@avail-project/nexus-core": "1.0.0-beta.44",
-    "@clober/v2-sdk": "^1.0.0-rc.66",
+    "@clober/v2-sdk": "1.0.0",
     "@google-analytics/data": "^5.1.0",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.0.18",
@@ -45,7 +45,7 @@
     "reactflow": "^11.9.4",
     "set-interval-async": "^3.0.3",
     "uuid": "^10.0.0",
-    "viem": "^2.24.2",
+    "viem": "^2.40.0",
     "wagmi": "^2.19.3",
     "@noble/ed25519": "^2.1.0"
   },

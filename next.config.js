@@ -16,6 +16,7 @@ const nextConfig = {
       'assets.odos.xyz',
       'dd.dexscreener.com',
       'raw.githubusercontent.com',
+      'imagedelivery.net',
     ],
   },
 }

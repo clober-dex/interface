@@ -73,34 +73,28 @@ export async function fetchWhitelistCurrenciesFromGithub(
   }
   try {
     const response = await fetch(
-      `https://raw.githubusercontent.com/${CHAIN_CONFIG.ASSETS_GITHUB_REPO}/refs/heads/main/${chain.id}/assets.json`,
+      `https://raw.githubusercontent.com/${CHAIN_CONFIG.ASSETS_GITHUB_REPO}/refs/heads/main/tokenlist-${chain.testnet ? 'testnet' : 'mainnet'}.json`,
     )
     if (!response.ok) {
       throw new Error(`Failed to fetch whitelist for ${chain.name}`)
     }
-    const currencies = (await response.json()) as {
-      address: `0x${string}`
-      decimals: number
-      symbol: string
-      name: string
-      icon?: string
-    }[]
-    return currencies.map((currency) =>
-      currency.icon
-        ? {
-            address: getAddress(currency.address),
-            decimals: currency.decimals,
-            symbol: currency.symbol,
-            name: currency.name,
-            icon: `https://raw.githubusercontent.com/${CHAIN_CONFIG.ASSETS_GITHUB_REPO}/refs/heads/main/${chain.id}/icons/${currency.icon}`,
-          }
-        : {
-            address: getAddress(currency.address),
-            decimals: currency.decimals,
-            symbol: currency.symbol,
-            name: currency.name,
-          },
-    )
+    const { tokens } = (await response.json()) as {
+      tokens: {
+        chainId: number
+        address: `0x${string}`
+        decimals: number
+        symbol: string
+        name: string
+        logoURI: string
+      }[]
+    }
+    return tokens.map((token) => ({
+      address: getAddress(token.address),
+      decimals: token.decimals,
+      symbol: token.symbol,
+      name: token.name,
+      icon: token.logoURI,
+    }))
   } catch (e) {
     console.error(`Failed to fetch whitelist for ${chain.name}`, e)
     return [] as Currency[]
@@ -123,7 +117,7 @@ export async function fetchTokenInfo({
     const {
       data: { tokenInfo },
     } = (await axios.get(
-      `/api/chains/[chainId]/base-tokens/${base}/quote-tokens/${quote}`,
+      `/api/chains/${chain.id}/base-tokens/${base}/quote-tokens/${quote}`,
     )) as {
       data: { tokenInfo: TokenInfo }
     }

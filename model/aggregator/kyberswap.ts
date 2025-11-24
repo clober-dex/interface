@@ -5,20 +5,21 @@ import { Chain } from '../chain'
 import { Currency } from '../currency'
 import { fetchApi } from '../../apis/utils'
 import { Prices } from '../prices'
-import { toUnitString } from '../../utils/bigint'
+import { currentTimestampInSeconds } from '../../utils/date'
 
 import { Aggregator } from './index'
 
-export class MonorailAggregator implements Aggregator {
-  public readonly name = 'Monorail'
-  public readonly baseUrl = 'https://pathfinder.monorail.xyz'
+export class KyberswapAggregator implements Aggregator {
+  public readonly name = 'KyberSwap'
+  public readonly baseUrl = 'https://aggregator-api.kyberswap.com'
   public readonly contract: `0x${string}`
   public readonly minimumSlippage = 0.01 // 0.01% slippage
   public readonly maximumSlippage = 50 // 50% slippage
   public readonly supportsPriceCalculation = true
   public readonly chain: Chain
   private readonly TIMEOUT = 4000
-  private readonly nativeTokenAddress = zeroAddress
+  private readonly nativeTokenAddress =
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
@@ -58,60 +59,81 @@ export class MonorailAggregator implements Aggregator {
   }> => {
     const start = performance.now()
     slippageLimitPercent = this.calculateSlippage(slippageLimitPercent)
-    let params = {
-      source: 4322176390363441,
-      amount: toUnitString(amountIn, inputCurrency.decimals),
-      from: isAddressEqual(inputCurrency.address, this.nativeTokenAddress)
-        ? this.nativeTokenAddress
-        : getAddress(inputCurrency.address),
-      to: isAddressEqual(outputCurrency.address, this.nativeTokenAddress)
-        ? this.nativeTokenAddress
-        : getAddress(outputCurrency.address),
-      slippage: (slippageLimitPercent * 100).toString(),
-    } as any
-    if (userAddress) {
-      params = {
-        ...params,
-        sender: userAddress,
+    const tokenIn = isAddressEqual(inputCurrency.address, zeroAddress)
+      ? this.nativeTokenAddress
+      : getAddress(inputCurrency.address)
+    const tokenOut = isAddressEqual(outputCurrency.address, zeroAddress)
+      ? this.nativeTokenAddress
+      : getAddress(outputCurrency.address)
+    const {
+      data: { routeSummary },
+    } = await fetchApi<{
+      data: {
+        routeSummary: any
       }
-    }
-
-    const { output, transaction, gas_estimate } = await fetchApi<{
-      output: string
-      gas_estimate: string
-      transaction: {
-        to: string
-        data: string
-        value: string
-      }
-    }>(this.baseUrl, `v4/quote`, {
+    }>(this.baseUrl, `${this.chain.name.toLowerCase()}/api/v1/routes`, {
       method: 'GET',
       headers: {
         accept: 'application/json',
       },
       timeout: timeout ?? this.TIMEOUT,
-      params,
+      params: {
+        tokenIn,
+        tokenOut,
+        amountIn: amountIn.toString(),
+      },
     })
-    if (!userAddress) {
+
+    let params = {
+      routeSummary,
+      slippageTolerance: slippageLimitPercent * 100,
+    } as any
+    if (userAddress) {
+      params = {
+        ...params,
+        sender: userAddress,
+        recipient: userAddress,
+      }
+    } else {
       return {
-        amountOut: BigInt(output),
-        gasLimit: BigInt(gas_estimate),
+        amountOut: BigInt(routeSummary?.amountOut ?? 0n),
+        gasLimit: BigInt(routeSummary?.gas ?? 0n),
         aggregator: this,
         transaction: undefined,
         executionMilliseconds: performance.now() - start,
       }
     }
 
+    const {
+      data: { amountOut, data, gas, routerAddress, transactionValue },
+    } = await fetchApi<{
+      data: {
+        amountOut: string
+        data: string
+        gas: string
+        routerAddress: string
+        transactionValue: string
+      }
+    }>(this.baseUrl, `${this.chain.name.toLowerCase()}/api/v1/route/build`, {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+      },
+      timeout: timeout ?? this.TIMEOUT,
+      data: params,
+    })
+
     return {
-      amountOut: BigInt(output),
-      gasLimit: BigInt(gas_estimate),
+      amountOut: BigInt(amountOut),
+      gasLimit: BigInt(gas),
       aggregator: this,
       transaction: {
-        data: transaction.data as `0x${string}`,
-        gas: BigInt(gas_estimate),
-        value: BigInt(transaction.value),
-        to: getAddress(transaction.to),
-        gasPrice: gasPrice,
+        data: data as `0x${string}`,
+        gas: BigInt(gas),
+        value: BigInt(transactionValue),
+        to: getAddress(routerAddress),
+        gasPrice,
         from: userAddress,
       },
       executionMilliseconds: performance.now() - start,

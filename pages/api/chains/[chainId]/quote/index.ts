@@ -262,13 +262,13 @@ export default async function handler(
       inputCurrencyBalance,
       inputCurrencyAllowance,
     } = await getSwapContext(inputTokenAddress, outputTokenAddress, userAddress)
-    if (inputCurrencyBalance < amountIn) {
+    if (userAddress && inputCurrencyBalance < amountIn) {
       res
         .status(422)
         .json({ code: 'INSUFFICIENT_BALANCE', error: 'Insufficient balance' })
       return
     }
-    if (inputCurrencyAllowance < amountIn) {
+    if (userAddress && inputCurrencyAllowance < amountIn) {
       res.status(422).json({
         code: 'INSUFFICIENT_ALLOWANCE',
         error: `Please approve spender ${CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway} first`,

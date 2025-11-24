@@ -1,48 +1,39 @@
 import { zeroAddress } from 'viem'
-import { monadTestnet } from 'viem/chains'
 
 import { Aggregator } from '../model/aggregator'
-import { OpenOceanAggregator } from '../model/aggregator/openocean'
-import { CloberV2Aggregator } from '../model/aggregator/clober-v2'
 import { AggregatorRouterGateway } from '../model/aggregator/router-gateway'
-import { MadhouseAggregator } from '../model/aggregator/madhouse'
-import { MonorailAggregator } from '../model/aggregator/monorail'
+import { CloberV2Aggregator } from '../model/aggregator/clober-v2'
 import { EisenFinanceAggregator } from '../model/aggregator/eisenfinance'
+import { MadhouseAggregator } from '../model/aggregator/madhouse'
+import { KyberswapAggregator } from '../model/aggregator/kyberswap'
+import { MonorailAggregator } from '../model/aggregator/monorail'
 
 import { CHAIN_CONFIG } from './index'
 
 export const aggregators: Aggregator[] = [
-  // new CloberV2Aggregator(
-  //   getContractAddresses({ chainId: CHAIN_IDS.MONAD_TESTNET }).Controller,
-  //   monadTestnet,
-  // ),
   new AggregatorRouterGateway(
     CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
-    monadTestnet,
-    new CloberV2Aggregator(zeroAddress, monadTestnet),
+    CHAIN_CONFIG.CHAIN,
+    new CloberV2Aggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
   ),
   new AggregatorRouterGateway(
     CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
-    monadTestnet,
-    // 0x1e538356d3cfe7fa04696a92515add4a895ecb65
-    new MadhouseAggregator(zeroAddress, monadTestnet),
+    CHAIN_CONFIG.CHAIN,
+    new EisenFinanceAggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
   ),
   new AggregatorRouterGateway(
     CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
-    monadTestnet,
-    // 0x11133460f102c5de431f7749c8bc2b7c172568e1
-    new MonorailAggregator(zeroAddress, monadTestnet),
+    CHAIN_CONFIG.CHAIN,
+    new MadhouseAggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
   ),
   new AggregatorRouterGateway(
     CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
-    monadTestnet,
-    // 0x6352a56caadC4F1E25CD6c75970Fa768A3304e64
-    new OpenOceanAggregator(zeroAddress, monadTestnet),
+    CHAIN_CONFIG.CHAIN,
+    new KyberswapAggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
   ),
   new AggregatorRouterGateway(
     CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
-    monadTestnet,
-    // 0x0f3Cfe8869d6fFdA410Ae6a7B78e7168780e22C3
-    new EisenFinanceAggregator(zeroAddress, monadTestnet),
+    CHAIN_CONFIG.CHAIN,
+    new MonorailAggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
   ),
 ]
