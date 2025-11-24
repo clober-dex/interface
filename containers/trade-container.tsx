@@ -525,8 +525,7 @@ export const TradeContainer = () => {
           !outputCurrency ||
           !inputCurrencyAmount ||
           !selectedQuote ||
-          amountIn !== selectedQuote.amountIn ||
-          !selectedQuote.transaction
+          amountIn !== selectedQuote.amountIn
         ) {
           return
         }
