@@ -67,6 +67,7 @@ export const CHAIN_CONFIG: ChainConfig = {
     ['0xA68A7F0601effDc65C64d9C47cA1b18D96B4352c']: 'Monorail',
     ['0xECE5E77f9A9846C4D69555Eb44E0CFF8B5F03F1e']: 'EisenFinance',
     ['0x6131B5fae19EA4f9D964eAc0408E4408b66337b5']: 'KyberSwap',
+    ['0x956Df8424B556F0076E8abf5481605f5A791cc7f']: 'Fly',
     [getContractAddresses({ chainId: CHAIN.id }).Controller]: 'Clober',
   },
   EXTERNAL_SUBGRAPH_ENDPOINTS: {
