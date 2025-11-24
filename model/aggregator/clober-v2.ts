@@ -6,7 +6,6 @@ import {
 } from 'viem'
 import {
   getCurrencies,
-  getLatestPriceMap,
   getReferenceCurrency,
   marketOrder,
   Transaction,
@@ -17,7 +16,6 @@ import { Prices } from '../prices'
 import { toUnitString } from '../../utils/bigint'
 import { Chain } from '../chain'
 import { CHAIN_CONFIG } from '../../chain-configs'
-import { fetchLeverageIndexPrices } from '../../apis/futures/leverage-index-price'
 import { WETH_ABI } from '../../abis/weth-abi'
 
 import { Aggregator } from './index'
@@ -48,18 +46,7 @@ export class CloberV2Aggregator implements Aggregator {
   }
 
   public async prices(): Promise<Prices> {
-    const [prices, leverageIndexOraclePrices] = await Promise.allSettled([
-      getLatestPriceMap({
-        chainId: this.chain.id,
-      }),
-      fetchLeverageIndexPrices(),
-    ])
-    return {
-      ...(prices.status === 'fulfilled' ? prices.value : {}),
-      ...(leverageIndexOraclePrices.status === 'fulfilled'
-        ? leverageIndexOraclePrices.value
-        : {}),
-    } as Prices
+    return {} as Prices
   }
 
   public quote = async (
