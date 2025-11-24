@@ -44,7 +44,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   IS_SWAP_DEFAULT: true,
   ENABLE_REMOTE_CHAIN_BALANCES: false,
   RPC_URL:
-    'https://rpc-mainnet.monadinfra.com/rpc/9O0pQDN9n3ORB3tgy759FHQdt9Esjutd',
+    'https://monad-mainnet.g.alchemy.com/v2/3Um4IcT1mrq2MEOYurXvsRAzk_v3Q_4X',
   PYTH_HERMES_ENDPOINT: 'https://hermes.pyth.network',
   ANALYTICS_VOLUME_BLACKLIST: [],
   MAX_SWAP_FEE: 0.1,
