@@ -1,7 +1,11 @@
 import { createConfig, injected } from 'wagmi'
 import { http } from 'viem'
 import { connectorsForWallets } from '@rainbow-me/rainbowkit'
-import { backpackWallet, bitgetWallet } from '@rainbow-me/rainbowkit/wallets'
+import {
+  backpackWallet,
+  bitgetWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets'
 
 import { socialAccountWallet } from '../utils/custom-wallets/web3auth'
 import { hahaWallet } from '../utils/custom-wallets/haha-wallet'
@@ -30,8 +34,14 @@ export const getClientConfig = () => {
           {
             groupName: 'Recommended',
             wallets: CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID
-              ? [socialAccountWallet, bitgetWallet, backpackWallet, hahaWallet]
-              : [bitgetWallet, backpackWallet, hahaWallet],
+              ? [
+                  socialAccountWallet,
+                  bitgetWallet,
+                  backpackWallet,
+                  walletConnectWallet,
+                  hahaWallet,
+                ]
+              : [bitgetWallet, backpackWallet, walletConnectWallet, hahaWallet],
           },
         ],
         {
