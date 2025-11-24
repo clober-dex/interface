@@ -12,7 +12,6 @@ import { useChainContext } from '../contexts/chain-context'
 import { HistogramChart } from '../components/chart/histogram-chart'
 import { Loading } from '../components/loading'
 import { CHAIN_CONFIG } from '../chain-configs'
-import RestrictedPageGuard from '../containers/restricted-page-guard'
 import { getStartOfTodayTimestampInSeconds } from '../utils/date'
 import { Currency } from '../model/currency'
 
@@ -171,7 +170,7 @@ export default function Analytics() {
   }, [analytics])
 
   return (
-    <RestrictedPageGuard>
+    <>
       {analytics && (
         <div className="flex flex-col w-full h-full items-center justify-center gap-8 px-16 pb-16 sm:mt-[84px]">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -512,6 +511,6 @@ export default function Analytics() {
       {!analytics && <Loading />}
 
       <div className="flex sm:mb-[80px]" />
-    </RestrictedPageGuard>
+    </>
   )
 }
