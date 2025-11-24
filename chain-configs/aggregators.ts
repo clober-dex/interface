@@ -8,6 +8,7 @@ import { MadhouseAggregator } from '../model/aggregator/madhouse'
 import { MonorailAggregator } from '../model/aggregator/monorail'
 import { KyberswapAggregator } from '../model/aggregator/kyberswap'
 import { OpenOceanAggregator } from '../model/aggregator/openocean'
+import { FlyAggregator } from '../model/aggregator/fly'
 
 import { CHAIN_CONFIG } from './index'
 
@@ -41,5 +42,10 @@ export const aggregators: Aggregator[] = [
     CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
     CHAIN_CONFIG.CHAIN,
     new OpenOceanAggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
+  ),
+  new AggregatorRouterGateway(
+    CHAIN_CONFIG.EXTERNAL_CONTRACT_ADDRESSES.AggregatorRouterGateway,
+    CHAIN_CONFIG.CHAIN,
+    new FlyAggregator(zeroAddress, CHAIN_CONFIG.CHAIN),
   ),
 ]
