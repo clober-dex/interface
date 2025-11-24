@@ -75,19 +75,18 @@ export class KyberswapAggregator implements Aggregator {
       method: 'GET',
       headers: {
         accept: 'application/json',
+        'x-client-id': 'clober',
       },
       timeout: timeout ?? this.TIMEOUT,
       params: {
         tokenIn,
         tokenOut,
         amountIn: amountIn.toString(),
-        clientID: 'clober',
       },
     })
 
     let params = {
       routeSummary,
-      clientID: 'clober',
       slippageTolerance: slippageLimitPercent * 100,
     } as any
     if (userAddress) {
@@ -121,6 +120,7 @@ export class KyberswapAggregator implements Aggregator {
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
+        'x-client-id': 'clober',
       },
       timeout: timeout ?? this.TIMEOUT,
       data: params,
