@@ -1077,14 +1077,14 @@
   resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-2.10.0.tgz#b444f8aafdfa8c497313c8c0f0e7e2e978c53df5"
   integrity sha512-fdRs9PSrBF7QUntpZpq6BTw58fhgGJojgg39m9oFOJGZT+nip9b0so5cYY1oWl5pvemDLr0cPPsH46vwThEbpQ==
 
-"@clober/v2-sdk@^1.0.0-rc.66":
-  version "1.0.0-rc.66"
-  resolved "https://registry.yarnpkg.com/@clober/v2-sdk/-/v2-sdk-1.0.0-rc.66.tgz#12a83d38b170ed8c10a27440954444be79d02230"
-  integrity sha512-Y6O93I612O51EwYsj6UarUbBZcvlAhmnHw8xUVotq+QbpQDRYCqrTb99efm3oRbB0RFSnfUFFSC8h8OApsXJ7A==
+"@clober/v2-sdk@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@clober/v2-sdk/-/v2-sdk-1.0.0.tgz#511a5760b956449c111e05029cf42be52e9d1135"
+  integrity sha512-oV4wvZdkUvKsko9UK4+iFiEuiyszndquCrFwucOg9fvd1z1kwXH+JsfUpSt3EWZt8HTRNAL+ddc2dvcaAACEZA==
   dependencies:
     axios "^1.7.7"
     bignumber.js "^9.1.2"
-    viem "^2.23.12"
+    viem "^2.40.0"
 
 "@coinbase/cdp-sdk@^1.0.0":
   version "1.38.5"
@@ -15302,7 +15302,7 @@ viem@2.23.2:
     ox "0.6.7"
     ws "8.18.0"
 
-viem@>=2.29.0, viem@^2.1.1, viem@^2.21.26, viem@^2.23.12, viem@^2.23.2, viem@^2.27.2, viem@^2.31.7:
+viem@>=2.29.0, viem@^2.1.1, viem@^2.21.26, viem@^2.23.2, viem@^2.27.2, viem@^2.31.7:
   version "2.39.0"
   resolved "https://registry.yarnpkg.com/viem/-/viem-2.39.0.tgz#54942ca3810bc904e3bfe97837a4d160699ad902"
   integrity sha512-rCN+IfnMESlrg/iPyyVL+M9NS/BHzyyNy72470tFmbTuscY3iPaZGMtJDcHKKV8TC6HV9DjWk0zWX6cpu0juyA==
