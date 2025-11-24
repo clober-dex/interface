@@ -24,20 +24,16 @@ export const PoolContainer = () => {
   const { address: userAddress } = useAccount()
   const { lpBalances } = usePoolContext()
   const { selectedChain } = useChainContext()
-  const { prices, balances } = useCurrencyContext()
+  const { balances } = useCurrencyContext()
   const { wrap, unwrap } = usePoolContractContext()
   const [isCopyToast, setIsCopyToast] = useState(false)
 
   const [tab, setTab] = React.useState<'my-liquidity' | 'pool'>('pool')
 
   const { data: poolSnapshots } = useQuery({
-    queryKey: [
-      'pool-snapshots',
-      selectedChain.id,
-      Object.keys(prices).length !== 0,
-    ],
+    queryKey: ['pool-snapshots', selectedChain.id],
     queryFn: async () => {
-      return fetchPoolSnapshots(selectedChain, prices)
+      return fetchPoolSnapshots(selectedChain)
     },
     initialData: [],
   })

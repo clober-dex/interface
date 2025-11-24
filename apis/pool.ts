@@ -7,7 +7,7 @@ import { CHAIN_CONFIG } from '../chain-configs'
 import { currentTimestampInSeconds } from '../utils/date'
 import { calculateApy } from '../utils/apy'
 
-export async function fetchPoolSnapshots(chain: Chain, prices: Prices) {
+export async function fetchPoolSnapshots(chain: Chain) {
   const poolSnapshots = await getPoolSnapshots({
     chainId: chain.id,
   })
@@ -16,11 +16,13 @@ export async function fetchPoolSnapshots(chain: Chain, prices: Prices) {
     .filter(({ key }) => CHAIN_CONFIG.WHITELISTED_POOL_KEYS.includes(key))
     .sort((a, b) => Number(b.volumeUSD24h) - Number(a.volumeUSD24h))
     .map((poolSnapshot) => {
+      const lastPerformanceHistory =
+        poolSnapshot.performanceHistories.slice(-1)[0]
       const onHoldUSDValuePerLp =
         (Number(poolSnapshot.initialLPInfo.currencyA.value) *
-          prices[poolSnapshot.initialLPInfo.currencyA.currency.address] +
+          lastPerformanceHistory.priceAUSD +
           Number(poolSnapshot.initialLPInfo.currencyB.value) *
-            prices[poolSnapshot.initialLPInfo.currencyB.currency.address]) /
+            lastPerformanceHistory.priceBUSD) /
         Number(poolSnapshot.initialLPInfo.lpToken.value)
 
       return {
@@ -58,11 +60,12 @@ export async function fetchPool(
     Number(pool.liquidityB.total.value) *
       prices[pool.liquidityB.total.currency.address]
   const now = currentTimestampInSeconds()
+  const lastPerformanceHistory = poolSnapshot.performanceHistories.slice(-1)[0]
   const onHoldUSDValuePerLp =
     (Number(poolSnapshot.initialLPInfo.currencyA.value) *
-      prices[poolSnapshot.initialLPInfo.currencyA.currency.address] +
+      lastPerformanceHistory.priceAUSD +
       Number(poolSnapshot.initialLPInfo.currencyB.value) *
-        prices[poolSnapshot.initialLPInfo.currencyB.currency.address]) /
+        lastPerformanceHistory.priceBUSD) /
     Number(poolSnapshot.initialLPInfo.lpToken.value)
 
   const apy = calculateApy(
