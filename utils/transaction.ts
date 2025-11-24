@@ -98,6 +98,6 @@ export const buildTransaction = async (
     data,
     value: args.value || 0n,
     to: args.address,
-    from: args.account as `0x${string}` | Account | undefined,
+    from: args.account as `0x${string}` | Account | undefined | null,
   }
 }
