@@ -99,7 +99,7 @@ export const PoolInfoCard = ({
           <div className="grow shrink basis-0 flex-col justify-center gap-1 flex ml-auto w-full lg:hidden text-right">
             <div className="text-[#e1ebff]/50 text-xs font-semibold">APY</div>
             <div className="text-[#39e79f] text-xl font-semibold">
-              {apy.toFixed(2)}%
+              {`${!BigNumber(apy).isNaN() && !BigNumber(apy).isZero() && BigNumber(apy).lt(10000) ? `${apy.toFixed(2)}%` : '-'}`}
             </div>
           </div>
         </div>
