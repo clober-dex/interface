@@ -348,20 +348,10 @@ export const LeaderboardContainer = () => {
       if (!userAddress) {
         return []
       }
-      const userDailyVolumes = await getUserDailyVolumes({
+      return getUserDailyVolumes({
         chainId: selectedChain.id,
         userAddress,
       })
-      return userDailyVolumes.filter(
-        ({ volume24hUSDMap }) =>
-          !Object.values(volume24hUSDMap).some(({ currency }) =>
-            CHAIN_CONFIG.ANALYTICS_VOLUME_BLACKLIST.some(
-              (blacklist) =>
-                blacklist.timestamp === userDailyVolumes[0].timestamp &&
-                isAddressEqual(blacklist.address, getAddress(currency.address)),
-            ),
-          ),
-      )
     },
     initialData: [],
   })

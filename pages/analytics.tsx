@@ -28,53 +28,21 @@ export default function Analytics() {
       })
       const analyticsSnapshots: AnalyticsSnapshot[] =
         protocolAnalytics.analyticsSnapshots.map((item) => {
-          const volume24hUSDMap = Object.fromEntries(
-            Object.entries(item.volume24hUSDMap).filter(
-              ([address]) =>
-                !CHAIN_CONFIG.ANALYTICS_VOLUME_BLACKLIST.some(
-                  (blacklist) =>
-                    blacklist.timestamp === item.timestamp &&
-                    isAddressEqual(blacklist.address, getAddress(address)),
-                ),
-            ),
-          )
-          const protocolFees24hUSDMap = Object.fromEntries(
-            Object.entries(item.protocolFees24hUSDMap).filter(
-              ([address]) =>
-                !CHAIN_CONFIG.ANALYTICS_VOLUME_BLACKLIST.some(
-                  (blacklist) =>
-                    blacklist.timestamp === item.timestamp &&
-                    isAddressEqual(blacklist.address, getAddress(address)),
-                ),
-            ),
-          )
-          const totalValueLockedUSDMap = Object.fromEntries(
-            Object.entries(item.totalValueLockedUSDMap).filter(
-              ([address]) =>
-                !CHAIN_CONFIG.ANALYTICS_VOLUME_BLACKLIST.some(
-                  (blacklist) =>
-                    blacklist.timestamp === item.timestamp &&
-                    isAddressEqual(blacklist.address, getAddress(address)),
-                ),
-            ),
-          )
           return {
             ...item,
-            volume24hUSD: Object.values(volume24hUSDMap).reduce(
+            volume24hUSD: Object.values(item.volume24hUSDMap).reduce(
               (acc, { usd }) => acc + usd,
               0,
             ),
-            volume24hUSDMap,
-            protocolFees24hUSD: Object.values(protocolFees24hUSDMap).reduce(
-              (acc, { usd }) => acc + usd,
-              0,
-            ),
-            protocolFees24hUSDMap,
-            totalValueLockedUSD: Object.values(totalValueLockedUSDMap).reduce(
-              (acc, { usd }) => acc + usd,
-              0,
-            ),
-            totalValueLockedUSDMap,
+            volume24hUSDMap: item.volume24hUSDMap,
+            protocolFees24hUSD: Object.values(
+              item.protocolFees24hUSDMap,
+            ).reduce((acc, { usd }) => acc + usd, 0),
+            protocolFees24hUSDMap: item.protocolFees24hUSDMap,
+            totalValueLockedUSD: Object.values(
+              item.totalValueLockedUSDMap,
+            ).reduce((acc, { usd }) => acc + usd, 0),
+            totalValueLockedUSDMap: item.totalValueLockedUSDMap,
           }
         })
       return {
