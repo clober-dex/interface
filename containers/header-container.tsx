@@ -234,7 +234,7 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
 
             {CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES && (
               <div className="relative p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex items-center gap-2 overflow-visible">
-                {showUnifiedBalanceTip && (
+                {address && showUnifiedBalanceTip && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.6, y: -12, rotate: -3 }}
                     animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
