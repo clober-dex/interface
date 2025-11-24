@@ -172,13 +172,16 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
       walletClient,
     ],
   )
+  const searchParams = new URLSearchParams(window.location.search)
+  const refFromUrl = searchParams.get('ref')
 
   useEffect(
     () => {
       const action = async () => {
-        if (!userAddress || !walletClient) {
+        if (!userAddress || !walletClient || !refFromUrl) {
           return
         }
+        console.log('Processing referral code from URL:', { refFromUrl })
         await walletClient.switchChain({ id: selectedChain.id }).catch(() => {})
 
         const result = await isWalletRegistered(
@@ -218,8 +221,6 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
             base64DecodeURL(orderlyKey),
             userAddress,
           )
-          const searchParams = new URLSearchParams(window.location.search)
-          const refFromUrl = searchParams.get('ref')
 
           console.log('Referral Status:', {
             referrerCode: orderlyReferrerCode,
@@ -271,7 +272,7 @@ export const ReferralProvider = ({ children }: React.PropsWithChildren<{}>) => {
       action()
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectedChain.id, userAddress, walletClient],
+    [selectedChain.id, userAddress, walletClient, refFromUrl],
   )
 
   return (
