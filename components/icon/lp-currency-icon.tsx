@@ -20,9 +20,10 @@ function getLogo(chain: Chain, currency?: Currency): string {
   if (currency.icon) {
     return currency.icon
   }
-  return `https://assets.odos.xyz/tokens/${encodeURIComponent(
-    currency.symbol,
-  )}.webp`
+  // return `https://assets.odos.xyz/tokens/${encodeURIComponent(
+  //   currency.symbol,
+  // )}.webp`
+  return '/unknown.svg'
 }
 
 const CurrencyIconBase = ({

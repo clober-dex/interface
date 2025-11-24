@@ -9,12 +9,11 @@ export default function ChainIcon({
 }: React.BaseHTMLAttributes<HTMLDivElement> & {
   chain: Chain
 }) {
-  const name = chain.name.toLowerCase().split(' ')[0]
   const defaultIcon = CHAIN_CONFIG.CHAIN.icon
   return (
     <div {...props}>
       <img
-        src={chain.icon || `https://assets.odos.xyz/chains/${name}.png`}
+        src={chain.icon}
         onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
           e.currentTarget.onerror = null
           // @ts-ignore

@@ -24,7 +24,8 @@ function getLogo(chain: Chain, currency?: Currency): string {
   if (chain.testnet) {
     return '/unknown.svg'
   }
-  return `https://assets.odos.xyz/tokens/${encodeURIComponent(currency.symbol)}.webp`
+  // return `https://assets.odos.xyz/tokens/${encodeURIComponent(currency.symbol)}.webp`
+  return '/unknown.svg'
 }
 
 function isLpCurrency(currency: Currency): currency is Currency & {

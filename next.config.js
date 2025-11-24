@@ -13,7 +13,6 @@ const nextConfig = {
   },
   images: {
     domains: [
-      'assets.odos.xyz',
       'dd.dexscreener.com',
       'raw.githubusercontent.com',
       'imagedelivery.net',
