@@ -219,12 +219,40 @@ const HeaderContainer = ({ onMenuClick }: { onMenuClick: () => void }) => {
             </button>
 
             {CHAIN_CONFIG.ENABLE_REMOTE_CHAIN_BALANCES && (
-              <div className="relative h-9 p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex justify-start items-center gap-2">
-                <BalloonModal className="flex absolute top-10 right-1/2">
-                  <div className="text-xs font-medium flex w-full text-nowrap justify-center items-center text-white bg-gray-800 rounded-lg px-3 py-2">
-                    Use cross-chain assets!
-                  </div>
-                </BalloonModal>
+              <div className="relative p-2.5 bg-[#2b2c30] rounded-xl hidden sm:flex items-center gap-2 overflow-visible">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.6, y: -12, rotate: -3 }}
+                  animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 220,
+                    damping: 18,
+                    mass: 0.6,
+                  }}
+                  className="absolute top-10 right-1/2 w-auto"
+                >
+                  <BalloonModal>
+                    <div className="shimmer-border font-medium bg-[#1f2024] text-white rounded-lg px-3 py-2 text-sm shadow-lg border border-[#3b3f4a]">
+                      Use cross-chain assets!
+                    </div>
+                  </BalloonModal>
+                  <style jsx>{`
+                    .shimmer-border {
+                      animation: border-shimmer 2s ease-in-out infinite;
+                    }
+                    @keyframes border-shimmer {
+                      0% {
+                        box-shadow: 0 0 0px rgba(80, 150, 255, 0);
+                      }
+                      50% {
+                        box-shadow: 0 0 10px rgba(80, 150, 255, 0.45);
+                      }
+                      100% {
+                        box-shadow: 0 0 0px rgba(80, 150, 255, 0);
+                      }
+                    }
+                  `}</style>
+                </motion.div>
 
                 <div className="flex justify-start items-center gap-1.5">
                   <div className="text-right justify-start text-white text-sm font-medium">
