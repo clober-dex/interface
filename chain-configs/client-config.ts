@@ -4,6 +4,7 @@ import { connectorsForWallets } from '@rainbow-me/rainbowkit'
 import {
   backpackWallet,
   bitgetWallet,
+  injectedWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 
@@ -33,15 +34,14 @@ export const getClientConfig = () => {
         [
           {
             groupName: 'Recommended',
-            wallets: CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID
-              ? [
-                  socialAccountWallet,
-                  bitgetWallet,
-                  backpackWallet,
-                  walletConnectWallet,
-                  hahaWallet,
-                ]
-              : [bitgetWallet, backpackWallet, walletConnectWallet, hahaWallet],
+            wallets: [
+              CHAIN_CONFIG.WEB3_AUTH_CLIENT_ID ? socialAccountWallet : null,
+              bitgetWallet,
+              backpackWallet,
+              walletConnectWallet,
+              hahaWallet,
+              injectedWallet,
+            ].filter((wallet) => wallet !== null) as any[],
           },
         ],
         {
