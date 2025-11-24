@@ -117,7 +117,7 @@ export async function fetchTokenInfo({
     const {
       data: { tokenInfo },
     } = (await axios.get(
-      `/api/chains/[chainId]/base-tokens/${base}/quote-tokens/${quote}`,
+      `/api/chains/${chain.id}/base-tokens/${base}/quote-tokens/${quote}`,
     )) as {
       data: { tokenInfo: TokenInfo }
     }
