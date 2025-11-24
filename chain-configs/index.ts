@@ -5,11 +5,11 @@ import {
   getReferenceCurrency,
 } from '@clober/v2-sdk'
 import colors from 'tailwindcss/colors'
+import { monad } from 'viem/chains'
 
 import { ChainConfig } from './type'
 import { WHITELISTED_CURRENCIES } from './currency'
 import { WHITELISTED_POOL_KEY_AND_WRAPPED_CURRENCIES } from './pool'
-import { monad } from './monad-mainnet'
 
 const CHAIN = {
   ...monad,
@@ -29,7 +29,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   TITLE: 'Fully On-chain Order Book',
   DEX_NAME: 'Clober',
   COLOR: colors.blue,
-  URL: 'https://alpha.clober.io',
+  URL: 'https://app.clober.io',
   LANDING_PAGE_URL: 'https://clober.io',
   TWITTER_HANDLE: '@CloberDEX',
   GITHIB_URL: 'https://github.com/clober-dex/',
