@@ -22,10 +22,10 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@avail-project/ca-common@1.0.0-dev.3":
-  version "1.0.0-dev.3"
-  resolved "https://registry.yarnpkg.com/@avail-project/ca-common/-/ca-common-1.0.0-dev.3.tgz#843bbd9ea9ef38774156f31abb9224ae7643e7da"
-  integrity sha512-uayZmtX04P99aLy+rGIsDX6BmImOH5HBAajZvf/SKJbIDqz6bG0AFEvybGfvEOCZNpajXA/sFOtTfitTDiQocA==
+"@avail-project/ca-common@1.0.0-dev.4":
+  version "1.0.0-dev.4"
+  resolved "https://registry.yarnpkg.com/@avail-project/ca-common/-/ca-common-1.0.0-dev.4.tgz#ec14cea01fd1308876788c7692581d0605b450b0"
+  integrity sha512-EG7BP4o6f1juSHIzxOO/X4AzWO+pnvI177gg0hbfyYV8eSFsWOm5L/PPKk7FCE20YGinS/R21R/F8r2q3Tgcdg==
   dependencies:
     "@bufbuild/protobuf" "^2.6.0"
     "@improbable-eng/grpc-web" "^0.15.0"
@@ -33,12 +33,12 @@
     es-toolkit "^1.39.7"
     tslib "^2.8.1"
 
-"@avail-project/nexus-core@1.0.0-beta.44":
-  version "1.0.0-beta.44"
-  resolved "https://registry.yarnpkg.com/@avail-project/nexus-core/-/nexus-core-1.0.0-beta.44.tgz#8d2010e20e0fadadea576f6f73cda75bf1de6bf3"
-  integrity sha512-NTMZv4lbUCEQA8S6sUCpiYwWz5s1LSkPYa+qiaghRxA6b19gK2MuG5H74TquIvAQ5lP19U/npC/GDFnSG1DfEQ==
+"@avail-project/nexus-core@1.0.0-rc.4":
+  version "1.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@avail-project/nexus-core/-/nexus-core-1.0.0-rc.4.tgz#ee542fb3be2308eac74e3a5d0771f2f6922968d8"
+  integrity sha512-74jez/a7SFFWnBpSi4yJuHh/UWiIiuiGPzpSkTRXI1cMArjb0z7ZN0whF7fpDpxp36boXRBrgkyUeSVN9czYhw==
   dependencies:
-    "@avail-project/ca-common" "1.0.0-dev.3"
+    "@avail-project/ca-common" "1.0.0-dev.4"
     "@cosmjs/proto-signing" "^0.34.0"
     "@cosmjs/stargate" "^0.34.0"
     "@metamask/safe-event-emitter" "3.1.2"
@@ -1073,9 +1073,9 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@bufbuild/protobuf@^2.6.0":
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-2.10.0.tgz#b444f8aafdfa8c497313c8c0f0e7e2e978c53df5"
-  integrity sha512-fdRs9PSrBF7QUntpZpq6BTw58fhgGJojgg39m9oFOJGZT+nip9b0so5cYY1oWl5pvemDLr0cPPsH46vwThEbpQ==
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-2.10.1.tgz#012f6d7d110f8c45198c7e6a96cb217c45d0c696"
+  integrity sha512-ckS3+vyJb5qGpEYv/s1OebUHDi/xSNtfgw1wqKZo7MR9F2z+qXr0q5XagafAG/9O0QPVIUfST0smluYSTpYFkg==
 
 "@clober/v2-sdk@1.0.0":
   version "1.0.0"
@@ -8917,9 +8917,9 @@ es-toolkit@1.33.0:
   integrity sha512-X13Q/ZSc+vsO1q600bvNK4bxgXMkHcf//RxCmYDaRY5DAcT+eoXjY5hoAPGMdRnWQjvyLEcyauG3b6hz76LNqg==
 
 es-toolkit@^1.39.7, es-toolkit@^1.40.0:
-  version "1.41.0"
-  resolved "https://registry.yarnpkg.com/es-toolkit/-/es-toolkit-1.41.0.tgz#84eacd54dcc88261d78005fde7a01c2291b90628"
-  integrity sha512-bDd3oRmbVgqZCJS6WmeQieOrzpl3URcWBUVDXxOELlUW2FuW+0glPOz1n0KnRie+PdyvUZcXz2sOn00c6pPRIA==
+  version "1.42.0"
+  resolved "https://registry.yarnpkg.com/es-toolkit/-/es-toolkit-1.42.0.tgz#c9e87c7e2d4759ca26887814e6bc780cf4747fc5"
+  integrity sha512-SLHIyY7VfDJBM8clz4+T2oquwTQxEzu263AyhVK4jREOAwJ+8eebaa4wM3nlvnAqhDrMm2EsA6hWHaQsMPQ1nA==
 
 es6-promise@^4.0.3:
   version "4.2.8"

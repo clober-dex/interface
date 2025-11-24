@@ -42,7 +42,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   WALLET_CONNECT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',
   GOOGLE_ANALYTICS_TRACKING_ID: 'G-TE8CSB6JP2',
   IS_SWAP_DEFAULT: true,
-  ENABLE_REMOTE_CHAIN_BALANCES: false,
+  ENABLE_REMOTE_CHAIN_BALANCES: true,
   RPC_URL:
     'https://monad-mainnet.g.alchemy.com/v2/3Um4IcT1mrq2MEOYurXvsRAzk_v3Q_4X',
   PYTH_HERMES_ENDPOINT: 'https://hermes.pyth.network',
