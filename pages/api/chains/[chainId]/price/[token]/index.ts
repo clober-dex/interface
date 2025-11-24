@@ -84,7 +84,8 @@ export default async function handler(
         aggregators.map(async (aggregator) =>
           aggregator.quote(
             CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY,
-            10n ** BigInt(CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.decimals),
+            10_000n **
+              BigInt(CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.decimals),
             cache[token as string] as Currency,
             1,
             1n,
