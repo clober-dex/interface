@@ -133,15 +133,11 @@ export function adjustQuotes(
   const adjustFee = adjustBestQuote.fee
 
   return {
-    best: {
-      ...adjustBestQuote,
-      amountOut: adjustBestQuote.amountOut - adjustFee,
-    },
+    best: adjustBestQuote,
     all: sortedQuotes
       .filter((q) => q.amountOut - adjustFee > 0n)
       .map((q) => ({
         ...q,
-        amountOut: q.amountOut - adjustFee,
         fee: adjustFee,
       })),
   }
@@ -441,23 +437,17 @@ export async function fetchQuotesLive(
                       ),
                     }
                   : null
-            if (adjustBestQuote === null) {
-              return prevQuotes
-            }
+
             if (isWrapOrUnwrap && adjustBestQuote) {
               adjustBestQuote.fee = 0n
             }
-            const adjustFee = adjustBestQuote.fee
+            const adjustFee = adjustBestQuote?.fee ?? 0n
             return {
-              best: {
-                ...adjustBestQuote,
-                amountOut: adjustBestQuote.amountOut - adjustFee,
-              },
+              best: adjustBestQuote,
               all: sortedQuotes
                 .filter((q) => q.amountOut - adjustFee > 0n)
                 .map((q) => ({
                   ...q,
-                  amountOut: q.amountOut - adjustFee,
                   fee: adjustFee,
                 })),
             }

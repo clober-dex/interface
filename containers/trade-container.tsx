@@ -529,6 +529,11 @@ export const TradeContainer = () => {
         ) {
           return
         }
+        console.log(
+          'Executing swap with quote:',
+          selectedQuote,
+          selectedQuote.fee,
+        )
         await swap(
           inputCurrency,
           amountIn,

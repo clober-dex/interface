@@ -223,10 +223,14 @@ export const SwapContractProvider = ({
                   outputCurrency,
                 )
                 let newTransaction: Transaction = transaction
+                console.log('best quote after bridge:', {
+                  bestAmountOut: expectedAmountOut,
+                  newBestAmountOut: (best?.amountOut ?? 0n) - (best?.fee ?? 0n),
+                })
                 if (
                   best &&
                   best.transaction &&
-                  BigInt(best.amountOut) >= expectedAmountOut
+                  best.amountOut - best.fee >= expectedAmountOut
                 ) {
                   newTransaction = best.transaction
                 }
