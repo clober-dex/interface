@@ -24,6 +24,8 @@ import Modal from '../../components/modal/modal'
 import { useNexus } from '../nexus-context'
 import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
 import { aggregators } from '../../chain-configs/aggregators'
+import { adjustQuotes } from '../../apis/swap/quote'
+import { Quote } from '../../model/aggregator/quote'
 
 type SwapContractContext = {
   swap: (
@@ -191,7 +193,14 @@ export const SwapContractProvider = ({
                       quote !== undefined && quote.amountOut > 0n,
                   )
                   .map((quote) => ({
-                    amountOut: quote.amountOut.toString(),
+                    timestamp: Date.now(),
+                    amountIn,
+                    amountOut: quote.amountOut,
+                    fee: 0n,
+                    gasLimit: quote.gasLimit,
+                    gasUsd: 0,
+                    netAmountOutUsd: 0,
+                    executionMilliseconds: quote.executionMilliseconds,
                     aggregator: quote.aggregator.name,
                     transaction:
                       quote.transaction && userAddress
@@ -204,22 +213,27 @@ export const SwapContractProvider = ({
                             from: userAddress,
                           }
                         : null,
-                    executionMilliseconds: quote.executionMilliseconds,
                   }))
+                  .filter((quote) => quote.transaction)
                   .sort((a, b) => Number(b.amountOut - a.amountOut))
 
+                const { best } = adjustQuotes(
+                  results as Quote[],
+                  inputCurrency,
+                  outputCurrency,
+                )
                 console.log(
                   'Swap results after bridge:',
-                  results?.[0],
+                  best,
                   expectedAmountOut.toString(),
                 )
                 let newTransaction: Transaction = transaction
                 if (
-                  results.length > 0 &&
-                  results[0].transaction &&
-                  BigInt(results[0].amountOut) >= expectedAmountOut
+                  best &&
+                  best.transaction &&
+                  BigInt(best.amountOut) >= expectedAmountOut
                 ) {
-                  newTransaction = results[0].transaction as Transaction
+                  newTransaction = best.transaction
                 }
 
                 return {

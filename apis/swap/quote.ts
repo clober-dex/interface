@@ -68,6 +68,85 @@ const applyFeeAdjustment = (
   }
 }
 
+export function adjustQuotes(
+  quotes: Quote[],
+  inputCurrency: Currency,
+  outputCurrency: Currency,
+) {
+  const ref = getReferenceCurrency({
+    chainId: CHAIN_CONFIG.CHAIN.id,
+  }).address
+  const isWrapOrUnwrap =
+    (isAddressEqual(inputCurrency.address, zeroAddress) &&
+      isAddressEqual(outputCurrency.address, ref)) ||
+    (isAddressEqual(inputCurrency.address, ref) &&
+      isAddressEqual(outputCurrency.address, zeroAddress))
+
+  let bestQuote: Quote | null = null
+  const allQuotes: Quote[] = []
+  for (const quote of quotes) {
+    allQuotes.push(quote)
+
+    if (quote.amountOut > 0n) {
+      if (
+        bestQuote === null ||
+        quote.netAmountOutUsd > bestQuote.netAmountOutUsd
+      ) {
+        bestQuote = quote
+      }
+    }
+  }
+
+  if (!bestQuote) {
+    return { best: null, all: [] }
+  }
+
+  const sortedQuotes = allQuotes
+    .filter((quote) => quote.amountOut > 0n)
+    .sort(
+      (a, b) =>
+        (b.netAmountOutUsd ?? 0) - (a.netAmountOutUsd ?? 0) ||
+        Number(b.amountOut) - Number(a.amountOut),
+    )
+  const adjustBestQuote =
+    bestQuote && sortedQuotes.length >= 2
+      ? applyFeeAdjustment(
+          bestQuote,
+          sortedQuotes[1],
+          inputCurrency,
+          outputCurrency,
+        )
+      : bestQuote && sortedQuotes.length === 1
+        ? {
+            ...bestQuote,
+            fee: applyPercent(bestQuote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
+          }
+        : null
+
+  if (adjustBestQuote === null) {
+    return { best: null, all: [] }
+  }
+
+  if (isWrapOrUnwrap && adjustBestQuote) {
+    adjustBestQuote.fee = 0n
+  }
+  const adjustFee = adjustBestQuote.fee
+
+  return {
+    best: {
+      ...adjustBestQuote,
+      amountOut: adjustBestQuote.amountOut - adjustFee,
+    },
+    all: sortedQuotes
+      .filter((q) => q.amountOut - adjustFee > 0n)
+      .map((q) => ({
+        ...q,
+        amountOut: q.amountOut - adjustFee,
+        fee: adjustFee,
+      })),
+  }
+}
+
 export async function fetchAllQuotesAndSelectBestBeforeFeeAdjustment(
   aggregators: Aggregator[],
   inputCurrency: Currency,
