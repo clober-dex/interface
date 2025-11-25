@@ -29,7 +29,6 @@ const applyFeeAdjustment = (
     abi: ROUTER_GATEWAY_ABI,
     data: bestQuote.transaction.data as `0x${string}`,
   })
-  console.log(bestQuote.amountOut, secondBestQuote.amountOut)
   const fee = max(
     applyPercent(
       bestQuote.amountOut - secondBestQuote.amountOut,
