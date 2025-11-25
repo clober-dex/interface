@@ -328,7 +328,7 @@ export const SwapContractProvider = ({
       } catch (e) {
         console.error(e)
         if (
-          (e as any)
+          (e as any).message
             .toString()
             .includes('No suitable quote found after bridging.')
         ) {
