@@ -537,6 +537,7 @@ export const TradeContainer = () => {
           aggregators.find(
             (aggregator) => aggregator.name === selectedQuote.aggregator.name,
           )!,
+          Number(slippageInput),
           selectedQuote.transaction,
         )
       },
@@ -606,6 +607,7 @@ export const TradeContainer = () => {
       })(),
     }),
     [
+      slippageInput,
       inputCurrencyAmount,
       selectedQuote,
       inputCurrency,

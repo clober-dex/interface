@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { getAddress, isAddressEqual, zeroAddress } from 'viem'
-import { useDisconnect, useWalletClient } from 'wagmi'
+import { useAccount, useDisconnect, useWalletClient } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   getReferenceCurrency,
@@ -23,6 +23,7 @@ import { executors } from '../../chain-configs/executors'
 import Modal from '../../components/modal/modal'
 import { useNexus } from '../nexus-context'
 import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
+import { aggregators } from '../../chain-configs/aggregators'
 
 type SwapContractContext = {
   swap: (
@@ -31,6 +32,7 @@ type SwapContractContext = {
     outputCurrency: Currency,
     expectedAmountOut: bigint,
     aggregator: Aggregator,
+    slippageLimitPercent: number,
     transaction?: Transaction,
   ) => Promise<void>
 }
@@ -57,6 +59,7 @@ export const SwapContractProvider = ({
   const { selectedChain } = useChainContext()
   const { getAllowance, prices, balances, remoteChainBalances } =
     useCurrencyContext()
+  const { address: userAddress } = useAccount()
   const { bridgeAndExecute } = useBridgeAndExecuteContext()
 
   const swap = useCallback(
@@ -66,6 +69,7 @@ export const SwapContractProvider = ({
       outputCurrency: Currency,
       expectedAmountOut: bigint,
       aggregator: Aggregator,
+      slippageLimitPercent: number,
       transaction?: Transaction,
     ) => {
       if (!walletClient) {
@@ -163,6 +167,67 @@ export const SwapContractProvider = ({
                   outputCurrency.decimals,
                 ),
               },
+              undefined,
+              async () => {
+                const results = (
+                  await Promise.allSettled(
+                    aggregators.map(async (aggregator) =>
+                      aggregator.quote(
+                        inputCurrency,
+                        amountIn,
+                        outputCurrency,
+                        slippageLimitPercent,
+                        gasPrice,
+                        userAddress,
+                      ),
+                    ),
+                  )
+                )
+                  .map((result) =>
+                    result.status === 'fulfilled' ? result.value : undefined,
+                  )
+                  .filter(
+                    (quote): quote is any =>
+                      quote !== undefined && quote.amountOut > 0n,
+                  )
+                  .map((quote) => ({
+                    amountOut: quote.amountOut.toString(),
+                    aggregator: quote.aggregator.name,
+                    transaction:
+                      quote.transaction && userAddress
+                        ? {
+                            data: quote.transaction.data,
+                            gas: quote.transaction.gas.toString(),
+                            gasPrice: quote.transaction.gasPrice.toString(),
+                            value: quote.transaction.value.toString(),
+                            to: quote.transaction.to,
+                            from: userAddress,
+                          }
+                        : null,
+                    executionMilliseconds: quote.executionMilliseconds,
+                  }))
+                  .sort((a, b) => Number(b.amountOut - a.amountOut))
+
+                console.log(
+                  'Swap results after bridge:',
+                  results?.[0],
+                  expectedAmountOut.toString(),
+                )
+                let newTransaction: Transaction = transaction
+                if (
+                  results.length > 0 &&
+                  results[0].transaction &&
+                  results[0].amountOut >= expectedAmountOut.toString()
+                ) {
+                  newTransaction = results[0].transaction as Transaction
+                }
+
+                return {
+                  value: newTransaction.value,
+                  to: newTransaction.to,
+                  data: newTransaction.data,
+                }
+              },
             )
           } else {
             const confirmation = {
@@ -253,6 +318,7 @@ export const SwapContractProvider = ({
       }
     },
     [
+      userAddress,
       remoteChainBalances,
       bridgeAndExecute,
       balances,

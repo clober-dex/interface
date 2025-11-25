@@ -4,7 +4,7 @@ import {
   BridgeParams,
   NEXUS_EVENTS,
 } from '@avail-project/nexus-core'
-import { numberToHex, parseUnits } from 'viem'
+import { Hex, numberToHex, parseUnits } from 'viem'
 import { usePublicClient } from 'wagmi'
 
 import { Chain } from '../model/chain'
@@ -33,6 +33,11 @@ type BridgeAndExecuteContext = {
       price?: number
     },
     additionalFields?: Confirmation['fields'],
+    beforeExecute?: () => Promise<{
+      value?: bigint
+      data?: Hex
+      gas?: bigint
+    }>,
   ): Promise<void>
 }
 
@@ -278,6 +283,11 @@ export const BridgeAndExecuteProvider = ({
         price?: number
       },
       additionalFields?: Confirmation['fields'],
+      beforeExecute?: () => Promise<{
+        value?: bigint
+        data?: Hex
+        gas?: bigint
+      }>,
     ) => {
       if (!nexusSDK || !publicClient) {
         return
@@ -432,15 +442,7 @@ export const BridgeAndExecuteProvider = ({
       let hexIntentID: `0x${string}` | undefined = undefined
       let externalLink: string | undefined = undefined
       const bridgeAndExecuteResult = await nexusSDK.bridgeAndExecute(params, {
-        // beforeExecute: async () => {
-        //   const gasEstimate = await publicClient.estimateGas({
-        //     to: getAddress(params.execute.to),
-        //     data: params.execute.data as `0x${string}`,
-        //     value: params.execute.value,
-        //     account: userAddress,
-        //   })
-        //   return { gas: gasEstimate }
-        // },
+        beforeExecute,
         onEvent: async (event) => {
           if (!externalLink && (event.args as any).data?.explorerURL) {
             externalLink = (event.args as any).data?.explorerURL
