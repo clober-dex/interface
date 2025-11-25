@@ -391,7 +391,8 @@ export const SwapContractProvider = ({
             'Your transaction was reverted. This may be due to low slippage tolerance. Consider increasing your slippage tolerance and trying again.'
           }
           buttonText="Increase Slippage"
-          onClick={() => {
+          onClick={async () => {
+            await queryClient.invalidateQueries({ queryKey: ['quotes'] })
             setSlippageInput(CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM.toString())
             setShowBridgeRevertModal(false)
           }}
