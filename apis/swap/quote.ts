@@ -279,7 +279,6 @@ export async function fetchQuotesLive(
         netAmountOutUsd,
         fee: 0n,
       }
-      console.log('✅ fetched quote from', aggregator.name, quoteWithMeta)
 
       if (quote.amountOut > 0n) {
         if (outputPrice && nativePrice) {
@@ -363,16 +362,23 @@ export async function fetchQuotesLive(
                       ),
                     }
                   : null
+            if (adjustBestQuote === null) {
+              return prevQuotes
+            }
             if (isWrapOrUnwrap && adjustBestQuote) {
               adjustBestQuote.fee = 0n
             }
-            const adjustFee = adjustBestQuote?.fee ?? 0n
+            const adjustFee = adjustBestQuote.fee
             return {
-              best: adjustBestQuote,
+              best: {
+                ...adjustBestQuote,
+                amountOut: adjustBestQuote.amountOut - adjustFee,
+              },
               all: sortedQuotes
                 .filter((q) => q.amountOut - adjustFee > 0n)
                 .map((q) => ({
                   ...q,
+                  amountOut: q.amountOut - adjustFee,
                   fee: adjustFee,
                 })),
             }
