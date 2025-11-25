@@ -135,6 +135,7 @@ export const AddLiquidityForm = ({
             onChange={() => {
               setDisableSwap(!disableSwap)
             }}
+            checked={!disableSwap}
           />
         </div>
       </div>

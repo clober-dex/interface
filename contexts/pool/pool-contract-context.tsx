@@ -30,10 +30,12 @@ import { sendTransaction } from '../../utils/transaction'
 import { currentTimestampInSeconds } from '../../utils/date'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { aggregators } from '../../chain-configs/aggregators'
-import Modal from '../../components/modal/modal'
 import { formatDollarValue } from '../../utils/bigint'
 import { useNexus } from '../nexus-context'
 import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
+import TransactionRevertModal from '../../components/modal/transaction-revert-modal'
+
+import { usePoolContext } from './pool-context'
 
 export type PoolContractContext = {
   mint: (
@@ -95,6 +97,7 @@ export const PoolContractProvider = ({
   const { selectedChain } = useChainContext()
   const { getAllowance, prices, balances, remoteChainBalances } =
     useCurrencyContext()
+  const { setDisableSwap } = usePoolContext()
   const { bridgeAndExecute } = useBridgeAndExecuteContext()
 
   const mint = useCallback(
@@ -934,19 +937,17 @@ export const PoolContractProvider = ({
       }}
     >
       {showRevertModal && (
-        <Modal show onClose={() => setShowRevertModal(false)}>
-          <h1 className="flex font-semibold text-xl mb-2">
-            Transaction Reverted
-          </h1>
-          <h6 className="text-sm">
-            The transaction has been reverted. Please try again with the
-            <span className="font-bold text-blue-500">
-              {' '}
-              Auto-Balance Liquidity
-            </span>{' '}
-            feature turned off.
-          </h6>
-        </Modal>
+        <TransactionRevertModal
+          revertReason={
+            'Your transaction was reverted. Please try again with Auto-Balance Liquidity disabled to proceed.'
+          }
+          buttonText="Disable Auto-Balance Liquidity"
+          onClick={() => {
+            setDisableSwap(true)
+            setShowRevertModal(false)
+          }}
+          onClose={() => setShowRevertModal(false)}
+        />
       )}
       {children}
     </Context.Provider>
