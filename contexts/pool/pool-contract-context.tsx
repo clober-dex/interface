@@ -429,6 +429,7 @@ export const PoolContractProvider = ({
       }
     },
     [
+      bridgeAndExecute,
       nexusSDK,
       balances,
       remoteChainBalances,
