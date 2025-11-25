@@ -9,7 +9,11 @@ import {
 } from '@clober/v2-sdk'
 
 import { Currency } from '../../model/currency'
-import { formatDollarValue, toUnitString } from '../../utils/bigint'
+import {
+  applyPercent,
+  formatDollarValue,
+  toUnitString,
+} from '../../utils/bigint'
 import { Confirmation, useTransactionContext } from '../transaction-context'
 import { sendTransaction } from '../../utils/transaction'
 import { useCurrencyContext } from '../currency-context'
@@ -229,14 +233,18 @@ export const SwapContractProvider = ({
                   outputCurrency,
                 )
                 let newTransaction: Transaction = transaction
+                const newBestAmountOut = applyPercent(
+                  (best?.amountOut ?? 0n) - (best?.fee ?? 0n),
+                  100 + slippageLimitPercent,
+                )
                 console.log('best quote after bridge:', {
+                  newBestAmountOut,
                   bestAmountOut: expectedAmountOut,
-                  newBestAmountOut: (best?.amountOut ?? 0n) - (best?.fee ?? 0n),
                 })
                 if (
                   best &&
                   best.transaction &&
-                  best.amountOut - best.fee >= expectedAmountOut
+                  newBestAmountOut >= expectedAmountOut
                 ) {
                   newTransaction = best.transaction
                 } else {
