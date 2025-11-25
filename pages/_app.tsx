@@ -136,13 +136,13 @@ const WalletProvider = ({ children }: React.PropsWithChildren) => {
 const TradeProvidersWrapper = ({ children }: React.PropsWithChildren) => {
   return (
     <OpenOrderProvider>
-      <LimitContractProvider>
-        <SwapContractProvider>
-          <TradeProvider>
-            <MarketProvider>{children}</MarketProvider>
-          </TradeProvider>
-        </SwapContractProvider>
-      </LimitContractProvider>
+      <TradeProvider>
+        <MarketProvider>
+          <LimitContractProvider>
+            <SwapContractProvider>{children}</SwapContractProvider>
+          </LimitContractProvider>
+        </MarketProvider>
+      </TradeProvider>
     </OpenOrderProvider>
   )
 }

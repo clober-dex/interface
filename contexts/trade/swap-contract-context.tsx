@@ -20,12 +20,14 @@ import { currentTimestampInSeconds } from '../../utils/date'
 import { formatWithCommas, toPreciseString } from '../../utils/bignumber'
 import { CHAIN_CONFIG } from '../../chain-configs'
 import { executors } from '../../chain-configs/executors'
-import Modal from '../../components/modal/modal'
 import { useNexus } from '../nexus-context'
 import { useBridgeAndExecuteContext } from '../bridge-and-execute-context'
 import { aggregators } from '../../chain-configs/aggregators'
 import { adjustQuotes } from '../../apis/swap/quote'
 import { Quote } from '../../model/aggregator/quote'
+import TransactionRevertModal from '../../components/modal/transaction-revert-modal'
+
+import { useTradeContext } from './trade-context'
 
 type SwapContractContext = {
   swap: (
@@ -46,7 +48,9 @@ const Context = React.createContext<SwapContractContext>({
 export const SwapContractProvider = ({
   children,
 }: React.PropsWithChildren<{}>) => {
-  const [showRevertModal, setShowRevertModal] = React.useState(false)
+  const [showBridgeRevertModal, setShowBridgeRevertModal] =
+    React.useState(false)
+  const [showMevRevertModal, setShowMevRevertModal] = React.useState(false)
   const queryClient = useQueryClient()
   const { nexusSDK } = useNexus()
   const { disconnectAsync } = useDisconnect()
@@ -55,9 +59,11 @@ export const SwapContractProvider = ({
     setConfirmation,
     queuePendingTransaction,
     updatePendingTransaction,
+    setSelectedExecutorName,
     selectedExecutorName,
     gasPrice,
   } = useTransactionContext()
+  const { setSlippageInput } = useTradeContext()
   const { selectedChain } = useChainContext()
   const { getAllowance, prices, balances, remoteChainBalances } =
     useCurrencyContext()
@@ -233,6 +239,8 @@ export const SwapContractProvider = ({
                   best.amountOut - best.fee >= expectedAmountOut
                 ) {
                   newTransaction = best.transaction
+                } else {
+                  throw new Error('No suitable quote found after bridging.')
                 }
 
                 return {
@@ -319,8 +327,16 @@ export const SwapContractProvider = ({
         }
       } catch (e) {
         console.error(e)
-        if (!(e as any).toString().includes('User rejected the request.')) {
-          setShowRevertModal(true)
+        if (
+          !(e as any)
+            .toString()
+            .includes('No suitable quote found after bridging.')
+        ) {
+          setShowBridgeRevertModal(true)
+        } else if (
+          !(e as any).toString().includes('User rejected the request.')
+        ) {
+          setShowMevRevertModal(true)
         }
       } finally {
         setConfirmation(undefined)
@@ -356,20 +372,31 @@ export const SwapContractProvider = ({
         swap,
       }}
     >
-      {showRevertModal && selectedExecutorName && (
-        <Modal show onClose={() => setShowRevertModal(false)}>
-          <h1 className="flex font-semibold text-xl mb-2">
-            Transaction Reverted
-          </h1>
-          <h6 className="text-sm">
-            The transaction has been reverted. Please try again with the
-            <span className="font-bold text-blue-500">
-              {' '}
-              Mev Protection
-            </span>{' '}
-            feature turned off.
-          </h6>
-        </Modal>
+      {showMevRevertModal && selectedExecutorName && (
+        <TransactionRevertModal
+          revertReason={
+            'Your transaction was reverted due to MEV protection. Please try again with the MEV protection disabled.'
+          }
+          buttonText="Disable MEV Protection"
+          onClick={() => {
+            setSelectedExecutorName(null)
+            setShowMevRevertModal(false)
+          }}
+          onClose={() => setShowMevRevertModal(false)}
+        />
+      )}
+      {showBridgeRevertModal && (
+        <TransactionRevertModal
+          revertReason={
+            'Your transaction was reverted. This may be due to low slippage tolerance. Consider increasing your slippage tolerance and trying again.'
+          }
+          buttonText="Increase Slippage"
+          onClick={() => {
+            setSlippageInput(CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM.toString())
+            setShowBridgeRevertModal(false)
+          }}
+          onClose={() => setShowBridgeRevertModal(false)}
+        />
       )}
       {children}
     </Context.Provider>
