@@ -85,7 +85,7 @@ export class ZeroXAggregator implements Aggregator {
             : getAddress(outputCurrency.address),
           sellAmount: amountIn.toString(),
           slippageBps: Math.floor(slippageLimitPercent * 100),
-          taker: userAddress ?? zeroAddress,
+          taker: userAddress,
         },
       })
 
