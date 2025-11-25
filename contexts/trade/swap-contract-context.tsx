@@ -388,7 +388,7 @@ export const SwapContractProvider = ({
       {showBridgeRevertModal && (
         <TransactionRevertModal
           revertReason={
-            'Your transaction was reverted. This may be due to low slippage tolerance. Consider increasing your slippage tolerance and trying again.'
+            'The amount out decreased after bridging, causing the swap to fail. Increase your slippage tolerance or refresh the quote and try again'
           }
           buttonText="Increase Slippage"
           onClick={async () => {
