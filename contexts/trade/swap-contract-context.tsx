@@ -245,8 +245,8 @@ export const SwapContractProvider = ({
 
                 return {
                   value: newTransaction.value,
-                  to: newTransaction.to,
                   data: newTransaction.data,
+                  gas: BigInt(newTransaction.gas),
                 }
               },
             )
@@ -392,9 +392,7 @@ export const SwapContractProvider = ({
           }
           buttonText="Increase Slippage"
           onClick={() => {
-            setSlippageInput(
-              (CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM + 0.5).toString(),
-            )
+            setSlippageInput(CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM.toString())
             setShowBridgeRevertModal(false)
           }}
           onClose={() => setShowBridgeRevertModal(false)}
