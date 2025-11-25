@@ -217,7 +217,7 @@ export const SwapContractProvider = ({
                 if (
                   results.length > 0 &&
                   results[0].transaction &&
-                  results[0].amountOut >= expectedAmountOut.toString()
+                  BigInt(results[0].amountOut) >= expectedAmountOut
                 ) {
                   newTransaction = results[0].transaction as Transaction
                 }
