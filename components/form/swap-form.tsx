@@ -20,6 +20,7 @@ import { SlippageSelector } from '../selector/slippage-selector'
 import { QuestionMarkSvg } from '../svg/question-mark-svg'
 import { RemoteChainBalances } from '../../model/remote-chain-balances'
 import BalanceSourcesModal from '../modal/balance-sources-modal'
+import { CHAIN_CONFIG } from '../../chain-configs'
 
 export type SwapFormProps = {
   chain: Chain
@@ -427,9 +428,7 @@ export const SwapForm = ({
                   <QuestionMarkSvg
                     data-tooltip-id="exchange-ratio"
                     data-tooltip-place="bottom-end"
-                    data-tooltip-html={
-                      'Exchange Ratio is calculated using your selected quote minus the platform fee. The fee is 30% of the savings compared to the second-best quote (e.g., if your quote is 0.02% better, the fee is 0.006%). This ensures you still benefit from improved pricing compared to using aggregators directly, while sustainably supporting the platform. A maximum fee cap of 0.1% prevents excessive charges.'
-                    }
+                    data-tooltip-html={`Exchange Ratio is calculated using your selected quote minus the platform fee. The fee is ${CHAIN_CONFIG.SWAP_FEE_PERCENT}% of the savings compared to the second-best quote (e.g., if your quote is 0.02% better, the fee is 0.006%). This ensures you still benefit from improved pricing compared to using aggregators directly, while sustainably supporting the platform. A maximum fee cap of ${CHAIN_CONFIG.MAX_SWAP_FEE_PERCENT}% prevents excessive charges.`}
                     className="w-3 h-3"
                   />
                   <Tooltip
