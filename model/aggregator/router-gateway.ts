@@ -66,7 +66,7 @@ export class AggregatorRouterGateway implements Aggregator {
     executionMilliseconds: number
   }> => {
     const start = performance.now()
-    const { amountOut, transaction } = await this.aggregator.quote(
+    const { amountOut, transaction, gasLimit } = await this.aggregator.quote(
       inputCurrency,
       amountIn,
       outputCurrency,
@@ -80,7 +80,7 @@ export class AggregatorRouterGateway implements Aggregator {
       if (transaction.data.trim() === '0x') {
         return {
           amountOut,
-          gasLimit: 0n,
+          gasLimit,
           aggregator: this,
           transaction: undefined,
           executionMilliseconds: performance.now() - start,
@@ -139,7 +139,7 @@ export class AggregatorRouterGateway implements Aggregator {
     }
     return {
       amountOut,
-      gasLimit: 0n,
+      gasLimit,
       aggregator: this,
       transaction: undefined,
       executionMilliseconds: performance.now() - start,
