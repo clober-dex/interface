@@ -392,7 +392,9 @@ export const SwapContractProvider = ({
           }
           buttonText="Increase Slippage"
           onClick={() => {
-            setSlippageInput(CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM.toString())
+            setSlippageInput(
+              (CHAIN_CONFIG.SLIPPAGE_PERCENT.MEDIUM + 0.5).toString(),
+            )
             setShowBridgeRevertModal(false)
           }}
           onClose={() => setShowBridgeRevertModal(false)}
