@@ -10,13 +10,13 @@ import { Aggregator } from './index'
 
 export class ZeroXAggregator implements Aggregator {
   public readonly name = '0x'
-  public readonly baseUrl = 'https://matcha.xyz'
+  public readonly baseUrl = '/api/proxy'
   public readonly contract: `0x${string}`
   public readonly minimumSlippage = 0.01 // 0.01% slippage
   public readonly maximumSlippage = 50 // 50% slippage
   public readonly supportsPriceCalculation = true
   public readonly chain: Chain
-  private readonly TIMEOUT = 4000
+  private readonly TIMEOUT = 20 * 1000
   private readonly nativeTokenAddress =
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
 
@@ -58,8 +58,25 @@ export class ZeroXAggregator implements Aggregator {
   }> => {
     const start = performance.now()
     slippageLimitPercent = this.calculateSlippage(slippageLimitPercent)
+    const slippageBps = Math.floor(slippageLimitPercent * 100)
+
+    const sellToken = isAddressEqual(inputCurrency.address, zeroAddress)
+      ? this.nativeTokenAddress
+      : getAddress(inputCurrency.address)
+    const buyToken = isAddressEqual(outputCurrency.address, zeroAddress)
+      ? this.nativeTokenAddress
+      : getAddress(outputCurrency.address)
 
     if (userAddress) {
+      const qs = new URLSearchParams({
+        chainId: this.chain.id.toString(),
+        sellToken,
+        buyToken,
+        sellAmount: amountIn.toString(),
+        slippageBps: slippageBps.toString(),
+        taker: getAddress(userAddress),
+      })
+
       const response = await fetchApi<{
         buyAmount: string
         transaction: {
@@ -69,23 +86,16 @@ export class ZeroXAggregator implements Aggregator {
           to: string
           value: string
         }
-      }>(this.baseUrl, 'api/swap/quote', {
+      }>(this.baseUrl, '', {
         method: 'GET',
         headers: {
           accept: 'application/json',
+          '0x-api-key': '',
+          '0x-version': 'v2',
         },
         timeout: this.TIMEOUT,
         params: {
-          chainId: this.chain.id,
-          sellToken: isAddressEqual(inputCurrency.address, zeroAddress)
-            ? this.nativeTokenAddress
-            : getAddress(inputCurrency.address),
-          buyToken: isAddressEqual(outputCurrency.address, zeroAddress)
-            ? this.nativeTokenAddress
-            : getAddress(outputCurrency.address),
-          sellAmount: amountIn.toString(),
-          slippageBps: Math.floor(slippageLimitPercent * 100),
-          taker: userAddress,
+          url: `https://api.0x.org/swap/allowance-holder/quote?${qs.toString()}`,
         },
       })
 
@@ -104,25 +114,27 @@ export class ZeroXAggregator implements Aggregator {
         executionMilliseconds: performance.now() - start,
       }
     } else {
+      const qs = new URLSearchParams({
+        chainId: this.chain.id.toString(),
+        sellToken,
+        buyToken,
+        sellAmount: amountIn.toString(),
+        slippageBps: slippageBps.toString(),
+      })
+
       const response = await fetchApi<{
         buyAmount: string
         gas: string
-      }>(this.baseUrl, 'api/swap/price', {
+      }>(this.baseUrl, '', {
         method: 'GET',
         headers: {
           accept: 'application/json',
+          '0x-api-key': '',
+          '0x-version': 'v2',
         },
         timeout: this.TIMEOUT,
         params: {
-          chainId: this.chain.id,
-          sellToken: isAddressEqual(inputCurrency.address, zeroAddress)
-            ? this.nativeTokenAddress
-            : getAddress(inputCurrency.address),
-          buyToken: isAddressEqual(outputCurrency.address, zeroAddress)
-            ? this.nativeTokenAddress
-            : getAddress(outputCurrency.address),
-          sellAmount: amountIn.toString(),
-          slippageBps: Math.floor(slippageLimitPercent * 100),
+          url: `https://api.0x.org/swap/allowance-holder/price?${qs.toString()}`,
         },
       })
 
