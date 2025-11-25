@@ -222,11 +222,6 @@ export const SwapContractProvider = ({
                   inputCurrency,
                   outputCurrency,
                 )
-                console.log(
-                  'Swap results after bridge:',
-                  best,
-                  expectedAmountOut.toString(),
-                )
                 let newTransaction: Transaction = transaction
                 if (
                   best &&
