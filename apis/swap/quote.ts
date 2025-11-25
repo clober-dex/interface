@@ -279,6 +279,7 @@ export async function fetchQuotesLive(
         netAmountOutUsd,
         fee: 0n,
       }
+      console.log('✅ fetched quote from', aggregator.name, quoteWithMeta)
 
       if (quote.amountOut > 0n) {
         if (outputPrice && nativePrice) {

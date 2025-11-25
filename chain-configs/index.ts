@@ -37,7 +37,7 @@ export const CHAIN_CONFIG: ChainConfig = {
   DISCORD_URL: 'https://discord.gg/clober-dex',
   DOCS_URL: 'https://docs.clober.io/',
   HIDE_ORDERBOOK: false,
-  USE_MEV_PROTECTION: false,
+  USE_MEV_PROTECTION: true,
   WEB3_AUTH_CLIENT_ID: null,
   WALLET_CONNECT_PROJECT_ID: '14e09398dd595b0d1dccabf414ac4531',
   GOOGLE_ANALYTICS_TRACKING_ID: 'G-TE8CSB6JP2',
