@@ -103,11 +103,11 @@ const MarketSelect = ({
           </div>
         </div>
 
-        <div className="flex flex-col h-full overflow-y-auto custom-scrollbar bg-gray-[#17181e] rounded-b-xl sm:rounded-b-3xl">
+        <div className="flex flex-col overflow-y-auto custom-scrollbar bg-gray-[#17181e] rounded-b-xl sm:rounded-b-3xl">
           {filteredMarkets.map((market) => (
             <button
               key={market.marketId}
-              className="flex flex-1 w-full px-6 py-3 justify-start items-center gap-1"
+              className="flex flex-1 h-11 w-full px-6 py-3 justify-start items-center gap-1"
               onClick={() => {
                 onMarketSelect(market)
               }}

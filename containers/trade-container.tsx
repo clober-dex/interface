@@ -833,7 +833,7 @@ export const TradeContainer = () => {
                         className="fixed inset-0 z-0"
                         onClick={() => setShowMarketSelect(false)}
                       />
-                      <div className="z-[10000] bg-[#191d25] rounded-t-2xl border border-[#272930] overflow-y-auto sm:absolute sm:top-[66px] sm:left-0 sm:w-[382px] sm:h-[481px] fixed bottom-0 left-0 w-full h-[70%] sm:rounded-2xl">
+                      <div className="z-[10000] bg-[#191d25] rounded-t-2xl border border-[#272930] sm:absolute sm:top-[66px] sm:left-0 sm:w-[382px] sm:h-[481px] fixed bottom-0 left-0 w-full h-[70%] sm:rounded-2xl">
                         <MarketSelect
                           chain={selectedChain}
                           onMarketSelect={(market) => {
