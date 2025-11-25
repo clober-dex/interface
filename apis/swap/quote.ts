@@ -29,6 +29,7 @@ const applyFeeAdjustment = (
     abi: ROUTER_GATEWAY_ABI,
     data: bestQuote.transaction.data as `0x${string}`,
   })
+  console.log(bestQuote.amountOut, secondBestQuote.amountOut)
   const fee = max(
     applyPercent(
       bestQuote.amountOut - secondBestQuote.amountOut,
@@ -119,7 +120,10 @@ export function adjustQuotes(
       : bestQuote && sortedQuotes.length === 1
         ? {
             ...bestQuote,
-            fee: applyPercent(bestQuote.amountOut, CHAIN_CONFIG.MAX_SWAP_FEE),
+            fee: applyPercent(
+              bestQuote.amountOut,
+              CHAIN_CONFIG.MAX_SWAP_FEE_PERCENT,
+            ),
           }
         : null
 
@@ -433,7 +437,7 @@ export async function fetchQuotesLive(
                       ...bestQuote,
                       fee: applyPercent(
                         bestQuote.amountOut,
-                        CHAIN_CONFIG.MAX_SWAP_FEE,
+                        CHAIN_CONFIG.MAX_SWAP_FEE_PERCENT,
                       ),
                     }
                   : null

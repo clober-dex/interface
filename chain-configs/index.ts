@@ -46,8 +46,8 @@ export const CHAIN_CONFIG: ChainConfig = {
   RPC_URL:
     'https://monad-mainnet.g.alchemy.com/v2/3Um4IcT1mrq2MEOYurXvsRAzk_v3Q_4X',
   PYTH_HERMES_ENDPOINT: 'https://hermes.pyth.network',
-  MAX_SWAP_FEE: 0.1,
-  SWAP_FEE_PERCENT: 30,
+  MAX_SWAP_FEE_PERCENT: 0.1,
+  SWAP_FEE_PERCENT: 50,
   EXTERNAL_CONTRACT_ADDRESSES: {
     FuturesMarket: zeroAddress,
     PythOracle: zeroAddress,

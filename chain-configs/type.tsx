@@ -33,7 +33,7 @@ export type ChainConfig = {
   ENABLE_REMOTE_CHAIN_BALANCES: boolean
   RPC_URL: string
   PYTH_HERMES_ENDPOINT: string
-  MAX_SWAP_FEE: number
+  MAX_SWAP_FEE_PERCENT: number
   SWAP_FEE_PERCENT: number
   BLACKLISTED_USERS: `0x${string}`[]
   ROUTER_MAP: Record<`0x${string}`, string>
