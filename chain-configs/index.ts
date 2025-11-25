@@ -80,9 +80,9 @@ export const CHAIN_CONFIG: ChainConfig = {
     ({ poolKey }) => poolKey,
   ),
   SLIPPAGE_PERCENT: {
-    DEFAULT: 0.25,
-    LOW: 0.25,
-    MEDIUM: 0.5,
+    DEFAULT: 0.5,
+    LOW: 0.5,
+    MEDIUM: 0.99,
     WARNING: 3,
     UNLIMITED: 50.0,
   },
