@@ -1,5 +1,5 @@
-import { MarketSnapshot } from '@clober/v2-sdk'
 import { zeroAddress } from 'viem'
+import { MarketSnapshot } from '../../contexts/trade/market-context'
 
 export const dummyMarkets = [
   {
@@ -26,6 +26,9 @@ export const dummyMarkets = [
     bidBookUpdatedAt: 1744005461,
     askBookUpdatedAt: 1744005461,
     fdv: 1000000000,
+    isBidTaken:false,
+    isAskTaken:false,
+    verified:true
   },
   {
     chainId: 1,
@@ -51,5 +54,8 @@ export const dummyMarkets = [
     bidBookUpdatedAt: 1744005461,
     askBookUpdatedAt: 1744005461,
     fdv: 1000000000,
+    isBidTaken:false,
+    isAskTaken:false,
+    verified:true
   },
 ] as MarketSnapshot[]

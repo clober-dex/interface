@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
-import { MarketSnapshot } from '@clober/v2-sdk'
 
 import { SearchSvg } from '../svg/search-svg'
 import { useWindowWidth } from '../../hooks/useWindowWidth'
 import { CurrencyIcon } from '../icon/currency-icon'
 import { Chain } from '../../model/chain'
 import { formatTinyNumber } from '../../utils/bignumber'
+import { MarketSnapshot } from '../../contexts/trade/market-context'
 
 const MarketSelect = ({
   chain,
