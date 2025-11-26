@@ -1,5 +1,11 @@
-import { createPublicClient, erc20Abi, http, zeroAddress } from 'viem'
-import { getMarketId, CHAIN_IDS } from '@clober/v2-sdk'
+import {
+  createPublicClient,
+  erc20Abi,
+  http,
+  isAddressEqual,
+  zeroAddress,
+} from 'viem'
+import { getMarketId, CHAIN_IDS, getReferenceCurrency } from '@clober/v2-sdk'
 
 import { Chain } from '../model/chain'
 import { CHAIN_CONFIG } from '../chain-configs'
@@ -167,6 +173,15 @@ export async function fetchExternalMarketSnapshots(
         )?.id!,
       ]
       const tokenValueData = pool.attributes.token_value_data[baseTokenId]
+      const ref = getReferenceCurrency({ chainId: chain.id })
+      if (
+        isAddressEqual(
+          tokens[baseTokenId].address as `0x${string}`,
+          ref.address,
+        )
+      ) {
+        return null
+      }
 
       return {
         chainId: chain.id,
