@@ -42,6 +42,14 @@ export class MonorailAggregator implements Aggregator {
       },
     })
 
+    const nativePrice = parseFloat(
+      result.find((r) => isAddressEqual(r.address, this.nativeTokenAddress))
+        ?.usd_per_token ?? '0',
+    )
+    if (nativePrice <= 0) {
+      return {} as Prices
+    }
+
     return result.reduce(
       (acc, curr) => {
         if (!isAddressEqual(curr.address, this.nativeTokenAddress)) {
@@ -54,10 +62,7 @@ export class MonorailAggregator implements Aggregator {
         return acc
       },
       {
-        [zeroAddress]: parseFloat(
-          result.find((r) => isAddressEqual(r.address, this.nativeTokenAddress))
-            ?.usd_per_token ?? '0',
-        ),
+        [zeroAddress]: nativePrice,
       } as Prices,
     )
   }

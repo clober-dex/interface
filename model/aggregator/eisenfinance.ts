@@ -30,7 +30,46 @@ export class EisenFinanceAggregator implements Aggregator {
   }
 
   public async prices(): Promise<Prices> {
-    return {} as Prices
+    const { result } = await fetchApi<{
+      result: {
+        tokenAddress: `0x${string}`
+        price: string
+        quoteToken: string
+      }[]
+    }>(
+      'https://api.hetz-01.eisenfinance.com',
+      `v1/chains/${this.chain.id}/v2/prices?quoteToken=USD`,
+      {
+        method: 'GET',
+        headers: {
+          accept: '*/*',
+        },
+      },
+    )
+    const nativePrice = parseFloat(
+      result.find((r) =>
+        isAddressEqual(r.tokenAddress, this.nativeTokenAddress),
+      )?.price ?? '0',
+    )
+    if (nativePrice <= 0) {
+      return {} as Prices
+    }
+
+    return result.reduce(
+      (acc, curr) => {
+        if (!isAddressEqual(curr.tokenAddress, this.nativeTokenAddress)) {
+          const price = parseFloat(curr.price ?? '0')
+          if (price > 0) {
+            acc[getAddress(curr.tokenAddress)] = price
+            acc[curr.tokenAddress.toLowerCase() as `0x${string}`] = price
+          }
+        }
+        return acc
+      },
+      {
+        [zeroAddress]: nativePrice,
+      } as Prices,
+    )
   }
 
   private calculateSlippage(slippageLimitPercent: number) {
