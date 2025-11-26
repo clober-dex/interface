@@ -77,7 +77,7 @@ export const PoolDailySnapshotCard = ({
             </div>
           </div>
           <div className="w-[140px] text-white text-sm font-medium flex flex-row gap-2">
-            {`${!BigNumber(apy).isNaN() && !BigNumber(apy).isZero() && BigNumber(apy).lt(10000) ? `${apy.toFixed(2)}%` : '-'}`}
+            {`${!BigNumber(apy).isNaN() && !BigNumber(apy).isZero() && BigNumber(apy).lt(1000) ? `${apy.toFixed(2)}%` : '$1,000%+'}`}
           </div>
           <div className="flex flex-row gap-1 w-[140px] text-white text-sm font-medium">
             <span className="text-[#8d94a1]">$</span>
@@ -210,7 +210,7 @@ export const PoolDailySnapshotCard = ({
               </div>
             </div>
             <div className="self-stretch text-white text-sm font-medium">
-              {`${!BigNumber(apy).isNaN() && !BigNumber(apy).isZero() && BigNumber(apy).lt(10000) ? `${apy.toFixed(2)}%` : '-'}`}
+              {`${!BigNumber(apy).isNaN() && !BigNumber(apy).isZero() && BigNumber(apy).lt(1000) ? `${apy.toFixed(2)}%` : '$1,000%+'}`}
             </div>
           </div>
 
