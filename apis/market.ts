@@ -185,11 +185,12 @@ export async function fetchExternalMarketSnapshots(
           pool.attributes.net_volume_data_24h.sell_volume_in_usd,
         ),
         totalValueLockedUSD: Number(pool.attributes.reserve_in_usd),
-        priceChange24h: Number(
-          pool.attributes.price_percent_change
-            .replace('%', '')
-            .replace('+', ''),
-        ),
+        priceChange24h:
+          Number(
+            pool.attributes.price_percent_change
+              .replace('%', '')
+              .replace('+', ''),
+          ) / 100,
         createdAtTimestamp: Math.floor(
           new Date(pool.attributes.pool_created_at).getTime() / 1000,
         ),
