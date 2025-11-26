@@ -29,7 +29,7 @@ export const MarketInfoCard = ({
   websiteUrl,
   twitterUrl,
   telegramUrl,
-  isFetchingMarketSnapshot,
+  isFetchingTokenInfo,
   showMarketSelect,
   setShowMarketSelect,
 }: {
@@ -46,7 +46,7 @@ export const MarketInfoCard = ({
   websiteUrl: string
   twitterUrl: string
   telegramUrl: string
-  isFetchingMarketSnapshot: boolean
+  isFetchingTokenInfo: boolean
   showMarketSelect: boolean
   setShowMarketSelect: (value: (prevState: boolean) => boolean) => void
 }) => {
@@ -207,7 +207,7 @@ export const MarketInfoCard = ({
                   Liquidity
                 </div>
                 <div className="text-white text-xs text-right flex flex-row gap-1">
-                  {!isFetchingMarketSnapshot ? (
+                  {!isFetchingTokenInfo ? (
                     liquidityUsd > 0 ? (
                       <>
                         <span className="text-[#8d94a1]">$</span>
@@ -228,7 +228,7 @@ export const MarketInfoCard = ({
                   24h Volume
                 </div>
                 <div className="text-white text-xs text-right flex flex-row gap-1">
-                  {!isFetchingMarketSnapshot ? (
+                  {!isFetchingTokenInfo ? (
                     dailyVolume > 0 ? (
                       <>
                         <span className="text-[#8d94a1]">$</span>
@@ -252,7 +252,7 @@ export const MarketInfoCard = ({
                   FDV
                 </div>
                 <div className="text-white text-xs text-right flex flex-row gap-1">
-                  {!isFetchingMarketSnapshot ? (
+                  {!isFetchingTokenInfo ? (
                     fdv > 0 ? (
                       <>
                         <span className="text-[#8d94a1]">$</span>
@@ -271,7 +271,7 @@ export const MarketInfoCard = ({
                   Market Cap
                 </div>
                 <div className="text-white text-xs text-right flex flex-row gap-1">
-                  {!isFetchingMarketSnapshot ? (
+                  {!isFetchingTokenInfo ? (
                     marketCap > 0 ? (
                       <>
                         <span className="text-[#8d94a1]">$</span>
@@ -309,7 +309,7 @@ export const MarketInfoCard = ({
                 Liquidity
               </div>
               <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
-                {!isFetchingMarketSnapshot ? (
+                {!isFetchingTokenInfo ? (
                   liquidityUsd > 0 ? (
                     <>
                       <span className="text-[#8d94a1]">$</span>
@@ -331,7 +331,7 @@ export const MarketInfoCard = ({
                 FDV
               </div>
               <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
-                {!isFetchingMarketSnapshot ? (
+                {!isFetchingTokenInfo ? (
                   fdv > 0 ? (
                     <>
                       <span className="text-[#8d94a1]">$</span>
@@ -351,7 +351,7 @@ export const MarketInfoCard = ({
                 Market Cap
               </div>
               <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
-                {!isFetchingMarketSnapshot ? (
+                {!isFetchingTokenInfo ? (
                   marketCap > 0 ? (
                     <>
                       <span className="text-[#8d94a1]">$</span>
@@ -371,7 +371,7 @@ export const MarketInfoCard = ({
                 24H Volume
               </div>
               <div className="w-[61px] text-white text-[13px] h-4 flex flex-row gap-1">
-                {!isFetchingMarketSnapshot ? (
+                {!isFetchingTokenInfo ? (
                   dailyVolume > 0 ? (
                     <>
                       <span className="text-[#8d94a1]">$</span>

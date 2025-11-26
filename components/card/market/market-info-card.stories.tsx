@@ -46,7 +46,7 @@ export const Default: Story = {
     websiteUrl: '',
     twitterUrl: '',
     telegramUrl: '',
-    isFetchingMarketSnapshot: false,
+    isFetchingTokenInfo: false,
     setShowMarketSelect: (market: any) => {
       console.log('Selected market:', market)
     },
@@ -78,7 +78,7 @@ export const Social: Story = {
     websiteUrl: 'https://www.google.com',
     twitterUrl: 'https://www.google.com',
     telegramUrl: 'https://www.google.com',
-    isFetchingMarketSnapshot: false,
+    isFetchingTokenInfo: false,
     setShowMarketSelect: (market: any) => {
       console.log('Selected market:', market)
     },
@@ -110,7 +110,7 @@ export const Loading: Story = {
     websiteUrl: '',
     twitterUrl: '',
     telegramUrl: '',
-    isFetchingMarketSnapshot: true,
+    isFetchingTokenInfo: true,
     setShowMarketSelect: (market: any) => {
       console.log('Selected market:', market)
     },

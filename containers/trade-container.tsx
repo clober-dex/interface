@@ -826,10 +826,7 @@ export const TradeContainer = () => {
                     websiteUrl={selectedTokenInfo?.website ?? ''}
                     twitterUrl={selectedTokenInfo?.twitter ?? ''}
                     telegramUrl={selectedTokenInfo?.telegram ?? ''}
-                    isFetchingMarketSnapshot={
-                      selectedMarketSnapshot === undefined ||
-                      selectedTokenInfo === undefined
-                    }
+                    isFetchingTokenInfo={selectedTokenInfo === undefined}
                     showMarketSelect={showMarketSelect}
                     setShowMarketSelect={setShowMarketSelect}
                   />

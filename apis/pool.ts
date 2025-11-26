@@ -11,10 +11,6 @@ export async function fetchPoolSnapshots(chain: Chain) {
   const poolSnapshots = await getPoolSnapshots({
     chainId: chain.id,
   })
-  console.log(
-    `Fetched ${poolSnapshots.length} pool snapshots from chain ${chain.name}`,
-    poolSnapshots,
-  )
   const now = currentTimestampInSeconds()
   return poolSnapshots
     .filter(({ key }) => CHAIN_CONFIG.WHITELISTED_POOL_KEYS.includes(key))
