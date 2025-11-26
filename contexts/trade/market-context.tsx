@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  CHAIN_IDS,
   getMarket,
   getMarketId,
   getMarketSnapshot,
@@ -33,10 +34,26 @@ import { useTransactionContext } from '../transaction-context'
 
 import { useTradeContext } from './trade-context'
 
-export type MarketSnapshot = SdkMarketSnapshot & {
+export type MarketSnapshot = {
+  chainId: CHAIN_IDS
+  marketId: string
+  base: Currency
+  quote: Currency
+  price: number
+  priceUSD: number
+  volume24hUSD: number
+  totalValueLockedUSD: number
+  priceChange24h: number
+  createdAtTimestamp: number
+  fdv: number
+  bidBookUpdatedAt?: number
+  askBookUpdatedAt?: number
+  //
   isBidTaken: boolean
   isAskTaken: boolean
   verified: boolean
+  // marketCap: number
+  // numHolders: number
 }
 
 type MarketContext = {
@@ -232,59 +249,65 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { data: marketSnapshots } = useQuery({
     queryKey: ['market-snapshots', selectedChain.id],
     queryFn: async () => {
-      if (lastIndexedBlockNumber === 0) {
-        return [] as MarketSnapshot[]
-      }
-      if (prevSubgraphBlockNumber.current !== lastIndexedBlockNumber) {
-        const marketSnapshots = await getMarketSnapshots({
-          chainId: selectedChain.id,
-          options: {
-            rpcUrl: CHAIN_CONFIG.RPC_URL,
-          },
-        })
-        const newMarketSnapshots: MarketSnapshot[] = marketSnapshots.map(
-          (marketSnapshot) => {
-            const prevMarketSnapshot = prevMarketSnapshots.current.find(
-              (snapshot) =>
-                isAddressEqual(
-                  snapshot.base.address,
-                  marketSnapshot.base.address,
-                ) &&
-                isAddressEqual(
-                  snapshot.quote.address,
-                  marketSnapshot.quote.address,
-                ),
-            )
-            return {
+      if (selectedChain.testnet) {
+        if (lastIndexedBlockNumber === 0) {
+          return [] as MarketSnapshot[]
+        }
+        if (prevSubgraphBlockNumber.current !== lastIndexedBlockNumber) {
+          const marketSnapshots = await getMarketSnapshots({
+            chainId: selectedChain.id,
+            options: {
+              rpcUrl: CHAIN_CONFIG.RPC_URL,
+            },
+          })
+          const newMarketSnapshots: MarketSnapshot[] = marketSnapshots.map(
+            (marketSnapshot) => {
+              const prevMarketSnapshot = prevMarketSnapshots.current.find(
+                (snapshot) =>
+                  isAddressEqual(
+                    snapshot.base.address,
+                    marketSnapshot.base.address,
+                  ) &&
+                  isAddressEqual(
+                    snapshot.quote.address,
+                    marketSnapshot.quote.address,
+                  ),
+              )
+              return {
+                ...marketSnapshot,
+                isBidTaken:
+                  (prevMarketSnapshot &&
+                    (prevMarketSnapshot?.bidBookUpdatedAt ?? 0) <
+                      marketSnapshot.bidBookUpdatedAt) ||
+                  false,
+                isAskTaken:
+                  (prevMarketSnapshot &&
+                    (prevMarketSnapshot?.askBookUpdatedAt ?? 0) <
+                      marketSnapshot.askBookUpdatedAt) ||
+                  false,
+                verified: isVerifiedMarket(marketSnapshot),
+              }
+            },
+          )
+          prevMarketSnapshots.current = marketSnapshots.map(
+            (marketSnapshot) => ({
               ...marketSnapshot,
-              isBidTaken:
-                (prevMarketSnapshot &&
-                  prevMarketSnapshot.bidBookUpdatedAt <
-                    marketSnapshot.bidBookUpdatedAt) ||
-                false,
-              isAskTaken:
-                (prevMarketSnapshot &&
-                  prevMarketSnapshot.askBookUpdatedAt <
-                    marketSnapshot.askBookUpdatedAt) ||
-                false,
+              isBidTaken: false,
+              isAskTaken: false,
               verified: isVerifiedMarket(marketSnapshot),
-            }
-          },
-        )
-        prevMarketSnapshots.current = marketSnapshots.map((marketSnapshot) => ({
-          ...marketSnapshot,
-          isBidTaken: false,
-          isAskTaken: false,
-          verified: isVerifiedMarket(marketSnapshot),
-        }))
-        prevSubgraphBlockNumber.current = lastIndexedBlockNumber
-        localStorage.setItem(
-          LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY(selectedChain),
-          JSON.stringify(marketSnapshots),
-        )
-        return newMarketSnapshots
+            }),
+          )
+          prevSubgraphBlockNumber.current = lastIndexedBlockNumber
+          localStorage.setItem(
+            LOCAL_STORAGE_MARKET_SNAPSHOTS_KEY(selectedChain),
+            JSON.stringify(marketSnapshots),
+          )
+          return newMarketSnapshots
+        }
+        return prevMarketSnapshots.current
       }
-      return prevMarketSnapshots.current
+
+      return [] as MarketSnapshot[]
     },
     refetchInterval: 1000, // checked
     refetchIntervalInBackground: true,
