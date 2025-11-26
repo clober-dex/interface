@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { FixedSizeGrid as Grid, FixedSizeList as List } from 'react-window'
-import { MarketSnapshot as SdkMarketSnapshot } from '@clober/v2-sdk'
 
 import { MarketDailySnapshotCard } from '../components/card/market/market-daily-snapshot-card'
 import { useChainContext } from '../contexts/chain-context'
@@ -11,7 +10,10 @@ import { useWindowHeight } from '../hooks/useWindowHeight'
 import { Toast } from '../components/toast'
 import { ClipboardSvg } from '../components/svg/clipboard-svg'
 import { SearchSvg } from '../components/svg/search-svg'
-import { useMarketContext } from '../contexts/trade/market-context'
+import {
+  MarketSnapshot,
+  useMarketContext,
+} from '../contexts/trade/market-context'
 
 const MOBILE_ROW_HEIGHT = 195
 
@@ -40,12 +42,6 @@ type SortOption =
   | 'daily-change-asc'
   | 'verified-desc'
   | 'verified-asc'
-
-type MarketSnapshot = SdkMarketSnapshot & {
-  isBidTaken: boolean
-  isAskTaken: boolean
-  verified: boolean
-}
 
 const TriangleDown = ({
   column,
