@@ -16,8 +16,9 @@ export async function fetchPoolSnapshots(chain: Chain) {
     .filter(({ key }) => CHAIN_CONFIG.WHITELISTED_POOL_KEYS.includes(key))
     .sort((a, b) => Number(b.volumeUSD24h) - Number(a.volumeUSD24h))
     .map((poolSnapshot) => {
-      const lastPerformanceHistory =
-        poolSnapshot.performanceHistories.slice(-1)[0]
+      const lastPerformanceHistory = poolSnapshot.performanceHistories.sort(
+        (a, b) => Number(b.timestamp) - Number(a.timestamp),
+      )[0]
       const onHoldUSDValuePerLp =
         (Number(poolSnapshot.initialLPInfo.currencyA.value) *
           (lastPerformanceHistory?.priceAUSD ?? 0) +
@@ -60,7 +61,9 @@ export async function fetchPool(
     Number(pool.liquidityB.total.value) *
       prices[pool.liquidityB.total.currency.address]
   const now = currentTimestampInSeconds()
-  const lastPerformanceHistory = poolSnapshot.performanceHistories.slice(-1)[0]
+  const lastPerformanceHistory = poolSnapshot.performanceHistories.sort(
+    (a, b) => Number(b.timestamp) - Number(a.timestamp),
+  )[0]
   const onHoldUSDValuePerLp =
     (Number(poolSnapshot.initialLPInfo.currencyA.value) *
       (lastPerformanceHistory?.priceAUSD ?? 0) +
