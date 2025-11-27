@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const ALLOWED_ORIGINS = ['https://app.clober.io', 'http://localhost:3000']
+// const ALLOWED_ORIGINS = ['https://app.clober.io', 'http://localhost:3000']
 const ALLOWED_HOSTS = ['api.0x.org', 'app.geckoterminal.com', 'rpc.kuru.io']
 const ALLOWED_HEADERS = [
   '0x-api-key',
@@ -33,10 +33,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const origin = req.headers.origin
-  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
-    return res.status(403).json({ error: 'not allowed' })
-  }
+  // const origin = req.headers.origin
+  // if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+  //   return res.status(403).json({ error: 'not allowed' })
+  // }
 
   const target = req.query.url as string
   if (!target) {
