@@ -22,7 +22,7 @@ export const MarketDailySnapshotCard = ({
   createAt,
   price,
   dailyVolume,
-  fdv,
+  marketCap,
   dailyChange,
   verified,
   isBidTaken,
@@ -35,7 +35,7 @@ export const MarketDailySnapshotCard = ({
   createAt: number
   price: number
   dailyVolume: number
-  fdv: number
+  marketCap: number
   dailyChange: number
   verified: boolean
   isBidTaken: boolean
@@ -155,13 +155,13 @@ export const MarketDailySnapshotCard = ({
           </span>
         </div>
         <div className="flex flex-row gap-1 w-[140px] text-white text-base font-semibold">
-          {fdv > 0 ? (
+          {marketCap > 0 ? (
             <div className="flex flex-row gap-1 w-[140px] text-white text-base font-semibold">
               <span className="justify-start text-[#8d94a1] text-sm font-medium">
                 $
               </span>
               <span className="justify-start text-white text-sm font-medium">
-                {formatAbbreviatedNumberString(new BigNumber(fdv))}
+                {formatAbbreviatedNumberString(new BigNumber(marketCap))}
               </span>
             </div>
           ) : (
@@ -301,15 +301,15 @@ export const MarketDailySnapshotCard = ({
           <div className="w-full flex flex-row flex-1 h-11 justify-start items-start gap-2 text-left">
             <div className="flex flex-1 w-full flex-col justify-start items-center gap-1.5">
               <div className="self-stretch text-gray-500 text-xs font-medium">
-                FDV
+                Market Cap
               </div>
               <div className="self-stretch text-white text-sm font-medium flex flex-row gap-0.5">
-                {fdv > 0 ? (
+                {marketCap > 0 ? (
                   <>
                     <div className="justify-start text-[#8d94a1] text-sm font-medium">
                       $
                     </div>
-                    {formatAbbreviatedNumberString(new BigNumber(fdv))}
+                    {formatAbbreviatedNumberString(new BigNumber(marketCap))}
                   </>
                 ) : (
                   '-'

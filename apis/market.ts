@@ -226,6 +226,8 @@ export async function fetchExternalMarketSnapshots(
             existing.createdAtTimestamp,
             pool.createdAtTimestamp,
           )
+          existing.marketCap = Math.max(existing.marketCap, pool.marketCap)
+          existing.fdv = Math.max(existing.fdv, pool.fdv)
         } else {
           acc.push(pool)
         }

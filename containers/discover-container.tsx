@@ -22,7 +22,7 @@ type Column =
   | 'age'
   | 'price'
   | 'daily-volume'
-  | 'fdv'
+  | 'mcap'
   | 'daily-change'
   | 'verified'
 
@@ -36,8 +36,8 @@ type SortOption =
   | 'price-asc'
   | 'daily-volume-desc'
   | 'daily-volume-asc'
-  | 'fdv-desc'
-  | 'fdv-asc'
+  | 'mcap-desc'
+  | 'mcap-asc'
   | 'daily-change-desc'
   | 'daily-change-asc'
   | 'verified-desc'
@@ -86,7 +86,7 @@ const MarketSnapshotListRow = ({
         createAt={marketSnapshot.createdAtTimestamp}
         price={marketSnapshot.priceUSD}
         dailyVolume={marketSnapshot.volume24hUSD}
-        fdv={marketSnapshot.fdv}
+        marketCap={marketSnapshot.marketCap || marketSnapshot.fdv}
         dailyChange={marketSnapshot.priceChange24h * 100}
         verified={marketSnapshot.verified}
         isBidTaken={marketSnapshot.isBidTaken || false}
@@ -135,7 +135,7 @@ const MarketSnapshotGridCell = ({
         createAt={marketSnapshot.createdAtTimestamp}
         price={marketSnapshot.priceUSD}
         dailyVolume={marketSnapshot.volume24hUSD}
-        fdv={marketSnapshot.fdv}
+        marketCap={marketSnapshot.marketCap || marketSnapshot.fdv}
         dailyChange={marketSnapshot.priceChange24h * 100}
         verified={marketSnapshot.verified}
         isBidTaken={marketSnapshot.isBidTaken || false}
@@ -204,10 +204,10 @@ export const DiscoverContainer = () => {
           return a.volume24hUSD - b.volume24hUSD
         } else if (sortOption === 'daily-volume-desc') {
           return b.volume24hUSD - a.volume24hUSD
-        } else if (sortOption === 'fdv-asc') {
-          return a.fdv - b.fdv
-        } else if (sortOption === 'fdv-desc') {
-          return b.fdv - a.fdv
+        } else if (sortOption === 'mcap-asc') {
+          return (a.marketCap || a.fdv) - (b.marketCap || b.fdv)
+        } else if (sortOption === 'mcap-desc') {
+          return (b.marketCap || b.fdv) - (a.marketCap || a.fdv)
         } else if (sortOption === 'daily-change-asc') {
           return a.priceChange24h - b.priceChange24h
         } else if (sortOption === 'daily-change-desc') {
@@ -322,7 +322,7 @@ export const DiscoverContainer = () => {
         <div className="text-[#8d94a1] text-sm font-medium absolute hidden lg:flex top-[84px] w-[1200px] py-2.5 px-4 justify-start items-center gap-4 z-[1] h-10 bg-[#222223] border-b border-[#2d2d2e] lg:outline lg:outline-1 lg:outline-offset-[-1px] lg:outline-[#272930] lg:rounded-tl-lg lg:rounded-tr-lg">
           <button
             onClick={() => sort('market')}
-            className="w-[410px] flex items-center hover:underline cursor-pointer flex-row gap-0.5"
+            className="w-[390px] flex items-center hover:underline cursor-pointer flex-row gap-0.5"
           >
             Market
             <TriangleDown column="market" sortOption={sortOption} />
@@ -343,16 +343,16 @@ export const DiscoverContainer = () => {
           </button>
           <button
             onClick={() => sort('daily-volume')}
-            className="flex flex-row gap-1.5 w-[170px] text-sm font-semibold hover:underline cursor-pointer"
+            className="flex flex-row gap-1.5 w-[160px] text-sm font-semibold hover:underline cursor-pointer"
           >
             24h Volume
           </button>
           <button
-            onClick={() => sort('fdv')}
+            onClick={() => sort('mcap')}
             className="w-[160px] flex items-center hover:underline cursor-pointer flex-row gap-0.5"
           >
-            FDV
-            <TriangleDown column="fdv" sortOption={sortOption} />
+            Market Cap
+            <TriangleDown column="mcap" sortOption={sortOption} />
           </button>
           <button
             onClick={() => sort('daily-change')}
