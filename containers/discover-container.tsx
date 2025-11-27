@@ -186,10 +186,8 @@ export const DiscoverContainer = () => {
       )
       .sort((a, b) => {
         if (sortOption === 'none') {
-          return (
-            b.volume24hUSD - a.volume24hUSD ||
-            b.totalValueLockedUSD - a.totalValueLockedUSD
-          )
+          // no sorting
+          return 0
         } else if (sortOption === 'market-asc') {
           return a.base.symbol.localeCompare(b.base.symbol)
         } else if (sortOption === 'market-desc') {

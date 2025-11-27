@@ -320,29 +320,20 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
 
           const newMarketSnapshots: MarketSnapshot[] = marketSnapshots.map(
             (marketSnapshot) => {
-              const prevMarketSnapshot = prevMarketSnapshots.current.find(
-                (snapshot) =>
-                  isAddressEqual(
-                    snapshot.base.address,
-                    marketSnapshot.base.address,
-                  ) &&
-                  isAddressEqual(
-                    snapshot.quote.address,
-                    marketSnapshot.quote.address,
-                  ),
-              )
               return {
                 ...marketSnapshot,
-                isBidTaken:
-                  (prevMarketSnapshot &&
-                    (prevMarketSnapshot?.buyVolume24hUSD ?? 0) <
-                      marketSnapshot.buyVolume24hUSD) ||
-                  false,
-                isAskTaken:
-                  (prevMarketSnapshot &&
-                    (prevMarketSnapshot?.sellVolume24hUSD ?? 0) <
-                      marketSnapshot.sellVolume24hUSD) ||
-                  false,
+                // isBidTaken:
+                //   (prevMarketSnapshot &&
+                //     (prevMarketSnapshot?.buyVolume24hUSD ?? 0) <
+                //       marketSnapshot.buyVolume24hUSD) ||
+                //   false,
+                isBidTaken: false,
+                // isAskTaken:
+                //   (prevMarketSnapshot &&
+                //     (prevMarketSnapshot?.sellVolume24hUSD ?? 0) <
+                //       marketSnapshot.sellVolume24hUSD) ||
+                //   false,
+                isAskTaken: false,
                 verified: isVerifiedMarket(
                   marketSnapshot.base,
                   marketSnapshot.quote,
@@ -370,7 +361,8 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         return prevMarketSnapshots.current
       }
     },
-    refetchInterval: 1000, // checked
+    enabled: lastIndexedBlockNumber > 0,
+    refetchInterval: 30 * 1000, // checked
     refetchIntervalInBackground: true,
   })
 
