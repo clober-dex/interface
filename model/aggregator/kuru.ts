@@ -44,53 +44,6 @@ export class KuruAggregator implements Aggregator {
     return slippageLimitPercent
   }
 
-  private quoteWithRevert = async (
-    params: any,
-  ): Promise<{
-    amountOut: bigint
-    gasLimit: bigint
-    aggregator: Aggregator
-    transaction: Transaction | undefined
-    executionMilliseconds: number
-  }> => {
-    const start = performance.now()
-
-    const {
-      data: {
-        data: { output },
-      },
-    } = await fetchApi<{
-      data: {
-        data: {
-          output: string
-        }
-      }
-    }>('/api/proxy', '', {
-      method: 'POST',
-      headers: {
-        accept: '*/*',
-        'content-type': 'text/plain;charset=UTF-8',
-        host: 'rpc.kuru.io',
-        origin: 'https://kuru.io',
-        'user-agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:145.0) Gecko/20100101 Firefox/145.0',
-      },
-      timeout: this.TIMEOUT,
-      params: {
-        url: `https://rpc.kuru.io/swap`,
-      },
-      data: params,
-    })
-
-    return {
-      amountOut: BigInt(output),
-      gasLimit: this.gasLimit,
-      aggregator: this,
-      transaction: undefined,
-      executionMilliseconds: performance.now() - start,
-    }
-  }
-
   public quote = async (
     inputCurrency: Currency,
     amountIn: bigint,
@@ -142,48 +95,51 @@ export class KuruAggregator implements Aggregator {
         }
       }
 
-      try {
-        const { output, transaction } = await fetchApi<{
-          output: string
-          transaction: {
-            calldata: string
-            value: string
-            to: string
-          }
-        }>(this.baseUrl, 'api/quote', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${this.token.value}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: timeout ?? this.TIMEOUT,
-          data: {
-            ...params,
-            userAddress,
-            referrerAddress: this.referrer,
-            referrerFeeBps: 0,
-          },
-        })
-        return {
-          amountOut: BigInt(output),
-          gasLimit: this.gasLimit,
-          aggregator: this,
-          transaction: {
-            data: `0x${transaction.calldata}`,
-            gas: this.gasLimit,
-            value: BigInt(transaction.value),
-            to: getAddress(transaction.to),
-            gasPrice: gasPrice,
-            from: userAddress,
-          },
-          executionMilliseconds: performance.now() - start,
+      const { output, transaction } = await fetchApi<{
+        output: string
+        transaction: {
+          calldata: string
+          value: string
+          to: string
         }
-      } catch {
-        // Fallback to quote with revert
-        return this.quoteWithRevert(params)
+      }>(this.baseUrl, 'api/quote', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.token.value}`,
+          'Content-Type': 'application/json',
+        },
+        timeout: timeout ?? this.TIMEOUT,
+        data: {
+          ...params,
+          userAddress,
+          referrerAddress: this.referrer,
+          referrerFeeBps: 0,
+        },
+      })
+      console.log('Kuru output:', output, transaction)
+
+      return {
+        amountOut: BigInt(output),
+        gasLimit: this.gasLimit,
+        aggregator: this,
+        transaction: {
+          data: `0x${transaction.calldata}`,
+          gas: this.gasLimit,
+          value: BigInt(transaction.value),
+          to: getAddress(transaction.to),
+          gasPrice: gasPrice,
+          from: userAddress,
+        },
+        executionMilliseconds: performance.now() - start,
       }
     }
 
-    return this.quoteWithRevert(params)
+    return {
+      amountOut: BigInt(0),
+      gasLimit: this.gasLimit,
+      aggregator: this,
+      transaction: undefined,
+      executionMilliseconds: performance.now() - start,
+    }
   }
 }
