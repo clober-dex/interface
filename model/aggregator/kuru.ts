@@ -1,0 +1,159 @@
+import { getAddress, isAddressEqual, zeroAddress } from 'viem'
+import { Transaction } from '@clober/v2-sdk'
+
+import { Chain } from '../chain'
+import { Currency } from '../currency'
+import { fetchApi } from '../../apis/utils'
+import { Prices } from '../prices'
+
+import { Aggregator } from './index'
+
+export class KuruAggregator implements Aggregator {
+  public readonly name = 'Kuru'
+  public readonly baseUrl = 'https://ws.kuru.io'
+  public readonly contract: `0x${string}`
+  public readonly minimumSlippage = 0.01 // 0.01% slippage
+  public readonly maximumSlippage = 50 // 50% slippage
+  public readonly supportsPriceCalculation = false
+  public readonly chain: Chain
+  private readonly TIMEOUT = 15 * 1000
+  private readonly nativeTokenAddress = zeroAddress
+  private readonly referrer: `0x${string}` =
+    '0xfb976Bae0b3Ef71843F1c6c63da7Df2e44B3836d'
+
+  token: string | null = null
+
+  constructor(contract: `0x${string}`, chain: Chain) {
+    this.contract = contract
+    this.chain = chain
+  }
+
+  public async currencies(): Promise<Currency[]> {
+    return [] as Currency[]
+  }
+
+  public async prices(): Promise<Prices> {
+    return {} as Prices
+  }
+
+  private calculateSlippage(slippageLimitPercent: number) {
+    slippageLimitPercent = Math.max(slippageLimitPercent, this.minimumSlippage)
+    slippageLimitPercent = Math.min(slippageLimitPercent, this.maximumSlippage)
+    return slippageLimitPercent
+  }
+
+  public quote = async (
+    inputCurrency: Currency,
+    amountIn: bigint,
+    outputCurrency: Currency,
+    slippageLimitPercent: number,
+    gasPrice: bigint,
+    userAddress?: `0x${string}`,
+    timeout?: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    estimateGas = true,
+  ): Promise<{
+    amountOut: bigint
+    gasLimit: bigint
+    aggregator: Aggregator
+    transaction: Transaction | undefined
+    executionMilliseconds: number
+  }> => {
+    const start = performance.now()
+    slippageLimitPercent = this.calculateSlippage(slippageLimitPercent)
+    const params = {
+      amount: amountIn.toString(),
+      tokenIn: isAddressEqual(inputCurrency.address, this.nativeTokenAddress)
+        ? this.nativeTokenAddress
+        : getAddress(inputCurrency.address),
+      tokenOut: isAddressEqual(outputCurrency.address, this.nativeTokenAddress)
+        ? this.nativeTokenAddress
+        : getAddress(outputCurrency.address),
+      autoSlippage: false,
+      slippageTolerance: slippageLimitPercent * 100,
+    } as any
+
+    const gasLimit = 2_000_000n // Set a fixed gas limit as Kuru API does not provide gas estimate
+
+    if (userAddress) {
+      if (!this.token) {
+        const { token } = await fetchApi<{ token: string }>(
+          this.baseUrl,
+          'api/generate-token',
+          {
+            method: 'POST',
+            headers: {
+              accept: 'application/json',
+            },
+            timeout: timeout ?? this.TIMEOUT,
+            data: { user_address: userAddress.toLowerCase() },
+          },
+        )
+        this.token = token
+      }
+
+      const { output, transaction } = await fetchApi<{
+        output: string
+        transaction: {
+          calldata: string
+          value: string
+          to: string
+        }
+      }>(this.baseUrl, 'api/quote', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          'Content-Type': 'application/json',
+        },
+        timeout: timeout ?? this.TIMEOUT,
+        data: {
+          ...params,
+          userAddress,
+          referrerAddress: this.referrer,
+          referrerFeeBps: 0,
+        },
+      })
+      return {
+        amountOut: BigInt(output),
+        gasLimit,
+        aggregator: this,
+        transaction: {
+          data: `0x${transaction.calldata}`,
+          gas: gasLimit,
+          value: BigInt(transaction.value),
+          to: getAddress(transaction.to),
+          gasPrice: gasPrice,
+          from: userAddress,
+        },
+        executionMilliseconds: performance.now() - start,
+      }
+    }
+
+    const {
+      data: {
+        data: { output },
+      },
+    } = await fetchApi<{
+      data: {
+        data: {
+          output: string
+        }
+      }
+    }>(this.baseUrl, `swap`, {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+      },
+      timeout: timeout ?? this.TIMEOUT,
+      data: params,
+    })
+
+    return {
+      amountOut: BigInt(output),
+      gasLimit,
+      aggregator: this,
+      transaction: undefined,
+      executionMilliseconds: performance.now() - start,
+    }
+  }
+}
