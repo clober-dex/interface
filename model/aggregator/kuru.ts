@@ -18,6 +18,7 @@ export class KuruAggregator implements Aggregator {
   public readonly supportsPriceCalculation = false
   public readonly chain: Chain
   private readonly TIMEOUT = 15 * 1000
+  private readonly gasLimit = 2_000_000n // Set a fixed gas limit as Kuru API does not provide gas estimate
   private readonly nativeTokenAddress = zeroAddress
   private readonly referrer: `0x${string}` =
     '0xfb976Bae0b3Ef71843F1c6c63da7Df2e44B3836d'
@@ -41,6 +42,51 @@ export class KuruAggregator implements Aggregator {
     slippageLimitPercent = Math.max(slippageLimitPercent, this.minimumSlippage)
     slippageLimitPercent = Math.min(slippageLimitPercent, this.maximumSlippage)
     return slippageLimitPercent
+  }
+
+  private quoteWithRevert = async (
+    params: any,
+  ): Promise<{
+    amountOut: bigint
+    gasLimit: bigint
+    aggregator: Aggregator
+    transaction: Transaction | undefined
+    executionMilliseconds: number
+  }> => {
+    const start = performance.now()
+
+    const {
+      data: {
+        data: { output },
+      },
+    } = await fetchApi<{
+      data: {
+        data: {
+          output: string
+        }
+      }
+    }>('/api/proxy', '', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'text/plain;charset=UTF-8',
+        host: 'rpc.kuru.io',
+        origin: 'https://kuru.io',
+      },
+      timeout: this.TIMEOUT,
+      params: {
+        url: `https://rpc.kuru.io/swap`,
+      },
+      data: params,
+    })
+
+    return {
+      amountOut: BigInt(output),
+      gasLimit: this.gasLimit,
+      aggregator: this,
+      transaction: undefined,
+      executionMilliseconds: performance.now() - start,
+    }
   }
 
   public quote = async (
@@ -74,8 +120,6 @@ export class KuruAggregator implements Aggregator {
       slippageTolerance: slippageLimitPercent * 100,
     } as any
 
-    const gasLimit = 2_000_000n // Set a fixed gas limit as Kuru API does not provide gas estimate
-
     if (userAddress) {
       const now = currentTimestampInSeconds()
       if (!this.token || (this.token && this.token.expiration <= now + 60)) {
@@ -96,68 +140,48 @@ export class KuruAggregator implements Aggregator {
         }
       }
 
-      const { output, transaction } = await fetchApi<{
-        output: string
-        transaction: {
-          calldata: string
-          value: string
-          to: string
-        }
-      }>(this.baseUrl, 'api/quote', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.token.value}`,
-          'Content-Type': 'application/json',
-        },
-        timeout: timeout ?? this.TIMEOUT,
-        data: {
-          ...params,
-          userAddress,
-          referrerAddress: this.referrer,
-          referrerFeeBps: 0,
-        },
-      })
-      return {
-        amountOut: BigInt(output),
-        gasLimit,
-        aggregator: this,
-        transaction: {
-          data: `0x${transaction.calldata}`,
-          gas: gasLimit,
-          value: BigInt(transaction.value),
-          to: getAddress(transaction.to),
-          gasPrice: gasPrice,
-          from: userAddress,
-        },
-        executionMilliseconds: performance.now() - start,
-      }
-    }
-
-    const {
-      data: {
-        data: { output },
-      },
-    } = await fetchApi<{
-      data: {
-        data: {
+      try {
+        const { output, transaction } = await fetchApi<{
           output: string
+          transaction: {
+            calldata: string
+            value: string
+            to: string
+          }
+        }>(this.baseUrl, 'api/quote', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.token.value}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: timeout ?? this.TIMEOUT,
+          data: {
+            ...params,
+            userAddress,
+            referrerAddress: this.referrer,
+            referrerFeeBps: 0,
+          },
+        })
+        return {
+          amountOut: BigInt(output),
+          gasLimit: this.gasLimit,
+          aggregator: this,
+          transaction: {
+            data: `0x${transaction.calldata}`,
+            gas: this.gasLimit,
+            value: BigInt(transaction.value),
+            to: getAddress(transaction.to),
+            gasPrice: gasPrice,
+            from: userAddress,
+          },
+          executionMilliseconds: performance.now() - start,
         }
+      } catch {
+        // Fallback to quote with revert
+        return this.quoteWithRevert(params)
       }
-    }>(this.baseUrl, `swap`, {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-      },
-      timeout: timeout ?? this.TIMEOUT,
-      data: params,
-    })
-
-    return {
-      amountOut: BigInt(output),
-      gasLimit,
-      aggregator: this,
-      transaction: undefined,
-      executionMilliseconds: performance.now() - start,
     }
+
+    return this.quoteWithRevert(params)
   }
 }
