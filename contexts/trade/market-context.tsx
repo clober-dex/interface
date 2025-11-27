@@ -248,7 +248,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   })
 
   const { data: marketSnapshots } = useQuery({
-    queryKey: ['market-snapshots', selectedChain.id],
+    queryKey: ['market-snapshots', selectedChain.id, currencies.length !== 0],
     queryFn: async () => {
       if (lastIndexedBlockNumber === 0) {
         return [] as MarketSnapshot[]
@@ -315,8 +315,10 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
         return prevMarketSnapshots.current
       } else {
         if (prevSubgraphBlockNumber.current !== lastIndexedBlockNumber) {
-          const marketSnapshots =
-            await fetchExternalMarketSnapshots(selectedChain)
+          const marketSnapshots = await fetchExternalMarketSnapshots(
+            selectedChain,
+            currencies,
+          )
 
           const newMarketSnapshots: MarketSnapshot[] = marketSnapshots.map(
             (marketSnapshot) => {

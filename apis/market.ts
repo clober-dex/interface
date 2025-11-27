@@ -36,6 +36,7 @@ type ExternalMarketSnapshot = {
 
 export async function fetchExternalMarketSnapshots(
   chain: Chain,
+  currencies: Currency[],
 ): Promise<ExternalMarketSnapshot[]> {
   const publicClient = createPublicClient({
     chain,
@@ -98,6 +99,14 @@ export async function fetchExternalMarketSnapshots(
       .map((token) => token.attributes.address.toLowerCase())
       .filter((address, index, self) => self.indexOf(address) === index)
       .filter((address) => !decimalsCache[address])
+
+    const currencyMap = currencies.reduce<{ [address: string]: Currency }>(
+      (acc, currency) => {
+        acc[currency.address.toLowerCase()] = currency
+        return acc
+      },
+      {},
+    )
 
     const results =
       tokenAddresses.length > 0
@@ -186,8 +195,14 @@ export async function fetchExternalMarketSnapshots(
       return {
         chainId: chain.id,
         marketId,
-        base: tokens[baseTokenId],
-        quote: tokens[quoteTokenId],
+        base: {
+          ...tokens[baseTokenId],
+          icon: currencyMap[tokens[baseTokenId].address.toLowerCase()]?.icon,
+        },
+        quote: {
+          ...tokens[quoteTokenId],
+          icon: currencyMap[tokens[quoteTokenId].address.toLowerCase()]?.icon,
+        },
         price: -1,
         priceUSD: Number(pool.attributes.price_in_usd),
         volume24hUSD: Number(
