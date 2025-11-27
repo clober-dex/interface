@@ -1,4 +1,10 @@
-import { createPublicClient, http, isAddressEqual, zeroAddress } from 'viem'
+import {
+  createPublicClient,
+  getAddress,
+  http,
+  isAddressEqual,
+  zeroAddress,
+} from 'viem'
 import { CHAIN_IDS, getReferenceCurrency } from '@clober/v2-sdk'
 
 import { ERC20_PERMIT_ABI } from '../abis/@openzeppelin/erc20-permit-abi'
@@ -129,11 +135,13 @@ export const fetchCurrencyByNameImpl = async (
     const candidateTokens: {
       [key: `0x${string}`]: number
     } = {}
+    const imageUrlMap: { [key: `0x${string}`]: string } = {}
     for (const pair of pairs) {
       const chainName = (pair.chainId as string).split('-')[0]
       if (chainName.toLowerCase() !== chain.name.toLowerCase()) {
         continue
       }
+      console.log('pair', pair)
 
       const baseToken = pair.baseToken as any
       const quoteToken = pair.quoteToken as any
@@ -147,6 +155,10 @@ export const fetchCurrencyByNameImpl = async (
             (pair.volume.h24 as number)
         }
       }
+      if (pair?.info?.imageUrl) {
+        imageUrlMap[baseToken.address as `0x${string}`] = pair.info
+          .imageUrl as string
+      }
     }
 
     const addresses = (Object.keys(candidateTokens) as `0x${string}`[]).sort(
@@ -157,8 +169,11 @@ export const fetchCurrencyByNameImpl = async (
         addresses.map((address) => fetchCurrency(chain, address)),
       )
     ).filter((token) => token !== undefined) as Currency[]
-    currencyCache[cacheKey] = tokens
-    return tokens
+    currencyCache[cacheKey] = tokens.map((token) => ({
+      ...token,
+      icon: imageUrlMap[token.address] ?? undefined,
+    }))
+    return currencyCache[cacheKey]
   } catch (e) {
     return []
   }

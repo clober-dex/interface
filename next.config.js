@@ -16,6 +16,7 @@ const nextConfig = {
       'dd.dexscreener.com',
       'raw.githubusercontent.com',
       'imagedelivery.net',
+      'cdn.dexscreener.com',
     ],
   },
 }
