@@ -13,6 +13,7 @@ import { Chain } from '../model/chain'
 import { CHAIN_CONFIG } from '../chain-configs'
 import { Currency } from '../model/currency'
 import { TokenInfo } from '../model/token-info'
+import { aggregators } from '../chain-configs/aggregators'
 
 const buildTotalSupplyCacheKey = (
   chainId: CHAIN_IDS,
@@ -65,11 +66,16 @@ async function fetchTotalSupplyInner(
   })
 }
 
+const currenciesCache = new Map<CHAIN_IDS, Currency[]>()
+
 export async function fetchWhitelistCurrenciesFromGithub(
   chain: Chain,
 ): Promise<Currency[]> {
   if (!CHAIN_CONFIG.ASSETS_GITHUB_REPO) {
     return [] as Currency[]
+  }
+  if (currenciesCache.has(chain.id)) {
+    return currenciesCache.get(chain.id)!
   }
   try {
     const response = await fetch(
@@ -88,13 +94,17 @@ export async function fetchWhitelistCurrenciesFromGithub(
         logoURI: string
       }[]
     }
-    return tokens.map((token) => ({
+    const currencies = tokens.map((token) => ({
       address: getAddress(token.address),
       decimals: token.decimals,
       symbol: token.symbol,
       name: token.name,
       icon: token.logoURI,
     }))
+    if (currencies.length > 0) {
+      currenciesCache.set(chain.id, currencies)
+    }
+    return currencies
   } catch (e) {
     console.error(`Failed to fetch whitelist for ${chain.name}`, e)
     return [] as Currency[]
@@ -125,4 +135,14 @@ export async function fetchTokenInfo({
   } catch (error) {
     return null
   }
+}
+
+export async function fetchCurrencies(): Promise<Currency[]> {
+  const currencies = await Promise.all(
+    aggregators.map((aggregator) => aggregator.currencies()),
+  )
+  return currencies.flat().map((currency) => ({
+    ...currency,
+    address: getAddress(currency.address),
+  }))
 }

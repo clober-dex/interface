@@ -25,7 +25,6 @@ import { aggregators } from '../chain-configs/aggregators'
 import { Allowances } from '../model/allowances'
 import { deduplicateCurrencies } from '../utils/currency'
 import { CHAIN_CONFIG } from '../chain-configs'
-import { fetchWhitelistCurrenciesFromGithub } from '../apis/token'
 import { currentTimestampInSeconds } from '../utils/date'
 import { formatWithCommas, toPreciseString } from '../utils/bignumber'
 import { formatDollarValue, toUnitString } from '../utils/bigint'
@@ -33,6 +32,10 @@ import { buildTransaction, sendTransaction } from '../utils/transaction'
 import { shortAddress } from '../utils/address'
 import { executors } from '../chain-configs/executors'
 import { RemoteChainBalances } from '../model/remote-chain-balances'
+import {
+  fetchWhitelistCurrenciesFromGithub,
+  fetchCurrencies,
+} from '../apis/token'
 
 import { Confirmation, useTransactionContext } from './transaction-context'
 import { useChainContext } from './chain-context'
@@ -91,10 +94,13 @@ export const CurrencyProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const { data: whitelistCurrencies } = useQuery({
     queryKey: ['currencies', selectedChain.id],
     queryFn: async () => {
-      const whitelistCurrencies =
-        await fetchWhitelistCurrenciesFromGithub(selectedChain)
+      const [githubCurrencies, currencies] = await Promise.all([
+        fetchWhitelistCurrenciesFromGithub(selectedChain),
+        fetchCurrencies(),
+      ])
       return deduplicateCurrencies([
-        ...whitelistCurrencies,
+        ...githubCurrencies,
+        ...currencies,
         ...CHAIN_CONFIG.WHITELISTED_CURRENCIES,
       ]).map((currency) => ({
         ...currency,
