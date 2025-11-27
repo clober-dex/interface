@@ -45,7 +45,7 @@ export async function fetchExternalMarketSnapshots(
   try {
     const qs = new URLSearchParams({
       include: 'dex%2Cdex.network%2Cdex.network.network_metric%2Ctokens',
-      sort: '-5m_trend_score',
+      sort: '-6h_trend_score',
       networks: chain.name.toLowerCase(),
       include_network_metrics: 'false',
     })
