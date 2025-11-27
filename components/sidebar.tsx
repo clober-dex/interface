@@ -22,7 +22,7 @@ const Sidebar = ({
               disabled={router.pathname.includes(page.path)}
               onClick={() =>
                 page.externalLink
-                  ? router.push(page.externalLink)
+                  ? window.open(page.externalLink, '_blank')
                   : router.push(page.path)
               }
               className="relative"

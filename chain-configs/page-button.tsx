@@ -33,10 +33,9 @@ export const PAGE_BUTTONS: PageButton[] = [
     isHiddenMenu: false,
   },
   {
-    path: '/perp',
+    path: 'https://perp.clober.io',
     label: 'Perp',
     icon: <LimitPageSvg className="w-6 h-6" />,
     isHiddenMenu: false,
-    externalLink: 'https://perp.clober.io',
   },
 ]
