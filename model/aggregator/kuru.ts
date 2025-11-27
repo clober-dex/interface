@@ -5,6 +5,7 @@ import { Chain } from '../chain'
 import { Currency } from '../currency'
 import { fetchApi } from '../../apis/utils'
 import { Prices } from '../prices'
+import { currentTimestampInSeconds } from '../../utils/date'
 
 import { Aggregator } from './index'
 
@@ -21,7 +22,7 @@ export class KuruAggregator implements Aggregator {
   private readonly referrer: `0x${string}` =
     '0xfb976Bae0b3Ef71843F1c6c63da7Df2e44B3836d'
 
-  token: string | null = null
+  token: { value: string; expiration: number } | null = null
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
@@ -76,20 +77,23 @@ export class KuruAggregator implements Aggregator {
     const gasLimit = 2_000_000n // Set a fixed gas limit as Kuru API does not provide gas estimate
 
     if (userAddress) {
-      if (!this.token) {
-        const { token } = await fetchApi<{ token: string }>(
-          this.baseUrl,
-          'api/generate-token',
-          {
-            method: 'POST',
-            headers: {
-              accept: 'application/json',
-            },
-            timeout: timeout ?? this.TIMEOUT,
-            data: { user_address: userAddress.toLowerCase() },
+      const now = currentTimestampInSeconds()
+      if (!this.token || (this.token && this.token.expiration <= now + 60)) {
+        const { token, expires_at } = await fetchApi<{
+          token: string
+          expires_at: number
+        }>(this.baseUrl, 'api/generate-token', {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
           },
-        )
-        this.token = token
+          timeout: timeout ?? this.TIMEOUT,
+          data: { user_address: userAddress.toLowerCase() },
+        })
+        this.token = {
+          value: token,
+          expiration: expires_at,
+        }
       }
 
       const { output, transaction } = await fetchApi<{
@@ -102,7 +106,7 @@ export class KuruAggregator implements Aggregator {
       }>(this.baseUrl, 'api/quote', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.token.value}`,
           'Content-Type': 'application/json',
         },
         timeout: timeout ?? this.TIMEOUT,
