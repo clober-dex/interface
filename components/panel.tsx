@@ -60,7 +60,7 @@ const Panel = ({
                               disabled={router.pathname.includes(button.path)}
                               onClick={() => {
                                 if (button.externalLink) {
-                                  window.open(button.externalLink, '_blank')
+                                  router.push(button.externalLink)
                                 } else {
                                   router.push(button.path)
                                   setOpen(false)
