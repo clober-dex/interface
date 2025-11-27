@@ -59,8 +59,12 @@ const Panel = ({
                               className="!bg-transparent"
                               disabled={router.pathname.includes(button.path)}
                               onClick={() => {
-                                router.push(button.path)
-                                setOpen(false)
+                                if (button.externalLink) {
+                                  window.open(button.externalLink, '_blank')
+                                } else {
+                                  router.push(button.path)
+                                  setOpen(false)
+                                }
                               }}
                             >
                               <div className="flex items-center w-4 h-4">
