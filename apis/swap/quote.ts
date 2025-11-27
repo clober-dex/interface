@@ -332,7 +332,9 @@ export async function fetchQuotesLive(
           estimateGas,
         )
         .catch((error) => {
-          console.error(`Failed to get quote from ${aggregator.name}: ${error}`)
+          console.error(
+            `Failed to get quote from ${aggregator.name}: ${error.message.slice(0, 500)}`,
+          )
           return
         })
       if (!quote) {
