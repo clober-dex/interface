@@ -133,6 +133,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     inputCurrency,
     outputCurrency,
     setIsFetchingOnChainPrice,
+    setShowOrderBook,
   } = useTradeContext()
   const prevMarketSnapshots = useRef<MarketSnapshot[]>([])
   const prevSubgraphBlockNumber = useRef<number>(0)
@@ -483,6 +484,20 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
     },
     [currencies],
   )
+
+  useEffect(() => {
+    if (selectedMarket) {
+      const isOrderBookEmpty =
+        (selectedMarket.bids?.length ?? 0) +
+          (selectedMarket.asks?.length ?? 0) ===
+        0
+      if (isOrderBookEmpty) {
+        setShowOrderBook(false)
+      } else if (!CHAIN_CONFIG.HIDE_ORDERBOOK) {
+        setShowOrderBook(true)
+      }
+    }
+  }, [selectedMarket, setShowOrderBook])
 
   // update selectedMarket and selectedMarketSnapshot when market data changes
   useEffect(() => {
