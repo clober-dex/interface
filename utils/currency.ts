@@ -141,7 +141,6 @@ export const fetchCurrencyByNameImpl = async (
       if (chainName.toLowerCase() !== chain.name.toLowerCase()) {
         continue
       }
-      console.log('pair', pair)
 
       const baseToken = pair.baseToken as any
       const quoteToken = pair.quoteToken as any
