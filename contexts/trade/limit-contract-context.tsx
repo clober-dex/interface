@@ -429,6 +429,7 @@ export const LimitContractProvider = ({
       }
     },
     [
+      bridgeAndExecute,
       nexusSDK,
       balances,
       remoteChainBalances,
