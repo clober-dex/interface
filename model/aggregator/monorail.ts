@@ -19,6 +19,7 @@ export class MonorailAggregator implements Aggregator {
   public readonly chain: Chain
   private readonly TIMEOUT = 4000
   private readonly nativeTokenAddress = zeroAddress
+  private currenciesCache: Currency[] | null = null
 
   constructor(contract: `0x${string}`, chain: Chain) {
     this.contract = contract
@@ -26,7 +27,38 @@ export class MonorailAggregator implements Aggregator {
   }
 
   public async currencies(): Promise<Currency[]> {
-    return [] as Currency[]
+    if (this.currenciesCache) {
+      return this.currenciesCache
+    }
+
+    const result = await fetchApi<
+      {
+        address: `0x${string}`
+        name: string
+        symbol: string
+        decimals: number
+        image_uri: string
+      }[]
+    >('https://api.monorail.xyz', `v2/tokens/category/verified`, {
+      method: 'GET',
+      headers: {
+        accept: '*/*',
+      },
+    })
+    const currencies = result.reduce((acc, curr) => {
+      acc.push({
+        address: getAddress(curr.address),
+        name: curr.name,
+        symbol: curr.symbol,
+        decimals: Number(curr.decimals),
+        icon: curr.image_uri ?? undefined,
+      })
+      return acc
+    }, [] as Currency[])
+    if (currencies.length > 0) {
+      this.currenciesCache = currencies
+    }
+    return currencies
   }
 
   public async prices(): Promise<Prices> {
