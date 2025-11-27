@@ -89,7 +89,8 @@ export default function Analytics() {
       ),
       ...{
         ['0x0000000000000000000000000000000000000000']: '#FC72FF',
-        [getAddress('0xf817257fed379853cDe0fa4F97AB987181B1E5Ea')]: '#4C82FB',
+        [getAddress(CHAIN_CONFIG.DEFAULT_STABLE_COIN_CURRENCY.address)]:
+          '#4C82FB',
       },
     }
   }, [uniqueCurrencies]) as Record<`0x${string}`, string>
