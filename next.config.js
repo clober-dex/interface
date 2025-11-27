@@ -12,11 +12,15 @@ const nextConfig = {
     BUILD,
   },
   images: {
-    domains: [
-      'dd.dexscreener.com',
-      'raw.githubusercontent.com',
-      'imagedelivery.net',
-      'cdn.dexscreener.com',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
     ],
   },
 }
