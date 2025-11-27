@@ -245,14 +245,28 @@ export async function fetchExternalMarketSnapshots(
       .reduce<ExternalMarketSnapshot[]>((acc, pool) => {
         const existing = acc.find((p) => p.marketId === pool.marketId)
         if (existing) {
+          existing.price =
+            pool.totalValueLockedUSD > existing.totalValueLockedUSD
+              ? pool.price
+              : existing.price
+          existing.priceUSD =
+            pool.totalValueLockedUSD > existing.totalValueLockedUSD
+              ? pool.priceUSD
+              : existing.priceUSD
           existing.volume24hUSD += pool.volume24hUSD
           existing.totalValueLockedUSD += pool.totalValueLockedUSD
           existing.createdAtTimestamp = Math.min(
             existing.createdAtTimestamp,
             pool.createdAtTimestamp,
           )
-          existing.marketCap = Math.max(existing.marketCap, pool.marketCap)
-          existing.fdv = Math.max(existing.fdv, pool.fdv)
+          existing.marketCap =
+            pool.totalValueLockedUSD > existing.totalValueLockedUSD
+              ? pool.marketCap
+              : existing.marketCap
+          existing.fdv =
+            pool.totalValueLockedUSD > existing.totalValueLockedUSD
+              ? pool.fdv
+              : existing.fdv
         } else {
           acc.push(pool)
         }
