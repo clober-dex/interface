@@ -81,6 +81,7 @@ export async function fetchExternalMarketSnapshots(
           address: string
           name: string
           symbol: string
+          image_url: string
         }
       }[]
     }>('/api/proxy', '', {
@@ -134,6 +135,7 @@ export async function fetchExternalMarketSnapshots(
         name: string
         symbol: string
         decimals: number
+        icon?: string
       }
     } = included.reduce(
       (acc, item) => {
@@ -144,6 +146,9 @@ export async function fetchExternalMarketSnapshots(
             name: item.attributes.name,
             symbol: item.attributes.symbol,
             decimals: decimalsCache[address],
+            icon: item.attributes.image_url.includes('missing')
+              ? undefined
+              : item.attributes.image_url,
           }
         }
         return acc
@@ -154,6 +159,7 @@ export async function fetchExternalMarketSnapshots(
           name: string
           symbol: string
           decimals: number
+          icon?: string
         }
       },
     )
@@ -197,11 +203,15 @@ export async function fetchExternalMarketSnapshots(
         marketId,
         base: {
           ...tokens[baseTokenId],
-          icon: currencyMap[tokens[baseTokenId].address.toLowerCase()]?.icon,
+          icon:
+            currencyMap[tokens[baseTokenId].address.toLowerCase()]?.icon ??
+            tokens[baseTokenId].icon,
         },
         quote: {
           ...tokens[quoteTokenId],
-          icon: currencyMap[tokens[quoteTokenId].address.toLowerCase()]?.icon,
+          icon:
+            currencyMap[tokens[quoteTokenId].address.toLowerCase()]?.icon ??
+            tokens[quoteTokenId].icon,
         },
         price: -1,
         priceUSD: Number(pool.attributes.price_in_usd),

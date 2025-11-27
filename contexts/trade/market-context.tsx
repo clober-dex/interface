@@ -364,7 +364,7 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
       }
     },
     enabled: lastIndexedBlockNumber > 0,
-    refetchInterval: 30 * 1000, // checked
+    refetchInterval: 5 * 1000, // checked
     refetchIntervalInBackground: true,
   })
 
