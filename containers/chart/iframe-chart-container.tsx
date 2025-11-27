@@ -28,7 +28,7 @@ export const IframeChartContainer = ({
         <div className="left-0 top-0 right-20 z-20 flex items-center justify-end gap-2 px-4 py-2">
           <button
             onClick={() => setShowOrderBook(true)}
-            className="hidden lg:flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
+            className="flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +57,7 @@ export const IframeChartContainer = ({
                 </clipPath>
               </defs>
             </svg>
-            <div className="text-center text-blue-400 text-[13px] font-semibold">
+            <div className="text-center text-blue-400 text-[13px]">
               View OrderBook
             </div>
           </button>

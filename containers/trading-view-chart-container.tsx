@@ -109,7 +109,7 @@ export const TradingViewChartContainer = ({
           {!CHAIN_CONFIG.HIDE_ORDERBOOK && setShowOrderBook && (
             <button
               onClick={() => setShowOrderBook(true)}
-              className="hidden xl:flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
+              className="flex w-[200px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
