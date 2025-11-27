@@ -112,7 +112,7 @@ const MarketSelect = ({
                 onMarketSelect(market)
               }}
             >
-              <div className="flex items-center gap-1.5 h-4 min-w-[160px] w-[160px] max-w-[160px] overflow-x-scroll">
+              <div className="flex items-center h-full gap-1.5 min-w-[160px] w-[160px] max-w-[160px] overflow-x-scroll">
                 <div className="w-[26px] h-4 shrink-0 relative">
                   <CurrencyIcon
                     chain={chain}
