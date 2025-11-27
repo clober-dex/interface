@@ -538,7 +538,12 @@ export const MarketProvider = ({ children }: React.PropsWithChildren<{}>) => {
   useEffect(
     () => {
       const action = async () => {
-        if (inputCurrency && outputCurrency && gasPrice) {
+        if (
+          depthClickedIndex === undefined &&
+          inputCurrency &&
+          outputCurrency &&
+          gasPrice
+        ) {
           previousValue.current.inputCurrencyAddress = inputCurrency.address
           previousValue.current.outputCurrencyAddress = outputCurrency.address
           try {
