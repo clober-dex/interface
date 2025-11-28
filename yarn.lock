@@ -1077,10 +1077,10 @@
   resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-2.10.1.tgz#012f6d7d110f8c45198c7e6a96cb217c45d0c696"
   integrity sha512-ckS3+vyJb5qGpEYv/s1OebUHDi/xSNtfgw1wqKZo7MR9F2z+qXr0q5XagafAG/9O0QPVIUfST0smluYSTpYFkg==
 
-"@clober/v2-sdk@1.0.0-beta.4":
-  version "1.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@clober/v2-sdk/-/v2-sdk-1.0.0-beta.4.tgz#b70f97cfd61a69ef119d9d1a060af5bf76588f35"
-  integrity sha512-5cR86kZa84BTxHzee0T7yRSEeMnHILuUGeIQkuohnmG0QzsdLMlL83lYEtJQULy4i8VjLYTErE33D66C87U15A==
+"@clober/v2-sdk@1.0.0-beta.5":
+  version "1.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/@clober/v2-sdk/-/v2-sdk-1.0.0-beta.5.tgz#f60c6ca1357e62ec3f01ce23399e0ea9c24031d8"
+  integrity sha512-BgW+x05+KbScJCstJRUQ1oLxCBDbk29jQPh5ohLUgkxmGDqY3xvQCV4OvgLv8AIULP2TV5ma9dgwD0hFN1uYEg==
   dependencies:
     axios "^1.7.7"
     bignumber.js "^9.1.2"

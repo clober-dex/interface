@@ -44,12 +44,7 @@ export const PoolContainer = () => {
       0,
     )
     const total24hVolume = poolSnapshots.reduce(
-      (acc, { performanceHistories }) =>
-        acc +
-        Number(
-          performanceHistories.sort((a, b) => b.timestamp - a.timestamp)?.[0]
-            ?.volumeUSD ?? 0,
-        ),
+      (acc, { volumeUSD24h }) => acc + Number(volumeUSD24h),
       0,
     )
     return [totalTvl, total24hVolume]
