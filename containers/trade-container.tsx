@@ -899,7 +899,7 @@ export const TradeContainer = () => {
                     }
                     setShowOrderBook={setShowOrderBook}
                     setTab={setTab}
-                    className="flex flex-col px-0.5 xl:px-4 pb-4 pt-2 md:pb-6 bg-[#16181d] rounded-b-xl md:rounded-2xl gap-[20px] h-[300px] xl:h-[481px] w-full xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930] overflow-y-hidden"
+                    className="flex flex-col xl:px-4 pb-4 pt-2 md:pb-6 bg-[#16181d] rounded-b-xl md:rounded-2xl gap-[20px] h-[300px] xl:h-[481px] w-full xl:outline xl:outline-1 xl:outline-offset-[-1px] xl:outline-[#272930] overflow-y-hidden"
                   />
                 ) : (
                   <></>

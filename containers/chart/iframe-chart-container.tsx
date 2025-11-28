@@ -58,7 +58,8 @@ export const IframeChartContainer = ({
               </defs>
             </svg>
             <div className="text-center text-blue-400 text-[13px]">
-              View OrderBook
+              <span className="hidden sm:flex">View OrderBook</span>
+              <span className="flex sm:hidden">OrderBook</span>
             </div>
           </button>
           <div className="w-full mr-auto sm:ml-auto flex">

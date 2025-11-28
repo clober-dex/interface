@@ -139,7 +139,8 @@ export const TradingViewChartContainer = ({
                 </defs>
               </svg>
               <div className="text-center text-blue-400 text-[13px] font-medium">
-                View OrderBook
+                <span className="hidden sm:flex">View OrderBook</span>
+                <span className="flex sm:hidden">OrderBook</span>
               </div>
             </button>
           )}

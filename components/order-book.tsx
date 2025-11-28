@@ -47,7 +47,7 @@ export default function OrderBook({
       <div className="flex items-center justify-between pl-4 xl:pl-0">
         <button
           onClick={() => setShowOrderBook(false)}
-          className="flex w-[140px] xl:w-[157px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
+          className="flex w-[126px] sm:w-[157px] h-7 px-2.5 py-1.5 bg-blue-500/20 rounded-lg justify-center items-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -77,7 +77,8 @@ export default function OrderBook({
             </defs>
           </svg>
           <div className="text-center text-blue-400 text-[13px]">
-            View Chart
+            <span className="hidden sm:flex">View Chart</span>
+            <span className="flex sm:hidden">Chart</span>
           </div>
         </button>
       </div>
