@@ -17,6 +17,13 @@ import { Currency } from '../model/currency'
 const buildCurrencyLabel = (currency: Currency): string =>
   `${currency.symbol}(${currency.address.slice(2, 6)})`
 
+// TODO use sdk type
+type ProtocolFeesType = {
+  totalFeeUSD: number
+  liquidityVaultProtocolFeeUSD: number
+  routerGatewayProtocolFeeUSD: number
+}
+
 export default function Analytics() {
   const { selectedChain } = useChainContext()
 
@@ -37,7 +44,22 @@ export default function Analytics() {
             volume24hUSDMap: item.volume24hUSDMap,
             protocolFees24hUSD: Object.values(
               item.protocolFees24hUSDMap,
-            ).reduce((acc, { usd }) => acc + usd, 0),
+            ).reduce(
+              (acc, { protocolFees }) => ({
+                totalFeeUSD: acc.totalFeeUSD + protocolFees.totalFeeUSD,
+                liquidityVaultProtocolFeeUSD:
+                  acc.liquidityVaultProtocolFeeUSD +
+                  protocolFees.liquidityVaultProtocolFeeUSD,
+                routerGatewayProtocolFeeUSD:
+                  acc.routerGatewayProtocolFeeUSD +
+                  protocolFees.routerGatewayProtocolFeeUSD,
+              }),
+              {
+                totalFeeUSD: 0,
+                liquidityVaultProtocolFeeUSD: 0,
+                routerGatewayProtocolFeeUSD: 0,
+              } as ProtocolFeesType,
+            ),
             protocolFees24hUSDMap: item.protocolFees24hUSDMap,
             totalValueLockedUSD: Object.values(
               item.totalValueLockedUSDMap,
@@ -56,7 +78,7 @@ export default function Analytics() {
           0,
         ),
         accumulatedProtocolFeesUSD: analyticsSnapshots.reduce(
-          (acc, item) => acc + item.protocolFees24hUSD,
+          (acc, item) => acc + item.protocolFees24hUSD.totalFeeUSD,
           0,
         ),
         analyticsSnapshots,
@@ -264,19 +286,41 @@ export default function Analytics() {
                   prefix={'$'}
                   data={(analytics?.analyticsSnapshots ?? [])
                     .map((item) => {
+                      const values = {
+                        ...Object.fromEntries(
+                          Object.entries(item.protocolFees24hUSDMap).map(
+                            ([
+                              ,
+                              {
+                                currency,
+                                protocolFees: { liquidityVaultProtocolFeeUSD },
+                              },
+                            ]) =>
+                              [
+                                `${buildCurrencyLabel(currency)}(LP)`,
+                                liquidityVaultProtocolFeeUSD,
+                              ] as [string, number],
+                          ),
+                        ),
+                        ...Object.fromEntries(
+                          Object.entries(item.protocolFees24hUSDMap).map(
+                            ([
+                              ,
+                              {
+                                currency,
+                                protocolFees: { routerGatewayProtocolFeeUSD },
+                              },
+                            ]) =>
+                              [
+                                `${buildCurrencyLabel(currency)}(AGG)`,
+                                routerGatewayProtocolFeeUSD,
+                              ] as [string, number],
+                          ),
+                        ),
+                      }
                       return {
                         time: item.timestamp as UTCTimestamp,
-                        values: {
-                          ...Object.fromEntries(
-                            Object.entries(item.protocolFees24hUSDMap).map(
-                              ([, { currency, usd }]) =>
-                                [buildCurrencyLabel(currency), usd] as [
-                                  string,
-                                  number,
-                                ],
-                            ),
-                          ),
-                        },
+                        values,
                       }
                     })
                     .sort((a, b) => a.time - b.time)}
@@ -292,11 +336,18 @@ export default function Analytics() {
                         if (!currency) {
                           return null
                         }
-                        return {
-                          label: buildCurrencyLabel(currency),
-                          color,
-                        }
+                        return [
+                          {
+                            label: `${buildCurrencyLabel(currency)}(AGG)`,
+                            color,
+                          },
+                          {
+                            label: `${buildCurrencyLabel(currency)}(LP)`,
+                            color,
+                          },
+                        ]
                       })
+                      .flat()
                       .filter(
                         (item): item is { label: string; color: string } =>
                           !!item,
