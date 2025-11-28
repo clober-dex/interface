@@ -138,9 +138,13 @@ export async function fetchTokenInfo({
 }
 
 export async function fetchCurrencies(): Promise<Currency[]> {
-  const currencies = await Promise.all(
-    aggregators.map((aggregator) => aggregator.currencies()),
+  const currencies = (
+    await Promise.allSettled(
+      aggregators.map((aggregator) => aggregator.currencies()),
+    )
   )
+    .map((result) => (result.status === 'fulfilled' ? result.value : []))
+    .filter((currency) => currency.length > 0)
   return currencies.flat().map((currency) => ({
     ...currency,
     address: getAddress(currency.address),
