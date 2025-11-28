@@ -6,6 +6,7 @@ import {
 } from 'viem'
 import {
   getCurrencies,
+  getLatestPriceMap,
   getReferenceCurrency,
   marketOrder,
   Transaction,
@@ -46,7 +47,10 @@ export class CloberV2Aggregator implements Aggregator {
   }
 
   public async prices(): Promise<Prices> {
-    return {} as Prices
+    const prices = await getLatestPriceMap({
+      chainId: this.chain.id,
+    })
+    return prices as Prices
   }
 
   public quote = async (
