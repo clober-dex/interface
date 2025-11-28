@@ -72,7 +72,7 @@ export class MonorailAggregator implements Aggregator {
       headers: {
         accept: '*/*',
       },
-      timeout: 500,
+      timeout: 1500,
     })
 
     const nativePrice = parseFloat(
