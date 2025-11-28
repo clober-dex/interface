@@ -6,6 +6,7 @@ import {
   AnalyticsSnapshot,
   AnalyticsSummary,
   getProtocolAnalytics,
+  ProtocolFeesType,
 } from '@clober/v2-sdk'
 
 import { useChainContext } from '../contexts/chain-context'
@@ -16,13 +17,6 @@ import { Currency } from '../model/currency'
 
 const buildCurrencyLabel = (currency: Currency): string =>
   `${currency.symbol}(${currency.address.slice(2, 6)})`
-
-// TODO use sdk type
-type ProtocolFeesType = {
-  totalFeeUSD: number
-  liquidityVaultProtocolFeeUSD: number
-  routerGatewayProtocolFeeUSD: number
-}
 
 export default function Analytics() {
   const { selectedChain } = useChainContext()
