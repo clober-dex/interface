@@ -68,6 +68,7 @@ export const CHAIN_CONFIG: ChainConfig = {
     ['0x6131B5fae19EA4f9D964eAc0408E4408b66337b5']: 'KyberSwap',
     ['0x956Df8424B556F0076E8abf5481605f5A791cc7f']: 'Fly',
     ['0x0000000000001fF3684f28c67538d4D072C22734']: '0x',
+    ['0xb3e6778480b2E488385E8205eA05E20060B813cb']: 'Kuru',
     [getContractAddresses({ chainId: CHAIN.id }).Controller]: 'Clober',
   },
   EXTERNAL_SUBGRAPH_ENDPOINTS: {
