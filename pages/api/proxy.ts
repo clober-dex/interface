@@ -1,8 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 // const ALLOWED_ORIGINS = ['https://app.clober.io', 'http://localhost:3000']
-const ALLOWED_HOSTS = ['api.0x.org', 'app.geckoterminal.com']
-const ALLOWED_HEADERS = ['accept', '0x-api-key', '0x-version']
+const ALLOWED_HOSTS = ['api.0x.org', 'app.geckoterminal.com', 'rpc.kuru.io']
+const ALLOWED_HEADERS = [
+  'accept',
+  '0x-api-key',
+  '0x-version',
+  'content-type',
+  'host',
+  'origin',
+  'user-agent',
+]
 
 const SECRET_HEADER_MAP = {
   '0x-api-key': process.env.ZERO_EX_API_KEY || '',
